@@ -1,0 +1,49 @@
+﻿<?php
+
+	$L_ERR_SERVER_NOT_LOADED = 'SecretServer non chargé';
+	$L_ERR_SERVER_NOT_STARTED = 'SecretServer non démarré';
+	$L_ERR_MOTHER_KEY_CORRUPTED = 'Clé mère corrompue';
+	$L_ERR_NO_CMD_SEND = 'Pas de commande envoyée';
+	$L_ERR_NO_SESSION = 'Pas d\'ID de Session';
+	$L_ERR_NO_VALUE = 'Pas de valeur';
+	$L_ERR_INVALID_SESSION = 'Session Invalide ou Session non trouvée';
+	$L_ERR_SESSION_EXPIRED = 'Session expirée';
+	$L_ERR_USER_NOT_CONNECTED = 'Utilisateur non connecté';
+	$L_ERR_USER_NOT_ADMIN = 'Cette utilisateur n\'est pas administrateur';
+	$L_ERR_MOTHER_KEY_EMPTY = 'Erreur, la Clé Mère est vide';
+	$L_ERR_INVALID_OPERATOR_KEY = 'Fichier contenant la clé mère corrompu ou Clé Opérateur invalide';
+	$L_ERR_MOTHER_KEY_NOT_LOADED = 'Clé mère non chargée';
+	$L_ERR_TRANSPORT_FILE_OPEN = 'Erreur à l\'ouverture du fichier contenant la Clé de Transport';
+	$L_ERR_TRANSPORT_FILE_READ = 'Erreur à la lecture du fichier contenant la Clé de Transport';
+	$L_ERR_TRANSPORT_FILE_CREATION = 'Erreur à la création du fichier pour la Clé de Transport';
+	$L_ERR_MISSING_KEY = 'Une clé omise';
+	$L_ERR_SECRET_FILE_OPEN = 'Erreur à l\'ouverture du fichier contenant la Clé Mère';
+	$L_ERR_SECRET_FILE_READ = 'Erreur à la lecture du fichier contenant la Clé Mère';
+	$L_ERR_SECRET_FILE_CREATION = 'Erreur à la création du fichier pour la Clé Mère';
+	
+	$L_MOTHER_KEY_LOADED = 'Clé Mère chargée';
+	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Clé Mère crée automatiquement';
+	$L_MOTHER_KEY_MANUALLY_CREATED = 'Clé Mère crée manuellement';
+
+	$L_Operator = 'Opérateur';
+	$L_Creation_Date = 'Date de création';
+	$L_Load_Mother_Key = 'Charger la clé mère';
+	$L_Creation_Mother_Key = 'Création de la clé mère';
+	$L_Operator_Key = 'Clé de l\'Opérateur';
+	$L_Mother_Key = 'Clé mère';
+	$L_Insert_Operator_Key = 'Insérer la clé opérateur';
+	$L_Insert_Mother_Key = 'Insérer la clé mère';
+	$L_Use_SecretServer = 'Utiliser le SecretServer';
+	$L_Create_New_Keys = 'Créer de nouvelles clés';
+	
+	$L_New_Keys_Created = 'Nouvelles clés de chiffrement créées';
+	$L_Confidentials = 'Informations Confidentielles';
+	
+	$L_Success_Page = "<h1>" . $L_Confidentials . "</h1>\n" .
+	 "<p>Important 1 : <span class=\"normal\">cette page ne sera pas regénérée, veillez à la conserver dans un lieu sur.</span></p>" .
+	 "<p>Important 2 : <span class=\"normal\">le précédent fichier a été renommé.</span></p>" .
+	 "<p>Important 3 : <span class=\"normal\">pensez à transchiffrer votre base si elle contenait précédemment des données.</span></p>";
+
+	$L_Shutdown_SecretServer = 'Eteindre le SecretServer';
+
+?>
