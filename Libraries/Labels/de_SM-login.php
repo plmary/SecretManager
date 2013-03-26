@@ -6,18 +6,16 @@
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY, Florian Maier (contact@marsmenschen.com)
-* @date 2013-03
-* @version 1.2
+* @date 2013-03-26
+* @version 1.3
 */
 
     $L_Title = "Benutzer Anmeldung";
 	$L_Title_CMDP = 'Passwort ändern';
 
 	$L_Username = 'Benutzername';
-	$L_Password = 'Passwort';
 	$L_New_Password = 'Neues Passwort';
 	$L_Conf_Password = 'Neues Passwort bestätigen';
-	$L_Connection = 'Login';
 	$L_Password_Modified = 'Password geändert';
 	$L_Disconnect = 'Verbindung annrechen';
 	$L_Connect = 'Verbinden';

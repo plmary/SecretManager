@@ -6,8 +6,8 @@
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY, Florian Maier (contact@marsmenschen.com)
-* @date 2013-03
-* @version 1.2
+* @date 2013-03-26
+* @version 1.3
 */
 
 	$L_Subtitle = "Password Gruppenverwaltung";
@@ -78,6 +78,9 @@
 	$L_SecretServer = 'SecretServer';
 	$L_Load = 'Laden';
 	$L_Execute = 'Ausführen';
+	$L_No_Profile = 'Kein Profil';
+	$L_Profile_Not_Found = 'Profil nicht gefunden';
+	$L_Password = 'Passwort';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

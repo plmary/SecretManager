@@ -6,14 +6,14 @@
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY, Florian Maier (contact@marsmenschen.com)
-* @date 2013-03
-* @version 1.2
+* @date 2013-03-26
+* @version 1.3
 */
 
 	$L_Title = 'Einstellungen verwalten';
 	
 	$L_Welcome = 'Willkommen';
-	$L_Alert = 'Warnungen';
+	$L_Alerts = 'Warnungen';
 	$L_Connection = 'Verbindung';
 	$L_Welcome_Text = 'Achtung: Dise Einstellungen beeinflussen die Sicherheit von SecretManager und können zu Fehlfunktionen führen.' ;
 	

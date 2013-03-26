@@ -6,8 +6,8 @@
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY, Florian Maier (contact@marsmenschen.com)
-* @date 2013-03
-* @version 1.2
+* @date 2013-03-26
+* @version 1.3
 */
 
 	$L_Title = 'Benutzer verwalten';
@@ -17,7 +17,6 @@
 	$L_List_Profiles = 'Profilliste';
 	$L_First_Name = 'Vorname' ;
 	$L_Last_Name = 'Nachname' ;
-	$L_Profil = 'Profil' ;
 	$L_Sex = 'Geschlecht';
 	$L_Man = 'Mann';
 	$L_Woman = 'Frau';
@@ -44,7 +43,6 @@
 	$L_Auditor = 'Auditor';
 	$L_Administrator = 'Administrator';
 	$L_Rights = 'Berechtigungen';
-	$L_Profiles = 'Profile';
 
 	$L_User_Created = 'Benutzer erstellt' ;
 	$L_User_Modified = 'Benutzer bearbeitet' ;
@@ -121,9 +119,6 @@
 	$L_Associate = "Zuordnen";
 	$L_Associated_Profiles = "Nicht zugeordnete Profile";
 	$L_Users_Associate = 'Benutzer zuordnen';
-	
-	$L_No_Profile = "Kein Profil";
-	$L_Profile_Not_Found = "Profil nicht gefunden";
 	
 	$L_Reactivated_Civility = 'Civility wurde erneut aktiviert';
 ?>

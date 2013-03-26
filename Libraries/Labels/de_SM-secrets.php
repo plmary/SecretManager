@@ -6,8 +6,8 @@
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY, Florian Maier (contact@marsmenschen.com)
-* @date 2013-03
-* @version 1.2
+* @date 2013-03-26
+* @version 1.3
 */
 
 	$L_Title = 'Secrets management';
@@ -35,7 +35,6 @@
 	$L_Secret = 'Secret';
 	$L_Host = 'Host';
 	$L_User = 'User';
-	$L_Password = 'Passwort';
 	$L_Creation_Date = 'Erstellungsdatum';
 	$L_Modification_Date = 'Bearbeitungsdatum';
 	
@@ -68,10 +67,7 @@
 	$L_Groups_Associate = 'Gruppe von Secrets verbinden';
 	$L_Secret_Management = 'Secrets verwalten';
 	$L_Association_Complited = 'Verbindung abgeschlossen';
-	
-	$L_No_Profile = 'Kein Profil';
-	$L_Profile_Not_Found = 'Profil nicht gefunden';
-	
+		
 	$L_Generate = "Generate";
 	
 	$L_No_Good_Size = 'Länge reicht nicht aus (min)';
