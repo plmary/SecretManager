@@ -1,9 +1,18 @@
 <?php
-
+/**
+* Libellé spécifique à la gestion des Préférences.
+*
+* @warning Ce fichier doit impérativement être au format UTF-8 pour une gestion cohérente des caractères accentués.
+*
+* @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
+* @author Pierre-Luc MARY
+* @date 2013-03-25
+* @version 1.2
+*/
 	$L_Title = 'Preferences management';
 	
 	$L_Welcome = 'Welcome';
-	$L_Alert = 'Alerts';
+	$L_Alerts = 'Alerts';
 	$L_Connection = 'Connection';
 	$L_Welcome_Text = 'Warning: These settings determine the overall safety of SecretManager and may cause serious malfunction.' ;
 	

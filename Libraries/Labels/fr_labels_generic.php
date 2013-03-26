@@ -6,8 +6,8 @@
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY
-* @date 2013-03
-* @version 1.1
+* @date 2013-03-25
+* @version 1.2
 */
 	$L_Subtitle = "Outil de partage des mots de passe";
 	$L_Langue_en = "Anglais";
@@ -59,6 +59,7 @@
 	$L_To = "À";
 	$L_Referential = "Référentiel";
 	$L_Referential_Management = "Gestion du Référentiel";
+	$L_Type = 'Type';
 	$L_Types = 'Types';
 	$L_Environments = "Environnements";
 	$L_Historical = "Historique";
@@ -76,6 +77,10 @@
 	$L_SecretServer = 'SecretServer';
 	$L_Load ='Charger';
 	$L_Execute = 'Exécuter';
+	$L_Profile_Not_Found = "Profil introuvable";
+	$L_No_Profile = "Pas de Profil";
+	$L_Password = 'Mot de passe';
+	$L_Creation_Date = 'Date de création';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

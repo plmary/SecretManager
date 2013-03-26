@@ -1,4 +1,14 @@
 <?php
+/**
+* Libellé spécifique à la gestion du SecretServer.
+*
+* @warning Ce fichier doit impérativement être au format UTF-8 pour une gestion cohérente des caractères accentués.
+*
+* @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
+* @author Pierre-Luc MARY
+* @date 2013-03-25
+* @version 1.2
+*/
 
 	$L_ERR_SERVER_NOT_LOADED = 'SecretServer not loaded';
 	$L_ERR_SERVER_NOT_STARTED = 'SecretServer non started';
@@ -26,7 +36,6 @@
 	$L_MOTHER_KEY_MANUALLY_CREATED = 'Mother key manually created';
 
 	$L_Operator = 'Operator';
-	$L_Creation_Date = 'Creation date';
 	$L_Load_Mother_Key = 'Load mother key';
 	$L_Operator_Key = 'Operator\'s key';
 	$L_Mother_Key = 'Mother key';

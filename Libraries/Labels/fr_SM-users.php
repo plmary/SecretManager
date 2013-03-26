@@ -1,4 +1,14 @@
 <?php
+/**
+* Libellé spécifique à la gestion des utilisateurs.
+*
+* @warning Ce fichier doit impérativement être au format UTF-8 pour une gestion cohérente des caractères accentués.
+*
+* @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
+* @author Pierre-Luc MARY
+* @date 2013-03-25
+* @version 1.2
+*/
 
 	$L_Title = 'Gestion des utilisateurs';
 	$L_List_Users = 'Liste des Utilisateurs';
@@ -7,7 +17,6 @@
 	$L_List_Profiles = 'Liste des Profils';
 	$L_First_Name = 'Prénom' ;
 	$L_Last_Name = 'Nom' ;
-	$L_Profil = 'Profil' ;
 	$L_Sex = 'Sexe';
 	$L_Man = 'Homme';
 	$L_Woman = 'Femme';
@@ -33,8 +42,6 @@
 	$L_Civility = 'Civilité';
 	$L_Auditor = 'Auditeur';
 	$L_Administrator = 'Administrateur';
-	$L_Rights = 'Droits';
-	$L_Profiles = 'Profils';
 
 	$L_User_Created = 'Utilisateur créé' ;
 	$L_User_Modified = 'Utilisateur modifié' ;
@@ -108,12 +115,8 @@
 
 	$L_Users_Profiles = 'Association des Profils à une Identité';
 	$L_Profiles_Management = "Gestion des Profils";
-	$L_Associate = "Associer";
 	$L_Associated_Profiles = "Profils à associer";
 	$L_Users_Associate = 'Associer des utilisateurs';
-	
-	$L_No_Profile = "Pas de Profil";
-	$L_Profile_Not_Found = "Profil introuvable";
 	
 	$L_Reactivated_Civility = 'La civilité a été réactivée';
 ?>

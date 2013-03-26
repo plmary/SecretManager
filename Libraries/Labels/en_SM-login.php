@@ -1,10 +1,19 @@
 <?php
+/**
+* Libellé spécifique à la gestion des connexions.
+*
+* @warning Ce fichier doit impérativement être au format UTF-8 pour une gestion cohérente des caractères accentués.
+*
+* @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
+* @author Pierre-Luc MARY
+* @date 2013-03-25
+* @version 1.2
+*/
 
    $L_Title = "User authentication";
 	$L_Title_CMDP = 'Change Password';
 
 	$L_Username = 'Username';
-	$L_Password = 'Password';
 	$L_New_Password = 'New password';
 	$L_Conf_Password = 'Confirm Password';
 	$L_Connection = 'Login';

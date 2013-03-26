@@ -6,7 +6,7 @@
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY, Samuel MAC ALEESE
-* @date 2013-03
+* @date 2013-03-25
 * @version 1.2
 */
 
@@ -77,6 +77,11 @@
 	$L_SecretServer = 'SecretServer';
 	$L_Load = 'Load';
 	$L_Execute = 'Execute';
+	$L_No_Profile = "No Profile";
+	$L_Profile_Not_Found = "Profile not found";
+	$L_Creation_Date = 'Creation date';
+	$L_List_Entities = 'Entities list';
+	$L_Password = 'Password';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

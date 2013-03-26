@@ -346,7 +346,7 @@ switch( $Action ) {
 	 "         <tr>\n" .
 	 "          <td>&nbsp;</td>\n" .
 	 "          <td><input type=\"submit\" class=\"button\" value=\"" . 
-	 $L_Connection . "\" /></td>\n" .
+	 $L_Connect . "\" /></td>\n" .
 	 "         </tr>\n" .
 	 "        </table>\n" .
 	 "       </center>\n" .
@@ -430,7 +430,7 @@ switch( $Action ) {
 		break;
 	}
 
-	$alert_message = $Secrets->formatHistoryMessage( $L_Connect . ' ' .
+	$alert_message = $Secrets->formatHistoryMessage( $L_Connection . ' ' .
 	 $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .
 	 ' (' . $_SESSION[ 'idn_login' ] . ')' );
 

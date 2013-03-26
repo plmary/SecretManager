@@ -1,10 +1,19 @@
 <?php
+/**
+* Libellé spécifique à la gestion des secrets.
+*
+* @warning Ce fichier doit impérativement être au format UTF-8 pour une gestion cohérente des caractères accentués.
+*
+* @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
+* @author Pierre-Luc MARY
+* @date 2013-03-25
+* @version 1.2
+*/
 
 	$L_Title = 'Secrets management';
 	
 	$L_List_Groups = 'Groups of Secrets  list';
 	$L_List_Secrets = 'Secrets list';
-	$L_List_Entities = 'Entity list';
 	$L_Search_Secrets = 'Search Secrets';
 	
 	$L_Group_Create = 'Creation of a Group of Secrets';
@@ -25,8 +34,6 @@
 	$L_Secret = 'Secret';
 	$L_Host = 'Host';
 	$L_User = 'User';
-	$L_Password = 'Password';
-	$L_Creation_Date = 'Creation date';
 	$L_Modification_Date = 'Modification date';
 	
 	$L_Group_Created = 'Group of Secrets created' ;

@@ -111,7 +111,7 @@ if ( $Authentication->is_administrator() ) {
 	switch( $Action ) {
 	 default:
 		print( "       <li class=\"active\">" . $L_Welcome . "</li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alert . "</a></li>\n" .
+		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
 		 "</a></li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
@@ -124,7 +124,7 @@ if ( $Authentication->is_administrator() ) {
 	 case 'A':
 	 case 'AX':
 		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li class=\"active\">" . $L_Alert . "</li>\n" .
+		 "       <li class=\"active\">" . $L_Alerts . "</li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
 		 "</a></li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
@@ -137,7 +137,7 @@ if ( $Authentication->is_administrator() ) {
 	 case 'C':
 	 case 'CX':
 		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alert . "</a></li>\n" .
+		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
 		 "       <li class=\"active\">" . $L_Connection . "</li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
 		 "</a></li>\n" .
@@ -150,7 +150,7 @@ if ( $Authentication->is_administrator() ) {
 	 case 'HX':
 	 case 'PH':
 		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alert . "</a></li>\n" .
+		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
 		 "       <li class=\"active\">" . $L_Historical . "</li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
@@ -161,7 +161,7 @@ if ( $Authentication->is_administrator() ) {
 	 case 'S':
 	 case 'LK':
 		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alert . "</a></li>\n" .
+		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
 		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
 		 "</a></li>\n" .
