@@ -105,6 +105,10 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 		 "      <img src=\"Pictures/flag-fra.png\" alt=\"" . $L_Langue_fr . 
 		 "\" title=\"" . $L_Langue_fr . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
+		 "     <a href=\"" . $Script . "?Lang=de\">\n" .
+		 "      <img src=\"Pictures/flag-deu.png\" alt=\"" . $L_Langue_de . 
+		 "\" title=\"" . $L_Langue_de . "\"  class=\"no-border\" />\n" .
+		 "     </a>\n" .
 		 "    </div> <!-- fin : zoneLangues -->\n\n" ;
 	} else {
 		if ( array_key_exists( 'idn_login', $_SESSION ) ) {
