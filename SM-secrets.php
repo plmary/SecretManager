@@ -768,15 +768,15 @@ switch( $Action ) {
 		print( "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
-		 "        <th colspan=\"7\">" . $L_List_Secrets . "</th>\n" .
+		 "        <th colspan=\"8\">" . $L_List_Secrets . "</th>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
-		 "        <td colspan=\"7\">" . $L_Group .
+		 "        <td colspan=\"8\">" . $L_Group .
 		 "        : <span class=\"green bold\">" . stripslashes( $Group->sgr_label ) . "</span>\n" .
 		 "        </td>" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
-		 "        <th colspan=\"7\">" . $Buttons . "</th>\n" .
+		 "        <th colspan=\"8\">" . $Buttons . "</th>\n" .
 		 "       </tr>\n" .
 		 "      </thead>\n" .
 		 "      <tbody>\n" );
@@ -856,6 +856,20 @@ switch( $Action ) {
 		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</th>\n"
 		 );
 	 
+		if ( $orderBy == 'alert' ) {
+			$tmpClass = 'order-select';
+		
+			$tmpSort = 'alert-desc';
+		} else {
+			if ( $orderBy == 'alert-desc' ) $tmpClass = 'order-select';
+			else $tmpClass = 'order';
+		
+			$tmpSort = 'alert';
+		}
+		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Alert .
+		 "</th>\n" );
+	 
 		if ( $orderBy == 'comment' ) {
 			$tmpClass = 'order-select';
 		
@@ -880,7 +894,16 @@ switch( $Action ) {
 				$BackGround = "impair";
 			else
 				$BackGround = "pair";
-				
+
+			if ( $Secret->scr_alert == 0 ) {
+				$Img_Src = 'Pictures/bouton_non_coche.gif';
+				$Img_Title = $L_No ;
+			} else {
+				$Img_Src = 'Pictures/bouton_coche.gif';
+				$Img_Title = $L_Yes ;
+			}
+			$Alert_Image = '<img class="no-border" src="' . $Img_Src . '" title="' . $Img_Title .
+			 '" alt="' . $Img_Title . '" />';
 
 			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
 			 "        <td class=\"align-middle\">" . ${$Secret->stp_name} . "</td>\n" .
@@ -888,6 +911,7 @@ switch( $Action ) {
 			 "        <td class=\"align-middle\">" . $Secret->scr_application . "</td>\n" .
 			 "        <td class=\"align-middle\">" . $Secret->scr_host . "</td>\n" .
 			 "        <td class=\"align-middle\">" . $Secret->scr_user . "</td>\n" .
+			 "        <td class=\"align-middle\">" . $Alert_Image . "</td>\n" .
 			 "        <td class=\"align-middle\">" . $Secret->scr_comment . "</td>\n" .
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
@@ -901,7 +925,7 @@ switch( $Action ) {
 		}
 		
 		print( "      </tbody>\n" .
-		 "      <tfoot><tr><th colspan=\"7\">Total : <span class=\"green\">" . 
+		 "      <tfoot><tr><th colspan=\"8\">Total : <span class=\"green\">" . 
 		 count( $List_Secrets ) . "</span>" . $Buttons . "</th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "\n" );
@@ -1092,7 +1116,7 @@ switch( $Action ) {
 			}
 		
 			print( "          <option value=\"" . $Group->sgr_id . "\"" . $Status . ">" .
-			 $Group->sgr_label . "</option>\n" );
+			 $Security->XSS_Protection( $Group->sgr_label ) . "</option>\n" );
 		}
 			
 		print( "         </select>\n" .
@@ -1347,7 +1371,7 @@ switch( $Action ) {
 		 "        <th>" . $L_Password . "</th>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"impair\">\n" .
-		 "        <td>" . $Secret->sgr_label . "</td>\n" .
+		 "        <td>" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
 		 "        <td>" . ${$Secret->stp_name} . "</td>\n" .
 		 "        <td>" . ${$Secret->env_name} . "</td>\n" .
 		 "        <td>" . $Secret->scr_application . "</td>\n" .
@@ -1435,7 +1459,7 @@ switch( $Action ) {
 			else $Status = '';
 		
 			print( "          <option value=\"" . $Group->sgr_id . '"' . $Status . ">" .
-			 $Group->sgr_label . "</option>\n" );
+			 $Security->XSS_Protection( $Group->sgr_label ) . "</option>\n" );
 		}
 			
 		print( "         </select>\n" .
@@ -1703,7 +1727,7 @@ switch( $Action ) {
 		 "       <tbody>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Group . "</td>\n" .
-		 "        <td class=\"pair\">" . $Secret->sgr_id . "</td>\n" .
+		 "        <td class=\"pair\">" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Type . "</td>\n" .

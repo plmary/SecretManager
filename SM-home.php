@@ -640,7 +640,7 @@ switch( $Action ) {
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Comment . "</th>\n" );
 
 
-	print( "        <th>&nbsp;</th>\n" .
+	print( "        <th>" . $L_Actions . "</th>\n" .
 	 "       </tr>\n" );
 		
 	$BackGround = "pair";
@@ -654,7 +654,7 @@ switch( $Action ) {
 		print( "       <tr class=\"" . $BackGround .
 		 " surline\" style=\"cursor: pointer;\" >\n" .
 		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . $Secret->sgr_label . "</td>\n" .
+		 $Secret->scr_id . " );\">" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
 		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
 		 $Secret->scr_id . " );\">" . ${$Secret->stp_name} . "</td>\n" .
 		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 

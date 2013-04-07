@@ -794,6 +794,14 @@ class IICA_Secrets extends PDO {
 			$Request .= 'ORDER BY scr_user DESC ';
 			break;
 
+		 case 'alert':
+			$Request .= 'ORDER BY scr_alert ';
+			break;
+
+		 case 'alert-desc':
+			$Request .= 'ORDER BY scr_alert DESC ';
+			break;
+
 		 case 'comment':
 			$Request .= 'ORDER BY scr_comment ';
 			break;
@@ -1100,6 +1108,7 @@ class IICA_Secrets extends PDO {
 		 'scr_id, idn_login, ach_date, ach_access, ach_ip ' .
 		 'FROM ach_access_history as T1 ' .
 		 'LEFT JOIN idn_identities as T2 ON T1.idn_id = T2.idn_id ' .
+		 'ORDER BY ach_date desc ' .
 		 'LIMIT ' . $start . ', ' . $number ;
 		
 		if ( $scr_id != '' ) {
@@ -1137,7 +1146,7 @@ class IICA_Secrets extends PDO {
 		}
 		
 		$Request .= $Where;
-		
+
 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
