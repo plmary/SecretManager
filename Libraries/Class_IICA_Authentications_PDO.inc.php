@@ -171,29 +171,31 @@ class IICA_Authentications extends PDO {
 		
 		 case 'ldap':
 			include( 'Libraries/Config_LDAP.inc.php' );
-
-			// Eléments d'authentification LDAP
-			$ldap_rdn  = $_User;     // DN ou RDN LDAP
-			$ldap_pass = $_Password;  // Mot de passe associé
-
-			if ( isset( $_LDAP_Port ) ) {
-				$LDAP_Port = $_LDAP_Port;
-			} else {			
-				$LDAP_Port = 389;
-			}
+			
+			$LDAP_RDN = $_LDAP_RDN_Prefix . '=' . $Login . ',' . $_LDAP_Organization;
 
 			// Connexion au serveur LDAP
-			$ldap_conn = ldap_connect( $_LDAP_Server, $LDAP_Port );
-			if ( $ldap_conn === FALSE ) {
+			$ldap_c = ldap_connect( $_LDAP_Server, $_LDAP_Port );
+			if ( $ldap_c === FALSE ) {
+				print( ldap_error( $ldap_c ) . ' (' . ldap_errno( $ldap_c ) . ')' );
+				return FALSE;
+			}
+	 
+			if ( ldap_set_option( $ldap_c, LDAP_OPT_PROTOCOL_VERSION,
+			 $_LDAP_Protocol_Version ) === FALSE ) {
+				print( ldap_error( $ldap_c ) . ' (' . ldap_errno( $ldap_c ) . ')' );
 				return FALSE;
 			}
 
-		    // Connexion au serveur LDAP
-			$ldap_bind = ldap_bind( $ldap_conn, $ldap_rdn, $ldap_pass );
+			if ( $ldap_c ) {
+				// Authentification au serveur LDAP
+				$ldap_b = ldap_bind( $ldap_c, $LDAP_RDN, $Authenticator );
 
-			// Vérification de l'authentification
-			if ( $ldap_bind === FALSE ) {
-				return FALSE;
+				// Vérification de l'authentification
+				if ( ! $ldap_b ) {
+					print( ldap_error( $ldap_c ) . ' (' . ldap_errno( $ldap_c ) . ')' );
+					return FALSE;
+				}
 			}
 
 			break;

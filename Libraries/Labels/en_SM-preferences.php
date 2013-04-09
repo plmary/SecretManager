@@ -35,7 +35,6 @@
 	$L_Use_Radius = 'RADIUS Authentication';
 	$L_Use_LDAP = 'LDAP Authentification';
 
-
 	$L_Min_Size_Password = 'Minimum password length';
 	$L_Password_Complexity = 'Passwords complexity';
 	$L_Default_User_Lifetime = 'Password lifetime (months)';
@@ -45,7 +44,11 @@
 	$L_Radius_Server_IP = 'RADIUS server IP address';
 	$L_Radius_Port_IP = 'RADIUS Server IP Port';
 	$L_Radius_Secret_Common = 'RADIUS shared secret';
-	$L_LDAP_Server_IP = 'LDAP server IP address';
+	$L_LDAP_Server = 'LDAP server IP address';
+	$L_LDAP_Port = 'LDAP port';
+	$L_LDAP_Protocol_Version = 'LDAP protocol version';
+	$L_LDAP_Organization = 'LDAP Organization';
+	$L_LDAP_RDN_Prefix = 'LDAP prefix RDN';
 	
 	$L_ERR_MAJ_Alert = 'An error occurred while updating the "Alerts" parameters';
 	$L_ERR_MAJ_Connection = 'An error occurred while updating the "Connection" parameters';

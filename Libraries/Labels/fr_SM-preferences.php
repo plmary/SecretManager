@@ -48,6 +48,9 @@
 	$L_Radius_Secret_Common = 'Secret partagé de Radius';
 	$L_LDAP_Server = 'Adresse IP du serveur LDAP';
 	$L_LDAP_Port = 'Port du serveur LDAP';
+	$L_LDAP_Protocol_Version = 'Version du protocole LDAP';
+	$L_LDAP_Organization = 'Organisation du LDAP';
+	$L_LDAP_RDN_Prefix = 'Préfixe RDN LDAP';
 	
 	$L_ERR_MAJ_Alert = 'Erreur durant la mise à jour des paramètres d\'Alertes';
 	$L_ERR_MAJ_Connection = 'Erreur durant la mise à jour des paramètres de Connexion';

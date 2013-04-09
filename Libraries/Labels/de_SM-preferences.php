@@ -45,7 +45,11 @@
 	$L_Radius_Server_IP = 'RADIUS Server IP Adresse';
 	$L_Radius_Port_IP = 'RADIUS Server IP Port';
 	$L_Radius_Secret_Common = 'RADIUS Shared Secret';
-	$L_LDAP_Server_IP = 'LDAP Server IP Addresse';
+	$L_LDAP_Server = 'LDAP Server IP Addresse';
+	$L_LDAP_Port = 'LDAP port';
+	$L_LDAP_Protocol_Version = 'LDAP protocol version';
+	$L_LDAP_Organization = 'LDAP Organization';
+	$L_LDAP_RDN_Prefix = 'LDAP prefix RDN';
 	
 	$L_ERR_MAJ_Alert = 'Beim Speichern der Warnungs-Einstellungen ist ein Fehler aufgetreten';
 	$L_ERR_MAJ_Connection = 'Beim Speichern der Verbindung-Einstellungen ist ein Fehler aufgetreten';

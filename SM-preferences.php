@@ -394,6 +394,9 @@ if ( $Authentication->is_administrator() ) {
 
 		 "  document.getElementById('id_LDAP_Server').disabled=true;\n" .
 		 "  document.getElementById('id_LDAP_Port').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_Protocol_Version').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_Organization').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_RDN_Prefix').disabled=true;\n" .
 		 " }\n" .
 		 " else if ( authentification_type == 'R' ) {\n" .
 		 "  document.getElementById('id_Min_Size_Password').disabled=true;\n" .
@@ -409,6 +412,9 @@ if ( $Authentication->is_administrator() ) {
 
 		 "  document.getElementById('id_LDAP_Server').disabled=true;\n" .
 		 "  document.getElementById('id_LDAP_Port').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_Protocol_Version').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_Organization').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_RDN_Prefix').disabled=true;\n" .
 		 " }\n" .
 		 " else if ( authentification_type == 'L' ) {\n" .
 		 "  document.getElementById('id_Min_Size_Password').disabled=true;\n" .
@@ -424,6 +430,9 @@ if ( $Authentication->is_administrator() ) {
 
 		 "  document.getElementById('id_LDAP_Server').disabled=false;\n" .
 		 "  document.getElementById('id_LDAP_Port').disabled=false;\n" .
+		 "  document.getElementById('id_LDAP_Protocol_Version').disabled=false;\n" .
+		 "  document.getElementById('id_LDAP_Organization').disabled=false;\n" .
+		 "  document.getElementById('id_LDAP_RDN_Prefix').disabled=false;\n" .
 		 " }\n" .
 		 "}" .
 		 "     </script>\n" .
@@ -562,7 +571,7 @@ if ( $Authentication->is_administrator() ) {
 		 "       </tr>\n" .
 		 
 		 "       <tr class=\"pair\">\n" .
-		 "        <td class=\"align-right\" width=\"50%\" rowspan=\"3\">" .
+		 "        <td class=\"align-right\" width=\"50%\" rowspan=\"6\">" .
 		 "<label for=\"id_rds\">" . $L_Use_LDAP . "</label>" .
 		 "</td>\n" .
 		 "        <td colspan=\"2\">\n" .
@@ -582,6 +591,27 @@ if ( $Authentication->is_administrator() ) {
 		 "        <td>\n" .
 		 "         <input type=\"text\" id=\"id_LDAP_Port\" name=\"LDAP_Port\" " .
 		 "value=\"" . $_LDAP_Port . "\"/>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td>" . $L_LDAP_Protocol_Version . "</td>\n" .
+		 "        <td>\n" .
+		 "         <input type=\"text\" id=\"id_LDAP_Protocol_Version\" " .
+		 "name=\"LDAP_Protocol_Version\" value=\"" . $_LDAP_Protocol_Version . "\"/>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td>" . $L_LDAP_Organization . "</td>\n" .
+		 "        <td>\n" .
+		 "         <input type=\"text\" id=\"id_LDAP_Organization\" name=\"LDAP_Organization\" " .
+		 "value=\"" . $_LDAP_Organization . "\"/>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td>" . $L_LDAP_RDN_Prefix . "</td>\n" .
+		 "        <td>\n" .
+		 "         <input type=\"text\" id=\"id_LDAP_RDN_Prefix\" name=\"LDAP_RDN_Prefix\" " .
+		 "value=\"" . $_LDAP_RDN_Prefix . "\"/>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 
@@ -690,6 +720,24 @@ if ( $Authentication->is_administrator() ) {
 			if ( ($LDAP_Port = $Security->valueControl( 
 			 $_POST[ 'LDAP_Port' ], 'NUMERIC' )) == -1 ) {
 				print( "     <h1>" . $L_Invalid_Value . " (LDAP_Port)</h1>" );
+				break 2;
+			}
+
+			if ( ($LDAP_Protocol_Version = $Security->valueControl( 
+			 $_POST[ 'LDAP_Protocol_Version' ], 'NUMERIC' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (LDAP_Protocol_Version)</h1>" );
+				break 2;
+			}
+
+			if ( ($LDAP_Organization = $Security->valueControl( 
+			 $_POST[ 'LDAP_Organization' ], 'ASCII' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (LDAP_Organization)</h1>" );
+				break 2;
+			}
+
+			if ( ($LDAP_RDN_Prefix = $Security->valueControl( 
+			 $_POST[ 'LDAP_RDN_Prefix' ], 'ASCII' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (LDAP_RDN_Prefix)</h1>" );
 				break 2;
 			}
 			
@@ -806,6 +854,9 @@ if ( $Authentication->is_administrator() ) {
 "\n" .
 "\$_LDAP_Server = '" . $LDAP_Server . "'; // IP address server or server name\n" .
 "\$_LDAP_Port = '" . $LDAP_Port . "'; // IP port server\n" .
+"\$_LDAP_Protocol_Version = '" . $LDAP_Protocol_Version . "'; // Protocol version\n" .
+"\$_LDAP_Organization = '" . $LDAP_Organization . "'; // Organization tree\n" .
+"\$_LDAP_RDN_Prefix = '" . $LDAP_RDN_Prefix . "'; // RDN prefix\n" .
 "\n" .
 "?>\n" ) === false ) {
 				print( "   <div id=\"alert\">\n" .
