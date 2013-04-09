@@ -377,6 +377,10 @@ switch( $Action ) {
 	 case 'R':
 		$Authentication_Type = 'radius';
 		break;
+		
+	 case 'L':
+		$Authentication_Type = 'ldap';
+		break;
 	}
 
 	try {

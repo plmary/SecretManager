@@ -33,6 +33,8 @@
 	$L_Connection_Management = 'Connection process Management';
 	$L_Use_Password = 'Password Authentication mode';
 	$L_Use_Radius = 'RADIUS Authentication';
+	$L_Use_LDAP = 'LDAP Authentification';
+
 
 	$L_Min_Size_Password = 'Minimum password length';
 	$L_Password_Complexity = 'Passwords complexity';
@@ -41,7 +43,9 @@
 	$L_Default_Password = 'Default password';
 	$L_Expiration_Time = 'Time before session expiration (minutes)';
 	$L_Radius_Server_IP = 'RADIUS server IP address';
+	$L_Radius_Port_IP = 'RADIUS Server IP Port';
 	$L_Radius_Secret_Common = 'RADIUS shared secret';
+	$L_LDAP_Server_IP = 'LDAP server IP address';
 	
 	$L_ERR_MAJ_Alert = 'An error occurred while updating the "Alerts" parameters';
 	$L_ERR_MAJ_Connection = 'An error occurred while updating the "Connection" parameters';

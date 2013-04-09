@@ -34,6 +34,7 @@
 	$L_Connection_Management = 'Gestion du processus de connexion';
 	$L_Use_Password = 'Utilisation de l\'authentification par mots de passe';
 	$L_Use_Radius = 'Utilisation de l\'authentification par Radius';
+	$L_Use_LDAP = 'Utilisation de l\'authentification par LDAP';
 
 	$L_Min_Size_Password = 'Taille minimum des mots de passe';
 	$L_Password_Complexity = 'Compléxité des mots de passe';
@@ -41,8 +42,12 @@
 	$L_Max_Attempt = 'Nombre de tentatives maximum';
 	$L_Default_Password = 'Mot de passe par défaut';
 	$L_Expiration_Time = 'Temps avant expiration de la session (en minutes)';
-	$L_Radius_Server_IP = 'Adresse IP du serveur Radius';
+	$L_Radius_Server = 'Adresse IP du serveur Radius';
+	$L_Radius_Authentication_Port = 'Port d\'authentification du serveur Radius';
+	$L_Radius_Accounting_Port = 'Port d\'accounting du serveur Radius';
 	$L_Radius_Secret_Common = 'Secret partagé de Radius';
+	$L_LDAP_Server = 'Adresse IP du serveur LDAP';
+	$L_LDAP_Port = 'Port du serveur LDAP';
 	
 	$L_ERR_MAJ_Alert = 'Erreur durant la mise à jour des paramètres d\'Alertes';
 	$L_ERR_MAJ_Connection = 'Erreur durant la mise à jour des paramètres de Connexion';

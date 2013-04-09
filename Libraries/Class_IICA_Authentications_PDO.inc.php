@@ -39,14 +39,14 @@ class IICA_Authentications extends PDO {
 
 
 	public function authentication( $Login, $Authenticator, $Type = 'database',
-	 $Salt = '' ) {
+	 $Salt = '', $_Port = '' ) {
 	/**
 	* Contrôle les éléments d'authentification
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-07
+	* @version 1.1
+	* @date 2013-04-07
 	*
 	* @param[in] $Login Nom de connexion de l'utilisateur
 	* @param[in] $Authenticator Authentifiant de l'utilisageur.
@@ -124,7 +124,9 @@ class IICA_Authentications extends PDO {
 		}
 
 
-		if ( $Type == 'database') {
+		switch( $Type ) {
+		 default:
+		 case 'database':
 			if ( $Salt == '' ) {
 				$Salt = $_salt_user;
 			}
@@ -136,18 +138,66 @@ class IICA_Authentications extends PDO {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
-		} else {
+			
+			break;
+		
+		 case 'radius':
 			include( 'Libraries/Radius/radius.class.php' );
 			include( 'Libraries/Config_Radius.inc.php' );
+
+			$Radius_Suffix = '';
+			$UPD_Timeout = 5;
+
+			if ( isset( $_Radius_Authentication_Port ) ) {
+				$authentication_port = $_Radius_Authentication_Port;
+			} else {			
+				$authentication_port = 1812;
+			}
 			
-			$radius = new Radius( $_Radius_Server_IP, $_Radius_Secret_Common );
+			if ( isset( $_Radius_Accounting_Port ) ) {
+				$accounting_port = $_Radius_Accounting_Port;
+			} else {			
+				$accounting_port = 1813;
+			}
+
+			$radius = new Radius( $_Radius_Server, $_Radius_Secret_Common,
+			 $Radius_Suffix, $UPD_Timeout, $authentication_port, $accounting_port );
 
 			if ( ! $radius->AccessRequest( $Login, $Authenticator ) ) {
 				return false;
-         }
+			}
+			
+			break;
+		
+		 case 'ldap':
+			include( 'Libraries/Config_LDAP.inc.php' );
 
+			// Eléments d'authentification LDAP
+			$ldap_rdn  = $_User;     // DN ou RDN LDAP
+			$ldap_pass = $_Password;  // Mot de passe associé
+
+			if ( isset( $_LDAP_Port ) ) {
+				$LDAP_Port = $_LDAP_Port;
+			} else {			
+				$LDAP_Port = 389;
+			}
+
+			// Connexion au serveur LDAP
+			$ldap_conn = ldap_connect( $_LDAP_Server, $LDAP_Port );
+			if ( $ldap_conn === FALSE ) {
+				return FALSE;
+			}
+
+		    // Connexion au serveur LDAP
+			$ldap_bind = ldap_bind( $ldap_conn, $ldap_rdn, $ldap_pass );
+
+			// Vérification de l'authentification
+			if ( $ldap_bind === FALSE ) {
+				return FALSE;
+			}
+
+			break;
 		}
-		 
 		 
 		if ( ! $Result->execute() ) {
 			$Error = $Result->errorInfo();

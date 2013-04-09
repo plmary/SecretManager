@@ -34,6 +34,7 @@
 	$L_Connection_Management = 'Verbindungseinstellungen bearbeiten';
 	$L_Use_Password = 'Passwort Authentifizierung';
 	$L_Use_Radius = 'RADIUS Authentifizierung';
+	$L_Use_LDAP = 'LDAP Authentifizierung';
 
 	$L_Min_Size_Password = 'Minimale Passwortlänge';
 	$L_Password_Complexity = 'Passwort Komplexität';
@@ -42,7 +43,9 @@
 	$L_Default_Password = 'Standard Passwort';
 	$L_Expiration_Time = 'Session Gültigkeit (Minuten)';
 	$L_Radius_Server_IP = 'RADIUS Server IP Adresse';
+	$L_Radius_Port_IP = 'RADIUS Server IP Port';
 	$L_Radius_Secret_Common = 'RADIUS Shared Secret';
+	$L_LDAP_Server_IP = 'LDAP Server IP Addresse';
 	
 	$L_ERR_MAJ_Alert = 'Beim Speichern der Warnungs-Einstellungen ist ein Fehler aufgetreten';
 	$L_ERR_MAJ_Connection = 'Beim Speichern der Verbindung-Einstellungen ist ein Fehler aufgetreten';

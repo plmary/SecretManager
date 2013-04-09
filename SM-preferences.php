@@ -344,53 +344,86 @@ if ( $Authentication->is_administrator() ) {
 		break;
 
 	 case 'C':
-	 	include( 'Libraries/Config_Authentication.inc.php' );
-	 	include( 'Libraries/Config_Radius.inc.php' );
+	 	if ( file_exists( 'Libraries/Config_Authentication.inc.php' ) ) {
+			include( 'Libraries/Config_Authentication.inc.php' );
+		}
+		
+	 	if ( file_exists( 'Libraries/Config_Radius.inc.php' ) ) {
+			include( 'Libraries/Config_Radius.inc.php' );
+		}
+		
+	 	if ( file_exists( 'Libraries/Config_LDAP.inc.php' ) ) {
+			include( 'Libraries/Config_LDAP.inc.php' );
+		}
+		
+		if ( ! isset( $_LDAP_Port ) ) $_LDAP_Port = 389;
 	 	
-		if ( $Parameters->get( 'authentication_type' ) == '2' ) {
-			$Radius_Selected = 'checked ';
-			$Password_Selected = '';
-		} else {
-			$Radius_Selected = '';
+		switch( $Parameters->get( 'authentication_type' ) ) {
+		 case 'D':
 			$Password_Selected = 'checked ';
+			$Radius_Selected = '';
+			$LDAP_Selected = '';
+			break;
+
+		 case 'R':
+			$Password_Selected = '';
+			$Radius_Selected = 'checked ';
+			$LDAP_Selected = '';
+			break;
+			
+		 case 'L':
+			$Password_Selected = '';
+			$Radius_Selected = '';
+			$LDAP_Selected = 'checked ';
+			break;
 		}
 
 		print( "     <script>\n" .
-		 "function activeFields() {" .
-		 " if ( document.Parameters.id_pwd.checked ) {\n" .
-		 "  document.Parameters.Min_Size_Password.style.backgroundColor=\"white\";\n" .
-		 "  document.Parameters.Password_Complexity.style.backgroundColor=\"white\";\n" .
-		 "  document.Parameters.Default_User_Lifetime.style.backgroundColor=\"white\";\n" .
-		 "  document.Parameters.Max_Attempt.style.backgroundColor=\"white\";\n" .
-		 "  document.Parameters.Default_Password.style.backgroundColor=\"white\";\n" .
+		 "function activeFields( authentification_type ) {" .
+		 " if ( authentification_type == 'D' ) {\n" .
+		 "  document.getElementById('id_Min_Size_Password').disabled=false;\n" .
+		 "  document.getElementById('id_Password_Complexity').disabled=false;\n" .
+		 "  document.getElementById('id_Default_User_Lifetime').disabled=false;\n" .
+		 "  document.getElementById('id_Max_Attempt').disabled=false;\n" .
+		 "  document.getElementById('id_Default_Password').disabled=false;\n" .
 
-		 "  document.Parameters.Min_Size_Password.style.color=\"black\";\n" .
-		 "  document.Parameters.Password_Complexity.style.color=\"black\";\n" .
-		 "  document.Parameters.Default_User_Lifetime.style.color=\"black\";\n" .
-		 "  document.Parameters.Max_Attempt.style.color=\"black\";\n" .
-		 "  document.Parameters.Default_Password.style.color=\"black\";\n" .
+		 "  document.getElementById('id_Radius_Server').disabled=true;\n" .
+		 "  document.getElementById('id_Radius_Authentication_Port').disabled=true;\n" .
+		 "  document.getElementById('id_Radius_Accounting_Port').disabled=true;\n" .
+		 "  document.getElementById('id_Radius_Secret').disabled=true;\n" .
 
-		 "  document.Parameters.Radius_Server.style.backgroundColor=\"silver\";\n" .
-		 "  document.Parameters.Radius_Secret.style.backgroundColor=\"silver\";\n" .
+		 "  document.getElementById('id_LDAP_Server').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_Port').disabled=true;\n" .
+		 " }\n" .
+		 " else if ( authentification_type == 'R' ) {\n" .
+		 "  document.getElementById('id_Min_Size_Password').disabled=true;\n" .
+		 "  document.getElementById('id_Password_Complexity').disabled=true;\n" .
+		 "  document.getElementById('id_Default_User_Lifetime').disabled=true;\n" .
+		 "  document.getElementById('id_Max_Attempt').disabled=true;\n" .
+		 "  document.getElementById('id_Default_Password').disabled=true;\n" .
 
-		 "  document.Parameters.Radius_Server.style.color=\"silver\";\n" .
-		 "  document.Parameters.Radius_Secret.style.color=\"silver\";\n" .
-		 " } else {\n" .
-		 "  document.Parameters.Min_Size_Password.style.backgroundColor=\"silver\";\n" .
-		 "  document.Parameters.Password_Complexity.style.backgroundColor=\"silver\";\n" .
-		 "  document.Parameters.Default_User_Lifetime.style.backgroundColor=\"silver\";\n" .
-		 "  document.Parameters.Max_Attempt.style.backgroundColor=\"silver\";\n" .
-		 "  document.Parameters.Default_Password.style.backgroundColor=\"silver\";\n" .
-		 "  document.Parameters.Radius_Server.style.backgroundColor=\"white\";\n" .
-		 "  document.Parameters.Radius_Secret.style.backgroundColor=\"white\";\n" .
+		 "  document.getElementById('id_Radius_Server').disabled=false;\n" .
+		 "  document.getElementById('id_Radius_Authentication_Port').disabled=false;\n" .
+		 "  document.getElementById('id_Radius_Accounting_Port').disabled=false;\n" .
+		 "  document.getElementById('id_Radius_Secret').disabled=false;\n" .
 
-		 "  document.Parameters.Min_Size_Password.style.color=\"silver\";\n" .
-		 "  document.Parameters.Password_Complexity.style.color=\"silver\";\n" .
-		 "  document.Parameters.Default_User_Lifetime.style.color=\"silver\";\n" .
-		 "  document.Parameters.Max_Attempt.style.color=\"silver\";\n" .
-		 "  document.Parameters.Default_Password.style.color=\"silver\";\n" .
-		 "  document.Parameters.Radius_Server.style.color=\"black\";\n" .
-		 "  document.Parameters.Radius_Secret.style.color=\"black\";\n" .
+		 "  document.getElementById('id_LDAP_Server').disabled=true;\n" .
+		 "  document.getElementById('id_LDAP_Port').disabled=true;\n" .
+		 " }\n" .
+		 " else if ( authentification_type == 'L' ) {\n" .
+		 "  document.getElementById('id_Min_Size_Password').disabled=true;\n" .
+		 "  document.getElementById('id_Password_Complexity').disabled=true;\n" .
+		 "  document.getElementById('id_Default_User_Lifetime').disabled=true;\n" .
+		 "  document.getElementById('id_Max_Attempt').disabled=true;\n" .
+		 "  document.getElementById('id_Default_Password').disabled=true;\n" .
+
+		 "  document.getElementById('id_Radius_Server').disabled=true;\n" .
+		 "  document.getElementById('id_Radius_Authentication_Port').disabled=true;\n" .
+		 "  document.getElementById('id_Radius_Accounting_Port').disabled=true;\n" .
+		 "  document.getElementById('id_Radius_Secret').disabled=true;\n" .
+
+		 "  document.getElementById('id_LDAP_Server').disabled=false;\n" .
+		 "  document.getElementById('id_LDAP_Port').disabled=false;\n" .
 		 " }\n" .
 		 "}" .
 		 "     </script>\n" .
@@ -408,20 +441,20 @@ if ( $Authentication->is_administrator() ) {
 		 "</td>\n" .
 		 "        <td colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"D\" name=\"authentication_type\" " .
-		 $Password_Selected . " id=\"id_pwd\" onClick=\"activeFields();\" />\n" .
+		 $Password_Selected . " id=\"id_pwd\" onClick=\"activeFields('D');\" />\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
 		 "        <td width=\"30%\">" . $L_Min_Size_Password . "</td>\n" .
 		 "        <td>\n" .
-		 "         <input type=\"text\" name=\"Min_Size_Password\" value=\"" .
-		 $_Min_Size_Password . "\" />\n" .
+		 "         <input type=\"text\" id=\"id_Min_Size_Password\" " .
+		 "name=\"Min_Size_Password\" value=\"" . $_Min_Size_Password . "\" />\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
 		 "        <td>" . $L_Password_Complexity . "</td>\n" .
 		 "        <td>\n" .
-		 "         <select name=\"Password_Complexity\">\n" );
+		 "         <select id=\"id_Password_Complexity\" name=\"Password_Complexity\">\n" );
 		
 		$Active_1 = '';
 		$Active_2 = '';
@@ -446,6 +479,14 @@ if ( $Authentication->is_administrator() ) {
 			break;
 		}
 		
+		if ( ! isset( $_Radius_Authentication_Port ) ) {
+			$_Radius_Authentication_Port = 1812;
+		}
+		
+		if ( ! isset( $_Radius_Accounting_Port ) ) {
+			$_Radius_Accounting_Port = 1813;
+		}
+		
 		print(
 		 "          <option value=\"1\"" . $Active_1 . ">" . $_Password_Complexity_1 .
 		 "</option>\n" .
@@ -461,48 +502,89 @@ if ( $Authentication->is_administrator() ) {
 		 "       <tr class=\"pair\">\n" .
 		 "        <td>" . $L_Default_User_Lifetime . "</td>\n" .
 		 "        <td>\n" .
-		 "         <input type=\"text\" name=\"Default_User_Lifetime\" value=\"" .
-		 $_Default_User_Lifetime . "\" />\n" .
+		 "         <input type=\"text\" id=\"id_Default_User_Lifetime\" " .
+		 "name=\"Default_User_Lifetime\" value=\"" . $_Default_User_Lifetime . "\" />\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
 		 "        <td>" . $L_Max_Attempt . "</td>\n" .
 		 "        <td>\n" .
-		 "         <input type=\"text\" name=\"Max_Attempt\" value=\"" .
-		 $_Max_Attempt . "\" />\n" .
+		 "         <input type=\"text\" id=\"id_Max_Attempt\" " .
+		 "name=\"Max_Attempt\" value=\"" . $_Max_Attempt . "\" />\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
 		 "        <td>" . $L_Default_Password . "</td>\n" .
 		 "        <td>\n" .
-		 "         <input type=\"text\" name=\"Default_Password\"  value=\"" .
-		 $_Default_Password . "\" />\n" .
+		 "         <input type=\"text\" id=\"id_Default_Password\" " .
+		 "name=\"Default_Password\"  value=\"" . $_Default_Password . "\" />\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 
 		 "       <tr class=\"pair\">\n" .
-		 "        <td class=\"align-right\" width=\"50%\" rowspan=\"3\">" .
+		 "        <td class=\"align-right\" width=\"50%\" rowspan=\"5\">" .
 		 "<label for=\"id_rds\">" . $L_Use_Radius . "</label>" .
 		 "</td>\n" .
 		 "        <td colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"R\" name=\"authentication_type\" " .
-		 $Radius_Selected . " id=\"id_rds\" onClick=\"activeFields();\" />\n" .
+		 $Radius_Selected . " id=\"id_rds\" onClick=\"activeFields('R');\" />\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
-		 "        <td>" . $L_Radius_Server_IP . "</td>\n" .
+		 "        <td>" . $L_Radius_Server . "</td>\n" .
 		 "        <td>\n" .
-		 "         <input type=\"text\" name=\"Radius_Server\" " .
-		 "value=\"" . $_Radius_Server_IP . "\"/>\n" .
+		 "         <input type=\"text\" id=\"id_Radius_Server\" name=\"Radius_Server\" " .
+		 "value=\"" . $_Radius_Server . "\"/>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td>" . $L_Radius_Authentication_Port . "</td>\n" .
+		 "        <td>\n" .
+		 "         <input type=\"text\" id=\"id_Radius_Authentication_Port\" " .
+		 "name=\"Radius_Authentication_Port\" " .
+		 "value=\"" . $_Radius_Authentication_Port . "\"/>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td>" . $L_Radius_Accounting_Port . "</td>\n" .
+		 "        <td>\n" .
+		 "         <input type=\"text\" id=\"id_Radius_Accounting_Port\" " .
+		 "name=\"Radius_Accounting_Port\" " .
+		 "value=\"" . $_Radius_Accounting_Port . "\"/>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
 		 "        <td>" . $L_Radius_Secret_Common . "</td>\n" .
 		 "        <td>\n" .
-		 "         <input type=\"text\" name=\"Radius_Secret\" " .
+		 "         <input type=\"text\" id=\"id_Radius_Secret\" name=\"Radius_Secret\" " .
 		 "value=\"" . $_Radius_Secret_Common . "\"/>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
+		 
+		 "       <tr class=\"pair\">\n" .
+		 "        <td class=\"align-right\" width=\"50%\" rowspan=\"3\">" .
+		 "<label for=\"id_rds\">" . $L_Use_LDAP . "</label>" .
+		 "</td>\n" .
+		 "        <td colspan=\"2\">\n" .
+		 "         <input type=\"radio\" value=\"L\" name=\"authentication_type\" " .
+		 $LDAP_Selected . " id=\"id_rds\" onClick=\"activeFields('L');\" />\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td>" . $L_LDAP_Server . "</td>\n" .
+		 "        <td>\n" .
+		 "         <input type=\"text\" id=\"id_LDAP_Server\" name=\"LDAP_Server\" " .
+		 "value=\"" . $_LDAP_Server . "\"/>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td>" . $L_LDAP_Port . "</td>\n" .
+		 "        <td>\n" .
+		 "         <input type=\"text\" id=\"id_LDAP_Port\" name=\"LDAP_Port\" " .
+		 "value=\"" . $_LDAP_Port . "\"/>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+
 		 "       <tr class=\"pair\">\n" .
 		 "        <td class=\"align-right\" width=\"50%\">" .
 		 $L_Expiration_Time . "</td>\n" .
@@ -520,7 +602,7 @@ if ( $Authentication->is_administrator() ) {
 		 "      </table>\n" .
 		 "     </form>\n" .
 		 "     <script>\n" .
-		 "activeFields();\n" .
+		 "activeFields('" . $Parameters->get( 'authentication_type' ) . "');\n" .
 		 "     </script>\n"
 		);
 		break;
@@ -532,56 +614,91 @@ if ( $Authentication->is_administrator() ) {
 			break;
 		}
 
-		if ( ($Min_Size_Password = $Security->valueControl( 
-		 $_POST[ 'Min_Size_Password' ], 'NUMERIC' )) == -1
-		 and $_POST[ 'Min_Size_Password' ] != '' ) {
-			print( "     <h1>" . $L_Invalid_Value . " (Min_Size_Password)</h1>" );
-			break;
-		}
+		switch( $authentication_type ) {
+		 case 'D':
+			if ( ($Min_Size_Password = $Security->valueControl( 
+			 $_POST[ 'Min_Size_Password' ], 'NUMERIC' )) == -1
+			 and $_POST[ 'Min_Size_Password' ] != '' ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Min_Size_Password)</h1>" );
+				break 2;
+			}
 
-		if ( ($Password_Complexity = $Security->valueControl( 
-		 $_POST[ 'Password_Complexity' ], 'NUMERIC' )) == -1
-		 and $_POST[ 'Password_Complexity' ] != '' ) {
-			print( "     <h1>" . $L_Invalid_Value . " (Password_Complexity)</h1>" );
-			break;
-		}
+			if ( ($Password_Complexity = $Security->valueControl( 
+			 $_POST[ 'Password_Complexity' ], 'NUMERIC' )) == -1
+			 and $_POST[ 'Password_Complexity' ] != '' ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Password_Complexity)</h1>" );
+				break 2;
+			}
 
-		if ( ($Default_User_Lifetime = $Security->valueControl( 
-		 $_POST[ 'Default_User_Lifetime' ], 'NUMERIC' )) == -1
-		 and $_POST[ 'Default_User_Lifetime' ] != '' ) {
-			print( "     <h1>" . $L_Invalid_Value . " (Default_User_Lifetime)</h1>" );
-			break;
-		}
+			if ( ($Default_User_Lifetime = $Security->valueControl( 
+			 $_POST[ 'Default_User_Lifetime' ], 'NUMERIC' )) == -1
+			 and $_POST[ 'Default_User_Lifetime' ] != '' ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Default_User_Lifetime)</h1>" );
+				break 2;
+			}
 
-		if ( ($Max_Attempt = $Security->valueControl( 
-		 $_POST[ 'Max_Attempt' ], 'NUMERIC' )) == -1
-		 and $_POST[ 'Max_Attempt' ] != '' ) {
-			print( "     <h1>" . $L_Invalid_Value . " (Max_Attempt)</h1>" );
-			break;
-		}
+			if ( ($Max_Attempt = $Security->valueControl( 
+			 $_POST[ 'Max_Attempt' ], 'NUMERIC' )) == -1
+			 and $_POST[ 'Max_Attempt' ] != '' ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Max_Attempt)</h1>" );
+				break 2;
+			}
 
-		if ( ! ($Default_Password = $Security->valueControl( 
-		 $_POST[ 'Default_Password' ], 'ASCII' ))
-		 and $_POST[ 'Default_Password' ] != '' ) {
-			print( "     <h1>" . $L_Invalid_Value . " (Default_Password)</h1>" );
+			if ( ! ($Default_Password = $Security->valueControl( 
+			 $_POST[ 'Default_Password' ], 'ASCII' ))
+			 and $_POST[ 'Default_Password' ] != '' ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Default_Password)</h1>" );
+				break 2;
+			}
+			
+			break;
+		
+		 case 'R':
+			if ( ($Radius_Server = $Security->valueControl( 
+			 $_POST[ 'Radius_Server' ], 'ASCII' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Radius_Server)</h1>" );
+				break 2;
+			}
+
+			if ( ($Radius_Authentication_Port = $Security->valueControl( 
+			 $_POST[ 'Radius_Authentication_Port' ], 'NUMERIC' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Radius_Authentication_Port)</h1>" );
+				break 2;
+			}
+
+			if ( ($Radius_Accounting_Port = $Security->valueControl( 
+			 $_POST[ 'Radius_Accounting_Port' ], 'NUMERIC' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Radius_Accounting_Port)</h1>" );
+				break 2;
+			}
+
+			if ( ($Radius_Secret = $Security->valueControl( 
+			 $_POST[ 'Radius_Secret' ], 'ASCII' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Radius_Secret)</h1>" );
+				break 2;
+			}
+			
+			break;
+
+		 case 'L':
+			if ( ($LDAP_Server = $Security->valueControl( 
+			 $_POST[ 'LDAP_Server' ], 'ASCII' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (LDAP_Server)</h1>" );
+				break 2;
+			}
+
+			if ( ($LDAP_Port = $Security->valueControl( 
+			 $_POST[ 'LDAP_Port' ], 'NUMERIC' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (LDAP_Port)</h1>" );
+				break 2;
+			}
+			
 			break;
 		}
 
 		if ( ($Expiration_Time = $Security->valueControl( 
 		 $_POST[ 'Expiration_Time' ], 'NUMERIC' )) == -1 ) {
 			print( "     <h1>" . $L_Invalid_Value . " (Expiration_Time)</h1>" );
-			break;
-		}
-
-		if ( ($Radius_Server = $Security->valueControl( 
-		 $_POST[ 'Radius_Server' ], 'ASCII' )) == -1 ) {
-			print( "     <h1>" . $L_Invalid_Value . " (Radius_Server)</h1>" );
-			break;
-		}
-
-		if ( ($Radius_Secret = $Security->valueControl( 
-		 $_POST[ 'Radius_Secret' ], 'ASCII' )) == -1 ) {
-			print( "     <h1>" . $L_Invalid_Value . " (Radius_Secret)</h1>" );
 			break;
 		}
 
@@ -599,8 +716,10 @@ if ( $Authentication->is_administrator() ) {
 		}
 
 
-		$Output = fopen( 'Libraries/Config_Authentication.inc.php', 'w+' );
-		if ( fwrite( $Output,
+		switch( $authentication_type ) {
+		 case 'D':
+			$Output = @fopen( 'Libraries/Config_Authentication.inc.php', 'w+' );
+			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .
 "/**\n" .
@@ -621,19 +740,22 @@ if ( $Authentication->is_administrator() ) {
 "\$_Default_Password = '" . $Default_Password . "';\n" .
 "\n" .
 "?>\n" ) === false ) {
-			print( "   <div id=\"alert\">\n" .
-			 $L_ERR_MAJ_Connection .
-			 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-			 "?action=P&id=" . $scr_id . "\">" .
-			 $L_Return . "</a>\n" .
-			 "   </div>\n" );
-			break;
-		}
+				print( "   <div id=\"alert\">\n" .
+				 $L_ERR_MAJ_Connection .
+				 "      <a class=\"button\" href=\"https://" . $Server . $Script .
+				 "?action=P&id=" . $scr_id . "\">" .
+				 $L_Return . "</a>\n" .
+				 "   </div>\n" );
+				break 2;
+			}
 		
-		fclose( $Output );
-
-		$Output = fopen( 'Libraries/Config_Radius.inc.php', 'w+' );
-		if ( fwrite( $Output,
+			fclose( $Output );
+			
+			break;
+			
+		 case 'R':
+			$Output = @fopen( 'Libraries/Config_Radius.inc.php', 'w+' );
+			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .
 "/**\n" .
@@ -647,20 +769,58 @@ if ( $Authentication->is_administrator() ) {
 "*\n" .
 "*/\n" .
 "\n" .
-"\$_Radius_Server_IP = '" . $Radius_Server . "'; // IP server\n" .
+"\$_Radius_Server = '" . $Radius_Server . "'; // IP address or server name\n" .
+"\$_Radius_Authentication_Port = '" . $Radius_Authentication_Port . "';\n" .
+"\$_Radius_Accounting_Port = '" . $Radius_Accounting_Port . "';\n" .
 "\$_Radius_Secret_Common = '" . $Radius_Secret . "'; // Shared secret\n" .
 "\n" .
 "?>\n" ) === false ) {
-			print( "   <div id=\"alert\">\n" .
-			 $L_ERR_MAJ_Connection .
-			 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-			 "?action=P&id=" . $scr_id . "\">" .
-			 $L_Return . "</a>\n" .
-			 "   </div>\n" );
+				print( "   <div id=\"alert\">\n" .
+				 $L_ERR_MAJ_Connection .
+				 "      <a class=\"button\" href=\"https://" . $Server . $Script .
+				 "?action=P&id=" . $scr_id . "\">" .
+				 $L_Return . "</a>\n" .
+				 "   </div>\n" );
+				break 2;
+			}
+		
+			fclose( $Output );
+			
+			break;
+
+		 case 'L':
+			$Output = @fopen( 'Libraries/Config_LDAP.inc.php', 'w+' );
+			if ( fwrite( $Output,
+"<?php\n" .
+"\n" .
+"/**\n" .
+"* Définit les variables permettant de gérer les authentifications Radius.\n" .
+"*\n" .
+"* PHP version 5\n" .
+"* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3\n" .
+"* @author Pierre-Luc MARY\n" .
+"* @version 1.0\n" .
+"* @Modified " . date( 'd/m/Y' ) . "\n" .
+"*\n" .
+"*/\n" .
+"\n" .
+"\$_LDAP_Server = '" . $LDAP_Server . "'; // IP address server or server name\n" .
+"\$_LDAP_Port = '" . $LDAP_Port . "'; // IP port server\n" .
+"\n" .
+"?>\n" ) === false ) {
+				print( "   <div id=\"alert\">\n" .
+				 $L_ERR_MAJ_Connection .
+				 "      <a class=\"button\" href=\"https://" . $Server . $Script .
+				 "?action=P&id=" . $scr_id . "\">" .
+				 $L_Return . "</a>\n" .
+				 "   </div>\n" );
+				break 2;
+			}
+		
+			fclose( $Output );
+			
 			break;
 		}
-		
-		fclose( $Output );
 
 		print( "     <div id=\"success\">\n" .
 		 "      <img class=\"no-border\" src=\"Pictures/s_success.png\" alt=\"Success\" />\n" .
