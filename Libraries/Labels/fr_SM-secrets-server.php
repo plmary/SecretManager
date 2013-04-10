@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
 * Libellé spécifique à la gestion du SecretServer.
 *

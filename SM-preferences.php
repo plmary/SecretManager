@@ -450,7 +450,8 @@ if ( $Authentication->is_administrator() ) {
 		 "</td>\n" .
 		 "        <td colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"D\" name=\"authentication_type\" " .
-		 $Password_Selected . " id=\"id_pwd\" onClick=\"activeFields('D');\" />\n" .
+		 $Password_Selected . " id=\"id_pwd\" onClick=\"activeFields('D');\" />&nbsp;" .
+		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
@@ -536,7 +537,8 @@ if ( $Authentication->is_administrator() ) {
 		 "</td>\n" .
 		 "        <td colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"R\" name=\"authentication_type\" " .
-		 $Radius_Selected . " id=\"id_rds\" onClick=\"activeFields('R');\" />\n" .
+		 $Radius_Selected . " id=\"id_rds\" onClick=\"activeFields('R');\" />&nbsp;" .
+		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
@@ -576,7 +578,8 @@ if ( $Authentication->is_administrator() ) {
 		 "</td>\n" .
 		 "        <td colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"L\" name=\"authentication_type\" " .
-		 $LDAP_Selected . " id=\"id_rds\" onClick=\"activeFields('L');\" />\n" .
+		 $LDAP_Selected . " id=\"id_rds\" onClick=\"activeFields('L');\" />&nbsp;" .
+		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
@@ -604,14 +607,14 @@ if ( $Authentication->is_administrator() ) {
 		 "        <td>" . $L_LDAP_Organization . "</td>\n" .
 		 "        <td>\n" .
 		 "         <input type=\"text\" id=\"id_LDAP_Organization\" name=\"LDAP_Organization\" " .
-		 "value=\"" . $_LDAP_Organization . "\"/>\n" .
+		 "value=\"" . $_LDAP_Organization . "\" />&nbsp;(Ex1: uid=user,<b>dc=orasys,dc=fr</b>)<br/>(Ex2: uid=user,<b>o=orasys,ou=production</b>)\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
 		 "        <td>" . $L_LDAP_RDN_Prefix . "</td>\n" .
 		 "        <td>\n" .
 		 "         <input type=\"text\" id=\"id_LDAP_RDN_Prefix\" name=\"LDAP_RDN_Prefix\" " .
-		 "value=\"" . $_LDAP_RDN_Prefix . "\"/>\n" .
+		 "value=\"" . $_LDAP_RDN_Prefix . "\" />&nbsp;(Ex1: <b>sn</b>=user,dc=orasys,dc=fr)<br/>(Ex2: <b>uid</b>=user,dc=orasys,dc=fr)\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 
@@ -1436,6 +1439,10 @@ if ( $Authentication->is_administrator() ) {
 
 	 case 'US':
 		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		
+		$Secrets = new IICA_Secrets(
+		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
 		$Parameters->set( 'use_SecretServer', $_POST[ 'Use_SecretServer' ] );
 

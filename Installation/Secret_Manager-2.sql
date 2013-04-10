@@ -60,9 +60,10 @@ INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('alert_mail
 INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('alert_syslog', '1');
 INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('authentication_type', 'D');
 INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('expiration_time', '60');
-INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('mail_from', 'papa@free.fr');
-INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('mail_to', 'pl.mary@free.fr');
+INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('mail_from', 'alert_SecretManager@societe.com');
+INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('mail_to', 'admin@societe.com');
 INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('verbosity_alert', '1');
+INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES('use_SecretServer', '1');
 
 --
 -- Contenu de la table `stp_secret_types`

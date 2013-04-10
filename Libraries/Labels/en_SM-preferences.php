@@ -49,6 +49,7 @@
 	$L_LDAP_Protocol_Version = 'LDAP protocol version';
 	$L_LDAP_Organization = 'LDAP Organization';
 	$L_LDAP_RDN_Prefix = 'LDAP prefix RDN';
+	$L_Testing_Connection = 'Testing connection';
 	
 	$L_ERR_MAJ_Alert = 'An error occurred while updating the "Alerts" parameters';
 	$L_ERR_MAJ_Connection = 'An error occurred while updating the "Connection" parameters';
