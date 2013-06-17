@@ -25,7 +25,7 @@ public function __construct() {
 		include( 'Libraries/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.2-2'; // Version de l'outil
+	$this->Version = '0.3-0'; // Version de l'outil
 	
 	return ;
 }

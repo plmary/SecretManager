@@ -30,6 +30,7 @@
 	$L_ERR_SECRET_FILE_OPEN = 'Erreur à l\'ouverture du fichier contenant la Clé Mère';
 	$L_ERR_SECRET_FILE_READ = 'Erreur à la lecture du fichier contenant la Clé Mère';
 	$L_ERR_SECRET_FILE_CREATION = 'Erreur à la création du fichier pour la Clé Mère';
+	$L_ERR_TRANSCRYPT = 'Erreur durant le transchiffrement de la base';
 	
 	$L_MOTHER_KEY_LOADED = 'Clé Mère chargée';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Clé Mère crée automatiquement';
@@ -50,7 +51,7 @@
 	
 	$L_Success_Page = "<h1>" . $L_Confidentials . "</h1>\n" .
 	 "<p>Important 1 : <span class=\"normal\">cette page ne sera pas regénérée, veillez à la conserver dans un lieu sur.</span></p>" .
-	 "<p>Important 2 : <span class=\"normal\">le précédent fichier a été renommé.</span></p>" .
+	 "<p>Important 2 : <span class=\"normal\">le précédent fichier 'secret.dat' a été renommé.</span></p>" .
 	 "<p>Important 3 : <span class=\"normal\">pensez à transchiffrer votre base si elle contenait précédemment des données.</span></p>";
 
 	$L_Shutdown_SecretServer = 'Eteindre le SecretServer';

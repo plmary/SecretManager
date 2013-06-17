@@ -30,6 +30,7 @@
 	$L_ERR_SECRET_FILE_OPEN = 'Secret file open error';
 	$L_ERR_SECRET_FILE_READ = 'Secret file read error';
 	$L_ERR_SECRET_FILE_CREATION = 'Error on creation Secret file';
+	$L_ERR_TRANSCRYPT = 'Error during database transcrypt';
 	
 	$L_MOTHER_KEY_LOADED = 'Mother key loaded';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mother key automatically created';
@@ -49,7 +50,7 @@
 	
 	$L_Success_Page = "<h1>" . $L_Confidentials . "</h1>\n" .
 	 "<p>Important 1 : <span class=\"normal\">this page will not be regenerate, preserve it in a safe place.</span></p>" .
-	 "<p>Important 2 : <span class=\"normal\">the previous file was renamed.</span></p>" .
+	 "<p>Important 2 : <span class=\"normal\">the previous file 'secret.dat' was renamed.</span></p>" .
 	 "<p>Important 3 : <span class=\"normal\">reencrypted think your database if it previously contained data.</span></p>";
 
 	$L_Shutdown_SecretServer = 'Shutdown SecretServer';

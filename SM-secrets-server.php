@@ -13,7 +13,7 @@
 *
 */
 
-$VERSION = '0.1-0';
+$VERSION = '0.2-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -105,6 +105,18 @@ if ( file_exists( $Security_File ) ) {
 $Security = new Security();
 if ( $FLAG_DEBUG ) {
 	print( $PREFIX_DEBUG . "\"Security Object\" loaded\n" );
+}
+
+
+// ===================================
+// Charge le module utile pour les transchiffrements.
+if ( file_exists( 'Libraries/Class_IICA_Secrets_PDO.inc.php' ) ) {
+	include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+	include( 'Libraries/Config_Access_DB.inc.php' );
+} else {
+	print( $PREFIX_ERROR . 'transcrypt module "Libraries/Class_IICA_Secrets_PDO.inc.php" ' .
+	 " not exists or inaccessible\n" );
+	exit( 1 );
 }
 
 
@@ -396,6 +408,48 @@ do {
 				 "###L_ERR_MOTHER_KEY_EMPTY\n" );
 				break; // Déconnecte le client.
 			} else {
+				$Secrets = new IICA_Secrets( 
+				 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+
+
+				if ( $FLAG_DEBUG ) {
+					print( $PREFIX_DEBUG . "Save old mother key\n" );
+				}
+				
+				$old_Secret_Key = explode('###', $Secret_Key );
+				$old_Secret_Key = $old_Secret_Key[ 3 ];
+
+
+				if ( $old_Secret_Key != $Mother_Key ) {
+					if ( $old_Secret_Key  == '' ) {
+						sendMessageToClient( $MsgSock, FLAG_ERROR .
+						 "###L_ERR_MOTHER_KEY_NOT_LOADED\n" );
+						break; // Déconnecte le client.
+
+					}
+
+					if ( $FLAG_DEBUG ) {
+						print( $PREFIX_DEBUG . "Database transcrypt : begin\n" );
+					}
+
+					try {
+print( $old_Secret_Key . ' => ' . $Mother_Key ."\n" );
+						$Secrets->transcrypt( $old_Secret_Key, $Mother_Key );
+					} catch( Exception $e ) {
+						print( $PREFIX_ERROR . $e->getCode() . ' -  ' . $e->getMessage() );
+
+						sendMessageToClient( $MsgSock, FLAG_ERROR .
+						 "###L_ERR_TRANSCRYPT\n" );
+						
+						break; // Déconnecte le client.
+					}
+
+					if ( $FLAG_DEBUG ) {
+						print( $PREFIX_DEBUG . "Database transcrypt : success\n" );
+					}
+				}
+
+
 				if ( $FLAG_DEBUG ) {
 					print( $PREFIX_DEBUG . "Prepare new mother key\n" );
 				}
@@ -409,7 +463,7 @@ do {
 
 				// Sauvegarde le chiffré de la clé mère.
 				if ( $FLAG_DEBUG ) {
-					print( $PREFIX_DEBUG . "Create new Secret file\n" );
+					print( $PREFIX_DEBUG . "Create new Secret file (for Mother Key)\n" );
 				}
 				
 				if ( file_exists( $SecretFile ) ) {

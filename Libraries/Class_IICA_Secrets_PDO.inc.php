@@ -667,6 +667,83 @@ class IICA_Secrets extends PDO {
 		return true;
 	}
 
+	
+	/* -----------------------------
+	** Déchiffre le Secret avec l'ancienne clé mère et rechiffre le Secret avec la nouvelle clé mère.
+	*/
+	public function transcrypt( $old_Mother_Key, $new_Mother_Key ) {
+		include_once( 'Libraries/Class_Security.inc.php' );
+		include_once( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
+
+		if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'en';
+
+		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include_once( 'Libraries/Constants.php' );
+
+		include( 'Libraries/Config_Access_DB.inc.php' );
+		
+
+		$Security = new Security();
+
+		
+		if ( ! $Result = $this->prepare( 'SELECT scr_id, scr_password FROM scr_secrets ' ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		/*
+		** Démarre la transaction.
+		*/
+		$this->beginTransaction();
+		
+		while ( $Occurrence = $Result->fetchObject() ) {
+			$Decrypted = $Security->mc_decrypt( $Occurrence->scr_password, $old_Mother_Key );
+			$Encrypted = $Security->mc_encrypt( $Decrypted, $new_Mother_Key );
+
+			if ( ! $Updater = $this->prepare( 'UPDATE scr_secrets SET ' .
+				'scr_password = :scr_password ' .
+				'WHERE scr_id = :scr_id ' ) ) {
+				$Error = $Updater->errorInfo();
+
+				$this->rollBack();
+
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+			
+			if ( ! $Updater->bindParam( ':scr_id', $Occurrence->scr_id, PDO::PARAM_INT ) ) {
+				$Error = $Updater->errorInfo();
+
+				$this->rollBack();
+
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+			
+			if ( ! $Updater->bindParam( ':scr_password', $Encrypted, PDO::PARAM_LOB ) ) {
+				$Error = $Updater->errorInfo();
+
+				$this->rollBack();
+
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+
+			if ( ! $Updater->execute() ) {
+				$Error = $Updater->errorInfo();
+
+				$this->rollBack();
+
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+		}
+
+		
+		return true;
+	}
+
 
 	/* -------------------
 	** Lister les Secrets.

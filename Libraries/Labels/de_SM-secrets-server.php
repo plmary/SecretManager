@@ -30,6 +30,7 @@
 	$L_ERR_SECRET_FILE_OPEN = 'Secretfile konnte nicht geöffnet werden';
 	$L_ERR_SECRET_FILE_READ = 'Secretfile konnte nicht geschrieben werden';
 	$L_ERR_SECRET_FILE_CREATION = 'Fehler bei der Erstellunge des Secretfile';
+	$L_ERR_TRANSCRYPT = 'Error during database transcrypt';
 	
 	$L_MOTHER_KEY_LOADED = 'Mutterkey geladen';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mutterkey automatisch erstellt';
@@ -50,7 +51,7 @@
 	
 	$L_Success_Page = "<h1>" . $L_Confidentials . "</h1>\n" .
 	 "<p>Important 1 : <span class=\"normal\">Diese Seite wird nicht gespeichert, an einem sicheren Ort verwahren.</span></p>" .
-	 "<p>Important 2 : <span class=\"normal\">Die Datei wurde umbenannt.</span></p>" .
+	 "<p>Important 2 : <span class=\"normal\">Die Datei wurde umbenannt (secret.dat).</span></p>" .
 	 "<p>Important 3 : <span class=\"normal\">Neu verschlüsseln.</span></p>";
 
 	$L_Shutdown_SecretServer = 'SecretServer beenden';
