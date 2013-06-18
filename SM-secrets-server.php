@@ -13,7 +13,7 @@
 *
 */
 
-$VERSION = '0.2-0';
+$VERSION = '0.3-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -433,7 +433,6 @@ do {
 					}
 
 					try {
-print( $old_Secret_Key . ' => ' . $Mother_Key ."\n" );
 						$Secrets->transcrypt( $old_Secret_Key, $Mother_Key );
 					} catch( Exception $e ) {
 						print( $PREFIX_ERROR . $e->getCode() . ' -  ' . $e->getMessage() );
