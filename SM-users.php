@@ -90,21 +90,36 @@ if ( array_key_exists( 'action', $_GET ) ) {
 	$Action = strtoupper( $_GET[ 'action' ] );
 }
 
-	
-print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
- "   <!-- debut : zoneTitre -->\n" .
- "   <div id=\"zoneTitre\">\n" .
- "    <div id=\"icon-users\" class=\"icon36\"></div>\n" .
- "    <span id=\"titre\">" . $L_Title . "</span>\n" .
- $PageHTML->afficherActions( $Authentication->is_administrator() ) .
- "   </div> <!-- fin : zoneTitre -->\n" .
- "\n" .
- "   <!-- debut : zoneGauche -->\n" .
- "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
- "\n" .
- "   <!-- debut : zoneMilieuComplet -->\n" .
- "   <div id=\"zoneMilieuComplet\">\n" .
- "\n" );
+
+if ( ! preg_match("/X$/i", $Action ) ) {
+	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
+	 "   <!-- debut : zoneTitre -->\n" .
+	 "   <div id=\"zoneTitre\">\n" .
+	 "    <div id=\"icon-users\" class=\"icon36\"></div>\n" .
+	 "    <span id=\"titre\">" . $L_Title . "</span>\n" .
+	 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
+	 "   </div> <!-- fin : zoneTitre -->\n" .
+	 "\n" .
+	 "   <!-- debut : zoneGauche -->\n" .
+	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
+	 "\n" .
+	 "   <!-- debut : zoneMilieuComplet -->\n" .
+	 "   <div id=\"zoneMilieuComplet\">\n" .
+	 "\n" );
+
+	if ( isset( $_POST[ 'infoMessage']) ) {
+		print( "<script>\n" .
+		 "     var myVar=setInterval(function(){cacherInfo()},3000);\n" .
+		 "     function cacherInfo() {\n" .
+		 "        document.getElementById(\"success\").style.display = \"none\";\n" .
+		 "        clearInterval(myVar);\n" .
+		 "     }\n" .
+		 "</script>\n" .
+		 "    <div id=\"success\">\n" .
+		 $_POST[ 'infoMessage' ] .
+		 "    </div>\n" );
+	}
+}
 
 
 if ( array_key_exists( 'orderby', $_GET ) ) {
@@ -144,7 +159,7 @@ switch( $Action ) {
 			$Buttons = $addButton ;
 		}
 		
-		print( "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"9\">" . $L_List_Users . $Buttons . "</th>\n" .
@@ -247,20 +262,7 @@ switch( $Action ) {
 		 $L_Administrator . "</th>\n" );
 		
 		 
-		if ( $orderBy == 'auditor' ) {
-			$tmpClass = 'order-select';
-		
-			$tmpSort = 'auditor-desc';
-		} else {
-			if ( $orderBy == 'auditor-desc' ) $tmpClass = 'order-select';
-			else $tmpClass = 'order';
-		
-			$tmpSort = 'auditor';
-		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
-		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
-		 $L_Auditor . "</th>\n" .
-		 "        <th>" . $L_Status . "</th>\n" .
+		print( "        <th>" . $L_Status . "</th>\n" .
 		 "        <th>" . $L_Actions . "</th>\n" .
 		 "       </tr>\n" );
 		
@@ -284,13 +286,6 @@ switch( $Action ) {
 			} else {
 				$Flag_Admin = '<img class="no-border" src="Pictures/bouton_coche.gif" alt="Ko" />';
 		  	}
-
-
-			if ( $Identity->idn_auditor == 0 ) {
-				$Flag_Audit = '<img class="no-border" src="Pictures/bouton_non_coche.gif" alt="Ko" />';
-			} else {
-				$Flag_Audit = '<img class="no-border" src="Pictures/bouton_coche.gif" alt="Ko" />';
-			}
 
 
 			/*
@@ -375,7 +370,6 @@ switch( $Action ) {
 			 "        <td class=\"align-middle\">" . 
 			 $Security->XSS_Protection( $Identity->idn_last_connection ) . "</td>\n" .
 			 "        <td class=\"align-center align-middle\">" . $Flag_Admin . "</td>\n" .
-			 "        <td class=\"align-center align-middle\">" . $Flag_Audit . "</td>\n" .
 			 "        <td class=\"align-center align-middle\">" . $Flag_Status . "</td>\n" .
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
@@ -535,37 +529,40 @@ switch( $Action ) {
 
 
 	if ( ! $Username = $Security->valueControl( $_POST[ 'Username' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Username)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Username)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ($ent_id = $Security->valueControl( $_POST[ 'Id_Entity' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Id_Entity)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Id_Entity)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ($cvl_id = $Security->valueControl( $_POST[ 'Id_Civility' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Id_Civility)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Id_Civility)', $Return_Page, 1 ) );
+		exit();
 	}
 	
 	try {
 		$Identities->set( '', $Username, $Authenticator, 1, 0,
 		 $SuperAdmin, $Auditor, $ent_id, $cvl_id, $Salt );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_CREA_Identity, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Identity, $Return_Page, 1 ) );
+		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->infoBox( $L_ERR_DUPL_Identity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Identity, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->infoBox( $L_ERR_CREA_Identity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Identity, $Return_Page, 1 ) );
 		}
-		break;
+		exit();
 	}
 
 
-	print( $PageHTML->infoBox( $L_User_Created, $Return_Page, 2 ) );
+	print( "<form method=\"post\" action=\"" . $Return_Page . "\" name=\"fInfoMessage\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"" . $L_User_Created ."\">\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>" );
 	break;
 
 
@@ -589,15 +586,11 @@ switch( $Action ) {
 	else
 		$Flag_Administrator = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
 
-	if ( $Identity->idn_auditor == 1 )
-		$Flag_Auditor = "<img class=\"no-border\" src=\"Pictures/bouton_coche.gif\" alt=\"Ok\" />";
-	else
-		$Flag_Auditor = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 	print( "     <form name=\"deleteEntity\" method=\"post\" action=\"" . $Script . 
 	 "?action=DX&idn_id=" . $idn_id . "\">\n" .
 	 "      <input type=\"hidden\" name=\"cvl_id\" value=\"" . $Identity->cvl_id . "\" />\n" .
-	 "      <table style=\"margin: 10px auto;width: 50%;\">\n" .
+	 "      <table class=\"table-center table-norm\">\n" .
 	 "       <thead>\n" .
 	 "       <tr>\n" .
 	 "        <th colspan=\"2\">" . $L_User_Delete . "</th>\n" .
@@ -605,40 +598,33 @@ switch( $Action ) {
 	 "       </thead>\n" .
 	 "       <tbody>\n" .
 	 "       <tr>\n" .
-	 "        <td>" . $L_Entity . "</td>\n" .
-	 "        <td class=\"bg-light-grey\">" . 
+	 "        <td class=\"align-right td-aere\">" . $L_Entity . "</td>\n" .
+	 "        <td  class=\"pair blue1 bold td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->ent_code ) . ' - ' . 
 	 $Security->XSS_Protection( $Identity->ent_label ) . "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td>" . $L_Civility . "</td>\n" .
-	 "        <td class=\"bg-light-grey\">\n" . 
+	 "        <td class=\"align-right td-aere\">" . $L_Civility . "</td>\n" .
+	 "        <td  class=\"pair green bold td-aere\">\n" . 
 	 $Security->XSS_Protection( $Identity->cvl_first_name ) . ' ' .
-	 $Security->XSS_Protection( $Identity->cvl_last_name ) . "</td>\n" .
+	 $Security->XSS_Protection( $Identity->cvl_last_name ) . ' (' .
+	 $Sex . ")</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td>" . $L_Username . "</td>\n" .
-	 "        <td class=\"bg-light-grey\">" . 
+	 "        <td class=\"align-right td-aere\">" . $L_Username . "</td>\n" .
+	 "        <td class=\"bg-light-grey td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->idn_login ) . "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td>" . $L_Rights . "</td>\n" .
-	 "        <td>\n" .
-
-	 "         <table style=\"border: 1px solid grey;\">\n" .
-	 "          <tr>\n" .
-	 "           <td>" . $L_Administrator . "</td>\n" .
-	 "           <td>" . $Flag_Administrator . "</td>\n" .
-	 "           <td>" . $L_Auditor . "</td>\n" .
-	 "           <td>" . $Flag_Auditor . "</td>\n" .
-	 "          </tr>\n" .
-	 "         </table>\n" .
-
+	 "        <td class=\"align-right td-aere\">" . $L_Rights . "</td>\n" .
+	 "        <td class=\"bg-light-grey td-aere\">\n" .
+	 "         " . $L_Administrator . "\n" .
+	 "         " . $Flag_Administrator . "\n" .
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input name=\"b_cancel\" type=\"submit\" class=\"button\" value=\"".
+	 "        <td class=\"td-aere\"><input name=\"b_cancel\" type=\"submit\" class=\"button\" value=\"".
 	 $L_Delete . "\" /><a  class=\"button\" href=\"". $Script . "\">" . $L_Cancel .
 	 "</a></td>\n" .
 	 "       </tr>\n" .
@@ -657,30 +643,36 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script;
  
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	try {
 		$Identities->delete( $idn_id );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_DELE_Identity, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Identity, $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ($cvl_id = $Security->valueControl( $_POST[ 'cvl_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
+/*
 	try {
 		$Civilities->delete( $cvl_id );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_DELE_Civility, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Civility, $Return_Page, 1 ) );
+		exit();
 	}
+*/
+	
+	print( "<form method=\"post\" action=\"" . $Return_Page . "\" name=\"fInfoMessage\">\n" .
+	 " <input type=\"hidden\" name=\"infoMessage\" value=\"" . $L_User_Deleted . "\" />\n" .
+	 "</form>\n" .
+	 "<script>document.fInfoMessage.submit();</script>" );
 
-	print( $PageHTML->infoBox( $L_User_Deleted, $Return_Page, 2 ) );
 	break;
 
 
@@ -715,7 +707,7 @@ switch( $Action ) {
 	 "     <form name=\"m_identity\" method=\"post\" action=\"" . $Script . "?action=MX\">\n" .
 	 "      <input type=\"hidden\" name=\"idn_id\" value=\"" . $idn_id . 
 	 "\" />\n" .
-	 "      <table style=\"margin:10px auto;width:60%\">\n" .
+	 "      <table class=\"table-center\">\n" .
 	 "       <thead>\n" .
 	 "       <tr>\n" .
 	 "        <th colspan=\"2\">" . $L_User_Modify . "</th>\n" .
@@ -723,11 +715,9 @@ switch( $Action ) {
 	 "       </thead>\n" .
 	 "       <tbody>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right align-middle\">" . $L_Entity . "</td>\n" .
-	 "        <td>\n" .
-	 "      	  <table style=\"border: 1px solid grey;\">\n" .
-	 "          <tr>\n" .
-	 "           <td><select name=\"ent_id\">\n" );
+	 "        <td class=\"align-right align-middle td-aere\">" . $L_Entity . "</td>\n" .
+	 "        <td class=\"td-aere\">\n" .
+	 "         <select name=\"ent_id\">\n" );
 
 	foreach( $T_Entities as $Entity ) {
 		if ( $Identity->ent_id == $Entity->ent_id )
@@ -740,20 +730,16 @@ switch( $Action ) {
 	 	 $Security->XSS_Protection( $Entity->ent_label ) . "</option>\n" );
 	}
 
-	print( "           </select>\n" .
-	 "           <a class=\"button\" href=\"" . $Script .
+	print( "         </select>\n" .
+	 "         <a class=\"button\" href=\"" . $Script .
 	 "?action=ENT_V&rp=users_m&idn_id=" . $idn_id . "\">" .
-	 $L_Entities_Management . "</a></td>\n" .
-	 "          </tr>\n" .
-	 "      	</table>\n" .
+	 $L_Entities_Management . "</a>\n" .
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right align-middle\">" . $L_Civility . "</td>\n" .
-	 "        <td>\n" .
-	 "         <table style=\"border: 1px solid grey;\">\n" .
-	 "          <tr>\n" .
-	 "           <td><select name=\"cvl_id\">\n" );
+	 "        <td class=\"align-right align-middle td-aere\">" . $L_Civility . "</td>\n" .
+	 "        <td class=\"td-aere\">\n" .
+	 "         <select name=\"cvl_id\">\n" );
  	
 	foreach( $T_Civilities as $Civility ) {
 		if ( $Identity->cvl_id == $Civility->cvl_id )
@@ -805,52 +791,43 @@ switch( $Action ) {
 	 $Identity->idn_expiration_date . '&nbsp;</span>';
 	
 
-	print( "           </select>\n" .
-	 "           <a class=\"button\" href=\"" . $Script . "?action=CVL_V&rp=users_m&idn_id=" . $idn_id . "\">" .
-	 $L_Civilities_Management . "</a></td>\n" .
- 	"          </tr>\n" .
-	 "         </table>\n" .
-
+	print( "         </select>\n" .
+	 "         <a class=\"button\" href=\"" . $Script . "?action=CVL_V&rp=users_m&idn_id=" . $idn_id . "\">" .
+	 $L_Civilities_Management . "</a>\n" .
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Username . "</td>\n" .
-	 "        <td><input name=\"Username\" type=\"text\" size=\"20\" value=\"" . 
+	 "        <td class=\"align-right td-aere\">" . $L_Username . "</td>\n" .
+	 "        <td class=\"td-aere\"><input name=\"Username\" type=\"text\" size=\"20\" value=\"" . 
 	 $Security->XSS_Protection( $Identity->idn_login ). "\" /></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right align-middle\">" . $L_Rights . "</td>\n" .
-	 "        <td>\n" .
-	 "         <table style=\"border: 1px solid grey;\">\n" .
-	 "          <tr>\n" .
-	 "           <td><label for=\"iAdministrator\">" . $L_Administrator . "</label></td>\n" .
-	 "           <td><input id=\"iAdministrator\" name=\"Administrator\" type=\"checkbox\" " . $Flag_Check_Administrator . " /></td>\n" .
-	 "           <td><label for=\"iAuditor\">" . $L_Auditor . "</label></td>\n" .
-	 "           <td><input id=\"iAuditor\" name=\"Auditor\" type=\"checkbox\" " . $Flag_Check_Auditor . " /></td>\n" .
-	 "          </tr>\n" .
-	 "         </table>\n" .
+	 "        <td class=\"align-right align-middle td-aere\">" . $L_Rights . "</td>\n" .
+	 "        <td class=\"td-aere\">\n" .
+	 "           <label for=\"iAdministrator\">" . $L_Administrator . "</label>\n" .
+	 "           <input id=\"iAdministrator\" name=\"Administrator\" type=\"checkbox\" " . $Flag_Check_Administrator . " />\n" .
 	 "        </td>\n" .
  	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
-	 "        <td><a class=\"button\" href=\"" . $Script. "?action=RST_PWD" .
+	 "        <td class=\"align-right td-aere\">" . $L_Password . "</td>\n" .
+	 "        <td class=\"td-aere\"><a class=\"button\" href=\"" . $Script. "?action=RST_PWDX" .
 	 "&idn_id=" . $idn_id . "\">" . $L_Authenticator_Reset . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Attempt . "</td>\n" .
-	 "        <td><span class=\"" . $Attempt_Color . "\">&nbsp;" . $Identity->idn_attempt . "&nbsp;</span>&nbsp;/&nbsp; " .
-	 $_Max_Attempt . " <a class=\"button\" href=\"" . $Script. "?action=RST_ATT" .
+	 "        <td class=\"align-right td-aere\">" . $L_Attempt . "</td>\n" .
+	 "        <td class=\"td-aere\"><span class=\"" . $Attempt_Color . "\">&nbsp;" . $Identity->idn_attempt . "&nbsp;</span>&nbsp;/&nbsp; " .
+	 $_Max_Attempt . " <a class=\"button\" href=\"" . $Script. "?action=RST_ATTX" .
 	 "&idn_id=" . $idn_id . "\">" . $L_Attempt_Reset . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Expiration_Date . "</td>\n" .
-	 "        <td>" . $Msg_Expiration_Date . "&nbsp;<a class=\"button\" href=\"" . $Script. "?action=RST_EXP" .
+	 "        <td class=\"align-right td-aere\">" . $L_Expiration_Date . "</td>\n" .
+	 "        <td class=\"td-aere\">" . $Msg_Expiration_Date . "&nbsp;<a class=\"button\" href=\"" . $Script. "?action=RST_EXPX" .
 	 "&idn_id=" . $idn_id . "\">" . $L_Expiration_Date_Reset . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Disabled . "</td>\n" .
-	 "        <td><span class=\"" . $Disable_Color . "\">&nbsp;" . $Disable_Msg .
-	 "&nbsp;</span>&nbsp;<a class=\"button\" href=\"" . $Script. "?action=RST_DIS" .
+	 "        <td class=\"align-right td-aere\">" . $L_Disabled . "</td>\n" .
+	 "        <td class=\"td-aere\"><span class=\"" . $Disable_Color . "\">&nbsp;" . $Disable_Msg .
+	 "&nbsp;</span>&nbsp;<a class=\"button\" href=\"" . $Script. "?action=RST_DISX" .
 	 "&idn_id=" . $idn_id . "&status=" . $Disable_Status . "\">" . $Disable_Action . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
@@ -890,23 +867,23 @@ switch( $Action ) {
 
 
 	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ($ent_id = $Security->valueControl( $_POST[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ($cvl_id = $Security->valueControl( $_POST[ 'cvl_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ! $Username = $Security->valueControl( $_POST[ 'Username' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Username)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Username)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	
@@ -914,19 +891,23 @@ switch( $Action ) {
 		$Identities->set( $idn_id, $Username, '', 1, 0, $SuperAdmin, $Auditor, $ent_id,
 		 $cvl_id );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_MODI_Identity, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Identity, $Return_Page, 1 ) );
+		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->infoBox( $L_ERR_DUPL_Identity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Identity, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->infoBox( $L_ERR_MODI_Identity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Identity, $Return_Page, 1 ) );
 		}
-		break;
+		exit();
 	}
 
 
-	print( $PageHTML->infoBox( $L_User_Modified, $Return_Page, 2 ) );
+	print( "<form method=\"post\" action=\"" . $Return_Page . "\" name=\"fInfoMessage\" >\n" .
+	 " <input type=\"hidden\" name=\"infoMessage\" value=\"" . $L_User_Modified . "\" />\n" .
+	 "</form>\n" .
+	 "<script>document.fInfoMessage.submit();</script>\n"
+	 );
 	break;
 
 
@@ -946,12 +927,6 @@ switch( $Action ) {
 		$Flag_Check_Administrator = "<img class=\"no-border\" src=\"Pictures/bouton_coche.gif\" alt=\"Ko\" />";
 	else
 		$Flag_Check_Administrator = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
-
-
-	if ( $Identity->idn_auditor == 1 )
-		$Flag_Check_Auditor = "<img class=\"no-border\" src=\"Pictures/bouton_coche.gif\" alt=\"Ko\" />";
-	else
-		$Flag_Check_Auditor = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 
 	if ( $Identity->cvl_sex == 0 )
@@ -974,7 +949,7 @@ switch( $Action ) {
 	
 	print(
 	 "    <form method=\"post\" action=\"" . $Script . "\">\n" .
-	 "     <table style=\"margin: 10px auto;width: 60%\">\n" .
+	 "     <table class=\"table-center table-norm\">\n" .
 	 "      <thead>\n" .
 	 "      <tr>\n" .
 	 "       <th colspan=\"2\">" . $L_User_View . "</th>\n" .
@@ -982,76 +957,60 @@ switch( $Action ) {
 	 "      </thead>\n" .
 	 "      <tbody>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right align-middle\">" . $L_Entity . "</td>\n" .
-	 "       <td>\n" .
-	 "        <table style=\"border: 1px solid grey;width: 100%;\">\n" .
-	 "         <tr><td class=\"pair blue1 bold\">" . 
+	 "       <td class=\"align-right align-middle td-aere\">" . $L_Entity . "</td>\n" .
+	 "       <td class=\"pair blue1 bold td-aere\">\n" .
 	 $Security->XSS_Protection( $Identity->ent_code ) . " - " . 
 	 $Security->XSS_Protection( $Identity->ent_label ) . "</td></tr>\n" .
-	 "        </table>\n" .
 	 "       </td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right align-middle\">" . $L_Civility . "</td>\n" .
-	 "       <td>\n" .
-	 "        <table style=\"border: 1px solid grey;width: 100%;\">\n" .
-	 "         <tr>\n" .
-	 "          <td>" . $L_First_Name . "</td>\n" .
-	 "          <td class=\"pair green bold\">" . 
-	 $Security->XSS_Protection( $Identity->cvl_first_name ) . "</td>\n" .
-	 "          <td>" . $L_Last_Name . "</td>\n" .
-	 "          <td class=\"pair green bold\">" . 
-	 $Security->XSS_Protection( $Identity->cvl_last_name ) . "</td>\n" .
-	 "          <td>" . $L_Sex . "</td>\n" .
-	 "          <td class=\"pair green bold\">" . $Flag_Sex . "</td>\n" .
-	 "         </tr>\n" .
-	 "        </table>\n" .
+	 "       <td class=\"align-right align-middle td-aere\">" . $L_Civility . "</td>\n" .
+	 "       <td class=\"pair green bold td-aere\">\n" .
+	 "        " . $Security->XSS_Protection( $Identity->cvl_first_name ) . " " .
+	 $Security->XSS_Protection( $Identity->cvl_last_name ) . " (" .
+	 $Flag_Sex . ")\n" .
 	 "       </td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right\">" . $L_Username . "</td>\n" .
-	 "       <td class=\"bg-light-grey\">" . 
+	 "       <td class=\"align-right td-aere\">" . $L_Username . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->idn_login ) . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right\">" . $L_Change_Authenticator_Flag . "</td>\n" .
-	 "       <td class=\"bg-light-grey\">" . $Flag_Change_Authenticator . "</td>\n" .
+	 "       <td class=\"align-right td-aere\">" . $L_Change_Authenticator_Flag . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . $Flag_Change_Authenticator . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right\">" . $L_Attempt . "</td>\n" .
-	 "       <td class=\"bg-light-grey\">" . $Identity->idn_attempt . ' / ' . $_Max_Attempt .
+	 "       <td class=\"align-right td-aere\">" . $L_Attempt . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . $Identity->idn_attempt . ' / ' . $_Max_Attempt .
 	 "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right\">" . $L_Disabled . "</td>\n" .
-	 "       <td class=\"bg-light-grey\">" . $Flag_Disable . "</td>\n" .
+	 "       <td class=\"align-right td-aere\">" . $L_Disabled . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . $Flag_Disable . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right\">" . $L_Last_Connection . "</td>\n" .
-	 "       <td class=\"bg-light-grey\">" . 
+	 "       <td class=\"align-right td-aere\">" . $L_Last_Connection . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->idn_last_connection ) . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right\">" . $L_Expiration_Date . "</td>\n" .
-	 "       <td class=\"bg-light-grey\">" . 
+	 "       <td class=\"align-right td-aere\">" . $L_Expiration_Date . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->idn_expiration_date ) . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right\">" . $L_Updated_Authentication . "</td>\n" .
-	 "       <td class=\"bg-light-grey\">" . 
+	 "       <td class=\"align-right td-aere\">" . $L_Updated_Authentication . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->idn_updated_authentication ) . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right align-middle\">" . $L_Administrator . "</td>\n" .
-	 "       <td>" . $Flag_Check_Administrator . "</td>\n" .
+	 "       <td class=\"align-right align-middle td-aere\">" . $L_Administrator . "</td>\n" .
+	 "       <td class=\"td-aere\">" . $Flag_Check_Administrator . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right align-middle\">" . $L_Auditor . "</td>\n" .
-	 "       <td>" . $Flag_Check_Auditor . "</td>\n" .
-	 "      </tr>\n" .
-	 "      <tr>\n" .
-	 "       <td>&nbsp;</td>\n" .
-	 "       <td><input id=\"b_return\"type=\"submit\" class=\"button\" value=\"".
+	 "       <td class=\"td-aere\">&nbsp;</td>\n" .
+	 "       <td class=\"td-aere\"><input id=\"b_return\"type=\"submit\" class=\"button\" value=\"".
 	 $L_Return . "\" /></td>\n" .
 	 "      </tr>\n" .
 	 "      </tbody>\n" .
@@ -1241,31 +1200,34 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
 
 	if ( ! $Code = $Security->valueControl( $_POST[ 'Code' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Code)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Code)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	try {
 		$Entities->set( '', $Code, $Label );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_CREA_Entity, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Entity, $Return_Page, 1 ) );
+		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->infoBox( $L_ERR_DUPL_Entity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Entity, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->infoBox( $L_ERR_CREA_Entity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Entity, $Return_Page, 1 ) );
 		}
-		break;
+		exit();
 	}
 
 
-	print( $PageHTML->infoBox( $L_Entity_Created, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"" . $L_Entity_Created . "\" />\n" .
+		"</form>" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -1317,36 +1279,40 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
 	
 	if ( ($ent_id = $Security->valueControl( $_POST[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ! $Code = $Security->valueControl( $_POST[ 'Code' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Code)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Code)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
+		exit();
 	}
+
 
 	try {
 		$Entities->set( $ent_id, $Code, $Label );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_MODI_Entity, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Entity, $Return_Page, 1 ) );
+		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->infoBox( $L_ERR_DUPL_Entity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Entity, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->infoBox( $L_ERR_MODI_Entity, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Entity, $Return_Page, 1 ) );
 		}
-		break;
+		exit();
 	}
 
 
-	print( $PageHTML->infoBox( $L_Entity_Modified, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Entity_Modified . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -1397,18 +1363,21 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
  
 	if ( ($ent_id = $Security->valueControl( $_POST[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	try {
 		$Entities->delete( $ent_id );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_DELE_Entity, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Entity, $Return_Page, 1 ) );
+		exit();
 	}
 
-	print( $PageHTML->infoBox( $L_Entity_Deleted, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Entity_Deleted . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -1599,18 +1568,18 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script . '?action=CVL_V';
  
 	if ( ! $Last_Name = $Security->valueControl( $_POST[ 'Last_Name' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Last_Name)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Last_Name)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ! $First_Name = $Security->valueControl( $_POST[ 'First_Name' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (First_Name)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (First_Name)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ($Sex = $Security->valueControl( $_POST[ 'Sex' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Sex)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Sex)', $Return_Page, 1 ) );
+		exit();
 	}
 
 
@@ -1620,21 +1589,24 @@ switch( $Action ) {
 		try {
 			$Civilities->set( '', $Last_Name, $First_Name, $Sex, '', '' );
 		} catch( PDOException $e ) {
-			print( $PageHTML->infoBox( $L_ERR_CREA_Civility, $Return_Page, 1 ) );
-			break;
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Civility, $Return_Page, 1 ) );
+			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				print( $PageHTML->infoBox( $L_ERR_DUPL_Civility, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Civility, $Return_Page, 1 ) );
 			} else {
-				print( $PageHTML->infoBox( $L_ERR_CREA_Civility, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Civility, $Return_Page, 1 ) );
 			}
-			break;
+			exit();
 		}
 
 		$Message = $L_Civility_Created;
 	}
 
-	print( $PageHTML->infoBox( $Message, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $Message . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -1704,41 +1676,44 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script . '?action=CVL_V';
  
 	if ( ($cvl_id = $Security->valueControl( $_POST[ 'cvl_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ! $Last_Name = $Security->valueControl( $_POST[ 'Last_Name' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Last_Name)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Last_Name)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ! $First_Name = $Security->valueControl( $_POST[ 'First_Name' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (First_Name)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (First_Name)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( ($Sex = $Security->valueControl( $_POST[ 'Sex' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (Sex)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Sex)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	try {
 		$Civilities->set( $cvl_id, $Last_Name, $First_Name, $Sex, '', '' );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_MODI_Civility, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Civility, $Return_Page, 1 ) );
+		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->infoBox( $L_ERR_DUPL_Civility, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Civility, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->infoBox( $L_ERR_MODI_Civility, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Civility, $Return_Page, 1 ) );
 		}
-		break;
+		exit();
 	}
 
 
-	print( $PageHTML->infoBox( $L_Civility_Modified, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Civility_Modified . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -1798,81 +1773,50 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script . '?action=CVL_V';
  
 	if ( ($cvl_id = $Security->valueControl( $_POST[ 'cvl_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	try {
 		$Civilities->delete( $_POST[ 'cvl_id' ] );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_DELE_Civility, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Civility, $Return_Page, 1 ) );
+		exit();
 	}
 
-	print( $PageHTML->infoBox( $L_Civility_Deleted, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Civility_Deleted . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
-	break;
-
-
- case 'RST_PWD':
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Script, 1 ) );
-		break;
-	}
-
-	$Identity = $Identities->detailedGet( $idn_id );
-	
-	print(
-	 "     <form method=\"post\" action=\"" . $Script . "?action=RST_PWDX\">\n" .
-	 "      <input name=\"idn_id\" type=\"hidden\" value=\"" . $idn_id . "\" />\n" .
-	 "      <table style=\"margin: 10px auto;width: 50%\">\n" .
-	 "       <tr>\n" .
-	 "        <th colspan=\"2\">" . $L_Authenticator_Reset . "</th>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Entity . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->ent_code . " - " . $Identity->ent_label .
-	 "</td>" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Civility . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->cvl_first_name . " " .
-	 $Identity->cvl_last_name . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Username . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->idn_login . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Reset . "\" /><a href=\"" . $Script . "?action=M&idn_id=" . $idn_id . "\" class=\"button\">". $L_Return . "</a></td>\n" .
-	 "       </tr>\n" .
-	 "      </table>\n" .
-	 "     </form>\n"
-	);
-	
 	break;
 
 
  case 'RST_PWDX':
-	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Script, 1 ) );
-		break;
+	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Script, 1 ) );
+		exit();
 	}
 
 	try {
 		$Authentication->resetPassword( $idn_id );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_RST_Password, $Script, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Password, $Script, 1 ) );
+		exit();
 	}
 
-	print( $PageHTML->infoBox( $L_Password_Reseted, $Script, 2 ) );
+
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=M&idn_id=" . $_GET[ 'idn_id' ] . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Password_Reseted . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
+
 	break;
 
 
  case 'P':
 	include( 'Libraries/Class_IICA_Profiles_PDO.inc.php' );
+	include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 	
 	$Profiles = new IICA_Profiles( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
@@ -1896,36 +1840,35 @@ switch( $Action ) {
 	 "       </thead>\n" .
 	 "       <tbody>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right align-middle\">" . $L_Entity . "</td>\n" .
-	 "        <td class=\"bg-light-grey\">" . 
+	 "        <td class=\"align-right align-middle td-aere\">" . $L_Entity . "</td>\n" .
+	 "        <td class=\"pair blue1 bold td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->ent_code ) . " - " . 
 	 $Security->XSS_Protection( $Identity->ent_label ) . "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right align-middle\">" . $L_Civility . "</td>\n" .
-	 "        <td class=\"bg-light-grey\">" . 
+	 "        <td class=\"align-right align-middle td-aere\">" . $L_Civility . "</td>\n" .
+	 "        <td class=\"pair green bold td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->cvl_first_name ) . " " .
 	 $Security->XSS_Protection( $Identity->cvl_last_name ) .
 	 "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Username . "</td>\n" .
-	 "        <td class=\"bg-light-grey\">" . 
+	 "        <td class=\"align-right td-aere\">" . $L_Username . "</td>\n" .
+	 "        <td class=\"bg-light-grey td-aere\">" . 
 	 $Security->XSS_Protection( $Identity->idn_login ) . "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td colspan=\"2\">&nbsp;</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Associated_Profiles . "</td>\n" .
+	 "        <td class=\"align-right td-aere\">" . $L_Associated_Profiles . "</td>\n" .
 	 "        <td>\n" .
-	 "         " . $Action_Button . "\n" .
-	 "        </td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td>\n" .
-	 "         <table class=\"surline\" style=\"border: 1px solid grey;\">\n" );
+//	 "         <div id=\"dashboard\">\n" .
+	 "         <table class=\"table-bordered table-max inner\">\n" .
+	 "          <thead>\n" .
+	 "           <tr><th colspan=\"3\"><span class=\"div-right\">" . $Action_Button . "</span></th></tr>\n" .
+	 "          </thead>\n" .
+	 "          <tbody>\n" );
 
 	$List_Profiles = $Profiles->listProfiles();
 
@@ -1936,7 +1879,7 @@ switch( $Action ) {
 
 	if ( $List_Profiles == array() ) {
 			print( "          <tr>\n" .
-			 "           <td class=\"bg-green\">" . $L_No_Profile . "</td>\n" .
+			 "           <td class=\"bg-green td-aere\">" . $L_No_Profile . "</td>\n" .
 			 "          </tr>\n" );
 	} else {
 		foreach( $List_Profiles as $Profile ) {
@@ -1950,26 +1893,26 @@ switch( $Action ) {
 			else $BackGround = 'pair';
 
 			
-			print( "          <tr class=\"" . $BackGround . " surline\">\n" .
-			 "           <td><input type=\"checkbox\" name=\"" . $Profile->prf_id . 
+			print( "          <tr class=\"" . $BackGround . " surline td-aere\">\n" .
+			 "           <td class=\"align-middle align-center\"><input type=\"checkbox\" name=\"" . $Profile->prf_id . 
 			 "\" id=\"P_" . $Profile->prf_id . "\"" . $Validate . " /></td>\n" .
-			 "           <td><label for=\"P_" . $Profile->prf_id . "\">" .
+			 "           <td class=\"td-aere align-middle\"><label for=\"P_" . $Profile->prf_id . "\">" .
 			 stripslashes( $Profile->prf_label ) . "</label></td>\n" .
+			 "           <td class=\"align-center\"><a class=\"simple\" href=\"?action=PRF_G&prf_id=" . $Profile->prf_id . "\">" .
+			 "<img src=\"Pictures/b_usrscr_2.png\" class=\"no-border\" alt=\"" . $L_Groups_Associate . "\" title=\"" . $L_Groups_Associate . "\" /></a></td>\n" .
 			 "          </tr>\n" );
 		}
 	}
 
-	print( "          <tr>\n" .
-	 "           <td colspan=\"2\">Total : <span class=\"green bold\">" . 
-	 count( $List_Profiles ) . "</span></td>\n" .
+	print( "          </tbody>\n" .
+	 "          <tfoot>\n" .
+	 "          <tr>\n" .
+	 "           <th colspan=\"3\" class=\"td-aere\">Total : <span class=\"green bold\">" . 
+	 count( $List_Profiles ) . "</span><span class=\"div-right\">" . $Action_Button . "</span></th>\n" .
 	 "          </tr>\n" .
+	 "          </tfoot>\n" .
 	 "         </table>\n" .
-	 "        </td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td>\n" .
-	 "         " . $Action_Button . "\n" .
+// 	 "         </div>\n" .
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
@@ -1992,8 +1935,8 @@ switch( $Action ) {
 	 $_GET[ 'idn_id' ];
  
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
 	try {
@@ -2005,273 +1948,87 @@ switch( $Action ) {
 			}
 		}
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
+		exit();
 	}
 
-	print( $PageHTML->infoBox( $L_Association_Terminated, 'https://' . $Server . $Script, 2 ) );
-	break;
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . 'https://' . $Server . $Script . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Association_Terminated . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
-
- case 'RST_ATT':
-	$Return_Page = 'https://' . $Server . $Script;
- 
-	include( 'Libraries/Config_Authentication.inc.php' );
-	
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
-	}
-
-	$Identity = $Identities->detailedGet( $idn_id );
-
-	
-	if ( $Identity->idn_attempt > $_Max_Attempt )
-		$Attempt_Color = "bg-orange";
-	else
-		$Attempt_Color = "bg-green";
-
-
-	print(
-	 "     <form method=\"post\" action=\"" . $Script . "?action=RST_ATTX\">\n" .
-	 "      <input name=\"idn_id\" type=\"hidden\" value=\"" . $idn_id . "\" />\n" .
-	 "      <table style=\"margin: 10px auto;width: 50%\">\n" .
-	 "       <tr>\n" .
-	 "        <th colspan=\"2\">" . $L_Attempt_Reset . "</th>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Entity . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->ent_code . " - " . $Identity->ent_label .
-	 "</td>" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Civility . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->cvl_first_name . " " .
-	 $Identity->cvl_last_name . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Username . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->idn_login . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Attempt . "</td>\n" .
-	 "        <td><span class=\"" . $Attempt_Color . "\">&nbsp;" . $Identity->idn_attempt . "&nbsp;</span>&nbsp;/&nbsp; " .
-	 $_Max_Attempt . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Reset . "\" /><a href=\"" . $Script . "?action=M&idn_id=" . $idn_id . "\" class=\"button\">". $L_Return . "</a></td>\n" .
-	 "       </tr>\n" .
-	 "      </table>\n" .
-	 "     </form>\n"
-	);
-	
 	break;
 
 
  case 'RST_ATTX':
-	$Return_Page = 'https://' . $Server . $Script;
- 
-	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
+	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
+	$Return_Page = 'https://' . $Server . $Script . '?action=M&idn_id=' . $idn_id;
+ 
 	try {
 		$Authentication->resetAttempt( $idn_id );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_RST_Attempt, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Attempt, $Return_Page, 1 ) );
+		exit();
 	}
 
-	print( $PageHTML->infoBox( $L_Attempt_Reseted, $Return_Page, 2 ) );
-	break;
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Attempt_Reseted . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
-
- case 'RST_EXP':
-	$Return_Page = 'https://' . $Server . $Script;
- 
-	include( 'Libraries/Config_Authentication.inc.php' );
-	
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
-	}
-
-	$Identity = $Identities->detailedGet( $idn_id );
-
-	
-	if ( $Identity->idn_attempt > $_Max_Attempt )
-		$Attempt_Color = "bg-orange";
-	else
-		$Attempt_Color = "bg-green";
-
-
-	$Msg_Color = 'bg-green';
-
-	if ( $Identity->idn_expiration_date != '0000-00-00 00:00:00' ) {
-		$datetime1 = new DateTime( date( 'Y-m-d' ) );
-		$datetime2 = new DateTime( $Identity->idn_expiration_date );
-
-		$interval = $datetime1->diff( $datetime2 );
-
-		if ( $interval->format('%R') == '-' ) {
-			$Msg_Color = 'bg-orange';
-		}
-	} else {
-		$Msg_Color = 'bg-orange';
-	}
-
-	$Msg_Expiration_Date = '<span class="' . $Msg_Color . '">&nbsp;' .
-	 $Identity->idn_expiration_date . '&nbsp;</span>';
-
-
-	print(
-	 "     <form method=\"post\" action=\"" . $Script . "?action=RST_EXPX\">\n" .
-	 "      <input name=\"idn_id\" type=\"hidden\" value=\"" . $idn_id . "\" />\n" .
-	 "      <table style=\"margin: 10px auto;width: 50%\">\n" .
-	 "       <tr>\n" .
-	 "        <th colspan=\"2\">" . $L_Expiration_Date_Reset . "</th>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Entity . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->ent_code . " - " . $Identity->ent_label .
-	 "</td>" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Civility . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->cvl_first_name . " " .
-	 $Identity->cvl_last_name . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Username . "</td>\n" .
-	 "        <td class=\"pair\">" . $Identity->idn_login . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Expiration_Date . "</td>\n" .
-	 "        <td>" . $Msg_Expiration_Date . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Reset . "\" /><a href=\"" . $Script . "?action=M&idn_id=" . $idn_id . "\" class=\"button\">". $L_Return . "</a></td>\n" .
-	 "       </tr>\n" .
-	 "      </table>\n" .
-	 "     </form>\n"
-	);
-	
 	break;
 
 
  case 'RST_EXPX':
 	$Return_Page = 'https://' . $Server . $Script;
- 
-	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
+
+	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
+	$Return_Page .= '?action=M&idn_id=' . $idn_id;
+ 
 	try {
 		$Authentication->resetExpirationDate( $idn_id );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_RST_Expiration, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Expiration, $Return_Page, 1 ) );
+		exit();
 	}
 
-	print( $PageHTML->infoBox( $L_Expiration_Date_Reseted, $Return_Page, 2 ) );
-	break;
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Expiration_Date_Reseted . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
-
- case 'RST_DIS':
-	$Return_Page = 'https://' . $Server . $Script;
- 
-	include( 'Libraries/Config_Authentication.inc.php' );
-	
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
-	}
-
-	$Identity = $Identities->detailedGet( $idn_id );
-
-	
-	if ( $Identity->idn_disable == 1 ) {
-		$Color = "bg-orange";
-		$Msg = $L_Yes;
-		$Title = $L_To_Activate_User;
-		$Action = $L_Enabled;
-	} else {
-		$Color = "bg-green";
-		$Msg = $L_No;
-		$Title = $L_To_Deactivate_User;
-		$Action = $L_Disabled;
-	}
-
-	if ( ($Status = $Security->valueControl( $_GET[ 'status' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (status)', $Return_Page, 1 ) );
-		break;
-	}
-
-
-	print(
-	 "     <form method=\"post\" action=\"" . $Script . "?action=RST_DISX\">\n" .
-	 "      <input name=\"idn_id\" type=\"hidden\" value=\"" . $idn_id . "\" />\n" .
-	 "      <input name=\"action\" type=\"hidden\" value=\"" . $Status . "\" />\n" .
-	 "      <table style=\"margin: 10px auto;width: 50%\">\n" .
-	 "       <tr>\n" .
-	 "        <th colspan=\"2\">" . $Title . "</th>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Entity . "</td>\n" .
-	 "        <td class=\"pair\">" . 
-	 $Security->XSS_Protection( $Identity->ent_code ) . " - " . 
-	 $Security->XSS_Protection( $Identity->ent_label ) .
-	 "</td>" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Civility . "</td>\n" .
-	 "        <td class=\"pair\">" . 
-	 $Security->XSS_Protection( $Identity->cvl_first_name ) . " " .
-	 $Security->XSS_Protection( $Identity->cvl_last_name ) . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Username . "</td>\n" .
-	 "        <td class=\"pair\">" . 
-	 $Security->XSS_Protection( $Identity->idn_login ) . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Disabled . "</td>\n" .
-	 "        <td><span class=\"" . $Color . "\">&nbsp;" . $Msg . "&nbsp;</span></td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input type=\"submit\" class=\"button\" value=\"". $Action . "\" /><a href=\"" . $Script . "?action=M&id=" . $idn_id . "\" class=\"button\">". $L_Return . "</a></td>\n" .
-	 "       </tr>\n" .
-	 "      </table>\n" .
-	 "     </form>\n"
-	);
-	
 	break;
 
 
  case 'RST_DISX':
 	$Return_Page = 'https://' . $Server . $Script;
  
-	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
-		break;
+	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+		exit();
 	}
 
-	if ( ($Action = $Security->valueControl( $_POST[ 'action' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (action)', $Return_Page, 1 ) );
-		break;
+	$Return_Page .= '?action=M&idn_id=' . $idn_id;
+
+	if ( ($Action = $Security->valueControl( $_GET[ 'status' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (status)', $Return_Page, 1 ) );
+		exit();
 	}
 
 
 	try {
 		$Authentication->setDisable( $idn_id, $Action );
 	} catch( PDOException $e ) {
-		print( $PageHTML->infoBox( $L_ERR_RST_Disable, $Return_Page, 1 ) );
-		break;
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Disable, $Return_Page, 1 ) );
+		exit();
 	}
 
 	if ( $Action == 1 ) 
@@ -2279,7 +2036,11 @@ switch( $Action ) {
 	else
 		$Message = $L_User_Enabled;
 
-	print( $PageHTML->infoBox( $Message, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $Message . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
+
 	break;
 
 
@@ -2458,29 +2219,35 @@ switch( $Action ) {
 
 	if ( $Authentication->is_administrator() ) {
 		if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
-			break;
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
+			exit();
 		}
 
 		try {
 			$Profiles->set( '', $Label );
 		} catch( PDOException $e ) {
-			print( $PageHTML->infoBox( $L_ERR_CREA_Profile, $Return_Page, 1 ) );
-			break;
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Profile, $Return_Page, 1 ) );
+			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				print( $PageHTML->infoBox( $L_ERR_DUPL_Profile, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Profile, $Return_Page, 1 ) );
 			} else {
-				print( $PageHTML->infoBox( $L_ERR_CREA_Profile, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Profile, $Return_Page, 1 ) );
 			}
-			break;
+			exit();
 		}
 
-		print( $PageHTML->infoBox( $L_Profile_Created, $Return_Page, 2 ) );
+		$TypeMessage = "infoMessage";
+		$Message = $L_Profile_Created;
 	} else {
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
-		break;
+		$TypeMessage = "alertMessage";
+		$Message = $L_No_Authorize;
 	}
+
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"". $TypeMessage . "\" value=\"". $Message . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 	
 	break;
 
@@ -2560,36 +2327,43 @@ switch( $Action ) {
 	if ( $Authentication->is_administrator() ) {
 		if ( ($prf_id = $Security->valueControl( $_POST[ 'prf_id' ], 'NUMERIC' )) == -1
 		 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (prf_id)', $Return_Page,
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (prf_id)', $Return_Page,
 			 1 ) );
-			break;
+			exit();
 		}
 
 		if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (Label)', $Return_Page,
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Label)', $Return_Page,
 			 1 ) );
-			break;
+			exit();
 		}
 
 		try {
 			$Profiles->set( $prf_id, $Label );
 		} catch( PDOException $e ) {
-			print( $PageHTML->infoBox( $L_ERR_MODI_Profile, $Return_Page, 1 ) );
-			break;
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Profile, $Return_Page, 1 ) );
+			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				print( $PageHTML->infoBox( $L_ERR_DUPL_Profile, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Profile, $Return_Page, 1 ) );
 			} else {
-				print( $PageHTML->infoBox( $L_ERR_MODI_Profile, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Profile, $Return_Page, 1 ) );
 			}
-			break;
+			exit();
 		}
 
 
-		print( $PageHTML->infoBox( $L_Profile_Modified, $Return_Page, 2 ) );
+		$TypeMessage = 'infoMessage';
+		$Message =  $L_Profile_Modified;
 	} else {
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
+		$TypeMessage = 'alertMessage';
+		$Message =  $L_No_Authorize;
 	}
+
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"" . $TypeMessage . "\" value=\"". $Message . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 	
 	break;
 
@@ -2673,11 +2447,18 @@ switch( $Action ) {
 			break;
 		}
 
-		print( $PageHTML->infoBox( $L_Profile_Deleted, $Return_Page, 2 ) );
+		$Message = $L_Profile_Deleted;
+		$TypeMessage = "infoMessage";
 	} else {
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
+		$Message = $L_No_Authorize;
+		$TypeMessage = 'alertMessage';
 	}
 	
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"" . $TypeMessage . "\" value=\"". $Message . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
+
 	break;
 
 
@@ -2722,9 +2503,11 @@ switch( $Action ) {
 		 
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Profil . "</td>\n" .
-		 "        <td>\n" .
-		 "           <span style=\"border: 1px solid grey; padding: 3px;\" " .
-		 "class=\"pair green bold\">" . stripslashes( $Profile->prf_label ) . "</span>\n" .
+		 "        <td class=\"pair green bold\">\n" .
+//		 "           <span style=\"border: 1px solid grey; padding: 3px;\" " .
+//		 "class=\"pair green bold\">" . 
+		 stripslashes( $Profile->prf_label ) . 
+//		 "</span>\n" .
 		 "        </td>\n" .
 		 "       <tr>\n" .
 		 "        <td colspan=\"2\">&nbsp;</td>\n" .
@@ -2738,13 +2521,15 @@ switch( $Action ) {
 		print( "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Groups . "</td>\n" .
 		 "        <td>\n" .
+		 "         <table class=\"table-bordered\">\n" .
+		 "          <thead>\n" .
+		 "          <tr>\n" .
+		 "           <th colspan=\"2\">\n" .
 		 $manageGroups .
-		 "        </td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td>&nbsp;</td>\n" .
-		 "        <td>\n" .
-		 "         <table style=\"border: 1px solid grey;\">\n" .
+		 "           </th>\n" .
+		 "          </tr>\n" .
+		 "          </thead>\n" .
+		 "          <tbody>\n" .
 		 "          <tr>\n" .
 		 "           <th>" . $L_Label . "</th>\n" .
 		 "           <th>" . $L_Rights . "</th>\n" .
@@ -2764,7 +2549,7 @@ switch( $Action ) {
 			else $Status = '';
 
 			print( 
-			 "          <tr class=\"" . $BackGround . " surline\">\n" .
+			 "          <tr class=\"" . $BackGround . "\">\n" .
 			 "           <td class=\"align-middle\">" . stripslashes( $Group->sgr_label ) . "</td>\n" .
 			 "           <td>\n" .
 			 "            <select name=\"r_" . $Group->sgr_id . "[]\" size=\"4\" " .
@@ -2791,13 +2576,15 @@ switch( $Action ) {
 			 "          </tr>\n" );
 		}
 		
-		print( "         </table>\n" .
-		 "        </td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td>&nbsp;</td>\n" .
-		 "        <td>\n" .
+		print( "          </tbody>\n" .
+		 "          <tfoot>\n" .
+		 "          <tr>\n" .
+		 "           <th colspan=\"2\">\n" .
 		 $manageGroups .
+		 "           </th>\n" .
+		 "          </tr>\n" .
+		 "          </tfoot>\n" .
+		 "         </table>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
@@ -2839,7 +2626,7 @@ switch( $Action ) {
 
 
 	if ( ! $prf_id = $Security->valueControl( $_GET[ 'prf_id' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (prf_id)', $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (prf_id)', $Return_Page, 1 ) );
 		break;
 	}
 
@@ -2885,7 +2672,7 @@ switch( $Action ) {
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
 
-		print( $PageHTML->infoBox( $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
 		break;
 	}
 
@@ -2893,7 +2680,11 @@ switch( $Action ) {
 		
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
 
-	print( $PageHTML->infoBox( $L_Association_Complited, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Association_Complited . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
+
 	break;
 }
 

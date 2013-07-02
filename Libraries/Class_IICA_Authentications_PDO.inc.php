@@ -348,6 +348,7 @@ class IICA_Authentications extends PDO {
 		unset( $_SESSION[ 'cvl_first_name' ] );
 		unset( $_SESSION[ 'Expired' ] );
 		unset( $_SESSION[ 'idn_login' ] );
+		unset( $_SESSION[ 'searchSecret' ] );
 
 		return true;
 	}
@@ -747,7 +748,7 @@ class IICA_Authentications extends PDO {
 			$Data[ $Occurrence->sgr_id ][] = $Occurrence->rgh_id ;
 
 			// Sauvegarde de façon globale, qu'il a un droit d'écriture.
-			if ( $Occurrence->rgh_id >= 2 ) $Data[ 'W' ] = 1; 
+			if ( $Occurrence->rgh_id == 2 ) $Data[ 'W' ] = 1; 
 		}
  
  		return $Data;

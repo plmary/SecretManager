@@ -309,8 +309,14 @@ switch( $Action ) {
 
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-	print( $PageHTML->returnPage( $L_Title_CMDP, $L_Password_Modified, $Script .
-	 "?action=DCNX", 0 ) );
+	$Authentication->disconnect();
+
+	$Return_Page = $Script;
+
+	print( 	"<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Password_Modified . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -321,35 +327,47 @@ switch( $Action ) {
    
 	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
      "    <div id=\"icon-users\" class=\"icon36\" style=\"float: left; margin: 3px 9px 3px 3px;\"></div>\n" .
-	 "    <h1 style=\"padding-top: 12px;\">" . $L_Title . "</h1>\n" .
+	 "    <h2>" . $L_Title . "</h2>\n" .
 	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
 	 "    <!-- debut : zoneMilieuComplet -->\n" .
-	 "    <div id=\"zoneMilieuComplet\">\n" .
-	 "     <center>\n" .
+	 "    <div id=\"zoneMilieuComplet\">\n" );
+
+	if ( array_key_exists( 'infoMessage', $_POST ) ) {
+		print( "<script>\n" .
+		 "     var myVar=setInterval(function(){cacherInfo()},3000);\n" .
+		 "     function cacherInfo() {\n" .
+		 "        document.getElementById(\"msgSuccess\").style.display = \"none\";\n" .
+		 "        clearInterval(myVar);\n" .
+		 "     }\n" .
+		 "</script>\n" .
+		 "    <div id=\"msgSuccess\">\n" .
+		 $_POST[ 'infoMessage' ] .
+		 "    </div>\n" );
+    }
+
+	print( "     <center>\n" .
 	 "      <form method=\"post\" name=\"connectForm\" action=\"". 
-     $Script . "?action=cnx\" style=\"width:50%;\">\n" .
-     "       <center>\n" );
+     $Script . "?action=cnx\" style=\"width:50%;\">\n" );
 
 	if ( array_key_exists( 'expired', $_GET ) ) {
     	print( "        <h3 id=\"alert\">" . $L_User_Session_Expired ."</h3>\n" );
     }
 
-	print( "        <table>\n" .
+	print( "        <table class=\"espace-20 espace-interne-10\">\n" .
 	 "         <tr>\n" .
-	 "          <td>" . $L_Username . "</td>\n" .
-	 "          <td><input type=\"text\" name=\"User\" /></td>\n" .
+	 "          <td class=\"align-middle\"><label class=\"control-label\" for=\"iUser\">" . $L_Username . "</label></td>\n" .
+	 "          <td class=\"align-middle\"><input type=\"text\" name=\"User\" id=\"iUser\" /></td>\n" .
 	 "         </tr>\n" .
 	 "         <tr>\n" .
-	 "          <td>" . $L_Password . "</td>\n" .
-	 "          <td><input type=\"password\" name=\"Password\" /></td>\n" .
+	 "          <td class=\"align-middle\"><label class=\"control-label\" for=\"iPassword\">" . $L_Password . "</label></td>\n" .
+	 "          <td class=\"align-middle\"><input type=\"password\" name=\"Password\" id=\"iPassword\" /></td>\n" .
 	 "         </tr>\n" .
 	 "         <tr>\n" .
 	 "          <td>&nbsp;</td>\n" .
-	 "          <td><input type=\"submit\" class=\"button\" value=\"" . 
+	 "          <td class=\"espace-interne-10\"><input type=\"submit\" class=\"button\" value=\"" . 
 	 $L_Connect . "\" /></td>\n" .
 	 "         </tr>\n" .
 	 "        </table>\n" .
-	 "       </center>\n" .
 	 "       <script>\n" .
 	 "        document.connectForm.User.focus();\n" .
 	 "       </script>\n" .

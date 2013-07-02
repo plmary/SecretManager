@@ -105,20 +105,35 @@ if ( $Action == 'SCR_V' ) {
 	 "   <div id=\"zoneMilieuComplet\">\n" .
 	 "\n" );
 } else {
-	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
-	 "   <!-- debut : zoneTitre -->\n" .
-	 "   <div id=\"zoneTitre\">\n" .
-	 "    <div id=\"icon-access\" class=\"icon36\"></div>\n" .
-	 "    <span id=\"titre\">" . $L_Title . "</span>\n" .
-	 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
-	 "   </div> <!-- fin : zoneTitre -->\n" .
-	 "\n" .
-	 "   <!-- debut : zoneGauche -->\n" .
-	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
-	 "\n" .
-	 "   <!-- debut : zoneMilieuComplet -->\n" .
-	 "   <div id=\"zoneMilieuComplet\">\n" .
-	 "\n" );
+	if ( ! preg_match("/X$/i", $Action ) ) {
+		print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
+		 "   <!-- debut : zoneTitre -->\n" .
+		 "   <div id=\"zoneTitre\">\n" .
+		 "    <div id=\"icon-access\" class=\"icon36\"></div>\n" .
+		 "    <span id=\"titre\">" . $L_Title . "</span>\n" .
+		 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
+		 "   </div> <!-- fin : zoneTitre -->\n" .
+		 "\n" .
+		 "   <!-- debut : zoneGauche -->\n" .
+		 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
+		 "\n" .
+		 "   <!-- debut : zoneMilieuComplet -->\n" .
+		 "   <div id=\"zoneMilieuComplet\">\n" .
+		 "\n" );
+	}
+
+	if ( isset( $_POST[ 'iMessage']) ) {
+		print( "<script>\n" .
+		 "     var myVar=setInterval(function(){cacherInfo()},3000);\n" .
+		 "     function cacherInfo() {\n" .
+		 "        document.getElementById(\"success\").style.display = \"none\";\n" .
+		 "        clearInterval(myVar);\n" .
+		 "     }\n" .
+		 "</script>\n" .
+		 "    <div id=\"success\">\n" .
+		 $_POST[ 'iMessage' ] .
+		 "    </div>\n" );
+	}
 }
 
 
@@ -155,6 +170,13 @@ switch( $Action ) {
 				 "/SM-users.php?action=PRF_G&prf_id=" . $_GET[ 'prf_id' ] . "\">" .
 				 $L_Return . "</a></span>";
 				break;
+
+			 case 'home-r2':
+				$returnButton = "<span style=\"float: right\">" .
+				 "<a class=\"button\" href=\"https://" . $Server . dirname( $Script ) .
+				 "/SM-users.php?action=R2\">" .
+				 $L_Return . "</a></span>";
+				break;
 			}
 			
 			$Buttons = $addButton . $returnButton;
@@ -162,7 +184,7 @@ switch( $Action ) {
 			$Buttons = $addButton ;
 		}
 		
-		print( "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		print( "     <table class=\"table-bordered\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"4\">" . $L_List_Groups . $Buttons . "</th>\n" .
@@ -265,7 +287,7 @@ switch( $Action ) {
  case 'ADD':
 	print( "     <form name=\"a_group\" method=\"post\" action=\"" . $Script .
 	 "?action=ADDX\">\n" .
-	 "      <table style=\"margin: 10px auto;width: 60%;\">\n" .
+	 "      <table class=\"table-center table-min\">\n" .
 	 "       <thead>\n" .
 	 "       <tr>\n" .
 	 "        <th colspan=\"2\">" . $L_Group_Create . "</th>\n" .
@@ -273,12 +295,12 @@ switch( $Action ) {
 	 "       </thead>\n" .
 	 "       <tbody>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Label . "</td>\n" .
-	 "        <td><input type=\"text\" name=\"Label\" size=\"60\" maxlength=\"60\" /></td>\n" .
+	 "        <td class=\"align-right\"><label for=\"iLabel\">" . $L_Label . "</label></td>\n" .
+	 "        <td><input type=\"text\" id=\"iLabel\" name=\"Label\" size=\"60\" maxlength=\"60\" /></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Alert . "</td>\n" .
-	 "        <td><input type=\"checkbox\" name=\"Alert\" /></td>\n" .
+	 "        <td class=\"align-right\"><label for=\"iAlert\">" . $L_Alert . "</label></td>\n" .
+	 "        <td><input type=\"checkbox\" id=\"iAlert\" name=\"Alert\" /></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td colspan=\"2\">&nbsp;</td>\n" .
@@ -323,12 +345,12 @@ switch( $Action ) {
 		
 		$Return_Page = 'https://' . $Server . $Script;
  
-		print( $PageHTML->infoBox( $L_ERR_CREA_Group, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Group, $Return_Page, 1 ) );
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->infoBox( $L_ERR_DUPL_Group, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Group, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->infoBox( $L_ERR_CREA_Group, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Group, $Return_Page, 1 ) );
 		}
 		break;
 	}
@@ -338,7 +360,12 @@ switch( $Action ) {
 		
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-	print( $PageHTML->infoBox( $L_Group_Created, $Return_Page, 2 ) );
+			
+	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Group_Created . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fMessage.submit();</script>" );
+
 	break;
 
 
@@ -362,7 +389,7 @@ switch( $Action ) {
 	 "      <input type=\"hidden\" name=\"origin_alert\" value=\"" . $Group->sgr_alert .
 	 "\" />\n" .
 	 "      <input type=\"hidden\" name=\"sgr_id\" value=\"" . $sgr_id . "\" />\n" .
-	 "      <table style=\"margin: 10px auto;width: 50%;\">\n" .
+	 "      <table class=\"table-center table-min\">\n" .
 	 "       <thead>\n" .
 	 "       <tr>\n" .
 	 "        <th colspan=\"2\">" . $L_Group_Delete . "</th>\n" .
@@ -370,16 +397,16 @@ switch( $Action ) {
 	 "       </thead>\n" .
 	 "       <tbody>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Label . "</td>\n" .
-	 "        <td class=\"pair\">\n" . stripslashes( $Group->sgr_label ) . "</td>\n" .
+	 "        <td class=\"align-right td-aere\">" . $L_Label . "</td>\n" .
+	 "        <td class=\"bg-light-grey td-aere\">\n" . stripslashes( $Group->sgr_label ) . "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Alert . "</td>\n" .
-	 "        <td>" . $Flag_Alert . "</td>\n" .
+	 "        <td class=\"align-right td-aere\">" . $L_Alert . "</td>\n" .
+	 "        <td class=\"bg-light-grey td-aere\">" . $Flag_Alert . "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Delete . "\" /><a  class=\"button\" href=\"". $Script . "\">" . $L_Cancel . "</a></td>\n" .
+	 "        <td class=\"td-aere\">&nbsp;</td>\n" .
+	 "        <td class=\"td-aere\"><input type=\"submit\" class=\"button\" value=\"". $L_Delete . "\" /><a  class=\"button\" href=\"". $Script . "\">" . $L_Cancel . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       </tbody>\n" .
 	 "      </table>\n" .
@@ -410,7 +437,7 @@ switch( $Action ) {
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-		print( $PageHTML->infoBox( $L_ERR_DELE_Group, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Group, $Return_Page, 1 ) );
 		break;
 	}
 
@@ -418,7 +445,12 @@ switch( $Action ) {
 		
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		
-	print( $PageHTML->infoBox( $L_Group_Deleted, $Return_Page, 2 ) );
+			
+	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Group_Deleted . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fMessage.submit();</script>" );
+
 	break;
 
 
@@ -443,7 +475,7 @@ switch( $Action ) {
 	 "      <input type=\"hidden\" name=\"origin_alert\" value=\"" .
 	 $Group->sgr_alert . "\" />\n" .
 	 "      <input type=\"hidden\" name=\"sgr_id\" value=\"" . $sgr_id . "\" />\n" .
-	 "      <table style=\"margin:10px auto;width:60%\">\n" .
+	 "      <table class=\"table-center table-min\">\n" .
 	 "       <thead>\n" .
 	 "       <tr>\n" .
 	 "        <th colspan=\"2\">" . $L_Group_Modify . "</th>\n" .
@@ -451,13 +483,13 @@ switch( $Action ) {
 	 "       </thead>\n" .
 	 "       <tbody>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Label . "</td>\n" .
-	 "        <td><input type=\"text\" name=\"Label\" size=\"60\" value=\"" . 
+	 "        <td class=\"align-right\"><label for=\"iLabel\">" . $L_Label . "<label></td>\n" .
+	 "        <td><input type=\"text\" id=\"iLabel\" name=\"Label\" class=\"input-xxlarge\" size=\"60\" maxlength=\"60\" value=\"" . 
 	 htmlentities( stripslashes( $Group->sgr_label ), ENT_COMPAT, "UTF-8" ) . "\" /></td>\n" .
  	"       </tr>\n" .
 	 "       <tr>\n" .
-	 "        <td class=\"align-right\">" . $L_Alert . "</td>\n" .
-	 "        <td><input name=\"Alert\" type=\"checkbox\" " .
+	 "        <td class=\"align-right\"><label for=\"iAlert\">" . $L_Alert . "</label></td>\n" .
+	 "        <td><input id=\"iAlert\" name=\"Alert\" type=\"checkbox\" " .
 	 $Flag_Check_Alert . " /></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
@@ -488,7 +520,7 @@ switch( $Action ) {
 	try {
 		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' ))
 		 == -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 )
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 )
 			 );
 			break;
 		}
@@ -506,13 +538,13 @@ switch( $Action ) {
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-		print( $PageHTML->infoBox( $L_ERR_MODI_Group, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Group, $Return_Page, 1 ) );
 		break;
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->infoBox( $L_ERR_DUPL_Group, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Group, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->infoBox( $L_ERR_CREA_Group, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Group, $Return_Page, 1 ) );
 		}
 		break;
 	}
@@ -522,7 +554,12 @@ switch( $Action ) {
 		
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-	print( $PageHTML->infoBox( $L_Group_Modified, $Return_Page, 2 ) );
+			
+	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Group_Modified . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fMessage.submit();</script>" );
+
 	break;
 
 
@@ -573,7 +610,7 @@ switch( $Action ) {
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Group . "</td>\n" .
 		 "        <td class=\"align-left\">\n" .
-		 "         <table style=\"border: 1px solid grey;\">\n" .
+		 "         <table class=\"table-bordered table-max\">\n" .
 		 "          <tr>\n" .
 		 "           <td class=\"align-right\" width=\"20%\">" . $L_Label . "</td>\n" .
 		 "           <td class=\"pair blue1 bold\" width=\"80%\">" . stripslashes( $Group->sgr_label ) .
@@ -581,7 +618,7 @@ switch( $Action ) {
 		 "          </tr>\n" .
 		 "          <tr>\n" .
 		 "           <td class=\"align-right\">" . $L_Alert . "</td>\n" .
-		 "           <td>" . $Flag_Alert . "</td>\n" .
+		 "           <td class=\"pair\">" . $Flag_Alert . "</td>\n" .
 		 "          </tr>\n" .
 		 "         </table>\n" .
 		 "        </td>\n" .
@@ -600,7 +637,7 @@ switch( $Action ) {
 		 "        <td class=\"align-right\">" . $L_Profiles_Associate . "</td>\n" .
 		 "        <td>\n" .
 //		 $Action_Button .
-		 "         <table style=\"border: 1px solid grey;\">\n" .
+		 "         <table class=\"table-bordered table-max\" style=\"border: 1px solid grey;\">\n" .
 		 "          <tr>\n" .
 		 "           <th>" . $L_Label . "</th>\n" .
 		 "           <th>" . $L_Rights . "</th>\n" .
@@ -614,11 +651,11 @@ switch( $Action ) {
 			else
 				$BackGround = "pair";
 			
-			if ( array_key_exists( $Profile->prf_id, $List_Profiles_Associated ) )				$Status = ' checked ';
+			if ( array_key_exists( $Profile->prf_id, $List_Profiles_Associated ) ) $Status = ' checked ';
 			else $Status = '';
 
 			print( 
-			 "          <tr class=\"" . $BackGround . " surline\">\n" .
+			 "          <tr class=\"" . $BackGround . " \">\n" .
 			 "           <td class=\"align-middle\">" . stripslashes( $Profile->prf_label ) . "</td>\n" .
 			 "           <td>\n" .
 			 "            <select name=\"r_" . $Profile->prf_id . "[]\" size=\"4\" " .
@@ -675,7 +712,7 @@ switch( $Action ) {
 	$Return_Page = 'https://' . $Server . $Script;
  
 	if ( ! $sgr_id = $Security->valueControl( $_GET[ 'sgr_id' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
 		break;
 	}
 
@@ -712,7 +749,7 @@ switch( $Action ) {
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-		print( $PageHTML->infoBox( $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
 		break;
 	}
 
@@ -720,7 +757,11 @@ switch( $Action ) {
 		
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-	print( $PageHTML->infoBox( $L_Association_Complited, $Return_Page, 2 ) );
+	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
+		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Association_Complited . "\" />\n" .
+		"</form>\n" .
+		"<script>document.fMessage.submit();</script>" );
+
 	break;
 
 
@@ -765,18 +806,15 @@ switch( $Action ) {
 		$Group = $Groups->get( $sgr_id );
 
 		
-		print( "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		print( "     <table class=\"table-bordered\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"8\">" . $L_List_Secrets . "</th>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
-		 "        <td colspan=\"8\">" . $L_Group .
-		 "        : <span class=\"green bold\">" . stripslashes( $Group->sgr_label ) . "</span>\n" .
-		 "        </td>" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"8\">" . $Buttons . "</th>\n" .
+		 "        <td colspan=\"8\">\n" .
+		 $L_Group . " : " . "<span class=\"green bold\">" . stripslashes( $Group->sgr_label ) . "</span>" . $Buttons . "\n" .
+		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "      </thead>\n" .
 		 "      <tbody>\n" );
@@ -1216,25 +1254,25 @@ switch( $Action ) {
 
 		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) ==
 		 -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 )
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 )
 			 );
-			break;
+			exit();
 		}
 		
 		$Group = $Groups->get( $sgr_id );
 		
 		if ( ($stp_id = $Security->valueControl( $_POST[ 'stp_id' ], 'NUMERIC' )) ==
 		 -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (stp_id)', $Return_Page, 1 )
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (stp_id)', $Return_Page, 1 )
 			 );
-			break;
+			exit();
 		}
 		
 		if ( ($env_id = $Security->valueControl( $_POST[ 'env_id' ], 'NUMERIC' )) ==
 		 -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (env_id)', $Return_Page, 1 )
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (env_id)', $Return_Page, 1 )
 			 );
-			break;
+			exit();
 		}
 		
 
@@ -1264,25 +1302,25 @@ switch( $Action ) {
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message,
 			 $IP_Source );
 
-			print( $PageHTML->infoBox( $L_ERR_CREA_Secret, "https://" . $Server .
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Secret, "https://" . $Server .
 			 $Script . "?action=P&sgr_id=" . $_GET[ 'sgr_id' ], 1 )
 			 );
-			break;
+			exit();
 		} catch( Exception $e ) {
 			if ( $Parameters->get( 'use_SecretServer' ) == '1' ) {
 				$Error = $e->getMessage();
 				
 				if ( isset( ${$Error} ) ) $Error = ${$Error};
 				
-				print( $PageHTML->infoBox( $Error, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $Error, $Return_Page, 1 ) );
 			} else {
 				if ( $e->getCode() == 1062 ) {
-					print( $PageHTML->infoBox( $L_ERR_DUPL_Secret, $Return_Page, 1 ) );
+					print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Secret, $Return_Page, 1 ) );
 				} else {
-					print( $PageHTML->infoBox( $L_ERR_CREA_Secret, $Return_Page, 1 ) );
+					print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Secret, $Return_Page, 1 ) );
 				}
 			}
-			break;
+			exit();
 		}
 
 
@@ -1302,11 +1340,16 @@ switch( $Action ) {
 			}
 		}
 
-		print( $PageHTML->infoBox( $L_Secret_Created, $Return_Page, 2 ) );
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Secret_Created . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
+
 	} else {
 		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
  
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_No_Authorize, $Return_Page, 1 ) );
+		exit();
 	}
 
 	break;
@@ -1402,7 +1445,38 @@ switch( $Action ) {
 	$Secrets = new IICA_Secrets( 
 	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 	
-	$Secret = $Secrets->get( $_GET[ 'scr_id' ] );
+	if ( array_key_exists( 'rp', $_GET ) ) {
+		$Return_Script = "https://" . $Server . dirname( $Script ) . "/SM-home.php";
+
+		switch( $_GET[ 'rp' ] ) {
+		 case 'home':
+			$home = '&rp=home';
+			$cancelButton = "<a class=\"button\" href=\"" . $Return_Script . "\">" . $L_Cancel . "</a>";
+			break;
+
+		 case 'home-r2':
+		 	$Return_Script .= "?Action=R2";
+			$home = '&rp=home-r2';
+			$cancelButton = "<a class=\"button\" href=\"" . $Return_Script . "\">" . $L_Cancel . "</a>";
+			break;
+		}
+	} else {
+		$home = '';
+		$cancelButton = "<a class=\"button\" href=\"" . $Script . "?action=SCR\">" .
+		 $L_Cancel . "</a>";
+	}
+
+	try {
+		$Secret = $Secrets->get( $_GET[ 'scr_id' ] );
+	} catch( PDOException $e ) {
+		print( $PageHTML->infoBox( $e->getMessage(), $Return_Script, 1 ) );
+
+		break;
+	} catch( Exception $e ) {
+		print( $PageHTML->infoBox( $e->getMessage(), $Return_Script, 1 ) );
+
+		break;
+	}
 
 	if ( isset( $groupsRights[ $Secret->sgr_id ] ) ) {
 		$accessControl = in_array( 3, $groupsRights[ $Secret->sgr_id ] );
@@ -1425,16 +1499,6 @@ switch( $Action ) {
 			$List_Groups = $Groups->listGroups( $_SESSION[ 'idn_id' ] );
 		}
 	
-		if ( array_key_exists( 'rp', $_GET ) ) {
-			$home = '&rp=home';
-			$cancelButton = "<a class=\"button\" href=\"https://" . 
-			 $Server . dirname( $Script ) .	"/SM-home.php\">" . $L_Cancel . "</a>";
-		} else {
-			$home = '';
-			$cancelButton = "<a class=\"button\" href=\"" . $Script . "?action=SCR\">" .
-			 $L_Cancel . "</a>";
-		}
-
 		if ( $Secret->scr_alert == 1 ) $Flag_Alert = ' checked';
 		else $Flag_Alert = '';
 	
@@ -1562,8 +1626,17 @@ switch( $Action ) {
 	if ( $Authentication->is_administrator()
 	 or $accessControl ) {
 		if ( array_key_exists( 'rp', $_GET ) ) {
-			$home = '&home';
-			$Return_Page = "https://" . $Server . dirname( $Script ) . "/SM-home.php";
+			switch( $_GET[ 'rp' ] ) {
+			 case 'home':
+				$home = '&rp=home';
+				$Return_Page = "https://" . $Server . dirname( $Script ) . "/SM-home.php";
+				break;
+
+			 case 'home-r2':
+				$home = '&rp=home-r2';
+				$Return_Page = "https://" . $Server . dirname( $Script ) .	"/SM-home.php?Action=R2\">";
+				break;
+			}
 		} else {
 			$home = '';
 			$Return_Page = "https://" . $Server . $Script . "?action=P&scr_id=" .
@@ -1577,30 +1650,30 @@ switch( $Action ) {
 		else $Alert = 0;
 		
 		if ( ($scr_id = $Security->valueControl( $_GET[ 'scr_id' ], 'NUMERIC' )) == -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (scr_id)', $Return_Page,
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (scr_id)', $Return_Page,
 			 1 ) );
-			break;
+			exit();
 		}
 		
 		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' ))
 		 == -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page,
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page,
 			 1 ) );
-			break;
+			exit();
 		}
 		
 		if ( ($stp_id = $Security->valueControl( $_POST[ 'stp_id' ], 'NUMERIC' ))
 		 == -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (stp_id)', $Return_Page,
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (stp_id)', $Return_Page,
 			 1 ) );
-			break;
+			exit();
 		}
 		
 		if ( ($env_id = $Security->valueControl( $_POST[ 'env_id' ], 'NUMERIC' ))
 		 == -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (env_id)', $Return_Page,
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (env_id)', $Return_Page,
 			 1 ) );
-			break;
+			exit();
 		}
 		
 
@@ -1631,15 +1704,15 @@ switch( $Action ) {
 			$Secrets->updateHistory( $scr_id, $_SESSION[ 'idn_id' ], $alert_message,
 			 $IP_Source );
 
-			print( $PageHTML->infoBox( $L_ERR_MODI_Secret, $Return_Page, 1 ) );
-			break;
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Secret, $Return_Page, 1 ) );
+			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				print( $PageHTML->infoBox( $L_ERR_DUPL_Secret, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Secret, $Return_Page, 1 ) );
 			} else {
-				print( $PageHTML->infoBox( $L_ERR_MODI_Secret, $Return_Page, 1 ) );
+				print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Secret, $Return_Page, 1 ) );
 			}
-			break;
+			exit();
 		}
 
 
@@ -1662,11 +1735,15 @@ switch( $Action ) {
 			}
 		}
 			
-		print( $PageHTML->infoBox( $L_Secret_Modified, $Return_Page, 2 ) );
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Secret_Modified . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
 	} else {
 		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
  
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_No_Authorize, $Return_Page, 1 ) );
+		exit();
 	}
 
 	break;
@@ -1691,7 +1768,17 @@ switch( $Action ) {
 		break;
 	}
 
-	$Secret = $Secrets->get( $scr_id );
+	try {
+		$Secret = $Secrets->get( $scr_id );
+	} catch( PDOException $e ) {
+		print( $PageHTML->infoBox( $e->getMessage(), $Return_Page, 1 ) );
+
+		break;
+	} catch( Exception $e ) {
+		print( $PageHTML->infoBox( $e->getMessage(), $Return_Page, 1 ) );
+
+		break;
+	}
 	 
 	if ( isset( $groupsRights[ $Secret->sgr_id ] ) ) {
 		$accessControl = in_array( 4, $groupsRights[ $Secret->sgr_id ] );
@@ -1752,7 +1839,7 @@ switch( $Action ) {
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Alert . "</td>\n" .
-		 "        <td>" . $Flag_Alert . "</td>\n" .
+		 "        <td class=\"pair\">" . $Flag_Alert . "</td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td colspan=\"2\">&nbsp;</td>\n" .
@@ -1800,9 +1887,9 @@ switch( $Action ) {
 		else $Alert = 0;
 
 		if ( ($scr_id = $Security->valueControl( $_GET[ 'scr_id' ], 'NUMERIC' )) == -1 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (scr_id)', $Return_Page, 1 )
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (scr_id)', $Return_Page, 1 )
 			 );
-			break;
+			exit();
 		}
 
 		try {
@@ -1821,8 +1908,8 @@ switch( $Action ) {
 			 $IP_Source );
 
 			$Return_Page = "https://" . $Server . $Script . "?action=P&id=" . $scr_id;
-			print( $PageHTML->infoBox( $L_ERR_DELE_Secret, $Return_Page, 1 ) );
-			break;
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Secret, $Return_Page, 1 ) );
+			exit();
 		}
 
 		$alert_message = $Secrets->formatHistoryMessage( $L_Secret_Deleted, $scr_id );
@@ -1847,11 +1934,15 @@ switch( $Action ) {
 			}
 		}
 			
-		print( $PageHTML->infoBox( $L_Secret_Deleted, $Return_Page, 2 ) );
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Secret_Deleted . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
 	} else {
 		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
  
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
+		print( $PageHTML->returnPage( $L_Title, $L_No_Authorize, $Return_Page, 1 ) );
+		exit();
 	}
 
 	break;

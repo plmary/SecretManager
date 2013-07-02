@@ -25,7 +25,7 @@ public function __construct() {
 		include( 'Libraries/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.3-0'; // Version de l'outil
+	$this->Version = '0.4-0'; // Version de l'outil
 	
 	return ;
 }
@@ -70,6 +70,8 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 	 "  <meta http-equiv=\"Content-Type\" content=\"text/html; " .
 	 "charset=utf-8\" />\n" . // iso-8859-15\" />\n" .
 	 "  <meta name=\"Author\" content=\"Pierre-Luc MARY\" />\n" .
+	 "  <link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.css\" ".
+	 "type=\"text/css\" />\n\n" .
 	 "  <link rel=\"stylesheet\" href=\"Libraries/SecretManager.css\" ".
 	 "type=\"text/css\" />\n\n" .
 	 "  <link rel=\"stylesheet\" href=\"Libraries/SecretManager-icons.css\" " .
@@ -316,15 +318,24 @@ public function infoBox( $Message, $Script, $Alert = 1 ) {
 */
 	include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 	
-	if ( $Alert == 1 ) {
-		$Type_Message = 'alert';
+	switch( $Alert ) {
+	 case 1:
+		$Type_Message = 'id="alert"';
 		$Icon_Name = 'minus';
-	} else {
-		$Type_Message = 'success';
+		break;
+
+	 case 2:
+		$Type_Message = 'id="success"';
 		$Icon_Name = 's_success';
+		break;
+		
+	 case 3:
+		$Type_Message = 'class="alert alert-block align-center"';
+		$Icon_Name = 's_warn';
+		break;
 	}
 	
-	return "     <div id=\"" . $Type_Message . "\">\n" .
+	return "     <div " . $Type_Message . "\">\n" .
 	 "<img class=\"no-border\" src=\"Pictures/" . $Icon_Name . ".png\" alt=\"" .
 	 $Type_Message . "\" />\n" . $Message . "<br/><br/>" .
 	 "<a id=\"b_return\" href=\"" . $Script . "\" class=\"button\">" .

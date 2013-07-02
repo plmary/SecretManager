@@ -82,31 +82,44 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 	header( 'Location: SM-login.php?action=DCNX' );
 }
 
+	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
+	 "   <!-- debut : zoneTitre -->\n" .
+	 "   <div id=\"zoneTitre\">\n" .
+	 "    <div id=\"icon-options\" class=\"icon36\"></div>\n" .
+	 "    <span id=\"titre\">" . $L_Title . "</span>\n" .
+	 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
+	 "   </div> <!-- fin : zoneTitre -->\n" .
+	 "\n" .
+	 "   <!-- debut : zoneGauche -->\n" .
+	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
+	 "\n" .
+	 "   <!-- debut : zoneMilieuComplet -->\n" .
+	 "   <div id=\"zoneMilieuComplet\">\n" .
+	 "\n" );
 
-print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
- "   <!-- debut : zoneTitre -->\n" .
- "   <div id=\"zoneTitre\">\n" .
- "    <div id=\"icon-options\" class=\"icon36\"></div>\n" .
- "    <span id=\"titre\">" . $L_Title . "</span>\n" .
- $PageHTML->afficherActions( $Authentication->is_administrator() ) .
- "   </div> <!-- fin : zoneTitre -->\n" .
- "\n" .
- "   <!-- debut : zoneGauche -->\n" .
- "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
- "\n" .
- "   <!-- debut : zoneMilieuComplet -->\n" .
- "   <div id=\"zoneMilieuComplet\">\n" .
- "\n" .
- "    <!-- debut : dashboard -->\n" .
- "    <div id=\"dashboard\">\n" );
+	if ( isset( $_POST[ 'iMessage']) ) {
+		print( "<script>\n" .
+		 "     var myVar=setInterval(function(){cacherInfo()},3000);\n" .
+		 "     function cacherInfo() {\n" .
+		 "        document.getElementById(\"success\").style.display = \"none\";\n" .
+		 "        clearInterval(myVar);\n" .
+		 "     }\n" .
+		 "</script>\n" .
+		 "    <div id=\"success\">\n" .
+		 $_POST[ 'iMessage' ] .
+		 "    </div>\n" );
+	}
 
-if ( $Authentication->is_administrator() ) {
-	print( "     <style type=\"text/css\" media=\"all\">\n" .
-	 "      @import url(Libraries/tabs.css);\n" .
-	 "     </style>\n" .
-	 "     <!-- debut : tabs -->\n" .
-	 "     <div id=\"tabs\">\n" .
-	 "      <ul>\n" );
+	print( "    <!-- debut : dashboard -->\n" .
+	 "    <div id=\"dashboard\">\n" );
+
+	if ( $Authentication->is_administrator() ) {
+		print( "     <style type=\"text/css\" media=\"all\">\n" .
+		 "      @import url(Libraries/tabs.css);\n" .
+		 "     </style>\n" .
+		 "     <!-- debut : tabs -->\n" .
+		 "     <div id=\"tabs\">\n" .
+		 "      <ul>\n" );
 
 	switch( $Action ) {
 	 default:
@@ -182,20 +195,8 @@ if ( $Authentication->is_administrator() ) {
 
 	 case 'A':
 		print(
-		 "     <script>\n" .
-		 "function activeMailFields() {\n" .
-		 " if ( document.alert_form.alert_mail.value != 1 ) {\n" .
-		 "  document.alert_form.mail_from.disabled = 1;\n" .
-		 "  document.alert_form.mail_to.disabled = 1;\n" .
-		 " } else {\n" .
-		 "  document.alert_form.mail_from.disabled = 0;\n" .
-		 "  document.alert_form.mail_to.disabled = 0;\n" .
-		 " }\n" .
-		 "}\n" .
-		 "activeMailFields();\n" .
-		 "     </script>\n" .
 		 "     <form method=\"post\" name=\"alert_form\" action=\"" . $Script . "?action=AX\">\n" .
-		 "      <table style=\"margin:10px auto;width:60%\">\n" .
+		 "      <table class=\"table-bordered table-center\">\n" .
 		 "       <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"2\">" . $L_Alert_Management . "</th>\n" .
@@ -203,7 +204,7 @@ if ( $Authentication->is_administrator() ) {
 		 "       </thead>\n" .
 		 "       <tbody>\n" .
 		 "       <tr>\n" .
-		 "        <td class=\"pair align-right\" width=\"50%\">" . $L_Verbosity_Alert .
+		 "        <td class=\"impair align-right\" width=\"50%\">" . $L_Verbosity_Alert .
 		 "</td>\n" .
 		 "        <td class=\"pair\">\n" .
 		 "         <select name=\"verbosity_alert\">\n" );
@@ -231,7 +232,7 @@ if ( $Authentication->is_administrator() ) {
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
-		 "        <td class=\"pair align-right\" width=\"50%\">" . $L_Alert_Syslog .
+		 "        <td class=\"impair align-right\" width=\"50%\">" . $L_Alert_Syslog .
 		 "</td>\n" .
 		 "        <td class=\"pair\">\n" .
 		 "         <select name=\"alert_syslog\">\n" );
@@ -248,7 +249,7 @@ if ( $Authentication->is_administrator() ) {
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
-		 "        <td class=\"pair align-right\">" . $L_Alert_Mail . "</td>\n" .
+		 "        <td class=\"impair align-right\">" . $L_Alert_Mail . "</td>\n" .
 		 "        <td class=\"pair\">\n" .
 		 "         <select name=\"alert_mail\" onChange=\"javascript:activeMailFields();\">\n" );
 
@@ -261,7 +262,7 @@ if ( $Authentication->is_administrator() ) {
 		 "          <option value=\"1\"" . $Selected . ">" . $L_Yes . "</option>\n" );
 
 		print( "         </select>\n" .
-		 "         <table>\n" .
+		 "         <table class=\"table-bordered\">\n" .
 		 "          <tr>\n" .
 		 "           <td>" . $L_From . "</td>\n" .
 		 "           <td><input type=\"text\" size=\"30\" name=\"mail_from\" value=\"".
@@ -283,7 +284,19 @@ if ( $Authentication->is_administrator() ) {
 		 "       </tr>\n" .
 		 "       </tbody>\n" .
 		 "      </table>\n" .
-		 "     </form>\n"
+		 "     </form>\n" .
+		 "     <script>\n" .
+		 "function activeMailFields() {\n" .
+		 " if ( document.alert_form.alert_mail.value != 1 ) {\n" .
+		 "  document.alert_form.mail_from.disabled = 1;\n" .
+		 "  document.alert_form.mail_to.disabled = 1;\n" .
+		 " } else {\n" .
+		 "  document.alert_form.mail_from.disabled = 0;\n" .
+		 "  document.alert_form.mail_to.disabled = 0;\n" .
+		 " }\n" .
+		 "}\n" .
+		 "activeMailFields();\n" .
+		 "     </script>\n"
 		);
 		break;
 
@@ -325,21 +338,16 @@ if ( $Authentication->is_administrator() ) {
 			$Parameters->set( 'mail_from', $Mail_From );
 			$Parameters->set( 'mail_to', $Mail_To );
 		} catch( PDOException $e ) {
-			print( "   <div id=\"alert\">\n" .
-			 $L_ERR_MAJ_Alert .
-			 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-			 "?action=P&id=" . $scr_id . "\">" .
-			 $L_Return . "</a>\n" .
-			 "   </div>\n" );
-			break;
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MAJ_Alert, "https://" . $Server . $Script .
+			 "?action=P&id=" . $scr_id, 1 ) );
+			exit();
 		}
 
-		print( "     <div id=\"success\">\n" .
-		 "      <img class=\"no-border\" src=\"Pictures/s_success.png\" alt=\"Success\" />\n" .
-		 $L_Parameters_Updated .
-		 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-		 "?action=SCR\">" . $L_Return . "</a>\n" .
-		 "     </div>\n" );
+		print( "<form method=\"post\" name=\"fMessage\" action=\"https://" . $Server . $Script .
+		 "?action=SCR\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Parameters_Updated . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
 
 		break;
 
@@ -437,18 +445,18 @@ if ( $Authentication->is_administrator() ) {
 		 "}" .
 		 "     </script>\n" .
 		 "     <form method=\"post\" name=\"Parameters\" action=\"" . $Script . "?action=CX\">\n" .
-		 "      <table style=\"margin:10px auto;width:90%\">\n" .
+		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:90%\">\n" .
 		 "       <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"3\">" . $L_Connection_Management . "</th>\n" .
 		 "       </tr>\n" .
 		 "       </thead>\n" .
 		 "       <tbody>\n" .
-		 "       <tr class=\"pair\">\n" .
-		 "        <td class=\"align-right\" rowspan=\"6\">" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" rowspan=\"6\">" .
 		 "<label for=\"id_pwd\">" . $L_Use_Password . "</label>" .
 		 "</td>\n" .
-		 "        <td colspan=\"2\">\n" .
+		 "        <td class=\"pair\"  colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"D\" name=\"authentication_type\" " .
 		 $Password_Selected . " id=\"id_pwd\" onClick=\"activeFields('D');\" />&nbsp;" .
 		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
@@ -531,11 +539,11 @@ if ( $Authentication->is_administrator() ) {
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 
-		 "       <tr class=\"pair\">\n" .
-		 "        <td class=\"align-right\" width=\"50%\" rowspan=\"5\">" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\" rowspan=\"5\">" .
 		 "<label for=\"id_rds\">" . $L_Use_Radius . "</label>" .
 		 "</td>\n" .
-		 "        <td colspan=\"2\">\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"R\" name=\"authentication_type\" " .
 		 $Radius_Selected . " id=\"id_rds\" onClick=\"activeFields('R');\" />&nbsp;" .
 		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
@@ -572,11 +580,11 @@ if ( $Authentication->is_administrator() ) {
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 
-		 "       <tr class=\"pair\">\n" .
-		 "        <td class=\"align-right\" width=\"50%\" rowspan=\"6\">" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\" rowspan=\"6\">" .
 		 "<label for=\"id_rds\">" . $L_Use_LDAP . "</label>" .
 		 "</td>\n" .
-		 "        <td colspan=\"2\">\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"L\" name=\"authentication_type\" " .
 		 $LDAP_Selected . " id=\"id_rds\" onClick=\"activeFields('L');\" />&nbsp;" .
 		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
@@ -618,10 +626,10 @@ if ( $Authentication->is_administrator() ) {
 		 "        </td>\n" .
 		 "       </tr>\n" .
 
-		 "       <tr class=\"pair\">\n" .
-		 "        <td class=\"align-right\" width=\"50%\">" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" .
 		 $L_Expiration_Time . "</td>\n" .
-		 "        <td colspan=\"2\">\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
 		 "         <input type=\"text\" name=\"Expiration_Time\" value=\"" .
 		 $Parameters->get( 'expiration_time' ) . "\" />\n" .
 		 "        </td>\n" .
@@ -945,7 +953,7 @@ if ( $Authentication->is_administrator() ) {
 		 " }\n" .
 		 "}\n" .
 		 "      </script>\n" .
-		 "      <table style=\"margin:10px auto;width:98%\">\n" .
+		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:98%\">\n" .
 		 "       <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"6\">" . $L_Historical_Management . "</th>\n" .
@@ -962,11 +970,11 @@ if ( $Authentication->is_administrator() ) {
 		 "        <th class=\"align-right\"><a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"Pictures/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></th>\n" .
 		 "       </tr>\n" .
 		 "       <tr style=\"display: none;\" id=\"r_search\" class=\"pair\">\n" .
-		 "        <td><input type=\"text\" name=\"scr_id\" size=\"6\" maxlength=\"6\" " .
+		 "        <td><input type=\"text\" name=\"scr_id\" class=\"input-mini\" " .
 		 "value=\"" .  $scr_id . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" );
 		 
 		print( "        <td>\n" .
-		 "         <select name=\"idn_id\" onChange=\"document.getElementById( 'i_historical' ).submit();\">\n" .
+		 "         <select name=\"idn_id\" class=\"input-small\" onChange=\"document.getElementById( 'i_historical' ).submit();\">\n" .
 		 "          <option value=\"\">&nbsp;</option>\n" );
 
 		foreach( $List_Identities as $Occurrence ) {
@@ -983,12 +991,12 @@ if ( $Authentication->is_administrator() ) {
 		print( "         </select>\n" .
 		 "        </td>\n" );
 		
-		print( "        <td><input type=\"text\" name=\"h_date\" size=\"10\" " .
-		 "maxlength=\"10\" value=\"" . $h_date . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
-		 "        <td><input type=\"text\" name=\"ip_source\" size=\"15\" " .
+		print( "        <td><input type=\"text\" name=\"h_date\" class=\"input-small\" " .
+		 "value=\"" . $h_date . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
+		 "        <td><input type=\"text\" name=\"ip_source\" class=\"input-small\" " .
 		 "maxlength=\"40\" value=\"" . $ip_source . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
-		 "        <td class=\"align-middle\"><input type=\"text\" name=\"message\" " .
-		 "size=\"80\" maxlength=\"100\" value=\"" . $message . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
+		 "        <td class=\"align-middle\"><input type=\"text\" class=\"input-xlarge\" name=\"message\" " .
+		 "value=\"" . $message . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
 		 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Search . "\" /></td>\n" .
 		 "       </tr>\n" );
 
@@ -1049,11 +1057,11 @@ if ( $Authentication->is_administrator() ) {
 		 "       <tr>\n" .
 		 "        <th colspan=\"2\">Total : <span class=\"green\">" . $Total . "</span></th>\n" .
 		 "        <th colspan=\"4\" class=\"align-center\">\n" .
-		 "<a href=\"" . $Script . "?action=H&start=0&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_premier.gif\" alt=\"First\" /></a>" .
-		 "<a href=\"?action=H&start=" . $previous . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_precedent.gif\" alt=\"Previous\" /></a>" .
+		 "<a class=\"btn\" href=\"" . $Script . "?action=H&start=0&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_premier.gif\" alt=\"First\" /></a>" .
+		 "<a class=\"btn\" href=\"?action=H&start=" . $previous . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_precedent.gif\" alt=\"Previous\" /></a>" .
 		 "&nbsp;" . ($start + 1) . "&nbsp;/&nbsp;" . ($start + $size) . "&nbsp;" .
-		 "<a href=\"?action=H&start=" . $next . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_suivant.gif\" alt=\"Next\" /></a>" .
-		 "<a href=\"?action=H&start=" . ( $Total - $size ) . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_dernier.gif\" alt=\"Last\" /></a>" .
+		 "<a class=\"btn\" href=\"?action=H&start=" . $next . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_suivant.gif\" alt=\"Next\" /></a>" .
+		 "<a class=\"btn\" href=\"?action=H&start=" . ( $Total - $size ) . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_dernier.gif\" alt=\"Last\" /></a>" .
 		 "        </th>\n" .
 		 "       </tr>\n" .
 		 "       </tfoot>\n" .
@@ -1250,7 +1258,7 @@ if ( $Authentication->is_administrator() ) {
 		}
 
 		print(
-		 "      <table style=\"margin:10px auto;width:70%\">\n" .
+		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:70%\">\n" .
 		 "       <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"2\">" . $L_SecretServer_Management . "</th>\n" .
@@ -1375,7 +1383,14 @@ if ( $Authentication->is_administrator() ) {
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 			
-		print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
+		if ( $Flag_Error == 1 ) {
+			print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
+		} else {
+			print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=S\">\n" .
+			 " <input type=\"hidden\" name=\"iMessage\" value=\"". $Result . "\" />\n" .
+			 "</form>\n" .
+			 "<script>document.fInfoMessage.submit();</script>\n" );
+		}
 		
 		break;
 
@@ -1397,7 +1412,7 @@ if ( $Authentication->is_administrator() ) {
 			
 			// Faire une page imprimable qui récapitule les informations créées.
 			$Result = $L_Success_Page .
-			 "<table>\n" .
+			 "<table class=\"table-bordered\">\n" .
 			 " <thead>\n" .
 			 " <tr>\n" .
 			 "  <th colspan=\"2\">" . $L_New_Keys_Created . "</td>\n" .
@@ -1405,24 +1420,24 @@ if ( $Authentication->is_administrator() ) {
 			 " </thead>\n" .
 			 " <tbody>\n" .
 			 " <tr>\n" .
-			 "  <td class=\"align-right normal\" width=\"50%\">" . $L_Type . "</td>\n" .
+			 "  <td class=\"align-right impair\" width=\"50%\">" . $L_Type . "</td>\n" .
 			 "  <td class=\"align-left pair\">" . ${$Status} . "</td>\n" .
 			 " </tr>\n" .
 			 " <tr>\n" .
-			 "  <td class=\"align-right normal\">" . $L_Operator_Key . "</td>\n" .
+			 "  <td class=\"align-right impair\">" . $L_Operator_Key . "</td>\n" .
 			 "  <td class=\"align-left pair\">" . $O_Key . "</td>\n" .
 			 " </tr>\n" .
 			 " <tr>\n" .
-			 "  <td class=\"align-right normal\">" . $L_Mother_Key . "</td>\n" .
+			 "  <td class=\"align-right impair\">" . $L_Mother_Key . "</td>\n" .
 			 "  <td class=\"align-left pair\">" . $M_Key . "</td>\n" .
 			 " </tr>\n" .
 			 " <tr>\n" .
-			 "  <td class=\"align-right normal\">" . $L_Creation_Date . "</td>\n" .
+			 "  <td class=\"align-right impair\">" . $L_Creation_Date . "</td>\n" .
 			 "  <td class=\"align-left pair\">" . date( 'Y-m-d H:i:s', $C_Date ) . "</td>\n" .
 			 " </tr>\n" .
 			 "</table>\n";
 			
-			$Flag_Error = 2;
+			$Flag_Error = 3;
 		} catch( Exception $e ) {
 			$Result = ${$e->getMessage()};
 			$Flag_Error = 1;
@@ -1431,7 +1446,7 @@ if ( $Authentication->is_administrator() ) {
 		$alert_message = $Secrets->formatHistoryMessage( $Result );
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
-			
+		
 		print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
 		
 		break;
@@ -1455,7 +1470,10 @@ if ( $Authentication->is_administrator() ) {
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 			
-		print( $PageHTML->infoBox( $Result, $Script . '?action=S', 2 ) );
+		print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=S\">\n" .
+		 " <input type=\"hidden\" name=\"iMessage\" value=\"". $Result . "\" />\n" .
+		 "</form>\n" .
+		 "<script>document.fInfoMessage.submit();</script>\n" );
 		
 		break;
 
@@ -1484,8 +1502,15 @@ if ( $Authentication->is_administrator() ) {
 		$alert_message = $Secrets->formatHistoryMessage( $Result );
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
-			
-		print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
+
+		if ( $Flag_Error == 1 ) {
+			print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
+		} else {
+			print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=S\">\n" .
+			 " <input type=\"hidden\" name=\"iMessage\" value=\"". $Result . "\" />\n" .
+			 "</form>\n" .
+			 "<script>document.fInfoMessage.submit();</script>\n" );
+		}
 		
 		break;
 	}

@@ -972,6 +972,151 @@ class IICA_Secrets extends PDO {
 	}
 
 
+	public function listSecrets2( $searchSecret = '', $idn_id = '', $Administrator = false, $orderBy = '' ) {
+		$Data = false;
+		
+
+		if ( $Administrator == false ) {
+			$Where = 'WHERE T6.idn_id = :idn_id AND (';
+		}
+		
+		if ( $Where == '' ) $Where .= 'WHERE ';
+
+		$Where .= 'T2.sgr_label like :secret ' .
+			'OR T3.stp_name like :secret ' .
+			'OR T4.env_name like :secret ' .
+			'OR T1.scr_application like :secret ' .
+			'OR T1.scr_host like :secret ' .
+			'OR T1.scr_user like :secret ' .
+			'OR T1.scr_comment like :secret ';
+
+		if ( $Administrator == false ) {
+			$Where .= ') ' ;
+		}
+
+
+		$Request = 'SELECT DISTINCT ' .
+		 'scr_id, scr_application, scr_host, scr_user, scr_comment, scr_alert, ' .
+		 'T1.sgr_id, sgr_label, sgr_alert, ' .
+		 'T1.stp_id, stp_name, ' .
+		 'T1.env_id, env_name ' .
+		 'FROM scr_secrets AS T1 ' .
+		 'LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' .
+		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
+		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ';
+		
+		if ( $Administrator == false ) {
+			$Request .=
+			 'LEFT JOIN prsg_profiles_secrets_groups AS T5 ON T2.sgr_id = T5.sgr_id ' .
+			 'LEFT JOIN idpr_identities_profiles AS T6 ON T5.prf_id = T6.prf_id ';
+		}
+		 
+		$Request .= $Where ;
+
+		switch( $orderBy ) {
+		 default:
+		 case 'group':
+			$Request .= 'ORDER BY sgr_label ';
+			break;
+
+		 case 'group-desc':
+			$Request .= 'ORDER BY sgr_label DESC ';
+			break;
+
+		 case 'type':
+			$Request .= 'ORDER BY stp_name ';
+			break;
+
+		 case 'type-desc':
+			$Request .= 'ORDER BY stp_name DESC ';
+			break;
+
+		 case 'environment':
+			$Request .= 'ORDER BY env_name ';
+			break;
+
+		 case 'environment-desc':
+			$Request .= 'ORDER BY env_name DESC ';
+			break;
+
+		 case 'application':
+			$Request .= 'ORDER BY scr_application ';
+			break;
+
+		 case 'application-desc':
+			$Request .= 'ORDER BY scr_application DESC ';
+			break;
+
+		 case 'host':
+			$Request .= 'ORDER BY scr_host ';
+			break;
+
+		 case 'host-desc':
+			$Request .= 'ORDER BY scr_host DESC ';
+			break;
+
+		 case 'user':
+			$Request .= 'ORDER BY scr_user ';
+			break;
+
+		 case 'user-desc':
+			$Request .= 'ORDER BY scr_user DESC ';
+			break;
+
+		 case 'alert':
+			$Request .= 'ORDER BY scr_alert ';
+			break;
+
+		 case 'alert-desc':
+			$Request .= 'ORDER BY scr_alert DESC ';
+			break;
+
+		 case 'comment':
+			$Request .= 'ORDER BY scr_comment ';
+			break;
+
+		 case 'comment-desc':
+			$Request .= 'ORDER BY scr_comment DESC ';
+			break;
+		}
+
+//		print( $Request );
+		
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+
+		$searchSecret = '%' . $searchSecret . '%';
+		if ( ! $Result->bindParam( ':secret', $searchSecret, PDO::PARAM_STR, 30 ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( $idn_id != '' ) {
+			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_STR, 30 ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+		}
+
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		$Data = array();
+		
+		while ( $Occurrence = $Result->fetchObject() ) {
+			$Data[] = $Occurrence;
+		}
+ 
+ 		return $Data;
+	}
+
+
 	/* -------------------
 	** Récupère les informations d'un Secret.
 	*/
@@ -1184,9 +1329,7 @@ class IICA_Secrets extends PDO {
 		$Request = 'SELECT ' .
 		 'scr_id, idn_login, ach_date, ach_access, ach_ip ' .
 		 'FROM ach_access_history as T1 ' .
-		 'LEFT JOIN idn_identities as T2 ON T1.idn_id = T2.idn_id ' .
-		 'ORDER BY ach_date desc ' .
-		 'LIMIT ' . $start . ', ' . $number ;
+		 'LEFT JOIN idn_identities as T2 ON T1.idn_id = T2.idn_id ' ;
 		
 		if ( $scr_id != '' ) {
 			$Where = 'WHERE scr_id = ' . $scr_id . ' ';
@@ -1222,7 +1365,9 @@ class IICA_Secrets extends PDO {
 			$Where .= 'ach_ip like "%' . $ach_ip . '%" ';
 		}
 		
-		$Request .= $Where;
+		$Request .= $Where .
+		 'ORDER BY ach_date desc ' .
+		 'LIMIT ' . $start . ', ' . $number . ' ' ;
 
 
 		if ( ! $Result = $this->prepare( $Request ) ) {

@@ -13,6 +13,8 @@
 
 session_start();
 
+$Search_Style = 2;
+
 if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
 
 if ( array_key_exists( 'Lang', $_GET ) ) {
@@ -71,6 +73,7 @@ $List_Types = $Referentials->listSecretTypes();
 $List_Environments = $Referentials->listEnvironments();
  
 $groupsRights = $Authentication->getGroups( $_SESSION[ 'idn_id' ] );
+//print_r($groupsRights);
 
 $Security = new Security();
 
@@ -191,10 +194,18 @@ switch( $Action ) {
 	else $idn_id = $_SESSION[ 'idn_id' ];
 	
 	if ( array_key_exists( 'last_login', $_GET ) ) {
-		print( "     <h4 id=\"success\">" .
-		 $L_Last_Connection . " : " . $_SESSION[ 'idn_last_connection' ] . "<br/>" .
-		 $L_Updated_Authentication . " : " . $_SESSION[ 'idn_updated_authentication' ] .
-		 "</h4>\n" );
+		print( 
+		 "<script>\n" .
+		 "     function cacherInfo() {\n" .
+		 "        document.getElementById(\"info\").style.display = \"none\";\n" .
+		 "     }\n" .
+		 "</script>\n" .
+		 "     <div id=\"info\" onclick=\"javascript:cacherInfo();\">" .
+//		 "     <div id=\"icon-close\" class=\"icon10 div-right\"></div>\n" .
+		 "     <button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>\n" .
+		 $L_Last_Connection . " : <b>" . $_SESSION[ 'idn_last_connection' ] . "</b><br/>" .
+		 $L_Updated_Authentication . " : <b>" . $_SESSION[ 'idn_updated_authentication' ] .
+		 "</b></div>\n" );
 	}
 
 	// ===========================================
@@ -216,8 +227,8 @@ switch( $Action ) {
 
 		print( "\n" .
 		 "     <!-- Début : affichage de la synthèse des utilisateurs -->\n" .
-		 "     <div style=\"width: 30%;float: left;\">\n" .
-		 "     <table cellspacing=\"0\">\n" .
+		 "     <div class=\"tableau_synthese\">\n" .
+		 "     <table class=\"table-bordered\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th>" . $L_List_Users . "</th>\n" .
@@ -257,8 +268,8 @@ switch( $Action ) {
 		 // ===========================================
 		 // Tableau d'affichage des Groupes de Secrets.
 		 "     <!-- Début : affichage de la synthèse des groupes -->\n\n" .
-		 "     <div style=\"width: 30%;float: left;\">\n" .
-		 "     <table cellspacing=\"0\">\n" .
+		 "     <div class=\"tableau_synthese\">\n" .
+		 "     <table class=\"table-bordered\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th>" . $L_List_Groups . "</th>\n" .
@@ -284,8 +295,8 @@ switch( $Action ) {
 		 // ===========================================
 		 // Tableau d'affichage des Profils.
 		 "     <!-- Début : affichage de la synthèse des profils -->\n\n" .
-		 "     <div style=\"width: 30%;float: left;\">\n" .
-		 "     <table cellspacing=\"0\">\n" .
+		 "     <div class=\"tableau_synthese\">\n" .
+		 "     <table class=\"table-bordered\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th>" . $L_List_Profiles . "</th>\n" .
@@ -311,8 +322,8 @@ switch( $Action ) {
 		 // ===========================================
 		 // Tableau d'affichage des Entités.
 		 "     <!-- Début : affichage de la synthèse des entités -->\n\n" .
-		 "     <div style=\"width: 30%;float: left;\">\n" .
-		 "     <table cellspacing=\"0\">\n" .
+		 "     <div class=\"tableau_synthese\">\n" .
+		 "     <table class=\"table-bordered\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th>" . $L_List_Entities . "</th>\n" .
@@ -337,8 +348,8 @@ switch( $Action ) {
 		 // ===========================================
 		 // Tableau d'affichage des Civilités.
 		 "     <!-- Début : affichage de la synthèse des civilités -->\n\n" .
-		 "     <div style=\"width: 30%;float: left;\">\n" .
-		 "     <table cellspacing=\"0\">\n" .
+		 "     <div class=\"tableau_synthese\">\n" .
+		 "     <table class=\"table-bordered\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th>" . $L_List_Civilities . "</th>\n" .
@@ -365,186 +376,222 @@ switch( $Action ) {
 
 	// ====================
 	// Tableau de recherche
-	$searchButton = '<span style="float: right">' .
-	 '<a id="search_icon" class="simple" style="cursor: pointer;" ' .
-	 'onclick="javascript:hiddeTableBody();">' .
-	 '<img class="no-border" src="Pictures/b_search.png" alt="'. $L_Search . 
-	 '" title="' . $L_Search . '" />' .
-	 '</a></span>' ;
+	if ( $Search_Style == 1 ) {
+		$searchButton = '<span style="float: right">' .
+		 '<a id="search_icon" class="simple" style="cursor: pointer;" ' .
+		 'onclick="javascript:hiddeTableBody();">' .
+		 '<img class="no-border" src="Pictures/b_search.png" alt="'. $L_Search . 
+		 '" title="' . $L_Search . '" />' .
+		 '</a></span>' ;
 
-	print( 
-	 "     <script>\n" .
-	 "function hiddeTableBody() {\n" .
-	 " var displaySelection;\n" .
-	 " if ( document.getElementById( 'search_icon' ).className == 'simple' ) {\n" .
-	 "  document.getElementById( 'search_icon' ).className = 'simple-selected';\n" .
-	 "  displaySelection = 'none';\n" .
-	 " } else {\n" .
-	 "  document.getElementById( 'search_icon' ).className = 'simple';\n" .
-	 "  displaySelection = 'block';\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'group_criteria' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'type_criteria' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'environment_criteria' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'application_criteria' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'host_criteria' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'user_criteria' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'comment_criteria' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-	 "  document.getElementById( 'search_buttons' ).style.display = displaySelection;\n" .
-	 " }\n" .
-	 "}\n" .
-	 "     </script>\n" .
-	 "     <!-- Début : search -->\n\n" .
-	 "     <div class=\"search\">\n" .
-	 "     <form class=\"simple\" method=\"post\" name=\"searchForm\" action=\"" .
-	 $Script . "?action=R\" >\n" .
-	 "      <div style=\"width: 100%;float: left;\">\n" .
-	 "       <p class=\"title\">" . $L_Search_Secrets . $searchButton . "</p>\n" .
-	 "      </div>\n" .
-	 "     <script>\n" .
-	 "hiddeTableBody();\n" .
-	 "     </script>\n" .
+		print( 
+		 "     <script>\n" .
+		 "function hiddeTableBody() {\n" .
+		 " var displaySelection;\n" .
+		 " if ( document.getElementById( 'search_icon' ).className == 'simple' ) {\n" .
+		 "  document.getElementById( 'search_icon' ).className = 'simple-selected';\n" .
+		 "  displaySelection = 'none';\n" .
+		 " } else {\n" .
+		 "  document.getElementById( 'search_icon' ).className = 'simple';\n" .
+		 "  displaySelection = 'block';\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'group_criteria' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'type_criteria' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'environment_criteria' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'application_criteria' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'host_criteria' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'user_criteria' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'comment_criteria' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
+		 "  document.getElementById( 'search_buttons' ).style.display = displaySelection;\n" .
+		 " }\n" .
+		 "}\n" .
+		 "     </script>\n" .
+		 "     <!-- Début : search -->\n\n" .
+		 "     <div class=\"search\">\n" .
+		 "     <form class=\"simple\" method=\"post\" name=\"searchForm\" action=\"" .
+		 $Script . "?action=R\" >\n" .
+		 "      <div style=\"width: 100%;float: left;\">\n" .
+		 "       <p class=\"title\">" . $L_Search_Secrets . $searchButton . "</p>\n" .
+		 "      </div>\n" .
+		 "     <script>\n" .
+		 "hiddeTableBody();\n" .
+		 "     </script>\n" .
 	 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"group_criteria\">\n" .
-	 "       <p class=\"subtitle pair\">" . $L_Group . "</p>\n" .
-	 "       <p class=\"impair\">\n" .
-	 "        <select name=\"sgr_id\" " .
-	 "onChange=\"javascript:document.searchForm.submit();\">\n" .
-	 "         <option value=\"\">&nbsp;</option>\n" );
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"group_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_Group . "</p>\n" .
+		 "       <p class=\"impair\">\n" .
+		 "        <select name=\"sgr_id\" " .
+		 "onChange=\"javascript:document.searchForm.submit();\">\n" .
+		 "         <option value=\"\">&nbsp;</option>\n" );
 
-	foreach( $List_Groups as $Group ) {
-		if ( $Group->sgr_id == $sgr_id ) $Status = ' selected ';
-		else $Status = '';
+		foreach( $List_Groups as $Group ) {
+			if ( $Group->sgr_id == $sgr_id ) $Status = ' selected ';
+			else $Status = '';
 		
-		print( "         <option value=\"" . $Group->sgr_id . '"' . $Status . '>' .
-		 $Group->sgr_label . "</option>\n" );
-	}
+			print( "         <option value=\"" . $Group->sgr_id . '"' . $Status . '>' .
+			 $Group->sgr_label . "</option>\n" );
+		}
 
-	print( "        </select>\n" .
-	 "       </p>\n" .
-	 "      </div>\n" .
+		print( "        </select>\n" .
+		 "       </p>\n" .
+		 "      </div>\n" .
 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"type_criteria\">\n" .
-	 "       <p class=\"subtitle pair\">" . $L_Type . "</p>\n" .
-	 "       <p class=\"impair\">\n" .
-	 "        <select name=\"stp_id\" " .
-	 "onChange=\"javascript:document.searchForm.submit();\">\n" .
-	 "         <option value=\"\">&nbsp;</option>\n" );
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"type_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_Type . "</p>\n" .
+		 "       <p class=\"impair\">\n" .
+		 "        <select name=\"stp_id\" " .
+		 "onChange=\"javascript:document.searchForm.submit();\">\n" .
+		 "         <option value=\"\">&nbsp;</option>\n" );
 	 
-	foreach( $List_Types as $Type ) {
-		if ( $Type->stp_id == $stp_id ) $Status = ' selected ';
-		else $Status = '';
+		foreach( $List_Types as $Type ) {
+			if ( $Type->stp_id == $stp_id ) $Status = ' selected ';
+			else $Status = '';
 		
-		print( "         <option value=\"" . $Type->stp_id . '"' . $Status . '>' .
-		 ${$Type->stp_name} . "</option>\n" );
-	}
+			print( "         <option value=\"" . $Type->stp_id . '"' . $Status . '>' .
+			 ${$Type->stp_name} . "</option>\n" );
+		}
 
-	print( "         </select>\n" .
-	 "       </p>\n" .
-	 "      </div>\n" .
+		print( "         </select>\n" .
+		 "       </p>\n" .
+		 "      </div>\n" .
 	 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"environment_criteria\">\n" .
-	 "       <p class=\"subtitle pair\">" . $L_Environment . "</p>\n" .
-	 "       <p class=\"impair\">\n" .
-	 "        <select name=\"env_id\" " .
-	 "onChange=\"javascript:document.searchForm.submit();\">\n" .
-	 "         <option value=\"\">&nbsp;</option>\n" );
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"environment_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_Environment . "</p>\n" .
+		 "       <p class=\"impair\">\n" .
+		 "        <select name=\"env_id\" " .
+		 "onChange=\"javascript:document.searchForm.submit();\">\n" .
+		 "         <option value=\"\">&nbsp;</option>\n" );
 
-	 foreach( $List_Environments as $Environment ) {
-		if ( $Environment->env_id == $env_id ) $Status = ' selected ';
-		else $Status = '';
+		foreach( $List_Environments as $Environment ) {
+			if ( $Environment->env_id == $env_id ) $Status = ' selected ';
+			else $Status = '';
 		
-		print( "         <option value=\"" . $Environment->env_id . "\"" . $Status .
-		 ">" . ${$Environment->env_name} . "</option>\n" );
-	}
+			print( "         <option value=\"" . $Environment->env_id . "\"" . $Status .
+			 ">" . ${$Environment->env_name} . "</option>\n" );
+		}
 
-	print( "         </select>\n" .
-	 "       </p>\n" .
-	 "      </div>\n" .
-	 "      <div style=\"clear:both;\"></div>\n" .
+		print( "         </select>\n" .
+		 "       </p>\n" .
+		 "      </div>\n" .
+		 "      <div style=\"clear:both;\"></div>\n" .
 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"application_criteria\">\n" .
-	 "       <p class=\"subtitle pair\">" . $L_Application . "</p>\n" .
-	 "       <p class=\"impair\">\n" .
-	 "        <input type=\"text\" name=\"scr_application\" size=\"30\" maxlength=\"60\" " .
-	 "value=\"" . $scr_application . "\" />\n" . 
-	 "       </p>\n" .
-	 "      </div>\n" .
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"application_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_Application . "</p>\n" .
+		 "       <p class=\"impair\">\n" .
+		 "        <input type=\"text\" name=\"scr_application\" size=\"30\" maxlength=\"60\" " .
+		 "value=\"" . $scr_application . "\" />\n" . 
+		 "       </p>\n" .
+		 "      </div>\n" .
 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"host_criteria\">\n" .
-	 "       <p class=\"subtitle pair\">" . $L_Host . "</p>\n" .
-	 "       <p class=\"impair\">\n" .
-	 "        <input type=\"text\" name=\"scr_host\" size=\"30\" maxlength=\"255\" " .
-	 "value=\"" . $scr_host . "\" />\n" . 
-	 "       </p>\n" .
-	 "      </div>\n" .
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"host_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_Host . "</p>\n" .
+		 "       <p class=\"impair\">\n" .
+		 "        <input type=\"text\" name=\"scr_host\" size=\"30\" maxlength=\"255\" " .
+		 "value=\"" . $scr_host . "\" />\n" . 
+		 "       </p>\n" .
+		 "      </div>\n" .
 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"user_criteria\">\n" .
-	 "       <p class=\"subtitle pair\">" . $L_User . "</p>\n" .
-	 "       <p class=\"impair\">\n" .
-	 "        <input type=\"text\" name=\"scr_user\" size=\"25\" maxlength=\"25\" " . 
-	 "value=\"" . $scr_user . "\" />\n" . 
-	 "       </p>\n" .
-	 "      </div>\n" .
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"user_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_User . "</p>\n" .
+		 "       <p class=\"impair\">\n" .
+		 "        <input type=\"text\" name=\"scr_user\" size=\"25\" maxlength=\"25\" " . 
+		 "value=\"" . $scr_user . "\" />\n" . 
+		 "       </p>\n" .
+		 "      </div>\n" .
 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"comment_criteria\">\n" .
-	 "       <p class=\"subtitle pair\">" . $L_Comment . "</p>\n" .
-	 "       <p class=\"impair\">\n" .
-	 "        <input type=\"text\" name=\"scr_comment\" size=\"50\" maxlength=\"100\" " .
-	 "value=\"" . $scr_comment . "\" />\n" . 
-	 "       </p>\n" .
-	 "      </div>\n" .
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"comment_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_Comment . "</p>\n" .
+		 "       <p class=\"impair\">\n" .
+		 "        <input type=\"text\" name=\"scr_comment\" size=\"50\" maxlength=\"100\" " .
+		 "value=\"" . $scr_comment . "\" />\n" . 
+		 "       </p>\n" .
+		 "      </div>\n" .
 
-	 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"search_buttons\">\n" .
-	 "       <p class=\"subtitle space\">\n" .
-	 "        <input type=\"submit\" class=\"button\" value=\"" . $L_Search . "\" />\n" . 
-	 "        <a href=\"" . $Script . "\" class=\"button\">" . $L_Reset . "</a>\n" . 
-	 "       </p>\n" .
-	 "      </div>\n" .
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"search_buttons\">\n" .
+		 "       <p class=\"subtitle space\">\n" .
+		 "        <input type=\"submit\" class=\"button\" value=\"" . $L_Search . "\" />\n" . 
+		 "        <a href=\"" . $Script . "\" class=\"button\">" . $L_Reset . "</a>\n" . 
+		 "       </p>\n" .
+		 "      </div>\n" .
 	 
-	 "      <div style=\"clear:both;height: 10px\"></div>\n" .
-	 "    </form>\n" .
-	 "    </div>\n" );
+		 "      <div style=\"clear:both;height: 10px\"></div>\n" .
+		 "    </form>\n" .
+		 "    </div>\n" );
+	}
 
 
 	// =====================
 	// Tableau des résultats
-	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
-		$addButton = '<span style="float: right">' .
-		 '<a class="button" href="SM-secrets.php?action=SCR_A&rp=home">' .
-		 $L_Create . '</a></span>' ;
+	if ( array_key_exists( 'searchSecret', $_POST ) ) {
+		$searchSecret = $_POST[ 'searchSecret' ];
+		$_SESSION[ 'searchSecret' ] = $searchSecret;
 	} else {
-		$addButton = '';
+		if ( array_key_exists( 'searchSecret', $_SESSION ) ) $searchSecret = $_SESSION[ 'searchSecret' ];
 	}
 
-	
+	$myButtons = '';
+
+	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
+    	$addButton = '<a class="btn btn-small" href="SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
+
+		if ( $Search_Style == 2 ) {
+		   	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' .
+			 $Script . '?action=R2" >' .
+		   	 '<div class="input-append">' .
+			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
+			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="Pictures/b_search.png" alt="'. $L_Search . 
+			 '" /></button>' .
+			 '</div>' .
+			 $addButton .
+			 '</form>';
+		}
+	} else {
+		if ( $Search_Style == 2 ) {
+		   	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' .
+			 $Script . '?action=R2" >' .
+		   	 '<div class="input-append">' .
+			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
+			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="Pictures/b_search.png" alt="'. $L_Search . 
+			 '" /></button>' .
+			 '</div>' .
+			 '</form>';
+		}
+	}
+
+	$myButtons = '<div style="float: right; display: inline;">' . $addButton . "</div>";
+
 	print( "     <div id=\"scroller\"> <!-- Début : scroller -->\n" .
-	 "     <table cellspacing=\"0\">\n" .
+	 "     <table class=\"table-bordered\">\n" .
 	 "      <thead>\n" .
 	 "       <tr>\n" .
-	 "        <th colspan=\"8\">" . $L_List_Secrets . $addButton . "</th>\n" .
+	 "        <th colspan=\"8\">" . $L_List_Secrets . $myButtons . "</th>\n" .
 	 "       </tr>\n" .
 	 "      </thead>\n" .
 	 "      <tbody>\n" );
 		 
-	$List_Secrets = $Secrets->listSecrets( $sgr_id, $_SESSION[ 'idn_id' ], $stp_id,
-	 $env_id, $scr_application, $scr_host, $scr_user, $scr_comment,
-	 $Authentication->is_administrator(), $orderBy );
+	if ( $Action != 'R2' && ! isset( $_SESSION[ 'searchSecret' ] ) ) {
+		$List_Secrets = $Secrets->listSecrets( $sgr_id, $_SESSION[ 'idn_id' ], $stp_id,
+		 $env_id, $scr_application, $scr_host, $scr_user, $scr_comment,
+		 $Authentication->is_administrator(), $orderBy );
+	} else {
+		$List_Secrets = $Secrets->listSecrets2( $searchSecret, $_SESSION[ 'idn_id' ],
+		 $Authentication->is_administrator(), $orderBy );
+	}
 	
 	print( "       <tr class=\"pair\">\n" );
 	
@@ -680,12 +727,14 @@ switch( $Action ) {
 			}
 		}
 
+		if ( $Action == 'R2' ) $Home = 'home-r2';
+		else $Home = 'home';
 		
 		if ( $Authentication->is_administrator() or $Update_Right ) {
 			print( "         <a class=\"simple\" href=\"https://" .
 			 $Server . dirname( $Script ) .
 			 "/SM-secrets.php?action=SCR_M&scr_id=" . $Secret->scr_id .
-			 "&rp=home\"><img class=\"no-border\" src=\"Pictures/b_edit.png\" alt=\"" .
+			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"Pictures/b_edit.png\" alt=\"" .
 			 $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" );
 		}
 		
@@ -693,7 +742,7 @@ switch( $Action ) {
 			print( "         <a class=\"simple\" href=\"https://" . 
 			 $Server . dirname( $Script ) .
 			 "/SM-secrets.php?action=SCR_D&scr_id=" . $Secret->scr_id .
-			 "&rp=home\"><img class=\"no-border\" src=\"Pictures/b_drop.png\" alt=\"" .
+			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"Pictures/b_drop.png\" alt=\"" .
 			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" );
 		}
 
@@ -706,7 +755,7 @@ switch( $Action ) {
 		
 	print( "      </tbody>\n" .
 	 "      <tfoot><tr><th colspan=\"8\">Total : <span class=\"green\">" . 
-	 count( $List_Secrets ) . "</span>" . $addButton . "</th></tr></tfoot>\n" .
+	 count( $List_Secrets ) . "</span>" . $myButtons . "</th></tr></tfoot>\n" .
 	 "     </table>\n" .
 	 "\n" .
 	 "     </div> <!-- Fin : scroller -->\n" .
@@ -715,7 +764,7 @@ switch( $Action ) {
    break;
 }
 
-print( "   </div> <!-- debut : zoneMilieuComplet -->\n" .
+print( "   </div> <!-- Fin : zoneMilieuComplet -->\n" .
  $PageHTML->construireFooter( 1, 'home' ) .
  $PageHTML->piedPageHTML() );
 
