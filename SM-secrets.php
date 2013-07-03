@@ -1496,7 +1496,7 @@ switch( $Action ) {
 		if ( $Authentication->is_administrator() ) {
 			$List_Groups = $Groups->listGroups();
 		} else {
-			$List_Groups = $Groups->listGroups( $_SESSION[ 'idn_id' ] );
+			$List_Groups = $Groups->listGroups( $_SESSION[ 'idn_id' ], '', 2 );
 		}
 	
 		if ( $Secret->scr_alert == 1 ) $Flag_Alert = ' checked';
@@ -1618,8 +1618,8 @@ switch( $Action ) {
 
 	if ( ! $Authentication->is_administrator() ) {
 		// Vérifie si l'utilisateur à un droit sur le groupe de secret.
-		if ( isset( $groupsRights[ $_GET[ 'sgr_id' ] ] ) ) {
-			$accessControl = in_array( 3, $groupsRights[ $_GET[ 'sgr_id' ] ] );
+		if ( isset( $groupsRights[ $_POST[ 'sgr_id' ] ] ) ) {
+			$accessControl = in_array( 3, $groupsRights[ $_POST[ 'sgr_id' ] ] );
 		}
 	}
 

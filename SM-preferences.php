@@ -472,7 +472,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "       <tr class=\"pair\">\n" .
 		 "        <td>" . $L_Password_Complexity . "</td>\n" .
 		 "        <td>\n" .
-		 "         <select id=\"id_Password_Complexity\" name=\"Password_Complexity\">\n" );
+		 "         <select id=\"id_Password_Complexity\" name=\"Password_Complexity\" class=\"input-xxlarge\">\n" );
 		
 		$Active_1 = '';
 		$Active_2 = '';

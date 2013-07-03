@@ -420,7 +420,7 @@ switch( $Action ) {
 	 "        <td>" . $L_Entity . "</td>\n" .
 	 "        <td>\n" .
 
-	 "         <table style=\"border: 1px solid grey;\">\n" .
+	 "         <table>\n" .
 	 "          <tr>\n" .
 	 "           <td>\n" .
 	 "            <select name=\"Id_Entity\">\n" );
@@ -443,7 +443,7 @@ switch( $Action ) {
 	 "        <td>" . $L_Civility . "</td>\n" .
 	 "        <td>\n" .
 
-	 "         <table style=\"border: 1px solid grey;\">\n" .
+	 "         <table>\n" .
 	 "          <tr>\n" .
 	 "           <td>\n" .
 	 "            <select name=\"Id_Civility\">\n" );
@@ -472,16 +472,19 @@ switch( $Action ) {
 	 "        <td>" . $L_Rights . "</td>\n" .
 	 "        <td>\n" .
 
-	 "         <table style=\"border: 1px solid grey;\">\n" .
+	 "         <table>\n" .
 	 "          <tr>\n" .
 	 "           <td><label for=\"iAdministrator\">" . $L_Administrator . "</label></td>\n" .
 	 "           <td><input id=\"iAdministrator\" name=\"Administrator\" type=\"checkbox\" /></td>\n" .
-	 "           <td><label for=\"iAuditor\">" . $L_Auditor . "</label></td>\n" .
-	 "           <td><input id=\"iAuditor\" name=\"Auditor\" type=\"checkbox\" /></td>\n" .
+//	 "           <td><label for=\"iAuditor\">" . $L_Auditor . "</label></td>\n" .
+//	 "           <td><input id=\"iAuditor\" name=\"Auditor\" type=\"checkbox\" /></td>\n" .
 	 "          </tr>\n" .
 	 "         </table>\n" .
 
 	 "        </td>\n" .
+	 "       </tr>\n" .
+	 "       <tr>\n" .
+	 "        <td colspan=\"2\">&nbsp;</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
@@ -510,13 +513,6 @@ switch( $Action ) {
 		$SuperAdmin = 0;
 	}
 	
-	if ( isset( $_POST[ 'Auditor' ] ) ) {
-		if ( $_POST[ 'Auditor' ] == 'on' )
-			$Auditor = 1;
-	} else {
-		$Auditor = 0;
-	}
-
 
 	// ===========================================================
 	// Calcule un nouveau grain de sel spécifique à l'utilisateur.
@@ -545,7 +541,7 @@ switch( $Action ) {
 	
 	try {
 		$Identities->set( '', $Username, $Authenticator, 1, 0,
-		 $SuperAdmin, $Auditor, $ent_id, $cvl_id, $Salt );
+		 $SuperAdmin, 0, $ent_id, $cvl_id, $Salt );
 	} catch( PDOException $e ) {
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Identity, $Return_Page, 1 ) );
 		exit();
@@ -1073,7 +1069,7 @@ switch( $Action ) {
 		$returnButton = "<span style=\"float: right\"><a class=\"button\" href=\"" .
 		 $Prev_Action . "\">" . $Return_Button . "</a></span>";
 		
-		print( "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"3\">" . $L_List_Entities . $addButton . $returnButton . "</th>\n" .
@@ -1095,7 +1091,7 @@ switch( $Action ) {
 		
 			$tmpSort = 'code';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		print( "        <th width=\"30%\" onclick=\"javascript:document.location='" . $Script . 
 		 "?action=ENT_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
 		 $L_Code . "</th>\n" );
 
@@ -1110,12 +1106,12 @@ switch( $Action ) {
 		
 			$tmpSort = 'label';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		print( "        <th width=\"50%\" onclick=\"javascript:document.location='" . $Script . 
 		 "?action=ENT_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
 		 $L_Label . "</th>\n" );
 		 
 
-		print( "        <th>" . $L_Actions . "</th>\n" .
+		print( "        <th width=\"20%\">" . $L_Actions . "</th>\n" .
 		 "       </tr>\n" );
 		
 		$List_Entities = $Entities->listEntities( 0, $orderBy );
@@ -1179,6 +1175,9 @@ switch( $Action ) {
 	 "       <tr>\n" .
 	 "        <td>" . $L_Label . "</td>\n" .
 	 "        <td><input type=\"text\" name=\"Label\" size=\"35\" maxlength=\"35\" /></td>\n" .
+	 "       </tr>\n" .
+	 "       <tr>\n" .
+	 "        <td colspan=\"2\">&nbsp;</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
@@ -1259,6 +1258,9 @@ switch( $Action ) {
 	 "       <tr>\n" .
 	 "        <td>" . $L_Label . "</td>\n" .
 	 "        <td><input type=\"text\" name=\"Label\" size=\"35\" maxlength=\"35\" value=\"" . $Security->XSS_Protection( $Entity->ent_label ) . "\" /></td>\n" .
+	 "       </tr>\n" .
+	 "       <tr>\n" .
+	 "        <td colspan=\"2\">&nbsp;</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
@@ -1348,6 +1350,9 @@ switch( $Action ) {
 	 $Security->XSS_Protection( $Entity->ent_label ) . "</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
+	 "        <td colspan=\"2\">&nbsp;</td>\n" .
+	 "       </tr>\n" .
+	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
 	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Delete . "\" /><a class=\"button\" href=\"" . $Script . "?action=ENT_V\">" . $L_Cancel . "</a></td>\n" .
 	 "       </tr>\n" .
@@ -1418,7 +1423,7 @@ switch( $Action ) {
 		$returnButton = "<span style=\"float: right\"><a class=\"button\" href=\"" .
 		 $Prev_Page . "\">" . $L_Return . "</a></span>"; // L_Users_List_Return
 		
-		print( "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"4\">" . $L_List_Civilities . $addButton . $returnButton . "</th>\n" .
@@ -1550,6 +1555,9 @@ switch( $Action ) {
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
+	 "        <td colspan=\"2\">&nbsp;</td>\n" .
+	 "       </tr>\n" .
+	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
 	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /><a class=\"button\" href=\"" . $Script . "?action=CVL_V\">" . $L_Cancel . "</a></td>\n" .
 	 "       </tr>\n" .
@@ -1658,6 +1666,9 @@ switch( $Action ) {
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
+	 "        <td colspan=\"2\">&nbsp;</td>\n" .
+	 "       </tr>\n" .
+	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
 	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Modify . "\" /><a class=\"button\" href=\"" . $Script . "?action=CVL_V\">" . $L_Cancel . "</a></td>\n" .
 	 "       </tr>\n" .
@@ -1756,6 +1767,9 @@ switch( $Action ) {
 	 "       <tr>\n" .
 	 "        <td>" . $L_Sex . "</td>\n" .
 	 "        <td class=\"bg-light-grey\">" . $Flag_Sex . "</td>\n" .
+	 "       </tr>\n" .
+	 "       <tr>\n" .
+	 "        <td colspan=\"2\">&nbsp;</td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td>&nbsp;</td>\n" .
@@ -1893,7 +1907,7 @@ switch( $Action ) {
 			else $BackGround = 'pair';
 
 			
-			print( "          <tr class=\"" . $BackGround . " surline td-aere\">\n" .
+			print( "          <tr class=\"" . $BackGround . " td-aere\">\n" .
 			 "           <td class=\"align-middle align-center\"><input type=\"checkbox\" name=\"" . $Profile->prf_id . 
 			 "\" id=\"P_" . $Profile->prf_id . "\"" . $Validate . " /></td>\n" .
 			 "           <td class=\"td-aere align-middle\"><label for=\"P_" . $Profile->prf_id . "\">" .
@@ -2098,7 +2112,7 @@ switch( $Action ) {
 		
 		$Buttons = $addButton . $returnButton;
 		
-		print( "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"2\">" . $L_List_Profiles . $Buttons . "</th>\n" .
@@ -2122,7 +2136,7 @@ switch( $Action ) {
 		 "?action=PRF_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
 		 $L_Label . "</th>\n" );
 
-		print( "        <th>" . $L_Actions . "</th>\n" .
+		print( "        <th width=\"30%\">" . $L_Actions . "</th>\n" .
 		 "       </tr>\n" );
 		
 		 
@@ -2188,7 +2202,10 @@ switch( $Action ) {
 		 "      <tbody>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Label . "</th>\n" .
-		 "        <td><input type=\"text\" name=\"Label\" size=\"60\" maxlength=\"60\" /></td>\n" .
+		 "        <td><input type=\"text\" name=\"Label\" class=\"input-xlarge\" maxlength=\"60\" /></td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
+		 "        <td colspan=\"2\">&nbsp;</td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td>&nbsp;</td>\n" .

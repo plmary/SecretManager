@@ -37,7 +37,7 @@
 
 	$L_Min_Size_Password = 'Minimum password length';
 	$L_Password_Complexity = 'Passwords complexity';
-	$L_Default_User_Lifetime = 'Password lifetime (months)';
+	$L_Default_User_Lifetime = 'User lifetime (months)';
 	$L_Max_Attempt = 'Maximum number of attempts';
 	$L_Default_Password = 'Default password';
 	$L_Expiration_Time = 'Time before session expiration (minutes)';

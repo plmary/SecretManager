@@ -120,9 +120,9 @@ class IICA_Groups extends PDO {
 		
 		if ( $rgh_id != '' ) {
 			if ( strpos( $Request, 'WHERE' ) === false ) {
-				$Request .= 'WHERE T2.rgh_id = :rgh_id ';
+				$Request .= 'WHERE T2.rgh_id >= :rgh_id ';
 			} else {
-				$Request .= 'AND T2.rgh_id = :rgh_id ';
+				$Request .= 'AND T2.rgh_id >= :rgh_id ';
 			}
 		}
 		
@@ -149,7 +149,6 @@ class IICA_Groups extends PDO {
 			break;
 		}
 		
-
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
