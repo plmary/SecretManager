@@ -215,7 +215,7 @@ class IICA_Entities extends PDO {
 	*
 	* @return Renvoi vrai si l'Entité a été supprimée
 	*/
-      include( 'Libraries/Config_Access_Tables.inc.php' );
+      include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
       
 		/*
 		** Démarre la transaction.

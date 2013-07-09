@@ -73,9 +73,9 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Renvoi vrai en cas de succès ou génère une exception en cas d'erreur.
 	*/
-		include( 'Libraries/Config_Hash.inc.php' );
-		include( 'Libraries/Config_Authentication.inc.php' );
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
+		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
 
 		
 		$Security = new Security();
@@ -142,8 +142,8 @@ class IICA_Authentications extends PDO {
 			break;
 		
 		 case 'radius':
-			include( 'Libraries/Radius/radius.class.php' );
-			include( 'Libraries/Config_Radius.inc.php' );
+			include( DIR_RADIUS . '/radius.class.php' );
+			include( DIR_LIBRARIES . '/Config_Radius.inc.php' );
 
 			$Radius_Suffix = '';
 			$UPD_Timeout = 5;
@@ -170,7 +170,7 @@ class IICA_Authentications extends PDO {
 			break;
 		
 		 case 'ldap':
-			include( 'Libraries/Config_LDAP.inc.php' );
+			include( DIR_LIBRARIES . '/Config_LDAP.inc.php' );
 			
 			$LDAP_RDN = $_LDAP_RDN_Prefix . '=' . $Login . ',' . $_LDAP_Organization;
 
@@ -405,11 +405,11 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( 'Libraries/Config_Hash.inc.php' );
-		include( 'Libraries/Config_Authentication.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 		
 		if ( ! class_exists( 'Security' ) ) {
-			include( 'Libraries/Class_Security.inc.php' );
+			include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 		}
 		
 		$Security = new Security();
@@ -481,11 +481,11 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( 'Libraries/Config_Hash.inc.php' );
-		include( 'Libraries/Config_Authentication.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
 		if ( ! class_exists( 'Security' ) ) {
-			include( 'Libraries/Class_Security.inc.php' );
+			include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 		}
 		
 		$Security = new Security();
@@ -568,7 +568,7 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( 'Libraries/Config_Authentication.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
 		// ===================================
 		// Récupère les données de l'identité.
@@ -611,7 +611,7 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( 'Libraries/Config_Authentication.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
 		// ===================================
 		// Récupère les données de l'identité.
@@ -665,8 +665,8 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( 'Libraries/Config_Hash.inc.php' );
-		include( 'Libraries/Config_Authentication.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
 		// ===================================
 		// Récupère les données de l'identité.
@@ -785,8 +785,8 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Retourne vrai en cas de succès, sinon retourne faux
 	*/
-		include_once( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
-		include( 'Libraries/Config_Access_DB.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 
 		$Parameters = new IICA_Parameters( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 

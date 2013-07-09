@@ -1,5 +1,7 @@
 <?php
 
+include_once( 'Constants.inc.php' );
+
 // =============================
 class IICA_Groups extends PDO {
 /**
@@ -217,7 +219,7 @@ class IICA_Groups extends PDO {
 	** Supprime un Groupe.
 	*/
 	public function delete( $sgr_id ) {
-      include( 'Libraries/Config_Access_Tables.inc.php' );
+      include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
       
 		/*
 		** Démarre la transaction.
@@ -551,15 +553,14 @@ class IICA_Secrets extends PDO {
 	*/
 	public function set( $scr_id, $sgr_id, $stp_id, $scr_host, $scr_user, $scr_password,
 	 $scr_comment, $scr_alert, $env_id, $scr_application ) {
-		include_once( 'Libraries/Class_Security.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
-		include_once( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( 'Libraries/Class_Secrets_Server.inc.php' );
-		include_once( 'Libraries/Constants.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 
-		include( 'Libraries/Config_Access_DB.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 		
 		$Security = new Security();
 
@@ -671,15 +672,14 @@ class IICA_Secrets extends PDO {
 	** Déchiffre le Secret avec l'ancienne clé mère et rechiffre le Secret avec la nouvelle clé mère.
 	*/
 	public function transcrypt( $old_Mother_Key, $new_Mother_Key ) {
-		include_once( 'Libraries/Class_Security.inc.php' );
-		include_once( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
 		if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'en';
 
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include_once( 'Libraries/Constants.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 
-		include( 'Libraries/Config_Access_DB.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 		
 
 		$Security = new Security();
@@ -1120,15 +1120,14 @@ class IICA_Secrets extends PDO {
 	** Récupère les informations d'un Secret.
 	*/
 	public function get( $scr_id ) {
-		include_once( 'Libraries/Class_Security.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
-		include_once( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( 'Libraries/Class_Secrets_Server.inc.php' );
-		include_once( 'Libraries/Constants.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 
-		include( 'Libraries/Config_Access_DB.inc.php' );
+		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 
 		
 		$Security = new Security();

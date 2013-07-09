@@ -11,6 +11,9 @@
 *
 */
 
+include( 'Constants.inc.php' );
+
+session_save_path( DIR_SESSION );
 session_start();
 
 if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
@@ -34,8 +37,8 @@ $Action = '';
 $Choose_Language = 0;
 $Logout_button = 1;
 
-include( 'Libraries/Config_Access_DB.inc.php' );
-include( 'Libraries/Class_IICA_Authentications_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
 $Authentication = new IICA_Authentications( 
  $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -46,16 +49,16 @@ if ( ! $Authentication->is_connect() ) {
 }
 
 // Charge les libellés.
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
 
 // Charge les objets
-include( 'Libraries/Class_HTML.inc.php' );
-include( 'Libraries/Config_Hash.inc.php' );
-include( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
-include( 'Libraries/Class_Security.inc.php' );
+include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
+include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 
 $PageHTML = new HTML();
@@ -352,16 +355,16 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		break;
 
 	 case 'C':
-	 	if ( file_exists( 'Libraries/Config_Authentication.inc.php' ) ) {
-			include( 'Libraries/Config_Authentication.inc.php' );
+	 	if ( file_exists( DIR_LIBRARIES . '/Config_Authentication.inc.php' ) ) {
+			include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 		}
 		
-	 	if ( file_exists( 'Libraries/Config_Radius.inc.php' ) ) {
-			include( 'Libraries/Config_Radius.inc.php' );
+	 	if ( file_exists( DIR_LIBRARIES . '/Config_Radius.inc.php' ) ) {
+			include( DIR_LIBRARIES . '/Config_Radius.inc.php' );
 		}
 		
-	 	if ( file_exists( 'Libraries/Config_LDAP.inc.php' ) ) {
-			include( 'Libraries/Config_LDAP.inc.php' );
+	 	if ( file_exists( DIR_LIBRARIES . '/Config_LDAP.inc.php' ) ) {
+			include( DIR_LIBRARIES . '/Config_LDAP.inc.php' );
 		}
 		
 		if ( ! isset( $_LDAP_Port ) ) $_LDAP_Port = 389;
@@ -894,9 +897,9 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		break;
 
 	 case 'H':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( 'Libraries/Class_IICA_Identities_PDO.inc.php' );
-		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Identities = new IICA_Identities(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -1079,8 +1082,8 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		break;
 
 	 case 'HX':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( 'Libraries/Class_IICA_Identities_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
 		
 		$Identities = new IICA_Identities(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -1158,8 +1161,8 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 
 	 case 'PH':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -1199,8 +1202,8 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 
 	 case 'PHX':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -1237,9 +1240,8 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		break;
 
 	 case 'S':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( 'Libraries/Class_Secrets_Server.inc.php' );
-		include_once( 'Libraries/Constants.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 
 		$Secret_Server = new Secret_Server();
 
@@ -1357,11 +1359,10 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		break;
 
 	 case 'LK':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( 'Libraries/Class_Secrets_Server.inc.php' );
-		include_once( 'Libraries/Constants.php' );
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -1395,11 +1396,10 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		break;
 
 	 case 'NK':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( 'Libraries/Class_Secrets_Server.inc.php' );
-		include_once( 'Libraries/Constants.php' );
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -1453,8 +1453,8 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 
 	 case 'US':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -1479,11 +1479,10 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 
 	 case 'SHUT':
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( 'Libraries/Class_Secrets_Server.inc.php' );
-		include_once( 'Libraries/Constants.php' );
-		include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );

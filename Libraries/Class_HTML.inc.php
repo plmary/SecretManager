@@ -1,5 +1,7 @@
 <?php
 
+include_once( 'Constants.inc.php' );
+
 class HTML {
 /**
 * Cette classe gère l'affichage des principales parties des écrans.
@@ -9,7 +11,6 @@ class HTML {
 * @version 1.2
 * @date 2012-11-26
 */
-
 public $Version; // Version de l'outil (précisé dans le constructeur)
 
 public function __construct() {
@@ -21,8 +22,8 @@ public function __construct() {
 * @version 1.0
 * @date 2013-02-19
 */
-	if ( file_exists( 'Libraries/Environnement.inc.php' ) ) {
-		include( 'Libraries/Environnement.inc.php' );
+	if ( file_exists( DIR_LIBRARIES . '/Environnement.inc.php' ) ) {
+		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
 	$this->Version = '0.4-0'; // Version de l'outil
@@ -49,16 +50,16 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 	$L_Subtitle = "";
 	$Script = $_SERVER[ 'SCRIPT_NAME' ];
 	
-	if ( file_exists( "Libraries/Labels/" . $_SESSION[ 'Language' ] .
+	if ( file_exists( DIR_LABELS . "/" . $_SESSION[ 'Language' ] .
 	 "_labels_date.php" ) ) {
-		include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_date.php" );
+		include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_date.php" );
 		
 		$Date = date( 'd' ) . ' ' . $Month[ date( 'n' ) ] . ' ' . date( 'Y' );
 	}
 	
-	if ( file_exists( "Libraries/Labels/" . $_SESSION[ 'Language' ] .
+	if ( file_exists( DIR_LABELS . "/" . $_SESSION[ 'Language' ] .
 	 "_labels_generic.php" ) ) {
-		include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
+		include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 	}
 	
 
@@ -72,9 +73,9 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 	 "  <meta name=\"Author\" content=\"Pierre-Luc MARY\" />\n" .
 	 "  <link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.css\" ".
 	 "type=\"text/css\" />\n\n" .
-	 "  <link rel=\"stylesheet\" href=\"Libraries/SecretManager.css\" ".
+	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager.css\" ".
 	 "type=\"text/css\" />\n\n" .
-	 "  <link rel=\"stylesheet\" href=\"Libraries/SecretManager-icons.css\" " .
+	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager-icons.css\" " .
 	 "type=\"text/css\" />\n\n" .
 	 "  <title>" . $Title . "</title>\n" .
 	 " </head>\n\n" .
@@ -100,15 +101,15 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 		$Header .= "    <!-- debut : zoneLangues -->\n" .
 		 "    <div id=\"zoneLangues\">\n" .
 		 "     <a href=\"" . $Script . "?Lang=en\">\n" .
-		 "      <img src=\"Pictures/flag-eng.png\" alt=\"" . $L_Langue_en .
+		 "      <img src=\"" . DIR_PICTURES . "/flag-eng.png\" alt=\"" . $L_Langue_en .
 		 "\" title=\"" . $L_Langue_en . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
 		 "     <a href=\"" . $Script . "?Lang=fr\">\n" .
-		 "      <img src=\"Pictures/flag-fra.png\" alt=\"" . $L_Langue_fr . 
+		 "      <img src=\"" . DIR_PICTURES . "/flag-fra.png\" alt=\"" . $L_Langue_fr . 
 		 "\" title=\"" . $L_Langue_fr . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
 		 "     <a href=\"" . $Script . "?Lang=de\">\n" .
-		 "      <img src=\"Pictures/flag-deu.png\" alt=\"" . $L_Langue_de . 
+		 "      <img src=\"" . DIR_PICTURES . "/flag-deu.png\" alt=\"" . $L_Langue_de . 
 		 "\" title=\"" . $L_Langue_de . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
 		 "    </div> <!-- fin : zoneLangues -->\n\n" ;
@@ -150,9 +151,9 @@ public function mini_HTMLHeader( $Title = "" ) {
 	 "  <meta http-equiv=\"Content-Type\" content=\"text/html; " .
 	 "charset=utf8\" />\n" .
 	 "  <meta name=\"Author\" content=\"Pierre-Luc MARY\" />\n" .
-	 "  <link rel=\"stylesheet\" href=\"Libraries/SecretManager.css\" " .
+	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager.css\" " .
 	 "type=\"text/css\" />\n\n" .
-	 "  <link rel=\"stylesheet\" href=\"Libraries/SecretManager-icons.css\" " .
+	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager-icons.css\" " .
 	 "type=\"text/css\" />\n\n" .
 	 "  <title>" . $Title . "</title>\n" .
 	 " </head>\n\n" .
@@ -178,14 +179,14 @@ public function construireFooter( $Buttons = 0, $Previous = '' ) {
 *
 * @return Retourne une chaîne matérialisant le bas des pages HTML
 */
-	include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
+	include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 
 	$Text = "   </div> <!-- fin : contenu-enveloppe -->\n" .
 	 "    <!-- debut : zonePiedPage -->\n" .
 	 "    <div id=\"zonePiedPage\">\n" .
 	 "     <div class=\"zonePiedPage-left\">\n" .
 	 "      <p class=\"align-left\">" .
-	 "<img src=\"Pictures/copy_left-15x15.jpg\" alt=\"Copyleft\" class=\"no-border\" />" .
+	 "<img src=\"" . DIR_PICTURES . "/copy_left-15x15.jpg\" alt=\"Copyleft\" class=\"no-border\" />" .
 	 " Copyleft " . date( "Y" ) . " <strong>" .
 	 "<a class=\"white\" href=\"http://www.orasys.fr\" target=\"_blank\">Orasys</a>" .
 	 "</strong></p>\n" .
@@ -241,9 +242,9 @@ public function afficherActions( $Administrator ) {
 *
 * @return Retourne une chaîne matérialisant l'affichage des options à l'écran
 */
-	if ( file_exists( "Libraries/Labels/" . $_SESSION[ 'Language' ] .
+	if ( file_exists( DIR_LABELS . "/" . $_SESSION[ 'Language' ] .
 	 "_labels_generic.php" ) ) {
-		include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
+		include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 	}
 	
 	$Actions = "    <span id=\"menu-icon-actions\" class=\"icon28\" title=\"Actions\" onMouseOver=\"javascript:document.getElementById('actions').style.visibility='visible';\"></span>\n" .
@@ -316,7 +317,7 @@ public function infoBox( $Message, $Script, $Alert = 1 ) {
 *
 * @return Retourne une chaîne HTML matérialisant l'affichage de cette boîte
 */
-	include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
+	include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 	
 	switch( $Alert ) {
 	 case 1:
@@ -336,7 +337,7 @@ public function infoBox( $Message, $Script, $Alert = 1 ) {
 	}
 	
 	return "     <div " . $Type_Message . "\">\n" .
-	 "<img class=\"no-border\" src=\"Pictures/" . $Icon_Name . ".png\" alt=\"" .
+	 "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/" . $Icon_Name . ".png\" alt=\"" .
 	 $Type_Message . "\" />\n" . $Message . "<br/><br/>" .
 	 "<a id=\"b_return\" href=\"" . $Script . "\" class=\"button\">" .
 	 $L_Return . "</a>" .
@@ -364,7 +365,7 @@ public function returnPage( $Title, $Message, $Script, $Alert = 1 ) {
 *
 * @return Retourne une chaîne matérialisant l'affichage de cet écran d'information
 */
-	include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
+	include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 	
 	if ( $Alert == 1 ) {
 		$Type_Message = 'alert';
@@ -412,7 +413,7 @@ public function page( $Title, $Message, $Language_Zone = 1, $Buttons = 1 ) {
 *
 * @return Retourne une chaîne matérialisant l'affichage de cet écran d'information
 */
-	include( "Libraries/Labels/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
+	include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 
 	return $this->enteteHTML( $Title, $Language_Zone ) .
 	 "   <!-- debut : zoneTitre -->\n" .

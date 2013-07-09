@@ -11,6 +11,9 @@
 *
 */
 
+include( 'Constants.inc.php' );
+
+session_save_path( DIR_SESSION );
 session_start();
 
 $Search_Style = 2;
@@ -31,8 +34,8 @@ if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
 $Action = '';
 $Choose_Language = 0;
 
-include( 'Libraries/Config_Access_DB.inc.php' );
-include( 'Libraries/Class_IICA_Authentications_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
 $Authentication = new IICA_Authentications( 
  $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -42,17 +45,16 @@ if ( ! $Authentication->is_connect() ) {
 	exit();
 }
 
-include( 'Libraries/Class_HTML.inc.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
-include( 'Libraries/Config_Hash.inc.php' );
-include( 'Libraries/Class_IICA_Identities_PDO.inc.php' );
-include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
-include( 'Libraries/Class_Security.inc.php' );
-//include( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
+include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 $PageHTML = new HTML();
 
@@ -185,7 +187,7 @@ switch( $Action ) {
 	}
 
  default:
-	include( 'Libraries/Config_Hash.inc.php' );
+	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 	
 	
 	print( "    <div id=\"dashboard\">\n\n" );
@@ -211,9 +213,9 @@ switch( $Action ) {
 	// ===========================================
 	// Tableau d'affichage des Utilisateurs.
 	if ( $Authentication->is_administrator() ) {
-		include( 'Libraries/Class_IICA_Profiles_PDO.inc.php' );
-		include( 'Libraries/Class_IICA_Entities_PDO.inc.php' );
-		include( 'Libraries/Class_IICA_Civilities_PDO.inc.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Entities_PDO.inc.php' );
+		include( DIR_LIBRARIES . '/Class_IICA_Civilities_PDO.inc.php' );
 		
 		$Profiles = new IICA_Profiles(
 		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -380,7 +382,7 @@ switch( $Action ) {
 		$searchButton = '<span style="float: right">' .
 		 '<a id="search_icon" class="simple" style="cursor: pointer;" ' .
 		 'onclick="javascript:hiddeTableBody();">' .
-		 '<img class="no-border" src="Pictures/b_search.png" alt="'. $L_Search . 
+		 '<img class="no-border" src="' . DIR_PICTURES . '/b_search.png" alt="'. $L_Search . 
 		 '" title="' . $L_Search . '" />' .
 		 '</a></span>' ;
 
@@ -542,6 +544,7 @@ switch( $Action ) {
 		$_SESSION[ 'searchSecret' ] = $searchSecret;
 	} else {
 		if ( array_key_exists( 'searchSecret', $_SESSION ) ) $searchSecret = $_SESSION[ 'searchSecret' ];
+		else $searchSecret = '';
 	}
 
 	$myButtons = '';
@@ -554,7 +557,7 @@ switch( $Action ) {
 			 $Script . '?action=R2" >' .
 		   	 '<div class="input-append">' .
 			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
-			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="Pictures/b_search.png" alt="'. $L_Search . 
+			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . DIR_PICTURES . '/b_search.png" alt="'. $L_Search . 
 			 '" /></button>' .
 			 '</div>' .
 			 $addButton .
@@ -566,7 +569,7 @@ switch( $Action ) {
 			 $Script . '?action=R2" >' .
 		   	 '<div class="input-append">' .
 			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
-			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="Pictures/b_search.png" alt="'. $L_Search . 
+			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . DIR_PICTURES . '/b_search.png" alt="'. $L_Search . 
 			 '" /></button>' .
 			 '</div>' .
 			 '</form>';
@@ -734,7 +737,7 @@ switch( $Action ) {
 			print( "         <a class=\"simple\" href=\"https://" .
 			 $Server . dirname( $Script ) .
 			 "/SM-secrets.php?action=SCR_M&scr_id=" . $Secret->scr_id .
-			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"Pictures/b_edit.png\" alt=\"" .
+			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" .
 			 $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" );
 		}
 		
@@ -742,12 +745,12 @@ switch( $Action ) {
 			print( "         <a class=\"simple\" href=\"https://" . 
 			 $Server . dirname( $Script ) .
 			 "/SM-secrets.php?action=SCR_D&scr_id=" . $Secret->scr_id .
-			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"Pictures/b_drop.png\" alt=\"" .
+			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" .
 			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" );
 		}
 
 		print( "         <a class=\"simple\" href=\"javascript:viewPassword( " . 
-		 $Secret->scr_id . " );\"><img class=\"no-border\" src=\"Pictures/b_eye.png\" alt=\"" .
+		 $Secret->scr_id . " );\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_eye.png\" alt=\"" .
 		 $L_Password_View . "\" title=\"" . $L_Password_View . "\" /></a>\n" );
 		print( "        </td>\n" .
 		 "       </tr>\n" );

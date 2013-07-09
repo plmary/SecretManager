@@ -537,7 +537,7 @@ class Security {
 	* @return string Retourne la chaine de données chiffrée.
 	*/
 		if ( $mc_key == '' ) {
-			include( 'Libraries/Config_Hash.inc.php' );
+			include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 			
 			$mc_key = $_salt_secret;
 		}
@@ -569,7 +569,7 @@ class Security {
 	* @return string Retourne la chaine de données déchiffrée.
 	*/
 		if ( $mc_key == '' ) {
-			include( 'Libraries/Config_Hash.inc.php' );
+			include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 			
 			$mc_key = $_salt_secret;
 		}

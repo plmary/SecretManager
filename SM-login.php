@@ -16,6 +16,9 @@
 * @param[in] $_GET['rp'] Précise la page de retour (pour peut qu'il soit possible de réaliser ce retour
 */
 
+include( 'Constants.inc.php' );
+
+session_save_path( DIR_SESSION );
 session_start();
 
 // Initialise la langue Française par défaut.

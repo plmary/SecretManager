@@ -11,6 +11,9 @@
 *
 */
 
+include( 'Constants.inc.php' );
+
+session_save_path( DIR_SESSION );
 session_start();
 
 if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
@@ -33,8 +36,8 @@ if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
 $Action = '';
 $Choose_Language = 0;
 
-include( 'Libraries/Config_Access_DB.inc.php' );
-include( 'Libraries/Class_IICA_Authentications_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
 $Authentication = new IICA_Authentications( 
  $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -45,17 +48,17 @@ if ( ! $Authentication->is_connect() ) {
 }
 
 // Charge les libellés.
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
 
-include( 'Libraries/Class_HTML.inc.php' );
-include( 'Libraries/Config_Hash.inc.php' );
-include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
-include( 'Libraries/Class_Security.inc.php' );
-include( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
+include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_Security.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
 
 $PageHTML = new HTML();
@@ -146,7 +149,7 @@ switch( $Action ) {
 		$orderBy = 'label';
 	}
 
-	include( 'Libraries/Config_Authentication.inc.php' );
+	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 	
 	print( "    <div id=\"dashboard\">\n" );
 
@@ -239,9 +242,9 @@ switch( $Action ) {
 				
 	
 			if ( $Group->sgr_alert == 1 )
-				$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_coche.gif\" alt=\"Ok\" />";
+				$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 			else
-				$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
+				$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 
 			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
@@ -250,19 +253,19 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=M&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"Pictures/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=D&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"Pictures/b_drop.png\" alt=\"" . 
+			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" . 
 			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"Pictures/b_usrscr_2.png\" alt=\"" .
+			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_usrscr_2.png\" alt=\"" .
 			 $L_Profiles_Associate . "\" title=\"" . $L_Profiles_Associate . 
 			 "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=SCR&sgr_id=" . $Group->sgr_id .
-			 "&store\"><img class=\"no-border\" src=\"Pictures/b_scredit_1.png\" alt=\"" .
+			 "&store\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_scredit_1.png\" alt=\"" .
 			 $L_Secret_Management . "\" title=\"" . $L_Secret_Management . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
@@ -380,9 +383,9 @@ switch( $Action ) {
 	$Group = $Groups->get( $sgr_id );
 	
 	if ( $Group->sgr_alert == 1 )
-		$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_coche.gif\" alt=\"Ok\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 	else
-		$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"". DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 	print( "     <form method=\"post\" action=\"" . $Script . 
 	 "?action=DX\">\n" .
@@ -566,7 +569,7 @@ switch( $Action ) {
  case 'PRF':
 	$Return_Page = 'https://' . $Server . $Script;
  
-	include( 'Libraries/Class_IICA_Profiles_PDO.inc.php' );
+	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
 
 	if ( ! $sgr_id = $Security->valueControl( $_GET[ 'sgr_id' ] ) ) {
@@ -590,9 +593,9 @@ switch( $Action ) {
 	$Group = $Groups->get( $sgr_id );
 
 	if ( $Group->sgr_alert == 1 )
-		$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_coche.gif\" alt=\"Ok\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 	else
-		$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 	print( "    <form method=\"post\" action=\"" . $Script . "?action=PRFX&sgr_id=" .
 	 $sgr_id . "\" >\n" );
@@ -774,7 +777,7 @@ switch( $Action ) {
 		$orderBy = 'type';
 	}
 
-	include( 'Libraries/Config_Authentication.inc.php' );
+	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 	
 	$Secrets = new IICA_Secrets( 
 	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -934,10 +937,10 @@ switch( $Action ) {
 				$BackGround = "pair";
 
 			if ( $Secret->scr_alert == 0 ) {
-				$Img_Src = 'Pictures/bouton_non_coche.gif';
+				$Img_Src = DIR_PICTURES . '/bouton_non_coche.gif';
 				$Img_Title = $L_No ;
 			} else {
-				$Img_Src = 'Pictures/bouton_coche.gif';
+				$Img_Src = DIR_PICTURES . '/bouton_coche.gif';
 				$Img_Title = $L_Yes ;
 			}
 			$Alert_Image = '<img class="no-border" src="' . $Img_Src . '" title="' . $Img_Title .
@@ -954,10 +957,10 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=SCR_M&scr_id=" . $Secret->scr_id .
-			 "\"><img class=\"no-border\" src=\"Pictures/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=SCR_D&scr_id=" . $Secret->scr_id .
-			 "\"><img class=\"no-border\" src=\"Pictures/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
 		}
@@ -1077,12 +1080,12 @@ switch( $Action ) {
 //		 "  element.innerHTML = Result;\n" . 
 		 "  if ( Result != '' && pwd != '' ) {\n" .
 		 "   document.getElementById(Result_Field).alt = 'Ko';\n" .
-		 "   document.getElementById(Result_Field).src = 'Pictures/s_attention.png'\n" .
+		 "   document.getElementById(Result_Field).src = " . DIR_PICTURES . "'/s_attention.png'\n" .
 		 "  }\n" .
 		 "  if ( Result == '' && pwd != '' ) {\n" .
 		 "   document.getElementById(Result_Field).alt = 'Ok';\n" .
 		 "   document.getElementById(Result_Field).title = 'Ok';\n" .
-		 "   document.getElementById(Result_Field).src = 'Pictures/s_okay.png'\n" .
+		 "   document.getElementById(Result_Field).src = " . DIR_PICTURES . "'/s_okay.png'\n" .
 		 "  }\n" .
 		 "}\n" .
 		 "function generatePassword( Password_Field, Complexity, Size ){\n" .
@@ -1200,7 +1203,7 @@ switch( $Action ) {
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
-		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"Pictures/blank.gif\" /></td>\n" .
+		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"" . DIR_PICTURES . "/blank.gif\" /></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .
@@ -1415,12 +1418,12 @@ switch( $Action ) {
 		 "       </tr>\n" .
 		 "       <tr class=\"impair\">\n" .
 		 "        <td>" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
-		 "        <td>" . ${$Secret->stp_name} . "</td>\n" .
-		 "        <td>" . ${$Secret->env_name} . "</td>\n" .
-		 "        <td>" . $Secret->scr_application . "</td>\n" .
-		 "        <td>" . $Secret->scr_host . "</td>\n" .
-		 "        <td>" . $Secret->scr_user . "</td>\n" .
-		 "        <td class=\"bg-orange\">" . $Secret->scr_password . "</td>\n" .
+		 "        <td>" . $Security->XSS_Protection( ${$Secret->stp_name} ) . "</td>\n" .
+		 "        <td>" . $Security->XSS_Protection( ${$Secret->env_name} ) . "</td>\n" .
+		 "        <td>" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
+		 "        <td>" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
+		 "        <td>" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" .
+		 "        <td class=\"bg-orange\">" . $Security->XSS_Protection( $Secret->scr_password ) . "</td>\n" .
 		 "       </tr>\n" .
 		 "      </tbody>\n" .
 		 "      <tfoot><tr><th colspan=\"7\">" );
@@ -1435,6 +1438,12 @@ switch( $Action ) {
 		 
 		print( "      </th></tr></tfoot>\n" .
 		 "     </table>\n" .
+//		 "     <script type=\"text/javascript\">\n" .
+//		 "<!--\n" .
+//		 "      document.fSelect.secret.focus();\n" .
+//		 "      document.fSelect..select();\n" .
+//		 "//-->\n" .
+//		 "     </script>\n" .
 		 "    </div> <!-- fin : scroller -->\n" .
 		 "    </div> <!-- fin : dashboard -->\n" );
 	}
@@ -1797,9 +1806,9 @@ switch( $Action ) {
 		$List_Groups = $Groups->listGroups();
 
 		if ( $Secret->scr_alert == 1 )
-			$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_coche.gif\" alt=\"Ok\" />";
+			$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 		else
-			$Flag_Alert = "<img class=\"no-border\" src=\"Pictures/bouton_non_coche.gif\" alt=\"Ko\" />";
+			$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 	
 		print( "     <form method=\"post\" action=\"" . $Script .
 		 "?action=SCR_DX&scr_id=" . $_GET[ 'scr_id' ] . $Continuous . "\">\n" .

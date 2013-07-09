@@ -1,6 +1,6 @@
 <?php
-include_once( 'Libraries/Class_Security.inc.php' );
-include_once( 'Libraries/Constants.php' );
+include_once( 'Constants.inc.php' );
+include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 
 class Secret_Server extends Security {
@@ -30,7 +30,7 @@ public function __construct() {
 	*
 	* @return TRUE .
 	*/
-	include( 'Libraries/Config_SM-secrets-server.inc.php' );
+	include( DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php' );
 	
 	$this->IP_Address = $IP_Address;
 	$this->IP_Port = $IP_Port;

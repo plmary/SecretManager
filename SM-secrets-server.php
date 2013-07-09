@@ -13,6 +13,8 @@
 *
 */
 
+include( 'Constants.inc.php' );
+
 $VERSION = '0.3-0';
 
 $PREFIX_SUCCESS = '%S ';
@@ -38,10 +40,10 @@ $Options = getopt( $ShortOpts, $LongOpts );
 //var_dump($Options);
 
 $FLAG_DEBUG = 0;
-$Config_File = 'Libraries/Config_SM-secrets-server.inc.php';
-$Security_File = 'Libraries/Class_Security.inc.php';
+$Config_File = DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php';
+$Security_File = DIR_LIBRARIES . '/Class_Security.inc.php';
+$Session_Dir = DIR_SESSION;
 
-include( 'Libraries/Constants.php' );
 
 foreach( $Options as $Option => $Valeur ) {
 	switch( $Option ) {
@@ -110,9 +112,9 @@ if ( $FLAG_DEBUG ) {
 
 // ===================================
 // Charge le module utile pour les transchiffrements.
-if ( file_exists( 'Libraries/Class_IICA_Secrets_PDO.inc.php' ) ) {
-	include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
-	include( 'Libraries/Config_Access_DB.inc.php' );
+if ( file_exists( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' ) ) {
+	include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
+	include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 } else {
 	print( $PREFIX_ERROR . 'transcrypt module "Libraries/Class_IICA_Secrets_PDO.inc.php" ' .
 	 " not exists or inaccessible\n" );
@@ -122,10 +124,10 @@ if ( file_exists( 'Libraries/Class_IICA_Secrets_PDO.inc.php' ) ) {
 
 // ==============================================
 // Charge l'environnement d'analyse des Sessions.
-include( 'Libraries/Class_Session.inc.php' );
+include( DIR_LIBRARIES . '/Class_Session.inc.php' );
 
-if ( is_dir( '/Applications/XAMPP/xamppfiles/temp' ) ) {
-	$Rep = '/Applications/XAMPP/xamppfiles/temp';
+if ( is_dir( $Session_Dir ) ) {
+	$Rep = $Session_Dir;
 } else {
 	$Rep = '';
 }
