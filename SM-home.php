@@ -3,11 +3,11 @@
 /**
 * Ce script gère l'affichage des options auxquelles à droit l'utilisateur.
 *
-* PHP version 5
+* PHP version 5.4
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.2
-* @date 2012-11-16
+* @version 1.3
+* @date 2013-07-09
 *
 */
 
@@ -18,6 +18,7 @@ session_start();
 
 $Search_Style = 2;
 
+// Par défaut langue Française.
 if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
 
 if ( array_key_exists( 'Lang', $_GET ) ) {
@@ -37,6 +38,7 @@ $Choose_Language = 0;
 include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
+
 $Authentication = new IICA_Authentications( 
  $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
@@ -44,6 +46,7 @@ if ( ! $Authentication->is_connect() ) {
    header( 'Location: SM-login.php' );
 	exit();
 }
+
 
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
@@ -58,6 +61,8 @@ include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 $PageHTML = new HTML();
 
+
+// Charge les différents objets utiles à cet écran.
 $Identities = new IICA_Identities(
  $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
@@ -70,17 +75,17 @@ $Secrets = new IICA_Secrets(
 $Referentials = new IICA_Referentials( 
  $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
+$Security = new Security();
+
+
+// Récupère la liste des Droits, des Types et des Environnements.
 $List_Rights = $Referentials->listRights();
 $List_Types = $Referentials->listSecretTypes();
 $List_Environments = $Referentials->listEnvironments();
- 
+
+
+// Récupère les Droits que cet utilisateur a sur les différents Groupes de Secrets.
 $groupsRights = $Authentication->getGroups( $_SESSION[ 'idn_id' ] );
-//print_r($groupsRights);
-
-$Security = new Security();
-
-//$Parameters = new IICA_Parameters( 
-// $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
 
 // Contrôle si la session n'a pas expirée.
@@ -91,6 +96,8 @@ if ( ! $Authentication->validTimeSession() ) {
 }
 
 
+// Si l'utilisateur n'est pas Administrateur alors il est bridé sur les Groupes de Secrets
+// auxquels il a accès.
 if ( ! $Authentication->is_administrator() )
 	$List_Groups = $Groups->listGroups( $_SESSION[ 'idn_id' ] );
 else
@@ -144,7 +151,7 @@ if ( array_key_exists( 'orderby', $_GET ) ) {
 
 
 switch( $Action ) {
- case 'R':
+ case 'R': // Fonction de Recherche.
 	if ( $_POST[ 'sgr_id' ] != '' ) {
 		if ( ($sgr_id = $Security->XSS_Protection( $_POST[ 'sgr_id' ], 'NUMERIC' )) == -1 ) {
 			print( "    <div id=\"dashboard\">\n" .
@@ -171,19 +178,19 @@ switch( $Action ) {
 	}
 
 	if ( $_POST[ 'scr_application' ] != '' ) {
-		$scr_application = addslashes( $_POST[ 'scr_application' ] );
+		$scr_application = $Security->XSS_Protection( $_POST[ 'scr_application' ] );
 	}
 
 	if ( $_POST[ 'scr_host' ] != '' ) {
-		$scr_host = addslashes( $_POST[ 'scr_host' ] );
+		$scr_host = $Security->XSS_Protection( $_POST[ 'scr_host' ] );
 	}
 
 	if ( $_POST[ 'scr_user' ] != '' ) {
-		$scr_user = addslashes( $_POST[ 'scr_user' ] );
+		$scr_user = $Security->XSS_Protection( $_POST[ 'scr_user' ] );
 	}
 
 	if ( $_POST[ 'scr_comment' ] != '' ) {
-		$scr_comment = addslashes( $_POST[ 'scr_comment' ] );
+		$scr_comment = $Security->XSS_Protection( $_POST[ 'scr_comment' ] );
 	}
 
  default:
@@ -288,11 +295,9 @@ switch( $Action ) {
 		 $L_Manage_Groups . "</a></p></td>\n" .
 		 "       </tr>\n" .
 		 "      </tbody>\n" .
-//		 "      <tfoot><tr><th>&nbsp;</th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" .
-//		 "     <div style=\"clear: both;\"></div>\n" .
 
 		 // ===========================================
 		 // Tableau d'affichage des Profils.
@@ -315,11 +320,9 @@ switch( $Action ) {
 		 $L_Manage_Profiles . "</a></p></td>\n" .
 		 "       </tr>\n" .
 		 "      </tbody>\n" .
-//		 "      <tfoot><tr><th>&nbsp;</th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" .
-//		 "     <div style=\"clear: both;\"></div>\n" .
 
 		 // ===========================================
 		 // Tableau d'affichage des Entités.
@@ -342,7 +345,6 @@ switch( $Action ) {
 		 $L_Manage_Entities . "</a></p></td>\n" .
 		 "       </tr>\n" .
 		 "      </tbody>\n" .
-//		 "      <tfoot><tr><th>&nbsp;</th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des entités -->\n\n" .
@@ -368,7 +370,6 @@ switch( $Action ) {
 		 $L_Manage_Civilities . "</a></p></td>\n" .
 		 "       </tr>\n" .
 		 "      </tbody>\n" .
-//		 "      <tfoot><tr><th>&nbsp;</th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des civilités -->\n\n" .

@@ -3,11 +3,11 @@
 /**
 * Ce script gère les utilisateurs.
 *
-* PHP version 5
+* PHP version 5.4
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.6
-* @date 2013-02-18
+* @version 1.7
+* @date 2013-07-10
 *
 */
 
@@ -16,6 +16,8 @@ include( 'Constants.inc.php' );
 session_save_path( DIR_SESSION );
 session_start();
 
+
+// Force la langue par défaut à Français.
 if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
 
 if ( array_key_exists( 'Lang', $_GET ) ) {
@@ -169,12 +171,15 @@ switch( $Action ) {
 		 "       </tr>\n" .
 		 "      </thead>\n" .
 		 "      <tbody>\n" );
-		 
+
+
+		// Récupère la liste détaillée des Identités (avec toutes les liaisons)
 		$List_Identities = $Identities->detailedListIdentities( $orderBy );
-		
+
 		print( "       <tr class=\"pair\">\n" );
 	 
 
+		// Classe les données selon la colonne sélectionnée.
 		if ( $orderBy == 'entity' ) {
 			$tmpClass = 'order-select';
 		
@@ -268,6 +273,7 @@ switch( $Action ) {
 		print( "        <th>" . $L_Status . "</th>\n" .
 		 "        <th>" . $L_Actions . "</th>\n" .
 		 "       </tr>\n" );
+		
 		
 		$BackGround = "pair";
 		

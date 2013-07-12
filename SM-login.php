@@ -6,8 +6,8 @@
 *
 * @brief Gestion des connexions des utiisateurs
 * @author Pierre-Luc MARY
-* @date 2012-10
-* @version 1.0
+* @date 2013-07-09
+* @version 1.1
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 *
 * @param[in] $_GET['action'] Action spécifique à faire réaliser par le composant
@@ -27,7 +27,7 @@ if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
 // Récupère le code langue, quand celui-ci est précisé.
 if ( array_key_exists( 'Lang', $_GET ) ) {
    $_SESSION[ 'Language' ] = $_GET[ 'Lang' ];
-}   
+}
 
 $Script = $_SERVER[ 'SCRIPT_NAME' ];
 $Server = $_SERVER[ 'SERVER_NAME' ];
@@ -41,15 +41,15 @@ if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
 $Action = '';
 $Choose_Language = 1;
 
-include( 'Libraries/Class_HTML.inc.php' );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
-include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
-include( 'Libraries/Config_Access_DB.inc.php' );
-include( 'Libraries/Config_Hash.inc.php' );
-include( 'Libraries/Class_IICA_Authentications_PDO.inc.php' );
-include( 'Libraries/Class_IICA_Parameters_PDO.inc.php' );
-include( 'Libraries/Class_Security.inc.php' );
-include( 'Libraries/Class_IICA_Secrets_PDO.inc.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
+include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_Security.inc.php' );
+include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 
 
 // Initialise l'objet de gestion des pages HTML.
@@ -89,10 +89,12 @@ switch( $Action ) {
 		}
 	} else $Signal = '';
 	
+	// Formate le message en événement standard
 	$alert_message = $Secrets->formatHistoryMessage( $L_Disconnect . ' ' .
 	 $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .
 	 '(' . $_SESSION[ 'idn_login' ] . ')' );
 
+	// Stocke le message dans l'historique de SecretManager.
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
 	$Authentication->disconnect();
@@ -105,7 +107,7 @@ switch( $Action ) {
 
  // Traite le changement de mot de passe d'un utilisateur.
  case 'CMDP':
-	include( 'Libraries/Labels/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 	
 	if ( array_key_exists( 'rp', $_GET ) ) {
 		$Previous_Page = 'SM-' . $_GET[ 'rp' ] . '.php';
@@ -215,7 +217,7 @@ switch( $Action ) {
 	 "         </tr>\n" .
 	 "         <tr>\n" .
 	 "          <td>" . $L_New_Password . "</td>\n" .
-	 "          <td><input id=\"iPassword\" type=\"password\" name=\"N_Password\"  onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onchange=\"checkPassword('iPassword', 'Result', 3, 8);\" /><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"Pictures/blank.gif\" width=\"16\" /></td>\n" .
+	 "          <td><input id=\"iPassword\" type=\"password\" name=\"N_Password\"  onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onchange=\"checkPassword('iPassword', 'Result', 3, 8);\" /><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"" . DIR_PICTURES . "/blank.gif\" width=\"16\" /></td>\n" .
 	 "         </tr>\n" .
 	 "         <tr>\n" .
 	 "          <td>" . $L_Conf_Password . "</td>\n" .
@@ -246,8 +248,8 @@ switch( $Action ) {
 
  // Enregistre le changement de mot de passe.
  case 'CMDPX':
-	include( 'Libraries/Config_Hash.inc.php' );
-	include( 'Libraries/Config_Authentication.inc.php' );
+	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
 	$Secrets = new IICA_Secrets( 
 	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
@@ -326,7 +328,7 @@ switch( $Action ) {
 
  // Récueille les informations d'authentification.
  default:
-	include( 'Libraries/Config_Hash.inc.php' );
+	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
    
 	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
      "    <div id=\"icon-users\" class=\"icon36\" style=\"float: left; margin: 3px 9px 3px 3px;\"></div>\n" .
@@ -405,6 +407,7 @@ switch( $Action ) {
 	}
 
 	try {
+		// Récupère le "salt" spécifique de l'utilisateur.
 		if ( ! ($Salt = $Authentication->getSalt( $_POST[ 'User' ] )) ) {
 			$alert_message = $Secrets->formatHistoryMessage( $L_Err_Auth . ' (' .
 			 $_POST[ 'User' ] . ') [' . $Authentication_Type . ']' );
@@ -416,6 +419,8 @@ switch( $Action ) {
 			exit();
 		}
 	
+		
+		// Contrôle l'authentication à partir des éléments fournis.
 		if ( ! $Authentication->authentication( $_POST[ 'User' ],
 		 $_POST[ 'Password' ], $Authentication_Type, $Salt ) ) {
 			$Authentication->addAttempt( $_POST[ 'User' ] );
@@ -430,6 +435,7 @@ switch( $Action ) {
 			exit();
 		}
 	} catch( Exception $e ) {
+		// Si problème d'authentification et que l'utilisateur existe alors incrémentation du nombre de tentative de connexion.
 		$Authentication->addAttempt( $_POST[ 'User' ] );
 			
 		$alert_message = $Secrets->formatHistoryMessage( $e->getMessage() . ' (' .
@@ -442,6 +448,7 @@ switch( $Action ) {
 		exit();
 	}
 
+	// Si l'indicateur de changement de mot de passe est à "vrai". L'utilisateur doit changer son mot de passe.
 	if ( $_SESSION[ 'idn_change_authenticator' ] == 1 ) {
 		$alert_message = $Secrets->formatHistoryMessage( $L_Change_Password . ' ' .
 		 $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .
@@ -455,6 +462,7 @@ switch( $Action ) {
 		break;
 	}
 
+	// Tout est normal, l'utilisateur arrive sur son tableau de bord.
 	$alert_message = $Secrets->formatHistoryMessage( $L_Connection . ' ' .
 	 $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .
 	 ' (' . $_SESSION[ 'idn_login' ] . ')' );

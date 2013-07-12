@@ -1429,21 +1429,22 @@ switch( $Action ) {
 		 "      <tfoot><tr><th colspan=\"7\">" );
 		 
 		if ( array_key_exists( 'home', $_GET ) ) {
-			print( "<a class=\"button\" href=\"SM-home.php\">" . 
+			print( "<a class=\"button\" id=\"iB_Close\" href=\"SM-home.php\">" . 
 			 $L_Return . "</a>\n" );
 		} else {
-			print( "<a class=\"button\" href=\"javascript:window.close();\">" . 
+			print( "<a class=\"button\" id=\"iB_Close\" href=\"javascript:window.close();\">" . 
 			 $L_Close . "</a>\n" );
 		}
 		 
 		print( "      </th></tr></tfoot>\n" .
 		 "     </table>\n" .
-//		 "     <script type=\"text/javascript\">\n" .
-//		 "<!--\n" .
+		 "     <script type=\"text/javascript\">\n" .
+		 "<!--\n" .
+		 "      document.getElementById('iB_Close').focus();\n" .
 //		 "      document.fSelect.secret.focus();\n" .
 //		 "      document.fSelect..select();\n" .
-//		 "//-->\n" .
-//		 "     </script>\n" .
+		 "//-->\n" .
+		 "     </script>\n" .
 		 "    </div> <!-- fin : scroller -->\n" .
 		 "    </div> <!-- fin : dashboard -->\n" );
 	}
