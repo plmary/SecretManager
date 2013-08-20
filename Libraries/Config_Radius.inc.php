@@ -7,7 +7,7 @@
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
 * @version 1.0
-* @Modified 09/04/2013
+* @Modified 18/08/2013
 *
 */
 

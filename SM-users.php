@@ -24,27 +24,25 @@ if ( array_key_exists( 'Lang', $_GET ) ) {
 	$_SESSION[ 'Language' ] = $_GET[ 'Lang' ];
 }	
 
-$Script = $_SERVER[ 'SCRIPT_NAME' ];
+$Script = URL_BASE . $_SERVER[ 'SCRIPT_NAME' ];
 $Server = $_SERVER[ 'SERVER_NAME' ];
 $URI = $_SERVER[ 'REQUEST_URI' ];
 
 if ( ! isset( $_SESSION[ 'idn_id' ] ) )
-	header( 'Location: https://' . $Server . dirname( $Script ) . '/SM-login.php' );
+	header( 'Location: ' . URL_BASE . '/SM-login.php' );
 
 if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
-	header( 'Location: https://' . $Server . $URI );
+	header( 'Location: ' . URL_BASE . $URI );
 
 $Action = '';
 $Choose_Language = 0;
 
-include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
-$Authentication = new IICA_Authentications( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Authentication = new IICA_Authentications();
 
 if ( ! $Authentication->is_connect() ) {
-   header( 'Location: SM-login.php' );
+   header( 'Location: '. URL_BASE . 'SM-login.php' );
 	exit();
 }
 
@@ -59,24 +57,17 @@ include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Civilities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Entities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
-include( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
 
 $PageHTML = new HTML();
 
-$Identities = new IICA_Identities( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Identities = new IICA_Identities();
 
-$Civilities = new IICA_Civilities( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Civilities = new IICA_Civilities();
 
-$Entities = new IICA_Entities( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Entities = new IICA_Entities();
 
 $Security = new Security();
-
-$Parameters = new IICA_Parameters( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
 
 if ( array_key_exists( 'Expired', $_SESSION ) ) {
@@ -163,7 +154,18 @@ switch( $Action ) {
 		} else {
 			$Buttons = $addButton ;
 		}
-		
+
+
+		if ( array_key_exists( 'particular', $_GET ) ) {
+			$particular = $_GET[ 'particular' ];
+			$Buttons = "<span style=\"float: right\">" .
+				 "<a class=\"button\" href=\"SM-home.php\">" . $L_Return . "</a></span>";
+
+		} else {
+			$particular = '';
+		}
+
+
 		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
@@ -174,7 +176,7 @@ switch( $Action ) {
 
 
 		// Récupère la liste détaillée des Identités (avec toutes les liaisons)
-		$List_Identities = $Identities->detailedListIdentities( $orderBy );
+		$List_Identities = $Identities->detailedListIdentities( $orderBy, 0, $particular );
 
 		print( "       <tr class=\"pair\">\n" );
 	 
@@ -291,9 +293,9 @@ switch( $Action ) {
 
 
 			if ( $Identity->idn_super_admin == 0 ) {
-				$Flag_Admin = '<img class="no-border" src="' . DIR_PICTURES . '/bouton_non_coche.gif" alt="Ko" />';
+				$Flag_Admin = '<img class="no-border" src="' . URL_PICTURES . '/bouton_non_coche.gif" alt="Ko" />';
 			} else {
-				$Flag_Admin = '<img class="no-border" src="' . DIR_PICTURES . '/bouton_coche.gif" alt="Ko" />';
+				$Flag_Admin = '<img class="no-border" src="' . URL_PICTURES . '/bouton_coche.gif" alt="Ko" />';
 		  	}
 
 
@@ -362,9 +364,9 @@ switch( $Action ) {
 			}
 		
 			if ( $Flag_Status == 1 ) {
-				$Flag_Status = '<img src="' . DIR_PICTURES . '/s_attention.png" class="no-border" alt="Ko" title="' . $Msg_Error . '" />';
+				$Flag_Status = '<img src="' . URL_PICTURES . '/s_attention.png" class="no-border" alt="Ko" title="' . $Msg_Error . '" />';
 			} else {
-				$Flag_Status = '<img src="' . DIR_PICTURES . '/s_okay.png" class="no-border" alt="Ok" title="Ok" />';
+				$Flag_Status = '<img src="' . URL_PICTURES . '/s_okay.png" class="no-border" alt="Ok" title="Ok" />';
 			}
 
 			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
@@ -383,16 +385,16 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=M&idn_id=" . $Identity->idn_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_usredit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_usredit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=D&idn_id=" . $Identity->idn_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_usrdrop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_usrdrop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=V&idn_id=" . $Identity->idn_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_usrcheck.png\" alt=\"" . $L_Verify . "\" title=\"" . $L_Verify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_usrcheck.png\" alt=\"" . $L_Verify . "\" title=\"" . $L_Verify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=P&idn_id=" . $Identity->idn_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_usrlist.png\" alt=\"" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_usrlist.png\" alt=\"" .
 			  $L_Profiles . "\" title=\"" . $L_Profiles_Associate . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
@@ -511,7 +513,7 @@ switch( $Action ) {
 
 
  case 'ADDX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 	
@@ -572,7 +574,7 @@ switch( $Action ) {
 
 
  case 'D':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
@@ -587,9 +589,9 @@ switch( $Action ) {
 		$Sex = $L_Woman;
 
 	if ( $Identity->idn_super_admin == 1 )
-		$Flag_Administrator = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+		$Flag_Administrator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 	else
-		$Flag_Administrator = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+		$Flag_Administrator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 
 	print( "     <form name=\"deleteEntity\" method=\"post\" action=\"" . $Script . 
@@ -645,7 +647,7 @@ switch( $Action ) {
 
 
  case 'DX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
@@ -682,7 +684,7 @@ switch( $Action ) {
 
 
  case 'M':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
@@ -854,7 +856,7 @@ switch( $Action ) {
 
 
  case 'MX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
 
 	if ( isset( $_POST[ 'Administrator' ] ) ) {
 		if ( $_POST[ 'Administrator' ] == 'on' )
@@ -917,7 +919,7 @@ switch( $Action ) {
 
 
  case 'V':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
 
 	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 	
@@ -929,9 +931,9 @@ switch( $Action ) {
 	$Identity = $Identities->detailedGet( $idn_id );
 	
 	if ( $Identity->idn_super_admin == 1 )
-		$Flag_Check_Administrator = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ko\" />";
+		$Flag_Check_Administrator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ko\" />";
 	else
-		$Flag_Check_Administrator = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+		$Flag_Check_Administrator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 
 	if ( $Identity->cvl_sex == 0 )
@@ -1141,10 +1143,10 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=ENT_M&ent_id=" . $Entity->ent_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=ENT_D&ent_id=" . $Entity->ent_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
 		}
@@ -1155,7 +1157,7 @@ switch( $Action ) {
 		 "     </table>\n" .
 		 "\n" );
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
 
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
@@ -1166,7 +1168,7 @@ switch( $Action ) {
 
 
  case 'ENT_C':
-	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
+	$Return_Page = $Script . '?action=ENT_V';
 
 	print(
 	 "     <form name=\"c_entity\" method=\"post\" action=\"" . $Script . "?action=ENT_CX\">\n" .
@@ -1205,7 +1207,7 @@ switch( $Action ) {
 
 
  case 'ENT_CX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
+	$Return_Page = $Script . '?action=ENT_V';
 
 	if ( ! $Code = $Security->valueControl( $_POST[ 'Code' ] ) ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Code)', $Return_Page, 1 ) );
@@ -1241,7 +1243,7 @@ switch( $Action ) {
 
 
  case 'ENT_M':
-	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
+	$Return_Page = $Script . '?action=ENT_V';
 
 	if ( ($ent_id = $Security->valueControl( $_GET[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
@@ -1287,7 +1289,7 @@ switch( $Action ) {
 
 
  case 'ENT_MX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
+	$Return_Page = $Script . '?action=ENT_V';
 	
 	if ( ($ent_id = $Security->valueControl( $_POST[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
@@ -1329,7 +1331,7 @@ switch( $Action ) {
 
 
  case 'ENT_D':
-	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
+	$Return_Page = $Script . '?action=ENT_V';
 	
 	if ( ($ent_id = $Security->valueControl( $_GET[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_ERR_CREA_Entity . ' (ent_id)', $Return_Page, 1 ) );
@@ -1374,7 +1376,7 @@ switch( $Action ) {
 
 
  case 'ENT_DX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=ENT_V';
+	$Return_Page = $Script . '?action=ENT_V';
  
 	if ( ($ent_id = $Security->valueControl( $_POST[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
@@ -1515,10 +1517,10 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=CVL_M&id=" . $Civility->cvl_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=CVL_D&id=" . $Civility->cvl_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
 		}
@@ -1582,7 +1584,7 @@ switch( $Action ) {
 
 
  case 'CVL_CX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=CVL_V';
+	$Return_Page = $Script . '?action=CVL_V';
  
 	if ( ! $Last_Name = $Security->valueControl( $_POST[ 'Last_Name' ] ) ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Last_Name)', $Return_Page, 1 ) );
@@ -1693,7 +1695,7 @@ switch( $Action ) {
 
 
  case 'CVL_MX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=CVL_V';
+	$Return_Page = $Script . '?action=CVL_V';
  
 	if ( ($cvl_id = $Security->valueControl( $_POST[ 'cvl_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
@@ -1793,7 +1795,7 @@ switch( $Action ) {
 
 
  case 'CVL_DX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=CVL_V';
+	$Return_Page = $Script . '?action=CVL_V';
  
 	if ( ($cvl_id = $Security->valueControl( $_POST[ 'cvl_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
@@ -1841,7 +1843,7 @@ switch( $Action ) {
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 	
-	$Profiles = new IICA_Profiles( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Script, 1 ) );
@@ -1922,7 +1924,7 @@ switch( $Action ) {
 			 "           <td class=\"td-aere align-middle\"><label for=\"P_" . $Profile->prf_id . "\">" .
 			 stripslashes( $Profile->prf_label ) . "</label></td>\n" .
 			 "           <td class=\"align-center\"><a class=\"simple\" href=\"?action=PRF_G&prf_id=" . $Profile->prf_id . "\">" .
-			 "<img src=\"" . DIR_PICTURES . "/b_usrscr_2.png\" class=\"no-border\" alt=\"" . $L_Groups_Associate . "\" title=\"" . $L_Groups_Associate . "\" /></a></td>\n" .
+			 "<img src=\"" . URL_PICTURES . "/b_usrscr_2.png\" class=\"no-border\" alt=\"" . $L_Groups_Associate . "\" title=\"" . $L_Groups_Associate . "\" /></a></td>\n" .
 			 "          </tr>\n" );
 		}
 	}
@@ -1954,7 +1956,7 @@ switch( $Action ) {
 
 
  case 'PX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=P&idn_id=' .
+	$Return_Page = $Script . '?action=P&idn_id=' .
 	 $_GET[ 'idn_id' ];
  
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
@@ -1975,7 +1977,7 @@ switch( $Action ) {
 		exit();
 	}
 
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . 'https://' . $Server . $Script . "\">\n" .
+	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "\">\n" .
 		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Association_Terminated . "\" />\n" .
 		"</form>\n" .
 		"<script>document.fInfoMessage.submit();</script>\n" );
@@ -1989,7 +1991,7 @@ switch( $Action ) {
 		exit();
 	}
 
-	$Return_Page = 'https://' . $Server . $Script . '?action=M&idn_id=' . $idn_id;
+	$Return_Page = $Script . '?action=M&idn_id=' . $idn_id;
  
 	try {
 		$Authentication->resetAttempt( $idn_id );
@@ -2007,7 +2009,7 @@ switch( $Action ) {
 
 
  case 'RST_EXPX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
 
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
@@ -2032,7 +2034,7 @@ switch( $Action ) {
 
 
  case 'RST_DISX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
@@ -2068,7 +2070,7 @@ switch( $Action ) {
 
 
  case 'PRF_V':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
@@ -2105,8 +2107,7 @@ switch( $Action ) {
 		$orderBy = 'label';
 	}
 
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 	print( "    <div id=\"dashboard\">\n" );
 
@@ -2165,13 +2166,13 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF_M&prf_id=" . $Profile->prf_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF_D&prf_id=" . $Profile->prf_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF_G&prf_id=" . $Profile->prf_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_usrscr_2.png\" alt=\"" . $L_Groups_Associate . "\" title=\"" . $L_Groups_Associate . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_usrscr_2.png\" alt=\"" . $L_Groups_Associate . "\" title=\"" . $L_Groups_Associate . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
 		}
@@ -2191,14 +2192,13 @@ switch( $Action ) {
 
 
  case 'PRF_A':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
 	$P_Action = $_SERVER[ 'HTTP_REFERER' ];
 
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 	if ( $Authentication->is_administrator() ) {
 		print( "    <form name=\"add_profil\" method=\"post\" action=\"" . $Script . "?action=PRF_AX\" />\n" .
@@ -2236,12 +2236,11 @@ switch( $Action ) {
 
 
  case 'PRF_AX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=PRF_V';
+	$Return_Page = $Script . '?action=PRF_V';
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 	if ( $Authentication->is_administrator() ) {
 		if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
@@ -2279,7 +2278,7 @@ switch( $Action ) {
 
 
  case 'PRF_M':
-	$Return_Page = 'https://' . $Server . $Script . '?action=PRF_V';
+	$Return_Page = $Script . '?action=PRF_V';
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
@@ -2292,8 +2291,7 @@ switch( $Action ) {
 		$_SESSION[ 'p_action' ] = '?action=P&prf_id=' . $prf_id;
 	}
 
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 
 	try {
@@ -2343,12 +2341,11 @@ switch( $Action ) {
 
 
  case 'PRF_MX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=PRF_V';
+	$Return_Page = $Script . '?action=PRF_V';
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 	if ( $Authentication->is_administrator() ) {
 		if ( ($prf_id = $Security->valueControl( $_POST[ 'prf_id' ], 'NUMERIC' )) == -1
@@ -2395,7 +2392,7 @@ switch( $Action ) {
 
 
  case 'PRF_D':
-	$Return_Page = 'https://' . $Server . $Script . '?action=PRF_V';
+	$Return_Page = $Script . '?action=PRF_V';
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
@@ -2404,8 +2401,7 @@ switch( $Action ) {
 		break;
 	}
 
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 
 	try {
@@ -2450,12 +2446,11 @@ switch( $Action ) {
 
 
  case 'PRF_DX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=PRF_V';
+	$Return_Page = $Script . '?action=PRF_V';
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 	if ( $Authentication->is_administrator() ) {
 		if ( ($prf_id = $Security->valueControl( $_POST[ 'prf_id' ], 'NUMERIC' )) == -1
@@ -2495,22 +2490,19 @@ switch( $Action ) {
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
 	
 
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
 	$Profile = $Profiles->get( $_GET[ 'prf_id' ] );
 
 	$List_Groups_Associated = $Profiles->listGroups( $_GET[ 'prf_id' ] );
 	
 
-	$Groups = new IICA_Groups( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Groups = new IICA_Groups();
 
 	$List_Groups = $Groups->listGroups();
 
 	
-	$Rights = new IICA_Referentials( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Rights = new IICA_Referentials();
 
 	$List_Rights = $Rights->listRights();
 
@@ -2540,8 +2532,7 @@ switch( $Action ) {
 		 "       </tr>\n" 
 		);
 		
-		$manageGroups = "         <a class=\"button\" href=\"https://" . $Server .
-		 dirname( $Script ) . "/SM-secrets.php?rp=users-prf_g&prf_id=" .
+		$manageGroups = "         <a class=\"button\" href=\"" . URL_BASE . "/SM-secrets.php?rp=users-prf_g&prf_id=" .
 		 $_GET[ 'prf_id' ] . "\">" . $L_Groups_Management . "</a>\n" ;
 		
 		print( "       <tr>\n" .
@@ -2637,18 +2628,16 @@ switch( $Action ) {
 
 
  case 'PRF_GX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=PRF_V';
+	$Return_Page = $Script . '?action=PRF_V';
  
 	include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
 	
 
-	$Groups = new IICA_Groups( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Groups = new IICA_Groups();
 
-	$Secrets = new IICA_Secrets( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Secrets = new IICA_Secrets();
 
 
 	if ( ! $prf_id = $Security->valueControl( $_GET[ 'prf_id' ] ) ) {
@@ -2656,7 +2645,7 @@ switch( $Action ) {
 		break;
 	}
 
-	$Verbosity_Alert = $Parameters->get( 'verbosity_alert' );
+	$Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 
 	try {
 		if ( $Verbosity_Alert == 2 ) {

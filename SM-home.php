@@ -25,12 +25,12 @@ if ( array_key_exists( 'Lang', $_GET ) ) {
    $_SESSION[ 'Language' ] = $_GET[ 'Lang' ];
 }
 	
-$Script = $_SERVER[ 'SCRIPT_NAME' ];
+$Script = URL_BASE . $_SERVER[ 'SCRIPT_NAME' ];
 $Server = $_SERVER[ 'SERVER_NAME' ];
 $URI = $_SERVER[ 'REQUEST_URI' ];
 
 if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
-	header( 'Location: https://' . $Server . $URI );
+	header( 'Location: ' . URL_BASE . $URI );
 
 $Action = '';
 $Choose_Language = 0;
@@ -43,7 +43,7 @@ $Authentication = new IICA_Authentications(
  $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
 if ( ! $Authentication->is_connect() ) {
-   header( 'Location: SM-login.php' );
+   header( 'Location: ' . URL_BASE . '/SM-login.php' );
 	exit();
 }
 
@@ -63,17 +63,13 @@ $PageHTML = new HTML();
 
 
 // Charge les différents objets utiles à cet écran.
-$Identities = new IICA_Identities(
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Identities = new IICA_Identities();
 
-$Groups = new IICA_Groups(
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Groups = new IICA_Groups();
 
-$Secrets = new IICA_Secrets(
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Secrets = new IICA_Secrets();
 
-$Referentials = new IICA_Referentials( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Referentials = new IICA_Referentials();
 
 $Security = new Security();
 
@@ -90,7 +86,7 @@ $groupsRights = $Authentication->getGroups( $_SESSION[ 'idn_id' ] );
 
 // Contrôle si la session n'a pas expirée.
 if ( ! $Authentication->validTimeSession() ) {
-	header( 'Location: SM-login.php?action=DCNX&expired' );
+	header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX&expired' );
 } else {
 	$Authentication->saveTimeSession();
 }
@@ -193,9 +189,9 @@ switch( $Action ) {
 		$scr_comment = $Security->XSS_Protection( $_POST[ 'scr_comment' ] );
 	}
 
+
  default:
 	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-	
 	
 	print( "    <div id=\"dashboard\">\n\n" );
 
@@ -210,7 +206,6 @@ switch( $Action ) {
 		 "     }\n" .
 		 "</script>\n" .
 		 "     <div id=\"info\" onclick=\"javascript:cacherInfo();\">" .
-//		 "     <div id=\"icon-close\" class=\"icon10 div-right\"></div>\n" .
 		 "     <button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>\n" .
 		 $L_Last_Connection . " : <b>" . $_SESSION[ 'idn_last_connection' ] . "</b><br/>" .
 		 $L_Updated_Authentication . " : <b>" . $_SESSION[ 'idn_updated_authentication' ] .
@@ -224,14 +219,11 @@ switch( $Action ) {
 		include( DIR_LIBRARIES . '/Class_IICA_Entities_PDO.inc.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Civilities_PDO.inc.php' );
 		
-		$Profiles = new IICA_Profiles(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Profiles = new IICA_Profiles();
 
-		$Entities = new IICA_Entities(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Entities = new IICA_Entities();
 
-		$Civilities = new IICA_Civilities(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Civilities = new IICA_Civilities();
 
 
 		print( "\n" .
@@ -250,8 +242,8 @@ switch( $Action ) {
 		 $Identities->total() . "&nbsp;</span></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"impair\">\n" .
-		 "        <td>" . $L_Total_Users_Disabled . " : <span class=\"green bold\">" .
-		 $Identities->totalDisabled() . "</span></td>\n" .
+		 "        <td><a class=\"surline\" href=\"SM-users.php?particular=disable\">" . $L_Total_Users_Disabled . " : <span class=\"green bold\">" .
+		 $Identities->totalDisabled() . "</span></a></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"impair\">\n" .
 		 "        <td>" . $L_Total_Users_Expired . " : <span class=\"green bold\">" .
@@ -383,7 +375,7 @@ switch( $Action ) {
 		$searchButton = '<span style="float: right">' .
 		 '<a id="search_icon" class="simple" style="cursor: pointer;" ' .
 		 'onclick="javascript:hiddeTableBody();">' .
-		 '<img class="no-border" src="' . DIR_PICTURES . '/b_search.png" alt="'. $L_Search . 
+		 '<img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
 		 '" title="' . $L_Search . '" />' .
 		 '</a></span>' ;
 
@@ -551,14 +543,14 @@ switch( $Action ) {
 	$myButtons = '';
 
 	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
-    	$addButton = '<a class="btn btn-small" href="SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
+    	$addButton = '<a class="btn btn-small" href="' . URL_BASE . '/SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
 
 		if ( $Search_Style == 2 ) {
 		   	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' .
 			 $Script . '?action=R2" >' .
 		   	 '<div class="input-append">' .
 			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
-			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . DIR_PICTURES . '/b_search.png" alt="'. $L_Search . 
+			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
 			 '" /></button>' .
 			 '</div>' .
 			 $addButton .
@@ -570,7 +562,7 @@ switch( $Action ) {
 			 $Script . '?action=R2" >' .
 		   	 '<div class="input-append">' .
 			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
-			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . DIR_PICTURES . '/b_search.png" alt="'. $L_Search . 
+			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
 			 '" /></button>' .
 			 '</div>' .
 			 '</form>';
@@ -735,23 +727,21 @@ switch( $Action ) {
 		else $Home = 'home';
 		
 		if ( $Authentication->is_administrator() or $Update_Right ) {
-			print( "         <a class=\"simple\" href=\"https://" .
-			 $Server . dirname( $Script ) .
+			print( "         <a class=\"simple\" href=\"" . URL_BASE .
 			 "/SM-secrets.php?action=SCR_M&scr_id=" . $Secret->scr_id .
-			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" .
+			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" .
 			 $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" );
 		}
 		
 		if ( $Authentication->is_administrator() or $Delete_Right ) {
-			print( "         <a class=\"simple\" href=\"https://" . 
-			 $Server . dirname( $Script ) .
+			print( "         <a class=\"simple\" href=\"" . URL_BASE .
 			 "/SM-secrets.php?action=SCR_D&scr_id=" . $Secret->scr_id .
-			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" .
+			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" .
 			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" );
 		}
 
 		print( "         <a class=\"simple\" href=\"javascript:viewPassword( " . 
-		 $Secret->scr_id . " );\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_eye.png\" alt=\"" .
+		 $Secret->scr_id . " );\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_eye.png\" alt=\"" .
 		 $L_Password_View . "\" title=\"" . $L_Password_View . "\" /></a>\n" );
 		print( "        </td>\n" .
 		 "       </tr>\n" );

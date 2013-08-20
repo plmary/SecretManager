@@ -22,26 +22,24 @@ if ( array_key_exists( 'Lang', $_GET ) ) {
 	$_SESSION[ 'Language' ] = $_GET[ 'Lang' ];
 }	
 
-$Script = $_SERVER[ 'SCRIPT_NAME' ];
+$Script = URL_BASE . $_SERVER[ 'SCRIPT_NAME' ];
 $Server = $_SERVER[ 'SERVER_NAME' ];
 $URI = $_SERVER[ 'REQUEST_URI' ];
 $IP_Source = $_SERVER[ 'REMOTE_ADDR' ];
 
 if ( ! isset( $_SESSION[ 'idn_id' ] ) )
-	header( 'Location: https://' . $Server . dirname( $Script ) . '/SM-login.php' );
+	header( 'Location: ' . URL_BASE . '/SM-login.php' );
 
 if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
-	header( 'Location: https://' . $Server . $URI );
+	header( 'Location: ' . URL_BASE . $URI );
 
 $Action = '';
 $Choose_Language = 0;
 $Logout_button = 1;
 
-include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
-$Authentication = new IICA_Authentications( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Authentication = new IICA_Authentications();
 
 if ( ! $Authentication->is_connect() ) {
    header( 'Location: SM-login.php' );
@@ -57,14 +55,10 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) 
 // Charge les objets
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-include( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 
 $PageHTML = new HTML();
-
-$Parameters = new IICA_Parameters( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
 $Security = new Security();
 
@@ -77,12 +71,12 @@ if ( array_key_exists( 'action', $_GET ) ) {
 if ( array_key_exists( 'Expired', $_SESSION ) ) {
 	// Contrôle si la session n'a pas expirée.
 	if ( ! $Authentication->validTimeSession() ) {
-		header( 'Location: SM-login.php?action=DCNX&expired' );
+		header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX&expired' );
 	} else {
 		$Authentication->saveTimeSession();
 	}
 } else {
-	header( 'Location: SM-login.php?action=DCNX' );
+	header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX' );
 }
 
 	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
@@ -109,7 +103,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "     }\n" .
 		 "</script>\n" .
 		 "    <div id=\"success\">\n" .
-		 $_POST[ 'iMessage' ] .
+		 stripslashes( $_POST[ 'iMessage' ] ) .
 		 "    </div>\n" );
 	}
 
@@ -196,6 +190,9 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		print( $L_Welcome_Text . "\n" );
 		break;
 
+
+	 // ====================
+	 // Gestion des Alertes
 	 case 'A':
 		print(
 		 "     <form method=\"post\" name=\"alert_form\" action=\"" . $Script . "?action=AX\">\n" .
@@ -215,7 +212,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		$Detailed_Selected = '' ;
 		$Normal_Selected = '';
 
-		switch ( $Parameters->get( 'verbosity_alert' ) ) {
+		switch ( $PageHTML->getParameter( 'verbosity_alert' ) ) {
 		 case '2':
 			$Detailed_Selected = ' selected ' ;
 			break;
@@ -242,7 +239,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 		$Selected = '';
 
-		if ( $Parameters->get( 'alert_syslog' ) == '1' )
+		if ( $PageHTML->getParameter( 'alert_syslog' ) == '1' )
 			$Selected = ' selected ' ;
 			
 		print( "          <option value=\"0\">" . $L_No . "</option>\n" .
@@ -258,7 +255,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 		$Selected = '';
 
-		if ( $Parameters->get( 'alert_mail' ) == '1' )
+		if ( $PageHTML->getParameter( 'alert_mail' ) == '1' )
 			$Selected = ' selected ' ;
 			
 		print( "          <option value=\"0\">" . $L_No . "</option>\n" .
@@ -269,13 +266,13 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "          <tr>\n" .
 		 "           <td>" . $L_From . "</td>\n" .
 		 "           <td><input type=\"text\" size=\"30\" name=\"mail_from\" value=\"".
-		  $Parameters->get( 'mail_from' ) . "\" title=\"" . $L_Mail_From . 
+		  $PageHTML->getParameter( 'mail_from' ) . "\" title=\"" . $L_Mail_From . 
 		  "\" /></td>\n" .
 		 "          </tr>\n" .
 		 "          <tr>\n" .
 		 "           <td>" . $L_To . "</td>\n" .
 		 "           <td><textarea name=\"mail_to\" title=\"" . $L_Mail_To . "\">".
-		  $Parameters->get( 'mail_to' ) . "</textarea></td>\n" .
+		  $PageHTML->getParameter( 'mail_to' ) . "</textarea></td>\n" .
 		 "          </tr>\n" .
 		 "         </table>\n" .
 		 "        </td>\n" .
@@ -322,38 +319,42 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 			break;
 		}
 
-		if ( ($Mail_From = $Security->valueControl( $_POST[ 'mail_from' ],
-		 'PRINTABLE' )) == -1 ) {
-			print( "     <h1>" . $L_Invalid_Value . " (mail_from)</h1>" );
-			break;
-		}
+		if ( $Alert_Mail ) {
+			if ( ($Mail_From = $Security->valueControl( $_POST[ 'mail_from' ] )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (mail_from)</h1>" );
+				break;
+			}
 
-		if ( ($Mail_To = $Security->valueControl( $_POST[ 'mail_to' ],
-		 'PRINTABLE' )) == -1 ) {
-			print( "     <h1>" . $L_Invalid_Value . " (mail_to)</h1>" );
-			break;
+			if ( ($Mail_To = $Security->valueControl( $_POST[ 'mail_to' ] )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (mail_to)</h1>" );
+				break;
+			}
 		}
 
 		try {
-			$Parameters->set( 'verbosity_alert', $Verbosity_Alert );
-			$Parameters->set( 'alert_syslog', $Alert_Syslog );
-			$Parameters->set( 'alert_mail', $Alert_Mail );
-			$Parameters->set( 'mail_from', $Mail_From );
-			$Parameters->set( 'mail_to', $Mail_To );
+			$PageHTML->setParameter( 'verbosity_alert', $Verbosity_Alert );
+			$PageHTML->setParameter( 'alert_syslog', $Alert_Syslog );
+			$PageHTML->setParameter( 'alert_mail', $Alert_Mail );
+			if ( $Alert_Mail ) {
+				$PageHTML->setParameter( 'mail_from', $Mail_From );
+				$PageHTML->setParameter( 'mail_to', $Mail_To );
+			}
 		} catch( PDOException $e ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_MAJ_Alert, "https://" . $Server . $Script .
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MAJ_Alert, $Script .
 			 "?action=P&id=" . $scr_id, 1 ) );
 			exit();
 		}
 
-		print( "<form method=\"post\" name=\"fMessage\" action=\"https://" . $Server . $Script .
-		 "?action=SCR\">\n" .
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=A\">\n" .
 			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Parameters_Updated . "\" />\n" .
 			"</form>\n" .
 			"<script>document.fMessage.submit();</script>" );
 
 		break;
 
+
+	 // ================================================
+	 // Gestion des modes d'authentification des utilisateurs
 	 case 'C':
 	 	if ( file_exists( DIR_LIBRARIES . '/Config_Authentication.inc.php' ) ) {
 			include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
@@ -369,7 +370,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		
 		if ( ! isset( $_LDAP_Port ) ) $_LDAP_Port = 389;
 	 	
-		switch( $Parameters->get( 'authentication_type' ) ) {
+		switch( $PageHTML->getParameter( 'authentication_type' ) ) {
 		 case 'D':
 			$Password_Selected = 'checked ';
 			$Radius_Selected = '';
@@ -447,7 +448,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 " }\n" .
 		 "}" .
 		 "     </script>\n" .
-		 "     <form method=\"post\" name=\"Parameters\" action=\"" . $Script . "?action=CX\">\n" .
+		 "     <form method=\"post\" name=\"PageHTML\" action=\"" . $Script . "?action=CX\">\n" .
 		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:90%\">\n" .
 		 "       <thead>\n" .
 		 "       <tr>\n" .
@@ -634,7 +635,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 $L_Expiration_Time . "</td>\n" .
 		 "        <td class=\"pair\" colspan=\"2\">\n" .
 		 "         <input type=\"text\" name=\"Expiration_Time\" value=\"" .
-		 $Parameters->get( 'expiration_time' ) . "\" />\n" .
+		 $PageHTML->getParameter( 'expiration_time' ) . "\" />\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
@@ -646,7 +647,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "      </table>\n" .
 		 "     </form>\n" .
 		 "     <script>\n" .
-		 "activeFields('" . $Parameters->get( 'authentication_type' ) . "');\n" .
+		 "activeFields('" . $PageHTML->getParameter( 'authentication_type' ) . "');\n" .
 		 "     </script>\n"
 		);
 		break;
@@ -765,13 +766,12 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		}
 
 		try {
-			$Parameters->set( 'authentication_type', $authentication_type );
-			$Parameters->set( 'expiration_time', $_POST[ 'Expiration_Time' ] );
+			$PageHTML->setParameter( 'authentication_type', $authentication_type );
+			$PageHTML->setParameter( 'expiration_time', $_POST[ 'Expiration_Time' ] );
 		} catch( PDOException $e ) {
 			print( "   <div id=\"alert\">\n" .
 			 $L_ERR_MAJ_Connection .
-			 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-			 "?action=P&id=" . $scr_id . "\">" .
+			 "      <a class=\"button\" href=\"" . $Script . "?action=P&id=" . $scr_id . "\">" .
 			 $L_Return . "</a>\n" .
 			 "   </div>\n" );
 			break;
@@ -780,7 +780,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 		switch( $authentication_type ) {
 		 case 'D':
-			$Output = @fopen( 'Libraries/Config_Authentication.inc.php', 'w+' );
+			$Output = @fopen( DIR_LIBRARIES . '/Config_Authentication.inc.php', 'w+' );
 			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .
@@ -804,8 +804,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 "?>\n" ) === false ) {
 				print( "   <div id=\"alert\">\n" .
 				 $L_ERR_MAJ_Connection .
-				 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-				 "?action=P&id=" . $scr_id . "\">" .
+				 "      <a class=\"button\" href=\"" . $Script . "?action=P&id=" . $scr_id . "\">" .
 				 $L_Return . "</a>\n" .
 				 "   </div>\n" );
 				break 2;
@@ -816,7 +815,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 			break;
 			
 		 case 'R':
-			$Output = @fopen( 'Libraries/Config_Radius.inc.php', 'w+' );
+			$Output = @fopen( DIR_LIBRARIES . '/Config_Radius.inc.php', 'w+' );
 			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .
@@ -839,8 +838,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 "?>\n" ) === false ) {
 				print( "   <div id=\"alert\">\n" .
 				 $L_ERR_MAJ_Connection .
-				 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-				 "?action=P&id=" . $scr_id . "\">" .
+				 "      <a class=\"button\" href=\"" . $Script . "?action=P&id=" . $scr_id . "\">" .
 				 $L_Return . "</a>\n" .
 				 "   </div>\n" );
 				break 2;
@@ -851,7 +849,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 			break;
 
 		 case 'L':
-			$Output = @fopen( 'Libraries/Config_LDAP.inc.php', 'w+' );
+			$Output = @fopen( DIR_LIBRARIES . '/Config_LDAP.inc.php', 'w+' );
 			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .
@@ -875,8 +873,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 "?>\n" ) === false ) {
 				print( "   <div id=\"alert\">\n" .
 				 $L_ERR_MAJ_Connection .
-				 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-				 "?action=P&id=" . $scr_id . "\">" .
+				 "      <a class=\"button\" href=\"" . $Script . "?action=P&id=" . $scr_id . "\">" .
 				 $L_Return . "</a>\n" .
 				 "   </div>\n" );
 				break 2;
@@ -887,25 +884,24 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 			break;
 		}
 
-		print( "     <div id=\"success\">\n" .
-		 "      <img class=\"no-border\" src=\"Pictures/s_success.png\" alt=\"Success\" />\n" .
-		 $L_Parameters_Updated .
-		 "      <a class=\"button\" href=\"https://" . $Server . $Script .
-		 "?action=SCR\">" . $L_Return . "</a>\n" .
-		 "     </div>\n" );
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=C\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Parameters_Updated . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
 
 		break;
 
+
+	 // ========================
+	 // Gestion de l'Historique
 	 case 'H':
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
-		$Identities = new IICA_Identities(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Identities = new IICA_Identities();
 		
-		$Secrets = new IICA_Secrets(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 
 		$List_Identities = $Identities->listIdentities( 1 );
 		
@@ -970,7 +966,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "        <th>" . $L_Date . "</th>\n" .
 		 "        <th>" . $L_IP_Source . "</th>\n" .
 		 "        <th>" . $L_Message . "</th>\n" .
-		 "        <th class=\"align-right\"><a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"Pictures/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></th>\n" .
+		 "        <th class=\"align-right\"><a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></th>\n" .
 		 "       </tr>\n" .
 		 "       <tr style=\"display: none;\" id=\"r_search\" class=\"pair\">\n" .
 		 "        <td><input type=\"text\" name=\"scr_id\" class=\"input-mini\" " .
@@ -1060,16 +1056,17 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "       <tr>\n" .
 		 "        <th colspan=\"2\">Total : <span class=\"green\">" . $Total . "</span></th>\n" .
 		 "        <th colspan=\"4\" class=\"align-center\">\n" .
-		 "<a class=\"btn\" href=\"" . $Script . "?action=H&start=0&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_premier.gif\" alt=\"First\" /></a>" .
-		 "<a class=\"btn\" href=\"?action=H&start=" . $previous . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_precedent.gif\" alt=\"Previous\" /></a>" .
+		 "<a class=\"btn\" href=\"" . $Script . "?action=H&start=0&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_premier.gif\" alt=\"First\" /></a>" .
+		 "<a class=\"btn\" href=\"?action=H&start=" . $previous . "&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_precedent.gif\" alt=\"Previous\" /></a>" .
 		 "&nbsp;" . ($start + 1) . "&nbsp;/&nbsp;" . ($start + $size) . "&nbsp;" .
-		 "<a class=\"btn\" href=\"?action=H&start=" . $next . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_suivant.gif\" alt=\"Next\" /></a>" .
-		 "<a class=\"btn\" href=\"?action=H&start=" . ( $Total - $size ) . "&size=" . $size . "\"><img class=\"no-border\" src=\"Pictures/bouton_dernier.gif\" alt=\"Last\" /></a>" .
+		 "<a class=\"btn\" href=\"?action=H&start=" . $next . "&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_suivant.gif\" alt=\"Next\" /></a>" .
+		 "<a class=\"btn\" href=\"?action=H&start=" . ( $Total - $size ) . "&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_dernier.gif\" alt=\"Last\" /></a>" .
 		 "        </th>\n" .
 		 "       </tr>\n" .
 		 "       </tfoot>\n" .
 		 "      </table>\n" .
 		 "     </form>\n" .
+
 		 "     <form method=\"post\" name=\"fPurge\" action=\"" . $Script .
 		 "?action=PH\">\n" .
 		 "      <p>" . $L_Specify_Purge_Date_History . " :" .
@@ -1145,7 +1142,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "        <th>" . $L_Date . "</th>\n" .
 		 "        <th>" . $L_IP_Source . "</th>\n" .
 		 "        <th>" . $L_Message . "<span style=\"float: right\">" .
-		 "<a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"Pictures/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></span></th>\n" .
+		 "<a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></span></th>\n" .
 		 "       </tr>\n" );
 		 
 
@@ -1164,8 +1161,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
-		$Secrets = new IICA_Secrets(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 
 		if ( array_key_exists( 'purge_date', $_POST ) ) {
 			$purge_date = $_POST[ 'purge_date' ];
@@ -1205,13 +1201,12 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
-		$Secrets = new IICA_Secrets(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 
 		if ( array_key_exists( 'purge_date', $_POST ) ) {
 			$purge_date = $_POST[ 'purge_date' ];
 		} else {
-			print( $PageHTML->infoBox( $L_No_Purge_Date, $Script ) );
+			print( $PageHTML->infoBox( $L_No_Purge_Date, $Script . '?action=H' ) );
 
 			exit();
 		}
@@ -1224,7 +1219,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message,
 			 $IP_Source );
 			
-			print( $PageHTML->infoBox( $e->getMessage(), $Script, 1 ) );
+			print( $PageHTML->infoBox( $e->getMessage(), $Script . '?action=H', 1 ) );
 
 			exit();
 		}
@@ -1235,7 +1230,12 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 			
-		print( $PageHTML->infoBox( $Message, $Script . '?action=H', 2 ) );
+//		print( $PageHTML->infoBox( $Message, $Script . '?action=H', 2 ) );
+
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=H\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . htmlentities( $Message ) . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
 		
 		break;
 
@@ -1251,7 +1251,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 			$Status = $e->getMessage();
 		}
 
-		if ( $Parameters->get( 'use_SecretServer' ) == '1' ) {
+		if ( $PageHTML->getParameter( 'use_SecretServer' ) == '1' ) {
 			$Select_Yes = 'selected';
 			$Select_No = '';
 		} else {
@@ -1364,8 +1364,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
-		$Secrets = new IICA_Secrets(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 
 		$Secret_Server = new Secret_Server();
 
@@ -1401,8 +1400,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
-		$Secrets = new IICA_Secrets(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 
 		$Secret_Server = new Secret_Server();
 
@@ -1456,10 +1454,9 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
-		$Secrets = new IICA_Secrets(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 
-		$Parameters->set( 'use_SecretServer', $_POST[ 'Use_SecretServer' ] );
+		$PageHTML->setParameter( 'use_SecretServer', $_POST[ 'Use_SecretServer' ] );
 
 		if ( $_POST[ 'Use_SecretServer' ] == 0 ) $Value = $L_No;
 		else $Value = $L_Yes;
@@ -1484,8 +1481,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
-		$Secrets = new IICA_Secrets(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 
 		$Secret_Server = new Secret_Server();
 

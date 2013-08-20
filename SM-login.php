@@ -29,14 +29,14 @@ if ( array_key_exists( 'Lang', $_GET ) ) {
    $_SESSION[ 'Language' ] = $_GET[ 'Lang' ];
 }
 
-$Script = $_SERVER[ 'SCRIPT_NAME' ];
+$Script = URL_BASE . $_SERVER[ 'SCRIPT_NAME' ];
 $Server = $_SERVER[ 'SERVER_NAME' ];
 $URI = $_SERVER[ 'REQUEST_URI' ];
 $IP_Source = $_SERVER[ 'REMOTE_ADDR' ];
 
 // Force la connexion en HTTPS.
 if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
-	header( 'Location: https://' . $Server . $URI );
+	header( 'Location: ' . URL_BASE . $URI );
 
 $Action = '';
 $Choose_Language = 1;
@@ -44,10 +44,6 @@ $Choose_Language = 1;
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
-include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
-include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
-include( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 
@@ -55,17 +51,8 @@ include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 // Initialise l'objet de gestion des pages HTML.
 $PageHTML = new HTML();
 
-// Initialise l'objet de gestion des authentifications.
-$Authentication = new IICA_Authentications( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
-
 // Initialise l'objet de gestion des paramètres.
-$Parameters = new IICA_Parameters( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
-
-// Initialise l'objet de gestion des paramètres.
-$Secrets = new IICA_Secrets( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Secrets = new IICA_Secrets();
 
 // Initialise l'objet de gestion des entrés et sorties.
 $Security = new Security();
@@ -97,9 +84,9 @@ switch( $Action ) {
 	// Stocke le message dans l'historique de SecretManager.
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-	$Authentication->disconnect();
+	$PageHTML->disconnect();
    
-	header( 'Location: https://' . $Server . dirname( $Script ) . '/SM-login.php' .
+	header( 'Location: ' . URL_BASE . '/SM-login.php' .
 	 $Signal );
 
 	break;
@@ -108,11 +95,12 @@ switch( $Action ) {
  // Traite le changement de mot de passe d'un utilisateur.
  case 'CMDP':
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 	
 	if ( array_key_exists( 'rp', $_GET ) ) {
-		$Previous_Page = 'SM-' . $_GET[ 'rp' ] . '.php';
+		$Previous_Page = URL_BASE . '/SM-' . $_GET[ 'rp' ] . '.php';
 	} else {
-		$Previous_Page = $Script . '?action=DCNX'; // $_SERVER[ 'HTTP_REFERER' ];
+		$Previous_Page = $Script . '?action=DCNX';
 	}
 	
 	print( $PageHTML->enteteHTML( $L_Title ) .
@@ -120,7 +108,7 @@ switch( $Action ) {
 	 "   <div id=\"zoneTitre\">\n" .
 	 "    <div id=\"icon-users\" class=\"icon36\"></div>\n" .
 	 "    <span id=\"titre\">". $L_Title_CMDP . "</span>\n" .
-	 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
+	 $PageHTML->afficherActions( $PageHTML->is_administrator() ) .
 	 "    </div> <!-- Fin : zoneTitre -->\n" .
 	 "\n" .
 	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
@@ -197,12 +185,12 @@ switch( $Action ) {
 		 "  }\n" .
 		 "  if ( Result != '' && pwd != '' ) {\n" .
 		 "   document.getElementById(Result_Field).alt = 'Ko';\n" .
-		 "   document.getElementById(Result_Field).src = 'Pictures/s_attention.png'\n" .
+		 "   document.getElementById(Result_Field).src = '" . URL_PICTURES . "/s_attention.png'\n" .
 		 "  }\n" .
 		 "  if ( Result == '' && pwd != '' ) {\n" .
 		 "   document.getElementById(Result_Field).alt = 'Ok';\n" .
 		 "   document.getElementById(Result_Field).title = 'Ok';\n" .
-		 "   document.getElementById(Result_Field).src = 'Pictures/s_okay.png'\n" .
+		 "   document.getElementById(Result_Field).src = '" . URL_PICTURES . "/s_okay.png'\n" .
 		 "  }\n" .
 		 "}\n" .
 		 "     </script>\n" );
@@ -217,7 +205,7 @@ switch( $Action ) {
 	 "         </tr>\n" .
 	 "         <tr>\n" .
 	 "          <td>" . $L_New_Password . "</td>\n" .
-	 "          <td><input id=\"iPassword\" type=\"password\" name=\"N_Password\"  onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onchange=\"checkPassword('iPassword', 'Result', 3, 8);\" /><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"" . DIR_PICTURES . "/blank.gif\" width=\"16\" /></td>\n" .
+	 "          <td><input id=\"iPassword\" type=\"password\" name=\"N_Password\"  onkeyup=\"checkPassword('iPassword', 'Result', " . $_Password_Complexity . ", " . $_Min_Size_Password . ");\" onchange=\"checkPassword('iPassword', 'Result', " . $_Password_Complexity . ", " . $_Min_Size_Password . ");\" /><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" width=\"16\" /></td>\n" .
 	 "         </tr>\n" .
 	 "         <tr>\n" .
 	 "          <td>" . $L_Conf_Password . "</td>\n" .
@@ -251,8 +239,7 @@ switch( $Action ) {
 	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
-	$Secrets = new IICA_Secrets( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Secrets = new IICA_Secrets();
 
 	
 	$Error = 0;
@@ -294,7 +281,7 @@ switch( $Action ) {
 	}
 	
 	try {
-		if ( ! $Authentication->changePassword( $_SESSION[ 'idn_id' ],
+		if ( ! $PageHTML->changePassword( $_SESSION[ 'idn_id' ],
 		 $_POST[ 'O_Password' ], $_POST[ 'N_Password' ] ) ) {
 			print( $PageHTML->returnPage( $L_Title_CMDP, $L_ERR_Modify_Password, $Script .
 			 "?action=CMDP" ) );
@@ -314,7 +301,7 @@ switch( $Action ) {
 
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-	$Authentication->disconnect();
+	$PageHTML->disconnect();
 
 	$Return_Page = $Script;
 
@@ -392,7 +379,7 @@ switch( $Action ) {
 		exit();;
 	}
 	
-	switch ( strtoupper( $Parameters->get( 'authentication_type' ) ) ) {
+	switch ( strtoupper( $PageHTML->getParameter( 'authentication_type' ) ) ) {
 	 default:
 		$Authentication_Type = 'database';
 		break;
@@ -408,35 +395,22 @@ switch( $Action ) {
 
 	try {
 		// Récupère le "salt" spécifique de l'utilisateur.
-		if ( ! ($Salt = $Authentication->getSalt( $_POST[ 'User' ] )) ) {
+		if ( ! ($Salt = $PageHTML->getSalt( $_POST[ 'User' ] )) ) {
 			$alert_message = $Secrets->formatHistoryMessage( $L_Err_Auth . ' (' .
 			 $_POST[ 'User' ] . ') [' . $Authentication_Type . ']' );
 
 			$Secrets->updateHistory( '', 0, $alert_message, $IP_Source );
 			
-			print( $PageHTML->returnPage( $L_Title, $L_Err_Auth . ' (1)', $Script ) );
+			print( $PageHTML->returnPage( $L_Title, $L_Err_Auth, $Script ) );
 
 			exit();
 		}
-	
 		
 		// Contrôle l'authentication à partir des éléments fournis.
-		if ( ! $Authentication->authentication( $_POST[ 'User' ],
-		 $_POST[ 'Password' ], $Authentication_Type, $Salt ) ) {
-			$Authentication->addAttempt( $_POST[ 'User' ] );
-
-			$alert_message = $Secrets->formatHistoryMessage( $L_Err_Auth . ' (' .
-			 $_POST[ 'User' ] . ') [' . $Authentication_Type . ']' );
-
-			$Secrets->updateHistory( '', 0, $alert_message, $IP_Source );
-			
-			print( $PageHTML->returnPage( $L_Title, $L_Err_Auth . ' (2)', $Script ) );
-
-			exit();
-		}
+		$PageHTML->authentication( $_POST[ 'User' ], $_POST[ 'Password' ], $Authentication_Type, $Salt );
 	} catch( Exception $e ) {
 		// Si problème d'authentification et que l'utilisateur existe alors incrémentation du nombre de tentative de connexion.
-		$Authentication->addAttempt( $_POST[ 'User' ] );
+		$PageHTML->addAttempt( $_POST[ 'User' ] );
 			
 		$alert_message = $Secrets->formatHistoryMessage( $e->getMessage() . ' (' .
 		 $_POST[ 'User' ] . ')' );
@@ -456,8 +430,7 @@ switch( $Action ) {
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 			
-		header( 'Location: https://' . $Server . dirname( $Script ) .
-		 '/SM-login.php?action=CMDP&mandatory' );
+		header( 'Location: ' . $Script . '?action=CMDP&mandatory' );
 		
 		break;
 	}
@@ -469,8 +442,7 @@ switch( $Action ) {
 
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 			
-	header( 'Location: https://' . $Server . dirname( $Script ) .
-	 '/SM-home.php?last_login' );
+	header( 'Location: ' . URL_BASE . '/SM-home.php?last_login' );
    
 	break;
 }

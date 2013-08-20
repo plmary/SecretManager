@@ -2,8 +2,10 @@
 
 include_once( 'Constants.inc.php' );
 
+include_once( IICA_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
+
 // =============================
-class IICA_Groups extends PDO {
+class IICA_Groups extends IICA_DB_Connector {
 /**
 * Cette classe gère les groupes de secrets.
 *
@@ -14,7 +16,7 @@ class IICA_Groups extends PDO {
 * @date 2012-11-19
 */
 
-	public function __construct( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password ) {
+	public function __construct() {
 	/**
 	* Connexion à la base de données.
 	*
@@ -23,18 +25,9 @@ class IICA_Groups extends PDO {
 	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $_Host Noeud sur lequel s'exécute la base de données
-	* @param[in] $_Port Port IP sur lequel répond la base de données
-	* @param[in] $_Driver Type de la base de données
-	* @param[in] $_Base Nom de la base de données
-	* @param[in] $_User Nom de l'utilisateur dans la base de données
-	* @param[in] $_Password Mot de passe de l'utilisateur dans la base de données
-	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
 	*/
-		$DSN = $_Driver . ':host=' . $_Host . ';port=' . $_Port . ';dbname=' . $_Base ;
-		
-		parent::__construct( $DSN, $_User, $_Password );
+		parent::__construct();
 		
 		return true;
 	}
@@ -521,7 +514,7 @@ class IICA_Groups extends PDO {
 
 // ===========================================================================
 // ===========================================================================
-class IICA_Secrets extends PDO {
+class IICA_Secrets extends IICA_DB_Connector {
 /**
 * Cette classe gère les secrets.
 *
@@ -535,10 +528,8 @@ class IICA_Secrets extends PDO {
 	/* ===============================
 	** Connexion à la base de données.
 	*/
-	public function __construct( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password ) {
-		$DSN = $_Driver . ':host=' . $_Host . ';port=' . $_Port . ';dbname=' . $_Base ;
-		
-		parent::__construct( $DSN, $_User, $_Password );
+	public function __construct() {
+		parent::__construct();
 		
 		return true;
 	}
@@ -973,6 +964,8 @@ class IICA_Secrets extends PDO {
 
 	public function listSecrets2( $searchSecret = '', $idn_id = '', $Administrator = false, $orderBy = '' ) {
 		$Data = false;
+
+		$Where = '';
 		
 
 		if ( $Administrator == false ) {
@@ -1122,18 +1115,13 @@ class IICA_Secrets extends PDO {
 	public function get( $scr_id ) {
 		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
-		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
-
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
-
-		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 
 		
 		$Security = new Security();
 
-		$Parameters = new IICA_Parameters( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Parameters = new IICA_Parameters();
 
 		$Secret_Server = new Secret_Server();
 
@@ -1170,7 +1158,7 @@ class IICA_Secrets extends PDO {
 
 		// =================================
 		// Déchiffrement du secret.
-		if ( $Parameters->get( 'use_SecretServer' ) == '1' ) {
+		if ( $Parameters->getParameter( 'use_SecretServer' ) == '1' ) {
 			try {
 				$Occurrence->scr_password = $Secret_Server->SS_decryptValue(
 				 $Occurrence->scr_password );
@@ -1477,7 +1465,7 @@ class IICA_Secrets extends PDO {
 
 
 // ===================================
-class IICA_Referentials extends PDO {
+class IICA_Referentials extends IICA_DB_Connector {
 /**
 * Cette classe gère les référentiels internes.
 *
@@ -1491,10 +1479,8 @@ class IICA_Referentials extends PDO {
 	/* ===============================
 	** Connexion à la base de données.
 	*/
-	public function __construct( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password ) {
-		$DSN = $_Driver . ':host=' . $_Host . ';port=' . $_Port . ';dbname=' . $_Base ;
-		
-		parent::__construct( $DSN, $_User, $_Password );
+	public function __construct() {
+		parent::__construct();
 		
 		return true;
 	}

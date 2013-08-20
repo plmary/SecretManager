@@ -2,7 +2,10 @@
 
 include_once( 'Constants.inc.php' );
 
-class HTML {
+include_once( IICA_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
+
+
+class HTML extends IICA_Authentications {
 /**
 * Cette classe gère l'affichage des principales parties des écrans.
 *
@@ -26,7 +29,9 @@ public function __construct() {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.5-0'; // Version de l'outil
+	$this->Version = '0.6-0'; // Version de l'outil
+
+	parent::__construct();
 	
 	return ;
 }
@@ -73,9 +78,9 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 	 "  <meta name=\"Author\" content=\"Pierre-Luc MARY\" />\n" .
 	 "  <link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.css\" ".
 	 "type=\"text/css\" />\n\n" .
-	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager.css\" ".
+	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager.css\" ".
 	 "type=\"text/css\" />\n\n" .
-	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager-icons.css\" " .
+	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager-icons.css\" " .
 	 "type=\"text/css\" />\n\n" .
 	 "  <title>" . $Title . "</title>\n" .
 	 " </head>\n\n" .
@@ -101,15 +106,15 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 		$Header .= "    <!-- debut : zoneLangues -->\n" .
 		 "    <div id=\"zoneLangues\">\n" .
 		 "     <a href=\"" . $Script . "?Lang=en\">\n" .
-		 "      <img src=\"" . DIR_PICTURES . "/flag-eng.png\" alt=\"" . $L_Langue_en .
+		 "      <img src=\"" . URL_PICTURES . "/flag-eng.png\" alt=\"" . $L_Langue_en .
 		 "\" title=\"" . $L_Langue_en . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
 		 "     <a href=\"" . $Script . "?Lang=fr\">\n" .
-		 "      <img src=\"" . DIR_PICTURES . "/flag-fra.png\" alt=\"" . $L_Langue_fr . 
+		 "      <img src=\"" . URL_PICTURES . "/flag-fra.png\" alt=\"" . $L_Langue_fr . 
 		 "\" title=\"" . $L_Langue_fr . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
 		 "     <a href=\"" . $Script . "?Lang=de\">\n" .
-		 "      <img src=\"" . DIR_PICTURES . "/flag-deu.png\" alt=\"" . $L_Langue_de . 
+		 "      <img src=\"" . URL_PICTURES . "/flag-deu.png\" alt=\"" . $L_Langue_de . 
 		 "\" title=\"" . $L_Langue_de . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
 		 "    </div> <!-- fin : zoneLangues -->\n\n" ;
@@ -151,9 +156,9 @@ public function mini_HTMLHeader( $Title = "" ) {
 	 "  <meta http-equiv=\"Content-Type\" content=\"text/html; " .
 	 "charset=utf8\" />\n" .
 	 "  <meta name=\"Author\" content=\"Pierre-Luc MARY\" />\n" .
-	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager.css\" " .
+	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager.css\" " .
 	 "type=\"text/css\" />\n\n" .
-	 "  <link rel=\"stylesheet\" href=\"" . DIR_LIBRARIES . "/SecretManager-icons.css\" " .
+	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager-icons.css\" " .
 	 "type=\"text/css\" />\n\n" .
 	 "  <title>" . $Title . "</title>\n" .
 	 " </head>\n\n" .
@@ -186,7 +191,7 @@ public function construireFooter( $Buttons = 0, $Previous = '' ) {
 	 "    <div id=\"zonePiedPage\">\n" .
 	 "     <div class=\"zonePiedPage-left\">\n" .
 	 "      <p class=\"align-left\">" .
-	 "<img src=\"" . DIR_PICTURES . "/copy_left-15x15.jpg\" alt=\"Copyleft\" class=\"no-border\" />" .
+	 "<img src=\"" . URL_PICTURES . "/copy_left-15x15.jpg\" alt=\"Copyleft\" class=\"no-border\" />" .
 	 " Copyleft " . date( "Y" ) . " <strong>" .
 	 "<a class=\"white\" href=\"http://www.orasys.fr\" target=\"_blank\">Orasys</a>" .
 	 "</strong></p>\n" .
@@ -199,9 +204,9 @@ public function construireFooter( $Buttons = 0, $Previous = '' ) {
 		
 		$Text .= "     <div class=\"zonePiedPage-right\">\n" .
 		 "      <p class=\"align-right\">" .
-		 "<a class=\"button\" href=\"SM-login.php?action=CMDP" . $Previous . "\">" . 
+		 "<a class=\"button\" href=\"" . URL_BASE . "/SM-login.php?action=CMDP" . $Previous . "\">" . 
 		 $L_Changed_Password . "</a>" .
-		 "<a class=\"button\" href=\"SM-login.php?action=DCNX\">" .
+		 "<a class=\"button\" href=\"" . URL_BASE . "/SM-login.php?action=DCNX\">" .
 		 $L_Deconnexion . "</a>\n" .
 		 "      </p>\n" .
 		 "     </div>\n" ;
@@ -279,8 +284,7 @@ public function drawBox( $Title = "", $Text = "" ) {
 *
 * @return Retourne une chaîne matérialisant l'affichage des options à l'écran
 */
-	$Rand = rand( 10000, 99999 );
-	
+
 	return "     <table cellspacing=\"0\" style=\"float: left\">\n" .
 	 "      <thead>\n" .
 	 "       <tr>\n" .
@@ -337,7 +341,7 @@ public function infoBox( $Message, $Script, $Alert = 1 ) {
 	}
 	
 	return "     <div " . $Type_Message . "\">\n" .
-	 "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/" . $Icon_Name . ".png\" alt=\"" .
+	 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/" . $Icon_Name . ".png\" alt=\"" .
 	 $Type_Message . "\" />\n" . $Message . "<br/><br/>" .
 	 "<a id=\"b_return\" href=\"" . $Script . "\" class=\"button\">" .
 	 $L_Return . "</a>" .

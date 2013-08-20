@@ -1,6 +1,10 @@
 <?php
 
-class IICA_Authentications extends PDO {
+include_once( 'Constants.inc.php' );
+
+include_once( IICA_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+
+class IICA_Authentications extends IICA_Parameters {
 /**
 * Cette classe gère l'authentification des utilisateurs.
 *
@@ -12,7 +16,7 @@ class IICA_Authentications extends PDO {
 */
 
 
-	public function __construct( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password ) {
+	public function __construct() {
 	/**
 	* Connexion à la base de données.
 	*
@@ -21,18 +25,9 @@ class IICA_Authentications extends PDO {
 	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $_Host Noeud sur lequel s'exécute la base de données
-	* @param[in] $_Port Port IP sur lequel répond la base de données
-	* @param[in] $_Driver Type de la base de données
-	* @param[in] $_Base Nom de la base de données
-	* @param[in] $_User Nom de l'utilisateur dans la base de données
-	* @param[in] $_Password Mot de passe de l'utilisateur dans la base de données
-	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
 	*/
-		$DSN = $_Driver . ':host=' . $_Host . ';port=' . $_Port . ';dbname=' . $_Base ;
-		
-		parent::__construct( $DSN, $_User, $_Password );
+		parent::__construct();
 		
 		return true;
 	}
@@ -76,6 +71,7 @@ class IICA_Authentications extends PDO {
 		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
 
 		
 		$Security = new Security();
@@ -93,7 +89,8 @@ class IICA_Authentications extends PDO {
 		 'T1.idn_updated_authentication, ' .
 		 'T1.idn_last_connection, ' .
 		 'T1.idn_super_admin, ' .
-		 'T1.idn_auditor, ' .
+		 'T1.idn_authenticator, ' .
+		 'T1.idn_salt, ' .
 		 'T1.idn_disable, ' .
 		 'T1.idn_expiration_date, ' .
 		 'T2.cvl_last_name, ' .
@@ -105,11 +102,7 @@ class IICA_Authentications extends PDO {
 		 'LEFT JOIN cvl_civilities AS T2 ON T1.cvl_id = T2.cvl_id ' .
 		 'LEFT JOIN ent_entities AS T3 ON T1.ent_id = T3.ent_id ' .
 		 'WHERE T1.idn_login = :Login ' ;
-		
-		if ( $Type == 'database') {
-			$Request .= 'AND T1.idn_authenticator = :Authenticator ' ;
-		}
-		
+				
 		$Request .= 'AND T1.idn_logical_delete = false ' ;
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
@@ -122,21 +115,29 @@ class IICA_Authentications extends PDO {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
+		 
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		$Occurrence = $Result->fetchObject();
 
+
+		/* ---------------------------------------------------------------------
+		** Si pas d'occurrence, alors mot de passe ou nom d'utilisateur inconnu.
+		*/
+		if ( $Occurrence == '' ) {
+			throw new Exception( $L_Err_Auth, -1 );
+		}
 
 		switch( $Type ) {
 		 default:
 		 case 'database':
-			if ( $Salt == '' ) {
-				$Salt = $_salt_user;
-			}
-
-			$Authenticator = sha1( $Authenticator . $Salt );
+			$Authenticator = sha1( $Authenticator . $Occurrence->idn_salt );
 	  
-			if ( ! $Result->bindParam( ':Authenticator', $Authenticator,
-			 PDO::PARAM_STR, 64 ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			if ( $Authenticator != $Occurrence->idn_authenticator ) {
+				throw new Exception( $L_Err_Auth, -1 );
 			}
 			
 			break;
@@ -164,7 +165,7 @@ class IICA_Authentications extends PDO {
 			 $Radius_Suffix, $UPD_Timeout, $authentication_port, $accounting_port );
 
 			if ( ! $radius->AccessRequest( $Login, $Authenticator ) ) {
-				return false;
+				throw new Exception( $L_Err_Auth, -1 );
 			}
 			
 			break;
@@ -177,14 +178,12 @@ class IICA_Authentications extends PDO {
 			// Connexion au serveur LDAP
 			$ldap_c = ldap_connect( $_LDAP_Server, $_LDAP_Port );
 			if ( $ldap_c === FALSE ) {
-				print( ldap_error( $ldap_c ) . ' (' . ldap_errno( $ldap_c ) . ')' );
-				return FALSE;
+				throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
 			}
 	 
 			if ( ldap_set_option( $ldap_c, LDAP_OPT_PROTOCOL_VERSION,
 			 $_LDAP_Protocol_Version ) === FALSE ) {
-				print( ldap_error( $ldap_c ) . ' (' . ldap_errno( $ldap_c ) . ')' );
-				return FALSE;
+				throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
 			}
 
 			if ( $ldap_c ) {
@@ -193,27 +192,11 @@ class IICA_Authentications extends PDO {
 
 				// Vérification de l'authentification
 				if ( ! $ldap_b ) {
-					print( ldap_error( $ldap_c ) . ' (' . ldap_errno( $ldap_c ) . ')' );
-					return FALSE;
+					throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
 				}
 			}
 
 			break;
-		}
-		 
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Occurrence = $Result->fetchObject();
-
-
-		/* ---------------------------------------------------------------------
-		** Si pas d'occurrence, alors mot de passe ou nom d'utilisateur inconnu.
-		*/
-		if ( $Occurrence == '' ) {
-			return false;
 		}
 
 
@@ -294,7 +277,6 @@ class IICA_Authentications extends PDO {
 		 $Occurrence->idn_updated_authentication ;
 		$_SESSION[ 'idn_last_connection' ] = $Occurrence->idn_last_connection ;
 		$_SESSION[ 'idn_super_admin' ] = $Occurrence->idn_super_admin ;
-		$_SESSION[ 'idn_auditor' ] = $Occurrence->idn_auditor ;
 
 		$_SESSION[ 'cvl_last_name' ] = $Security->XSS_Protection(
 		 $Occurrence->cvl_last_name );
@@ -785,12 +767,7 @@ class IICA_Authentications extends PDO {
 	*
 	* @return Retourne vrai en cas de succès, sinon retourne faux
 	*/
-		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
-		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
-
-		$Parameters = new IICA_Parameters( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
-
-		$_SESSION[ 'Expired' ] = time() + ( $Parameters->get( 'expiration_time' ) * 60 );
+		$_SESSION[ 'Expired' ] = time() + ( $this->getParameter( 'expiration_time' ) * 60 );
 		
 		return TRUE;
 	}

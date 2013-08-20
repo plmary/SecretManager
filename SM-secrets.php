@@ -22,16 +22,16 @@ if ( array_key_exists( 'Lang', $_GET ) ) {
 	$_SESSION[ 'Language' ] = $_GET[ 'Lang' ];
 }	
 
-$Script = $_SERVER[ 'SCRIPT_NAME' ];
+$Script = URL_BASE . $_SERVER[ 'SCRIPT_NAME' ];
 $Server = $_SERVER[ 'SERVER_NAME' ];
 $URI = $_SERVER[ 'REQUEST_URI' ];
 $IP_Source = $_SERVER[ 'REMOTE_ADDR' ];
 
 if ( ! isset( $_SESSION[ 'idn_id' ] ) )
-	header( 'Location: https://' . $Server . dirname( $Script ) . '/SM-login.php' );
+	header( 'Location: ' . URL_BASE . '/SM-login.php' );
 
 if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
-	header( 'Location: https://' . $Server . $URI );
+	header( 'Location: ' . URL_BASE . $URI );
 
 $Action = '';
 $Choose_Language = 0;
@@ -39,11 +39,10 @@ $Choose_Language = 0;
 include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
-$Authentication = new IICA_Authentications( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Authentication = new IICA_Authentications();
 
 if ( ! $Authentication->is_connect() ) {
-   header( 'Location: SM-login.php' );
+   header( 'Location: '. URL_BASE . '/SM-login.php' );
 	exit();
 }
 
@@ -58,22 +57,17 @@ include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
-include( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
 
 $PageHTML = new HTML();
 
-$Groups = new IICA_Groups( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Groups = new IICA_Groups();
 
-$Secrets = new IICA_Secrets( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+$Secrets = new IICA_Secrets();
 
-$Parameters = new IICA_Parameters( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
 
-$Alert_Syslog = $Parameters->get( 'alert_syslog' );
-$Alert_Mail = $Parameters->get( 'alert_mail' );
+$Alert_Syslog = $PageHTML->getParameter( 'alert_syslog' );
+$Alert_Mail = $PageHTML->getParameter( 'alert_mail' );
 
 $groupsRights = $Authentication->getGroups( $_SESSION[ 'idn_id' ] );
 //print_r( $groupsRights );
@@ -84,12 +78,12 @@ $Security = new Security();
 if ( array_key_exists( 'Expired', $_SESSION ) ) {
 	// Contrôle si la session n'a pas expirée.
 	if ( ! $Authentication->validTimeSession() ) {
-		header( 'Location: SM-login.php?action=DCNX&expired' );
+		header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX&expired' );
 	} else {
 		$Authentication->saveTimeSession();
 	}
 } else {
-	header( 'Location: SM-login.php?action=DCNX' );
+	header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX' );
 }
 
 
@@ -97,7 +91,7 @@ if ( array_key_exists( 'action', $_GET ) ) {
 	$Action = strtoupper( $_GET[ 'action' ] );
 }
 
-$Verbosity_Alert = $Parameters->get( 'verbosity_alert' );
+$Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 	
 if ( $Action == 'SCR_V' ) {
 	print( $PageHTML->mini_HTMLHeader( $L_Title ) .
@@ -163,20 +157,20 @@ switch( $Action ) {
 			switch( $_GET[ 'rp' ] ) {
 			 case 'home':
 				$returnButton = "<span style=\"float: right\">" .
-				 "<a class=\"button\" href=\"https://" . $Server . dirname( $Script ) .
+				 "<a class=\"button\" href=\"" . URL_BASE .
 				 "/SM-home.php\">" . $L_Return . "</a></span>";
 				break;
 
 			 case 'users-prf_g':
 				$returnButton = "<span style=\"float: right\">" .
-				 "<a class=\"button\" href=\"https://" . $Server . dirname( $Script ) .
+				 "<a class=\"button\" href=\"" . URL_BASE .
 				 "/SM-users.php?action=PRF_G&prf_id=" . $_GET[ 'prf_id' ] . "\">" .
 				 $L_Return . "</a></span>";
 				break;
 
 			 case 'home-r2':
 				$returnButton = "<span style=\"float: right\">" .
-				 "<a class=\"button\" href=\"https://" . $Server . dirname( $Script ) .
+				 "<a class=\"button\" href=\"" . URL_BASE .
 				 "/SM-users.php?action=R2\">" .
 				 $L_Return . "</a></span>";
 				break;
@@ -242,9 +236,9 @@ switch( $Action ) {
 				
 	
 			if ( $Group->sgr_alert == 1 )
-				$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+				$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 			else
-				$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+				$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 
 			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
@@ -253,19 +247,19 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=M&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=D&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" . 
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . 
 			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_usrscr_2.png\" alt=\"" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_usrscr_2.png\" alt=\"" .
 			 $L_Profiles_Associate . "\" title=\"" . $L_Profiles_Associate . 
 			 "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=SCR&sgr_id=" . $Group->sgr_id .
-			 "&store\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_scredit_1.png\" alt=\"" .
+			 "&store\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_scredit_1.png\" alt=\"" .
 			 $L_Secret_Management . "\" title=\"" . $L_Secret_Management . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
@@ -277,7 +271,7 @@ switch( $Action ) {
 		 "     </table>\n" .
 		 "\n" );
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
@@ -324,7 +318,7 @@ switch( $Action ) {
 
 
  case 'ADDX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( isset( $_POST[ 'Alert' ] ) ) {
 		if ( $_POST[ 'Alert' ] == 'on' )
@@ -346,8 +340,6 @@ switch( $Action ) {
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		
-		$Return_Page = 'https://' . $Server . $Script;
- 
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Group, $Return_Page, 1 ) );
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
@@ -373,7 +365,7 @@ switch( $Action ) {
 
 
  case 'D':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( ($sgr_id = $Security->valueControl( $_GET[ 'sgr_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
@@ -383,9 +375,9 @@ switch( $Action ) {
 	$Group = $Groups->get( $sgr_id );
 	
 	if ( $Group->sgr_alert == 1 )
-		$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 	else
-		$Flag_Alert = "<img class=\"no-border\" src=\"". DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"". URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 	print( "     <form method=\"post\" action=\"" . $Script . 
 	 "?action=DX\">\n" .
@@ -420,7 +412,7 @@ switch( $Action ) {
 
 
  case 'DX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( ! $sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ] ) ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
@@ -458,7 +450,7 @@ switch( $Action ) {
 
 
  case 'M':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( ! $sgr_id = $Security->valueControl( $_GET[ 'sgr_id' ] ) ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
@@ -511,7 +503,7 @@ switch( $Action ) {
 
 
  case 'MX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( isset( $_POST[ 'Alert' ] ) ) {
 		if ( $_POST[ 'Alert' ] == 'on' )
@@ -521,8 +513,7 @@ switch( $Action ) {
 	}
 	
 	try {
-		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' ))
-		 == -1 ) {
+		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) == -1 ) {
 			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 )
 			 );
 			break;
@@ -567,7 +558,7 @@ switch( $Action ) {
 
 
  case 'PRF':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
@@ -578,11 +569,9 @@ switch( $Action ) {
 	}
 	
 	
-	$Profiles = new IICA_Profiles( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Profiles = new IICA_Profiles();
 
-	$Rights = new IICA_Referentials( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Rights = new IICA_Referentials();
 
 	$List_Profiles = $Profiles->listProfiles();
 
@@ -593,9 +582,9 @@ switch( $Action ) {
 	$Group = $Groups->get( $sgr_id );
 
 	if ( $Group->sgr_alert == 1 )
-		$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 	else
-		$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+		$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
 	print( "    <form method=\"post\" action=\"" . $Script . "?action=PRFX&sgr_id=" .
 	 $sgr_id . "\" >\n" );
@@ -702,7 +691,7 @@ switch( $Action ) {
 		 "     </table>\n" .
 		 "\n" );
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
@@ -712,7 +701,7 @@ switch( $Action ) {
 
 
  case 'PRFX':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( ! $sgr_id = $Security->valueControl( $_GET[ 'sgr_id' ] ) ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
@@ -769,7 +758,7 @@ switch( $Action ) {
 
 
  case 'SCR':
-	$Return_Page = 'https://' . $Server . $Script;
+	$Return_Page = $Script;
  
 	if ( array_key_exists( 'orderby', $_GET ) ) {
 		$orderBy = $_GET[ 'orderby' ];
@@ -937,10 +926,10 @@ switch( $Action ) {
 				$BackGround = "pair";
 
 			if ( $Secret->scr_alert == 0 ) {
-				$Img_Src = DIR_PICTURES . '/bouton_non_coche.gif';
+				$Img_Src = URL_PICTURES . '/bouton_non_coche.gif';
 				$Img_Title = $L_No ;
 			} else {
-				$Img_Src = DIR_PICTURES . '/bouton_coche.gif';
+				$Img_Src = URL_PICTURES . '/bouton_coche.gif';
 				$Img_Title = $L_Yes ;
 			}
 			$Alert_Image = '<img class="no-border" src="' . $Img_Src . '" title="' . $Img_Title .
@@ -957,10 +946,10 @@ switch( $Action ) {
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=SCR_M&scr_id=" . $Secret->scr_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=SCR_D&scr_id=" . $Secret->scr_id .
-			 "\"><img class=\"no-border\" src=\"" . DIR_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
+			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
 		}
@@ -971,7 +960,7 @@ switch( $Action ) {
 		 "     </table>\n" .
 		 "\n" );
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
@@ -983,8 +972,7 @@ switch( $Action ) {
 
  case 'SCR_A':
 	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
-		$Referentials = new IICA_Referentials( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Referentials = new IICA_Referentials();
 
 		$List_Rights = $Referentials->listRights();
 		$List_Types = $Referentials->listSecretTypes();
@@ -1005,8 +993,7 @@ switch( $Action ) {
 				break;
 			}
 			
-			$cancelButton = '<a class="button" href="https://' .
-			 $Server . dirname( $Script ) . '/' . $Prev_Page .'">' . $L_Cancel . '</a>';
+			$cancelButton = '<a class="button" href="' . URL_BASE . '/' . $Prev_Page .'">' . $L_Cancel . '</a>';
 		} else {
 			$cancelButton = '<a class="button" href="' . $Script .
 			 '?action=SCR">' . $L_Cancel . '</a>';
@@ -1080,12 +1067,12 @@ switch( $Action ) {
 //		 "  element.innerHTML = Result;\n" . 
 		 "  if ( Result != '' && pwd != '' ) {\n" .
 		 "   document.getElementById(Result_Field).alt = 'Ko';\n" .
-		 "   document.getElementById(Result_Field).src = " . DIR_PICTURES . "'/s_attention.png'\n" .
+		 "   document.getElementById(Result_Field).src = " . URL_PICTURES . "'/s_attention.png'\n" .
 		 "  }\n" .
 		 "  if ( Result == '' && pwd != '' ) {\n" .
 		 "   document.getElementById(Result_Field).alt = 'Ok';\n" .
 		 "   document.getElementById(Result_Field).title = 'Ok';\n" .
-		 "   document.getElementById(Result_Field).src = " . DIR_PICTURES . "'/s_okay.png'\n" .
+		 "   document.getElementById(Result_Field).src = " . URL_PICTURES . "'/s_okay.png'\n" .
 		 "  }\n" .
 		 "}\n" .
 		 "function generatePassword( Password_Field, Complexity, Size ){\n" .
@@ -1203,7 +1190,7 @@ switch( $Action ) {
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
-		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"" . DIR_PICTURES . "/blank.gif\" /></td>\n" .
+		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .
@@ -1229,7 +1216,7 @@ switch( $Action ) {
 		 "     </script>\n"
 		);
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
@@ -1238,19 +1225,18 @@ switch( $Action ) {
 
 
  case 'SCR_AX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=SCR';
+	$Return_Page = $Script . '?action=SCR';
 
 	if ( array_key_exists( 'rp', $_GET ) ) {
 		switch( $_GET[ 'rp' ] ) {
 		 case 'home':
-			$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+			$Return_Page = URL_BASE . '/SM-home.php';
 			break;
 		}
 	}
  
 	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
-		$Secrets = new IICA_Secrets( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 	 
 		if ( isset( $_POST[ 'Alert' ] ) ) $Alert = 1;
 		else $Alert = 0;
@@ -1305,12 +1291,12 @@ switch( $Action ) {
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message,
 			 $IP_Source );
 
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Secret, "https://" . $Server .
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Secret, URL_BASE .
 			 $Script . "?action=P&sgr_id=" . $_GET[ 'sgr_id' ], 1 )
 			 );
 			exit();
 		} catch( Exception $e ) {
-			if ( $Parameters->get( 'use_SecretServer' ) == '1' ) {
+			if ( $PageHTML->getParameter( 'use_SecretServer' ) == '1' ) {
 				$Error = $e->getMessage();
 				
 				if ( isset( ${$Error} ) ) $Error = ${$Error};
@@ -1338,8 +1324,8 @@ switch( $Action ) {
 			}
 			 
 			if ( $Alert_Mail == 1 ) {
-				$Security->writeMail( $alert_message, $Parameters->get( 'mail_from' ),
-				 $Parameters->get( 'mail_to' ) );
+				$Security->writeMail( $alert_message, $PageHTML->getParameter( 'mail_from' ),
+				 $PageHTML->getParameter( 'mail_to' ) );
 			}
 		}
 
@@ -1349,7 +1335,7 @@ switch( $Action ) {
 			"<script>document.fMessage.submit();</script>" );
 
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->returnPage( $L_Title, $L_No_Authorize, $Return_Page, 1 ) );
 		exit();
@@ -1359,8 +1345,7 @@ switch( $Action ) {
 
 
  case 'SCR_V':
-	$Secrets = new IICA_Secrets( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Secrets = new IICA_Secrets();
 	
 	try {
 		$Secret = $Secrets->get( $_GET[ 'scr_id' ] );
@@ -1385,8 +1370,8 @@ switch( $Action ) {
 		}
 			 
 		if ( $Alert_Mail == 1 ) {
-			$Security->writeMail( $alert_message, $Parameters->get( 'mail_from' ),
-			 $Parameters->get( 'mail_to' ) );
+			$Security->writeMail( $alert_message, $PageHTML->getParameter( 'mail_from' ),
+			 $PageHTML->getParameter( 'mail_to' ) );
 		}
 	}
 
@@ -1429,7 +1414,7 @@ switch( $Action ) {
 		 "      <tfoot><tr><th colspan=\"7\">" );
 		 
 		if ( array_key_exists( 'home', $_GET ) ) {
-			print( "<a class=\"button\" id=\"iB_Close\" href=\"SM-home.php\">" . 
+			print( "<a class=\"button\" id=\"iB_Close\" href=\"" . URL_BASE . "/SM-home.php\">" . 
 			 $L_Return . "</a>\n" );
 		} else {
 			print( "<a class=\"button\" id=\"iB_Close\" href=\"javascript:window.close();\">" . 
@@ -1454,9 +1439,11 @@ switch( $Action ) {
  case 'SCR_M':
 	$Secrets = new IICA_Secrets( 
 	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+
+	$Return_Script = $Script;
 	
 	if ( array_key_exists( 'rp', $_GET ) ) {
-		$Return_Script = "https://" . $Server . dirname( $Script ) . "/SM-home.php";
+		$Return_Script = URL_BASE . "/SM-home.php";
 
 		switch( $_GET[ 'rp' ] ) {
 		 case 'home':
@@ -1496,8 +1483,7 @@ switch( $Action ) {
 
 	if ( $Authentication->is_administrator()
 	 or $accessControl ) {
-		$Referentials = new IICA_Referentials( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Referentials = new IICA_Referentials();
 
 		$List_Rights = $Referentials->listRights();
 		$List_Types = $Referentials->listSecretTypes();
@@ -1615,7 +1601,7 @@ switch( $Action ) {
 		 "     </script>\n"
 		);
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
@@ -1639,22 +1625,21 @@ switch( $Action ) {
 			switch( $_GET[ 'rp' ] ) {
 			 case 'home':
 				$home = '&rp=home';
-				$Return_Page = "https://" . $Server . dirname( $Script ) . "/SM-home.php";
+				$Return_Page = URL_BASE . "/SM-home.php";
 				break;
 
 			 case 'home-r2':
 				$home = '&rp=home-r2';
-				$Return_Page = "https://" . $Server . dirname( $Script ) .	"/SM-home.php?Action=R2\">";
+				$Return_Page = URL_BASE . "/SM-home.php?Action=R2\">";
 				break;
 			}
 		} else {
 			$home = '';
-			$Return_Page = "https://" . $Server . $Script . "?action=P&scr_id=" .
+			$Return_Page = $Script . "?action=P&scr_id=" .
 			 $_GET[ 'scr_id' ];
 		}
 	
-		$Secrets = new IICA_Secrets( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 	 
 		if ( isset( $_POST[ 'Alert' ] ) ) $Alert = 1;
 		else $Alert = 0;
@@ -1740,8 +1725,8 @@ switch( $Action ) {
 			}
 			 
 			if ( $Alert_Mail == 1 ) {
-				$Security->writeMail( $alert_message, $Parameters->get( 'mail_from' ),
-				 $Parameters->get( 'mail_to' ) );
+				$Security->writeMail( $alert_message, $PageHTML->getParameter( 'mail_from' ),
+				 $PageHTML->getParameter( 'mail_to' ) );
 			}
 		}
 			
@@ -1750,7 +1735,7 @@ switch( $Action ) {
 			"</form>\n" .
 			"<script>document.fMessage.submit();</script>" );
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->returnPage( $L_Title, $L_No_Authorize, $Return_Page, 1 ) );
 		exit();
@@ -1760,18 +1745,17 @@ switch( $Action ) {
 
 
  case 'SCR_D':
-	$Return_Page = 'https://' . $Server . $Script . '?action=SCR';
+	$Return_Page = $Script . '?action=SCR';
 	$Continuous = '';
 
 	if ( array_key_exists( 'rp', $_GET ) ) {
 		if ( $_GET[ 'rp' ] == 'home' ) {
-			$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+			$Return_Page = URL_BASE . '/SM-home.php';
 			$Continuous = '&rp=home';
 		}
 	}
 	
-	$Secrets = new IICA_Secrets( 
-	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+	$Secrets = new IICA_Secrets();
 
 	if ( ($scr_id = $Security->valueControl( $_GET[ 'scr_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (scr_id)', $Return_Page, 1 ) );
@@ -1798,8 +1782,7 @@ switch( $Action ) {
 
 	if ( $Authentication->is_administrator()
 	 or $accessControl ) {
-		$Referentials = new IICA_Referentials( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Referentials = new IICA_Referentials();
 
 		$List_Rights = $Referentials->listRights();
 		$List_Types = $Referentials->listSecretTypes();
@@ -1807,9 +1790,9 @@ switch( $Action ) {
 		$List_Groups = $Groups->listGroups();
 
 		if ( $Secret->scr_alert == 1 )
-			$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+			$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
 		else
-			$Flag_Alert = "<img class=\"no-border\" src=\"" . DIR_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+			$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 	
 		print( "     <form method=\"post\" action=\"" . $Script .
 		 "?action=SCR_DX&scr_id=" . $_GET[ 'scr_id' ] . $Continuous . "\">\n" .
@@ -1863,7 +1846,7 @@ switch( $Action ) {
 		 "     </form>\n"
 		);
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
@@ -1872,12 +1855,12 @@ switch( $Action ) {
 
 
  case 'SCR_DX':
-	$Return_Page = 'https://' . $Server . $Script . '?action=SCR';
+	$Return_Page = $Script . '?action=SCR';
 	$Continuous = '';
 
 	if ( array_key_exists( 'rp', $_GET ) ) {
 		if ( $_GET[ 'rp' ] == 'home' ) {
-			$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+			$Return_Page = URL_BASE . '/SM-home.php';
 			$Continuous = '&rp=home';
 		}
 	}
@@ -1890,8 +1873,7 @@ switch( $Action ) {
 
 	if ( $Authentication->is_administrator()
 	 or $accessControl ) {
-		$Secrets = new IICA_Secrets( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Secrets = new IICA_Secrets();
 	 
 		if ( isset( $_POST[ 'Alert' ] ) ) $Alert = 1;
 		else $Alert = 0;
@@ -1939,8 +1921,8 @@ switch( $Action ) {
 			}
 			 
 			if ( $Alert_Mail == 1 ) {
-				$Security->writeMail( $alert_message, $Parameters->get( 'mail_from' ),
-				 $Parameters->get( 'mail_to' ) );
+				$Security->writeMail( $alert_message, $PageHTML->getParameter( 'mail_from' ),
+				 $PageHTML->getParameter( 'mail_to' ) );
 			}
 		}
 			
@@ -1949,7 +1931,7 @@ switch( $Action ) {
 			"</form>\n" .
 			"<script>document.fMessage.submit();</script>" );
 	} else {
-		$Return_Page = 'https://' . $Server . dirname( $Script ) . '/SM-home.php';
+		$Return_Page = URL_BASE . '/SM-home.php';
  
 		print( $PageHTML->returnPage( $L_Title, $L_No_Authorize, $Return_Page, 1 ) );
 		exit();

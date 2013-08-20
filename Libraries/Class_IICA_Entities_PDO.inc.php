@@ -1,6 +1,10 @@
 <?php
 
-class IICA_Entities extends PDO {
+include_once( 'Constants.inc.php' );
+
+include_once( IICA_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
+
+class IICA_Entities extends IICA_DB_Connector {
 /**
 * Cette classe gère les entités.
 *
@@ -10,7 +14,7 @@ class IICA_Entities extends PDO {
 * @version 1.0
 */
 
-	public function __construct( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password ) {
+	public function __construct() {
 	/**
 	* Connexion à la base de données.
 	*
@@ -19,18 +23,9 @@ class IICA_Entities extends PDO {
 	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $_Host Noeud sur lequel s'exécute la base de données
-	* @param[in] $_Port Port IP sur lequel répond la base de données
-	* @param[in] $_Driver Type de la base de données
-	* @param[in] $_Base Nom de la base de données
-	* @param[in] $_User Nom de l'utilisateur dans la base de données
-	* @param[in] $_Password Mot de passe de l'utilisateur dans la base de données
-	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
 	*/
-		$DSN = $_Driver . ':host=' . $_Host . ';port=' . $_Port . ';dbname=' . $_Base ;
-		
-		parent::__construct( $DSN, $_User, $_Password );
+		parent::__construct();
 		
 		return true;
 	}

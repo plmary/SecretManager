@@ -15,9 +15,13 @@
 *
 */
 
-class IICA_Parameters extends PDO {
+include_once( 'Constants.inc.php' );
 
-	public function __construct( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password ) {
+include_once( IICA_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
+
+class IICA_Parameters extends IICA_DB_Connector {
+
+	public function __construct() {
 	/**
 	* Connexion à la base de données.
 	*
@@ -26,18 +30,9 @@ class IICA_Parameters extends PDO {
 	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $_Host Noeud sur lequel s'exécute la base de données
-	* @param[in] $_Port Port IP sur lequel répond la base de données
-	* @param[in] $_Driver Type de la base de données
-	* @param[in] $_Base Nom de la base de données
-	* @param[in] $_User Nom de l'utilisateur dans la base de données
-	* @param[in] $_Password Mot de passe de l'utilisateur dans la base de données
-	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
 	*/
-		$DSN = $_Driver . ':host=' . $_Host . ';port=' . $_Port . ';dbname=' . $_Base ;
-		
-		parent::__construct( $DSN, $_User, $_Password );
+		parent::__construct();
 		
 		return true;
 	}
@@ -47,7 +42,7 @@ class IICA_Parameters extends PDO {
 	** Gestion des Paramètres
 	*/
 	
-	public function get( $Name ) {
+	public function getParameter( $Name ) {
 	/**
 	* Récupère la valeur d'un paramètre.
 	*
@@ -90,7 +85,7 @@ class IICA_Parameters extends PDO {
 	}
 
 
-	public function set( $Name, $Value ) {
+	public function setParameter( $Name, $Value ) {
 	/**
 	* Crée ou met à jour la valeur d'un paramètre.
 	*
@@ -104,7 +99,7 @@ class IICA_Parameters extends PDO {
 	*
 	* @return Renvoi vrai si le paramêtre a été mis à jour, sinon renvoi une exception
 	*/
-		if ( $this->get( $Name ) == '' ) {
+		if ( $this->getParameter( $Name ) == '' ) {
 			if ( ! $Result = $this->prepare( 'INSERT INTO spr_system_parameters ' .
 				'( spr_value, spr_name ) ' .
 				'VALUES ( :Value, :Name ) ' ) ) {
