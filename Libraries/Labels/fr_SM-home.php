@@ -7,7 +7,7 @@
 	$L_Total_Users_Base = 'Nombre total d\'utilisateurs en base';
 	$L_Total_Users_Disabled = 'Utilisateurs désativés';
 	$L_Total_Users_Expired = 'Utilisateurs expirés';
-	$L_Total_Users_Attempted = 'Utilisateurs ayant dépassé le nombre d\'essais autorisés';
+	$L_Total_Users_Attempted = 'Utilisateurs ayant dépassé le nombre d\'essais';
 	$L_Total_Users_Super_Admin = 'Utilisateurs super admin';
 
 	$L_Total_Groups_Base = 'Nombre total de groupes en base';

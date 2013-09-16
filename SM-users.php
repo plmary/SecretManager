@@ -96,9 +96,6 @@ if ( ! preg_match("/X$/i", $Action ) ) {
 	 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
 	 "   </div> <!-- fin : zoneTitre -->\n" .
 	 "\n" .
-	 "   <!-- debut : zoneGauche -->\n" .
-	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
-	 "\n" .
 	 "   <!-- debut : zoneMilieuComplet -->\n" .
 	 "   <div id=\"zoneMilieuComplet\">\n" .
 	 "\n" );
@@ -138,22 +135,10 @@ switch( $Action ) {
 		
 		$addButton = '<span style="float: right;"><a class="button" href="' . $Script . '?action=add">' . $L_Create . '</a></span>' ;
 
-		if ( array_key_exists( 'rp', $_GET ) ) {
-			switch( $_GET[ 'rp' ] ) {
-			 case 'home':
-				$returnButton = "<span style=\"float: right\">" .
-				 "<a class=\"button\" href=\"SM-home.php\">" . $L_Return . "</a></span>";
-				break;
+		$returnButton = "<span style=\"float: right\">" .
+		 "<a class=\"button\" href=\"SM-home.php\">" . $L_Return . "</a></span>";
 
-			 default:
-				$returnButton = '';
-				break;
-			}
-			
-			$Buttons = $addButton . $returnButton;
-		} else {
-			$Buttons = $addButton ;
-		}
+		$Buttons = $addButton . $returnButton;
 
 
 		if ( array_key_exists( 'particular', $_GET ) ) {
@@ -1508,7 +1493,7 @@ switch( $Action ) {
 			else
 				$Flag_Sex = $L_Woman;
 
-			print( "       <tr class=\"" . $BackGround . "\">\n" .
+			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
 			 "        <td>" . 
 			 $Security->XSS_Protection( $Civility->cvl_first_name ) . "</td>\n" .
 			 "        <td>" . 
@@ -2095,6 +2080,10 @@ switch( $Action ) {
 
 	if ( array_key_exists( 'home', $_GET ) ) {
 		$_SESSION[ 'p_action' ] = 'SM-home.php';
+	}
+
+	if ( array_key_exists( 'rp', $_GET ) ) {
+		if ( $_GET[ 'rp'] = 'home' ) $_SESSION[ 'p_action' ] = 'SM-home.php';
 	}
 
 	if ( ! isset( $_SESSION[ 'p_action' ] ) ) {

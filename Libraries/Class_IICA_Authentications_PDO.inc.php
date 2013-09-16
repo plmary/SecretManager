@@ -131,6 +131,10 @@ class IICA_Authentications extends IICA_Parameters {
 			throw new Exception( $L_Err_Auth, -1 );
 		}
 
+
+		/* -----------------------------
+		** Test l'authentifiant fournit.
+		*/
 		switch( $Type ) {
 		 default:
 		 case 'database':

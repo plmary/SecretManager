@@ -111,7 +111,7 @@ switch( $Action ) {
 	 $PageHTML->afficherActions( $PageHTML->is_administrator() ) .
 	 "    </div> <!-- Fin : zoneTitre -->\n" .
 	 "\n" .
-	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
+//	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
 	 "    <!-- debut : zoneMilieuComplet -->\n" .
 	 "    <div id=\"zoneMilieuComplet\">\n" .
 	 "     <center>\n" );
@@ -319,8 +319,8 @@ switch( $Action ) {
    
 	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
      "    <div id=\"icon-users\" class=\"icon36\" style=\"float: left; margin: 3px 9px 3px 3px;\"></div>\n" .
-	 "    <h2>" . $L_Title . "</h2>\n" .
-	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
+	 "    <h2 class=\"titre\">" . $L_Title . "</h2>\n" .
+//	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
 	 "    <!-- debut : zoneMilieuComplet -->\n" .
 	 "    <div id=\"zoneMilieuComplet\">\n" );
 
@@ -347,15 +347,15 @@ switch( $Action ) {
 
 	print( "        <table class=\"espace-20 espace-interne-10\">\n" .
 	 "         <tr>\n" .
-	 "          <td class=\"align-middle\"><label class=\"control-label\" for=\"iUser\">" . $L_Username . "</label></td>\n" .
-	 "          <td class=\"align-middle\"><input type=\"text\" name=\"User\" id=\"iUser\" /></td>\n" .
+//	 "          <td class=\"align-middle\"><label class=\"control-label\" for=\"iUser\">" . $L_Username . "</label></td>\n" .
+	 "          <td class=\"espace-interne-10 align-middle\"><div class=\"input-append\"><input class=\"span2\" type=\"text\" name=\"User\" id=\"iUser\" placeholder=\"" . $L_Username . "\" style=\"height: 20px;\"/><span class=\"add-on\"><i class=\"icon-user\"></i></span></div></td>\n" .
 	 "         </tr>\n" .
 	 "         <tr>\n" .
-	 "          <td class=\"align-middle\"><label class=\"control-label\" for=\"iPassword\">" . $L_Password . "</label></td>\n" .
-	 "          <td class=\"align-middle\"><input type=\"password\" name=\"Password\" id=\"iPassword\" /></td>\n" .
+//	 "          <td class=\"align-middle\"><label class=\"control-label\" for=\"iPassword\">" . $L_Password . "</label></td>\n" .
+	 "          <td class=\"align-middle\"><div class=\"input-append\"><input class=\"span2\" type=\"password\" name=\"Password\" id=\"iPassword\" placeholder=\"" . $L_Password . "\" style=\"height: 20px;\" /><span class=\"add-on\"><i class=\"icon-lock\"></i></span></div></td>\n" .
 	 "         </tr>\n" .
 	 "         <tr>\n" .
-	 "          <td>&nbsp;</td>\n" .
+//	 "          <td>&nbsp;</td>\n" .
 	 "          <td class=\"espace-interne-10\"><input type=\"submit\" class=\"button\" value=\"" . 
 	 $L_Connect . "\" /></td>\n" .
 	 "         </tr>\n" .

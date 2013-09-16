@@ -37,7 +37,7 @@ public function __construct() {
 }
 
 
-public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
+public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScript = '' ) {
 /**
 * Standardisation de la construction des pages HTML et de l'affichage des hauts de page.
 *
@@ -71,18 +71,34 @@ public function enteteHTML( $Title = "", $Language_Zone = 0 ) {
 	$Header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" " .
 	 " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n\n" .
 	 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\" lang=\"fr\">\n" .
+//	$Header = "<!DOCTYPE html>\n\n" .
+//	 "<html lang=\"fr\">\n" .
 	 " <head>\n" .
 	 "  <meta name=\"Description\" content=\"Secret Management\" />\n" .
 	 "  <meta http-equiv=\"Content-Type\" content=\"text/html; " .
 	 "charset=utf-8\" />\n" . // iso-8859-15\" />\n" .
 	 "  <meta name=\"Author\" content=\"Pierre-Luc MARY\" />\n" .
+	 "  <link rel=\"icon\" type=\"image/png\" href=\"" . URL_PICTURES . "/Logo-SM-30x30.png\" />\n" .
 	 "  <link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.css\" ".
-	 "type=\"text/css\" />\n\n" .
+	 "type=\"text/css\" />\n" .
 	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager.css\" ".
-	 "type=\"text/css\" />\n\n" .
+	 "type=\"text/css\" />\n" .
 	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager-icons.css\" " .
-	 "type=\"text/css\" />\n\n" .
-	 "  <title>" . $Title . "</title>\n" .
+	 "type=\"text/css\" />\n" .
+//	 "  <script  type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.min.js\"></script>\n" ;
+	 "  <script  type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.js\"></script>\n" ;
+
+	if ( $Fichiers_JavaScript != '' ) {
+        if ( is_array( $Fichiers_JavaScript ) ) {
+            foreach( $Fichiers_JavaScript as $Fichier ) {
+                $Header .= "  <script type=\"text/javascript\" src=\"" . "Libraries/" . $Fichier . "\"></script>\n";
+            }
+        } else {
+            $Header .= "  <script type=\"text/javascript\" src=\"" . "Libraries/" . $Fichiers_JavaScript . "\"></script>\n";
+        }
+	}
+
+	$Header .= "  <title>" . $Title . "</title>\n" .
 	 " </head>\n\n" .
 	 " <body>\n\n" .
 	 "  <!-- debut : enveloppe -->\n" .
@@ -382,8 +398,8 @@ public function returnPage( $Title, $Message, $Script, $Alert = 1 ) {
 	return $this->enteteHTML( $Title, 0 ) .
 	 "    <div id=\"icon-users\" class=\"icon36\" style=\"float: left; margin: 3px 9px 3px 3px;\"></div>\n" .
 	 "    <h1 style=\"padding-top: 12px;\">" . $Title . "</h1>\n" .
-	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
-	 "    <!-- debut : zoneMilieuComplet -->\n" .
+//	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
+//	 "    <!-- debut : zoneMilieuComplet -->\n" .
 	 "    <div id=\"zoneMilieuComplet\">\n" .
 	 "     <div id=\"" . $Type_Message . "\"><img class=\"no-border\" src=\"Pictures/" .
 	 $Icon_Name . ".png\" alt=\"KO\" />\n" .
@@ -427,8 +443,8 @@ public function page( $Title, $Message, $Language_Zone = 1, $Buttons = 1 ) {
 	 $this->afficherActions( $_SESSION['idn_super_admin'] ) .
 	 "   </div> <!-- fin : zoneTitre -->\n" .
 	 "\n" .
-	 "   <!-- debut : zoneGauche -->\n" .
-	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
+//	 "   <!-- debut : zoneGauche -->\n" .
+//	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
 	 "\n" .
 	 "   <!-- debut : zoneMilieuComplet -->\n" .
 	 "   <div id=\"zoneMilieuComplet\">\n" .

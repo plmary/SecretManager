@@ -87,8 +87,6 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 	 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
 	 "   </div> <!-- fin : zoneTitre -->\n" .
 	 "\n" .
-	 "   <!-- debut : zoneGauche -->\n" .
-	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
 	 "\n" .
 	 "   <!-- debut : zoneMilieuComplet -->\n" .
 	 "   <div id=\"zoneMilieuComplet\">\n" .

@@ -26,7 +26,6 @@ if ( array_key_exists( 'Lang', $_GET ) ) {
 }
 	
 $Script = URL_BASE . $_SERVER[ 'SCRIPT_NAME' ];
-$Server = $_SERVER[ 'SERVER_NAME' ];
 $URI = $_SERVER[ 'REQUEST_URI' ];
 
 if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
@@ -104,9 +103,10 @@ if ( array_key_exists( 'action', $_GET ) ) {
    $Action = strtoupper( $_GET[ 'action' ] );
 }
 
-   
-print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
- "  <script>\n" .
+$Javascripts = 'dashboard.js';
+
+print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts ) .
+/* "  <script>\n" .
  "function viewPassword( scr_id ) {\n" .
  " var WindowHeight = 400;\n" .
  " var WindowWidth = 950;\n" .
@@ -115,7 +115,17 @@ print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
  " 'left=' + (screen.width - WindowWidth) / 2 + ',' +\n" .
  " 'top=' + (screen.height - WindowHeight) / 2 );\n" .
  "}\n" .
- "  </script>\n" .
+ "  </script>\n" . */
+ "   <script>\n" .
+"function viewPassword( scr_id ) {\n" .
+"	alert( scr_id );\n" .
+"	$('#myModal').delay(400).fadeIn(500);\n" .
+"	$('#myModal').animate({\n" .
+"		width: '315px',\n" .
+"		height: '100%'\n" .
+"	},400);\n" .
+"}\n" .
+ "   </script>\n" .
  "   <!-- debut : zoneTitre -->\n" .
  "   <div id=\"zoneTitre\">\n" .
  "    <div id=\"icon-home\" class=\"icon36\"></div>\n" .
@@ -123,8 +133,8 @@ print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
  $PageHTML->afficherActions( $Authentication->is_administrator() ) .
  "    </div> <!-- Fin : zoneTitre -->\n" .
  "\n" .
- "   <!-- debut : zoneGauche -->\n" .
- "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
+// "   <!-- debut : zoneGauche -->\n" .
+// "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
  "\n" .
  "   <!-- debut : zoneMilieuComplet -->\n" .
  "   <div id=\"zoneMilieuComplet\">\n" .
@@ -201,6 +211,7 @@ switch( $Action ) {
 	if ( array_key_exists( 'last_login', $_GET ) ) {
 		print( 
 		 "<script>\n" .
+		 "     var myVar=setInterval(function(){cacherInfo()},9000);\n" .
 		 "     function cacherInfo() {\n" .
 		 "        document.getElementById(\"info\").style.display = \"none\";\n" .
 		 "     }\n" .
@@ -229,40 +240,30 @@ switch( $Action ) {
 		print( "\n" .
 		 "     <!-- Début : affichage de la synthèse des utilisateurs -->\n" .
 		 "     <div class=\"tableau_synthese\">\n" .
-		 "     <table class=\"table-bordered\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th>" . $L_List_Users . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" .
-		 "       <tr class=\"pair\">\n" .
-		 "        <td>" . $L_Total_Users_Base . 
-		 " : <span class=\"bg-green bold\">&nbsp;" .
-		 $Identities->total() . "&nbsp;</span></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td><a class=\"surline\" href=\"SM-users.php?particular=disable\">" . $L_Total_Users_Disabled . " : <span class=\"green bold\">" .
-		 $Identities->totalDisabled() . "</span></a></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td>" . $L_Total_Users_Expired . " : <span class=\"green bold\">" .
-		 $Identities->totalExpired() . "</span></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td>" . $L_Total_Users_Attempted . " : <span class=\"green bold\">" .
-		 $Identities->totalAttempted() . "</span></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td>" . $L_Total_Users_Super_Admin . " : <span class=\"green bold\">" .
-		 $Identities->totalSuperAdmin() . "</span></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td><p class=\"space\"><a class=\"button\" href=\"SM-users.php?rp=home\">" .
-		 $L_Manage_Users . "</a></p></td>\n" .
-		 "       </tr>\n" .
-		 "      </tbody>\n" .
-		 "     </table>\n" .
+		 "      <p class=\"titre\" id=\"users\">" . $L_List_Users . "</p>\n" .
+		 "      <div class=\"corps hide\" id=\"c_users\">\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Users_Base . " : </span>\n" .
+		 "        <span class=\"bg-green bold\">&nbsp;" . $Identities->total() . "&nbsp;</span>\n" .
+		 "       </p>\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Users_Disabled . " : </span>\n" .
+		 "        <span class=\"green bold\">" . $Identities->totalDisabled() . "</span>\n" .
+		 "       </p>\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Users_Expired . " : </span>\n" .
+		 "        <span class=\"green bold\">" . $Identities->totalExpired() . "</span>\n" .
+		 "       </p>\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Users_Attempted . " : </span>\n" .
+		 "        <span class=\"green bold\">" . $Identities->totalAttempted() . "</span>\n" .
+		 "       </p>\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Users_Super_Admin . " : </span>\n" .
+		 "        <span class=\"green bold\">" . $Identities->totalSuperAdmin() . "</span>\n" .
+		 "       </p>\n" .
+		 "      </div> <!-- Fin : corps -->\n" .
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php\">" . $L_Manage_Users . "</a></p>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des utilisateurs -->\n\n" .
 
@@ -270,24 +271,14 @@ switch( $Action ) {
 		 // Tableau d'affichage des Groupes de Secrets.
 		 "     <!-- Début : affichage de la synthèse des groupes -->\n\n" .
 		 "     <div class=\"tableau_synthese\">\n" .
-		 "     <table class=\"table-bordered\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th>" . $L_List_Groups . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" .
-		 "       <tr class=\"pair\">\n" .
-		 "        <td>" . $L_Total_Groups_Base . 
-		 " : <span class=\"bg-green bold\">&nbsp;" . 
-		 $Groups->total( $idn_id ) . "&nbsp;</span></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td><p class=\"space\"><a class=\"button\" href=\"SM-secrets.php?rp=home\">" .
-		 $L_Manage_Groups . "</a></p></td>\n" .
-		 "       </tr>\n" .
-		 "      </tbody>\n" .
-		 "     </table>\n" .
+		 "      <p class=\"titre\" id=\"groups\">" . $L_List_Groups . "</p>\n" .
+		 "      <div class=\"corps hide\" id=\"c_groups\">\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Groups_Base . " : </span>\n" .
+		 "        <span class=\"bg-green bold\">&nbsp;" . $Groups->total( $idn_id ) . "&nbsp;</span>\n" .
+		 "       </p>\n" .
+		 "      </div>\n" .
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-secrets.php?rp=home\">" . $L_Manage_Groups . "</a></p>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" .
 
@@ -295,24 +286,15 @@ switch( $Action ) {
 		 // Tableau d'affichage des Profils.
 		 "     <!-- Début : affichage de la synthèse des profils -->\n\n" .
 		 "     <div class=\"tableau_synthese\">\n" .
-		 "     <table class=\"table-bordered\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th>" . $L_List_Profiles . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" .
-		 "       <tr class=\"pair\">\n" .
-		 "        <td>" . $L_Total_Profiles_Base . 
-		 " : <span class=\"bg-green bold\">&nbsp;" . 
-		 $Profiles->total() . "&nbsp;</span></td>\n" .
-		 "       </tr>\n" .
+		 "      <p class=\"titre\" id=\"profiles\">" . $L_List_Profiles . "</p>\n" .
+		 "      <div class=\"corps hide\" id=\"c_profiles\">\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Profiles_Base . " : </span>\n" .
+		 "        <span class=\"bg-green bold\">&nbsp;" . $Profiles->total() . "&nbsp;</span>\n" .
+		 "       </p>\n" .
 		 "       <tr class=\"impair\">\n" .
-		 "        <td><p class=\"space\"><a class=\"button\" href=\"SM-users.php?action=PRF_V&rp=home\">" .
-		 $L_Manage_Profiles . "</a></p></td>\n" .
-		 "       </tr>\n" .
-		 "      </tbody>\n" .
-		 "     </table>\n" .
+		 "      </div>\n" .
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=PRF_V&rp=home\">" . $L_Manage_Profiles . "</a></p>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" .
 
@@ -320,24 +302,14 @@ switch( $Action ) {
 		 // Tableau d'affichage des Entités.
 		 "     <!-- Début : affichage de la synthèse des entités -->\n\n" .
 		 "     <div class=\"tableau_synthese\">\n" .
-		 "     <table class=\"table-bordered\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th>" . $L_List_Entities . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" .
-		 "       <tr class=\"pair\">\n" .
-		 "        <td>" . $L_Total_Entities_Base . 
-		 " : <span class=\"bg-green bold\">&nbsp;" . 
-		 $Entities->total() . "&nbsp;</span></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td><p class=\"space\"><a class=\"button\" href=\"SM-users.php?action=ENT_V&rp=home\">" .
-		 $L_Manage_Entities . "</a></p></td>\n" .
-		 "       </tr>\n" .
-		 "      </tbody>\n" .
-		 "     </table>\n" .
+		 "      <p class=\"titre\" id=\"entities\">" . $L_List_Entities . "</p>\n" .
+		 "      <div class=\"corps hide\" id=\"c_entities\">\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
+		 "        <span class=\"bg-green bold\">&nbsp;" . $Entities->total() . "&nbsp;</span>\n" .
+		 "       </p>\n" .
+		 "      </div>\n" .
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=ENT_V&rp=home\">" . $L_Manage_Entities . "</a></p>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des entités -->\n\n" .
 
@@ -345,24 +317,14 @@ switch( $Action ) {
 		 // Tableau d'affichage des Civilités.
 		 "     <!-- Début : affichage de la synthèse des civilités -->\n\n" .
 		 "     <div class=\"tableau_synthese\">\n" .
-		 "     <table class=\"table-bordered\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th>" . $L_List_Civilities . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" .
-		 "       <tr class=\"pair\">\n" .
-		 "        <td>" . $L_Total_Entities_Base . 
-		 " : <span class=\"bg-green bold\">&nbsp;" . 
-		 $Civilities->total() . "&nbsp;</span></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td><p class=\"space\"><a class=\"button\" href=\"SM-users.php?action=CVL_V&rp=home\">" .
-		 $L_Manage_Civilities . "</a></p></td>\n" .
-		 "       </tr>\n" .
-		 "      </tbody>\n" .
-		 "     </table>\n" .
+		 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Civilities . "</p>\n" .
+		 "      <div class=\"corps hide\" id=\"c_civilities\">\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
+		 "        <span class=\"bg-green bold\">&nbsp;" . $Civilities->total() . "&nbsp;</span>\n" .
+		 "       </p>\n" .
+		 "      </div>\n" .
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=CVL_V&rp=home\">" . $L_Manage_Civilities . "</a></p>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des civilités -->\n\n" .
 		 "     <div style=\"clear: both;\"></div>\n" );
@@ -759,6 +721,18 @@ switch( $Action ) {
 }
 
 print( "   </div> <!-- Fin : zoneMilieuComplet -->\n" .
+ "   <div id=\"myModal\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\n".
+ "    <div class=\"modal-header\">\n".
+ "     <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button>\n".
+ "     <h3 id=\"myModalLabel\">".$L_Secret_View."</h3>\n".
+ "    </div> <!-- Fin : modal-header -->\n".
+ "    <div class=\"modal-loby\">\n" .
+//
+ "    </div> <!-- Fin : modal-loby -->\n" .
+ "    <div class=\"modal-footer\">\n".
+ "     <a href=\"#\" class=\"btn btn-custom\" name=\"ajouter\" id=\"ajouter\">".$L_Secret_View."</a>\n".
+ "    </div> <!-- Fin : modal-footer -->\n".
+ "   </div> <!-- Fin : myModal -->\n" .
  $PageHTML->construireFooter( 1, 'home' ) .
  $PageHTML->piedPageHTML() );
 

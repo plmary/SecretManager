@@ -42,8 +42,9 @@
 	$L_Max_Attempt = 'Maximale Anzahl Versuche';
 	$L_Default_Password = 'Standard Passwort';
 	$L_Expiration_Time = 'Session Gültigkeit (Minuten)';
-	$L_Radius_Server_IP = 'RADIUS Server IP Adresse';
-	$L_Radius_Port_IP = 'RADIUS Server IP Port';
+	$L_Radius_Server = 'RADIUS Server IP Adresse';
+	$L_Radius_Authentication_Port = 'RADIUS Server IP Authentication Port';
+	$L_Radius_Accounting_Port = 'RADIUS Server IP Accounting Port';
 	$L_Radius_Secret_Common = 'RADIUS Shared Secret';
 	$L_LDAP_Server = 'LDAP Server IP Addresse';
 	$L_LDAP_Port = 'LDAP port';

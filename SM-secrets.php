@@ -95,9 +95,9 @@ $Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 	
 if ( $Action == 'SCR_V' ) {
 	print( $PageHTML->mini_HTMLHeader( $L_Title ) .
-	 "   <!-- debut : zoneGauche -->\n" .
-	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
-	 "\n" .
+//	 "   <!-- debut : zoneGauche -->\n" .
+//	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
+//	 "\n" .
 	 "   <!-- debut : zoneMilieuComplet -->\n" .
 	 "   <div id=\"zoneMilieuComplet\">\n" .
 	 "\n" );
@@ -111,9 +111,9 @@ if ( $Action == 'SCR_V' ) {
 		 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
 		 "   </div> <!-- fin : zoneTitre -->\n" .
 		 "\n" .
-		 "   <!-- debut : zoneGauche -->\n" .
-		 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
-		 "\n" .
+//		 "   <!-- debut : zoneGauche -->\n" .
+//		 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
+//		 "\n" .
 		 "   <!-- debut : zoneMilieuComplet -->\n" .
 		 "   <div id=\"zoneMilieuComplet\">\n" .
 		 "\n" );
