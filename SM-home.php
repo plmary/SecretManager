@@ -710,10 +710,10 @@ switch( $Action ) {
 }
 
 print( "   </div> <!-- Fin : zoneMilieuComplet -->\n" .
- "   <div id=\"afficherSecret\" class=\"tableau_synthese hide modal\" style=\"top:50%;\">\n".
+ "   <div id=\"afficherSecret\" class=\"tableau_synthese hide modal\" style=\"top:50%;left:40%;\">\n".
  "    <button type=\"button\" class=\"close\">×</button>\n".
  "    <p class=\"titre\">".$L_Secret_View."</p>\n".
- "    <div id=\"detailSecret\" style=\"margin: 6px;padding:6px;min-width:150px;\" class=\"corps vertical-align align-center bg-orange\"></div>\n" .
+ "    <div id=\"detailSecret\" style=\"margin:6px;padding:6px;min-width:150px;\" class=\"corps vertical-align align-center\"></div>\n" .
  "   </div> <!-- Fin : afficherSecret -->\n" .
  $PageHTML->construireFooter( 1, 'home' ) .
  $PageHTML->piedPageHTML() );

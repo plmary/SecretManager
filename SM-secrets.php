@@ -1212,7 +1212,7 @@ switch( $Action ) {
 	break;
 
 
- case 'SCR_V':
+ case 'SCR_V': // Réponse à la requête AJAX
 	$Secrets = new IICA_Secrets();
 	
 	try {
@@ -1254,12 +1254,19 @@ switch( $Action ) {
 	 or $accessControl ) {
 		$Resultat = array( 'Statut' => 'succes',
 		 'group' => $Secret->sgr_label,
+		 'l_group' => $L_Group,
 		 'type' => ${$Secret->stp_name},
+		 'l_type' => $L_Type,
 		 'environment' => ${$Secret->env_name},
+		 'l_environment' => $L_Environment,
 		 'application' => $Secret->scr_application,
+		 'l_application' => $L_Application,
 		 'host' => $Secret->scr_host,
+		 'l_host' => $L_Host,
 		 'user' => $Secret->scr_user,
-		 'password' => stripslashes( $Secret->scr_password ) );
+		 'l_user' => $L_User,
+		 'password' => stripslashes( $Secret->scr_password ),
+		 'l_password' => $L_Password );
 	}
 
 	echo json_encode( $Resultat );

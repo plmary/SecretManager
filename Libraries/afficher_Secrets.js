@@ -36,7 +36,8 @@ function viewPassword( scr_id ){
                 var statut = resultat['Statut'];
 
                 if (statut == 'succes') {
-                    $('#detailSecret').text(resultat['password']);
+                    Message = '<p><span>'+resultat['l_password']+' : </span><span class="bg-orange td-aere">'+resultat['password']+'</span></p>';
+                    $('#detailSecret').html(Message);
                 }
                 else if (statut == 'erreur') {
                     $('#detailSecret').text(resultat['Message']);
