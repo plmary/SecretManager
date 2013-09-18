@@ -29,7 +29,7 @@ public function __construct() {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.6-0'; // Version de l'outil
+	$this->Version = '0.6-1'; // Version de l'outil
 
 	parent::__construct();
 	
@@ -37,7 +37,7 @@ public function __construct() {
 }
 
 
-public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScript = '' ) {
+public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScript = '', $innerJS = '' ) {
 /**
 * Standardisation de la construction des pages HTML et de l'affichage des hauts de page.
 *
@@ -86,16 +86,22 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager-icons.css\" " .
 	 "type=\"text/css\" />\n" .
 //	 "  <script  type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.min.js\"></script>\n" ;
-	 "  <script  type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.js\"></script>\n" ;
+	 "  <script type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.js\"></script>\n" ;
 
 	if ( $Fichiers_JavaScript != '' ) {
         if ( is_array( $Fichiers_JavaScript ) ) {
             foreach( $Fichiers_JavaScript as $Fichier ) {
-                $Header .= "  <script type=\"text/javascript\" src=\"" . "Libraries/" . $Fichier . "\"></script>\n";
+                $Header .= "  <script type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/" . $Fichier . "\"></script>\n";
             }
         } else {
-            $Header .= "  <script type=\"text/javascript\" src=\"" . "Libraries/" . $Fichiers_JavaScript . "\"></script>\n";
+            $Header .= "  <script type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/" . $Fichiers_JavaScript . "\"></script>\n";
         }
+	}
+
+	if ( $innerJS != '' ) {
+		$Header .= "  <script type=\"text/javascript\">\n" .
+			$innerJS .
+			"  </script>\n";
 	}
 
 	$Header .= "  <title>" . $Title . "</title>\n" .

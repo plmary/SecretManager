@@ -620,7 +620,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		// =================================
 		// Chiffrement du secret.
-		if ( $Parameters->get( 'use_SecretServer' ) == '1' ) {
+		if ( $Parameters->getParameter( 'use_SecretServer' ) == '1' ) {
 			try {
 				$Encrypted = $Secret_Server->SS_encryptValue( $scr_password );
 			} catch( Exception $e ) {

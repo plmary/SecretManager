@@ -103,7 +103,7 @@ if ( array_key_exists( 'action', $_GET ) ) {
    $Action = strtoupper( $_GET[ 'action' ] );
 }
 
-$Javascripts = 'dashboard.js';
+$Javascripts = array( 'dashboard.js', 'afficher_Secrets.js' );
 
 print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts ) .
 /* "  <script>\n" .
@@ -116,16 +116,6 @@ print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts ) .
  " 'top=' + (screen.height - WindowHeight) / 2 );\n" .
  "}\n" .
  "  </script>\n" . */
- "   <script>\n" .
-"function viewPassword( scr_id ) {\n" .
-"	alert( scr_id );\n" .
-"	$('#myModal').delay(400).fadeIn(500);\n" .
-"	$('#myModal').animate({\n" .
-"		width: '315px',\n" .
-"		height: '100%'\n" .
-"	},400);\n" .
-"}\n" .
- "   </script>\n" .
  "   <!-- debut : zoneTitre -->\n" .
  "   <div id=\"zoneTitre\">\n" .
  "    <div id=\"icon-home\" class=\"icon36\"></div>\n" .
@@ -292,7 +282,6 @@ switch( $Action ) {
 		 "        <span>" . $L_Total_Profiles_Base . " : </span>\n" .
 		 "        <span class=\"bg-green bold\">&nbsp;" . $Profiles->total() . "&nbsp;</span>\n" .
 		 "       </p>\n" .
-		 "       <tr class=\"impair\">\n" .
 		 "      </div>\n" .
 		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=PRF_V&rp=home\">" . $L_Manage_Profiles . "</a></p>\n" .
 		 "     </div>\n" .
@@ -400,7 +389,7 @@ switch( $Action ) {
 			if ( $Group->sgr_id == $sgr_id ) $Status = ' selected ';
 			else $Status = '';
 		
-			print( "         <option value=\"" . $Group->sgr_id . '"' . $Status . '>' .
+			print( "         <option value=\"" . stripslashes( $Group->sgr_id ) . '"' . $Status . '>' .
 			 $Group->sgr_label . "</option>\n" );
 		}
 
@@ -538,9 +527,7 @@ switch( $Action ) {
 	 "      <thead>\n" .
 	 "       <tr>\n" .
 	 "        <th colspan=\"8\">" . $L_List_Secrets . $myButtons . "</th>\n" .
-	 "       </tr>\n" .
-	 "      </thead>\n" .
-	 "      <tbody>\n" );
+	 "       </tr>\n" );
 		 
 	if ( $Action != 'R2' && ! isset( $_SESSION[ 'searchSecret' ] ) ) {
 		$List_Secrets = $Secrets->listSecrets( $sgr_id, $_SESSION[ 'idn_id' ], $stp_id,
@@ -563,8 +550,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'group';
 	}
-	print( "        <th onclick=\"javascript:document.location='" . $Script . 
-	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Group . "</th>\n" );
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Group . "</td>\n" );
 	 
 	if ( $orderBy == 'type' ) {
 		$tmpClass = 'order-select';
@@ -576,8 +563,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'type';
 	}
-	print( "        <th onclick=\"javascript:document.location='" . $Script . 
-	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Type . "</th>\n" );
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Type . "</td>\n" );
 	 
 	if ( $orderBy == 'environment' ) {
 		$tmpClass = 'order-select';
@@ -589,8 +576,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'environment';
 	}
-	print( "        <th onclick=\"javascript:document.location='" . $Script . 
-	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Environment . "</th>\n" );
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Environment . "</td>\n" );
 	 
 	if ( $orderBy == 'application' ) {
 		$tmpClass = 'order-select';
@@ -602,8 +589,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'application';
 	}
-	print( "        <th onclick=\"javascript:document.location='" . $Script . 
-	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Application . "</th>\n" );
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Application . "</td>\n" );
 	 
 	if ( $orderBy == 'host' ) {
 		$tmpClass = 'order-select';
@@ -615,8 +602,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'host';
 	}
-	print( "        <th onclick=\"javascript:document.location='" . $Script . 
-	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Host . "</th>\n" );
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Host . "</td>\n" );
 	 
 	if ( $orderBy == 'user' ) {
 		$tmpClass = 'order-select';
@@ -628,8 +615,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'user';
 	}
-	print( "        <th onclick=\"javascript:document.location='" . $Script . 
-	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</th>\n" );
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</td>\n" );
 	 
 	if ( $orderBy == 'comment' ) {
 		$tmpClass = 'order-select';
@@ -641,12 +628,14 @@ switch( $Action ) {
 		
 		$tmpSort = 'comment';
 	}
-	print( "        <th onclick=\"javascript:document.location='" . $Script . 
-	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Comment . "</th>\n" );
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Comment . "</td>\n" );
 
 
-	print( "        <th>" . $L_Actions . "</th>\n" .
-	 "       </tr>\n" );
+	print( "        <td>" . $L_Actions . "</td>\n" .
+	 "       </tr>\n" .
+	 "      </thead>\n" .
+	 "      <tbody>\n" );
 		
 	$BackGround = "pair";
 		
@@ -721,18 +710,11 @@ switch( $Action ) {
 }
 
 print( "   </div> <!-- Fin : zoneMilieuComplet -->\n" .
- "   <div id=\"myModal\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\n".
- "    <div class=\"modal-header\">\n".
- "     <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button>\n".
- "     <h3 id=\"myModalLabel\">".$L_Secret_View."</h3>\n".
- "    </div> <!-- Fin : modal-header -->\n".
- "    <div class=\"modal-loby\">\n" .
-//
- "    </div> <!-- Fin : modal-loby -->\n" .
- "    <div class=\"modal-footer\">\n".
- "     <a href=\"#\" class=\"btn btn-custom\" name=\"ajouter\" id=\"ajouter\">".$L_Secret_View."</a>\n".
- "    </div> <!-- Fin : modal-footer -->\n".
- "   </div> <!-- Fin : myModal -->\n" .
+ "   <div id=\"afficherSecret\" class=\"tableau_synthese hide modal\" style=\"top:50%;\">\n".
+ "    <button type=\"button\" class=\"close\">×</button>\n".
+ "    <p class=\"titre\">".$L_Secret_View."</p>\n".
+ "    <div id=\"detailSecret\" style=\"margin: 6px;padding:6px;min-width:150px;\" class=\"corps vertical-align align-center bg-orange\"></div>\n" .
+ "   </div> <!-- Fin : afficherSecret -->\n" .
  $PageHTML->construireFooter( 1, 'home' ) .
  $PageHTML->piedPageHTML() );
 

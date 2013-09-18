@@ -93,17 +93,13 @@ if ( array_key_exists( 'action', $_GET ) ) {
 
 $Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 	
-if ( $Action == 'SCR_V' ) {
-	print( $PageHTML->mini_HTMLHeader( $L_Title ) .
-//	 "   <!-- debut : zoneGauche -->\n" .
-//	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
-//	 "\n" .
-	 "   <!-- debut : zoneMilieuComplet -->\n" .
-	 "   <div id=\"zoneMilieuComplet\">\n" .
-	 "\n" );
-} else {
+if ( $Action != 'SCR_V' ) {
+	 // Cas de l'import des fonctions JS gérant les mots de passe.
+	if ( $Action == 'SCR_A' or $Action == 'SCR_M' ) include( DIR_LIBRARIES . '/password_js.php' );
+	else $innerJS = '';
+
 	if ( ! preg_match("/X$/i", $Action ) ) {
-		print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
+		print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, '', $innerJS ) .
 		 "   <!-- debut : zoneTitre -->\n" .
 		 "   <div id=\"zoneTitre\">\n" .
 		 "    <div id=\"icon-access\" class=\"icon36\"></div>\n" .
@@ -111,9 +107,6 @@ if ( $Action == 'SCR_V' ) {
 		 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
 		 "   </div> <!-- fin : zoneTitre -->\n" .
 		 "\n" .
-//		 "   <!-- debut : zoneGauche -->\n" .
-//		 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
-//		 "\n" .
 		 "   <!-- debut : zoneMilieuComplet -->\n" .
 		 "   <div id=\"zoneMilieuComplet\">\n" .
 		 "\n" );
@@ -132,7 +125,6 @@ if ( $Action == 'SCR_V' ) {
 		 "    </div>\n" );
 	}
 }
-
 
 
 switch( $Action ) {
@@ -999,130 +991,6 @@ switch( $Action ) {
 			 '?action=SCR">' . $L_Cancel . '</a>';
 			$Continuous = '';
 		}
-
-		print( "     <script>\n" .
-		 "function checkPassword(Password_Field, Result_Field, Complexity, Size) {\n" .
-		 " var Ok_Size = 0;\n" .
-		 " var Result = '';\n" .
-		 " var pwd = document.getElementById(Password_Field).value;\n" .
-		 " if ( Complexity < 1 || Complexity > 3 ) Complexity = 3;\n" .
-		 " if ( pwd.length < Size ) {\n" .
-		 "  Result += '" . $L_No_Good_Size . " ' + Size + '). ';\n" .
-		 "  document.getElementById(Result_Field).title = Result;\n" .
-		 " }\n" .
-		 " switch( Complexity ) {\n" .
-		 "  case 1:\n" .
-		 "   var regex_lcase = new RegExp('[a-z]', 'g');\n" .
-		 "   var regex_ucase = new RegExp('[A-Z]', 'g');\n" .
-		 "   if ( ! pwd.match( regex_lcase ) ) {\n" .
-		 "    Result += '" . $L_Use_Lowercase . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   if ( ! pwd.match( regex_ucase ) ) {\n" .
-		 "    Result += '" . $L_Use_Uppercase . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   break;\n" .
-		 "  case 2:\n" .
-		 "   var regex_lcase = new RegExp('[a-z]', 'g');\n" .
-		 "   var regex_ucase = new RegExp('[A-Z]', 'g');\n" .
-		 "   var regex_num = new RegExp('[0-9]', 'g');\n" .
-		 "   if ( ! pwd.match( regex_lcase ) ) {\n" .
-		 "    Result += '" . $L_Use_Lowercase . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   if ( ! pwd.match( regex_ucase ) ) {\n" .
-		 "    Result += '" . $L_Use_Uppercase . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   if ( ! pwd.match( regex_num ) ) {\n" .
-		 "    Result += '" . $L_Use_Number . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   break;\n" .
-		 "  case 3:\n" .
-		 "   var regex_lcase = new RegExp('[a-z]', 'g');\n" .
-		 "   var regex_ucase = new RegExp('[A-Z]', 'g');\n" .
-		 "   var regex_num = new RegExp('[0-9]', 'g');\n" .
-		 "   var regex_sc = new RegExp('[^\\\\w]', 'g');\n" .
-		 "   if ( ! pwd.match( regex_lcase ) ) {\n" .
-		 "    Result += '" . $L_Use_Lowercase . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   if ( ! pwd.match( regex_ucase ) ) {\n" .
-		 "    Result += '" . $L_Use_Uppercase . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "	 if ( ! pwd.match( regex_num ) ) {\n" .
-		 "    Result += '" . $L_Use_Number . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   if ( ! pwd.match( regex_sc ) ) {\n" .
-		 "    Result += '" . $L_Use_Special_Chars . ". ';\n" .
-		 "    document.getElementById(Result_Field).title = Result;\n" .
-		 "   }\n" .
-		 "   break;\n" .
-		 "  }\n" .
-//		 "  element = document.getElementById(Result_Field);\n" .
-//		 "  element.innerHTML = Result;\n" . 
-		 "  if ( Result != '' && pwd != '' ) {\n" .
-		 "   document.getElementById(Result_Field).alt = 'Ko';\n" .
-		 "   document.getElementById(Result_Field).src = " . URL_PICTURES . "'/s_attention.png'\n" .
-		 "  }\n" .
-		 "  if ( Result == '' && pwd != '' ) {\n" .
-		 "   document.getElementById(Result_Field).alt = 'Ok';\n" .
-		 "   document.getElementById(Result_Field).title = 'Ok';\n" .
-		 "   document.getElementById(Result_Field).src = " . URL_PICTURES . "'/s_okay.png'\n" .
-		 "  }\n" .
-		 "}\n" .
-		 "function generatePassword( Password_Field, Complexity, Size ){\n" .
-		 "	Size	= parseInt( Size );\n" .
-		 "	if ( ! Size )\n" .
-		 "		Size = 8;\n" .
-		 "	if ( ! Complexity )\n" .
-		 "		Complexity = 3;\n" .
-		 "	var Password = '';\n" .
-		 "	var Numbers  = '0123456789';\n" .
-		 "	var Accentuations = 'àçèéêëîïôöùûüÿ';\n" .
-		 "	var Special_Chars = '&~\"#\'{([-|_\\@)]=}+£\$€µ*%<>?,.;/:§!';\n" .
-		 "	var Chars    = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';\n" .
-		 "	var NextChar;\n" .
-		 "	var Attempt  = 0;\n" .
-		 "	switch( Complexity ) {\n" .
-		 "	 case 2:\n" .
-		 "	 	Chars += Numbers;\n" .
-		 "		break;\n" .
-		 "	 default:\n" .
-		 "	 case 3:\n" .
-		 "	 	Chars += Numbers + Special_Chars;\n" .
-		 "		break;\n" .
-		 "	 case 4:\n" .
-		 "	 	Chars += Numbers + Special_Chars + Accentuations;\n" .
-		 "		break;\n" .
-		 "	}\n" .
-		 "	var CharsN   = Chars.length;\n" .
-		 "	var regex_lower = new RegExp('[a-z]', 'g');\n" .
-		 "	var regex_upper = new RegExp('[A-Z]', 'g');\n" .
-		 "	var regex_num = new RegExp('[0-9]', 'g');\n" .
-		 "	var regex_sc = new RegExp('[^\\w]', 'g');\n" .
-		 "	while( Attempt < 50 ) {\n" .
-		 "		for( i = 0; i < Size; i++ ){\n" .
-		 "			NextChar = Chars.charAt( Math.floor( Math.random() * CharsN ) );\n" .
-		 "			Password += NextChar;\n" .
-		 "		}\n" .
-		 "		if ( Password.match( regex_lower ) != null\n" .
-		 "		 && Password.match( regex_upper ) != null\n" .
-		 "		 && Password.match( regex_num ) != null\n" .
-		 "		 && Password.match( regex_sc ) != null ) break;\n" .
-		 "		else Password = '';\n" .
-		 "		Attempt++;\n" .
-		 "	}\n" .
-		 "	element = document.getElementById( Password_Field );\n" .
-//		 "	element.innerHTML = Password;\n" .
-		 "	element.value = Password;\n" .
-		 "}\n" .
-		 "     </script>\n" );
-		
 	
 		print( "     <form name=\"a_group\" method=\"post\" action=\"" . $Script . "?action=SCR_AX". $Continuous . "\">\n" .
 		 "      <table style=\"margin:10px auto;width:60%\">\n" .
@@ -1190,7 +1058,7 @@ switch( $Action ) {
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
-		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
+		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" width=\"16\" height=\"16\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .
@@ -1348,11 +1216,12 @@ switch( $Action ) {
 	$Secrets = new IICA_Secrets();
 	
 	try {
-		$Secret = $Secrets->get( $_GET[ 'scr_id' ] );
+		$Secret = $Secrets->get( $_POST[ 'scr_id' ] );
 	} catch( Exception $e ) {
-		$Return_Page = 'javascript:window.close();';
- 
-		print( $PageHTML->infoBox( $e->getMessage(), $Return_Page, 1 ) );
+		$Resultat = array( 'Statut' => 'erreur',
+			'Message' => $e->getMessage() );
+
+		echo json_encode( $Resultat );
 		
 		break;
 	}
@@ -1360,10 +1229,10 @@ switch( $Action ) {
 	$Group = $Groups->get( $Secret->sgr_id );
 
 	if ( $Secret->scr_alert == 1 or $Group->sgr_alert == 1 ) {
-		$alert_message = $Secrets->formatHistoryMessage( $L_Secret_View, $_GET[ 'scr_id' ], ${$Secret->stp_name},
+		$alert_message = $Secrets->formatHistoryMessage( $L_Secret_View, $_POST[ 'scr_id' ], ${$Secret->stp_name},
 		 ${$Secret->env_name}, $Secret->scr_application, $Secret->scr_host, $Secret->scr_user );
 
-		$Secrets->updateHistory( $_GET[ 'scr_id' ], $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		$Secrets->updateHistory( $_POST[ 'scr_id' ], $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
 		if ( $Alert_Syslog == 1 ) {
 			$Security->writeLog( $alert_message );
@@ -1383,56 +1252,17 @@ switch( $Action ) {
 
 	if ( $Authentication->is_administrator()
 	 or $accessControl ) {
-		print( "    <div id=\"dashboard\">\n" .
-		 "    <div id=\"scroller\">\n" .
-		 "     <table>\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"7\">" . $L_Secret_View . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" .
-		 "       <tr>\n" .
-		 "        <th>" . $L_Group . "</th>\n" .
-		 "        <th>" . $L_Type . "</th>\n" .
-		 "        <th>" . $L_Environment . "</th>\n" .
-		 "        <th>" . $L_Application . "</th>\n" .
-		 "        <th>" . $L_Host . "</th>\n" .
-		 "        <th>" . $L_User . "</th>\n" .
-		 "        <th>" . $L_Password . "</th>\n" .
-		 "       </tr>\n" .
-		 "       <tr class=\"impair\">\n" .
-		 "        <td>" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
-		 "        <td>" . $Security->XSS_Protection( ${$Secret->stp_name} ) . "</td>\n" .
-		 "        <td>" . $Security->XSS_Protection( ${$Secret->env_name} ) . "</td>\n" .
-		 "        <td>" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
-		 "        <td>" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
-		 "        <td>" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" .
-		 "        <td class=\"bg-orange\">" . $Security->XSS_Protection( $Secret->scr_password ) . "</td>\n" .
-		 "       </tr>\n" .
-		 "      </tbody>\n" .
-		 "      <tfoot><tr><th colspan=\"7\">" );
-		 
-		if ( array_key_exists( 'home', $_GET ) ) {
-			print( "<a class=\"button\" id=\"iB_Close\" href=\"" . URL_BASE . "/SM-home.php\">" . 
-			 $L_Return . "</a>\n" );
-		} else {
-			print( "<a class=\"button\" id=\"iB_Close\" href=\"javascript:window.close();\">" . 
-			 $L_Close . "</a>\n" );
-		}
-		 
-		print( "      </th></tr></tfoot>\n" .
-		 "     </table>\n" .
-		 "     <script type=\"text/javascript\">\n" .
-		 "<!--\n" .
-		 "      document.getElementById('iB_Close').focus();\n" .
-//		 "      document.fSelect.secret.focus();\n" .
-//		 "      document.fSelect..select();\n" .
-		 "//-->\n" .
-		 "     </script>\n" .
-		 "    </div> <!-- fin : scroller -->\n" .
-		 "    </div> <!-- fin : dashboard -->\n" );
+		$Resultat = array( 'Statut' => 'succes',
+		 'group' => $Secret->sgr_label,
+		 'type' => ${$Secret->stp_name},
+		 'environment' => ${$Secret->env_name},
+		 'application' => $Secret->scr_application,
+		 'host' => $Secret->scr_host,
+		 'user' => $Secret->scr_user,
+		 'password' => stripslashes( $Secret->scr_password ) );
 	}
+
+	echo json_encode( $Resultat );
 
 	break;
 
@@ -1573,8 +1403,11 @@ switch( $Action ) {
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
-		 "        <td><input name=\"Password\" type=\"text\" size=\"64\" maxlength=\"64\" " .
-		 "value=\"" . htmlentities( stripslashes( $Secret->scr_password ), ENT_COMPAT, "UTF-8" ) . "\" /></td>\n" .
+		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" " .
+		 "onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"" .
+		 "value=\"" . htmlentities( stripslashes( $Secret->scr_password ), ENT_COMPAT, "UTF-8" ) . "\"/>" .
+		 "<a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a>" .
+		 "<img id=\"Result\" class=\"no-border\" width=\"16\" height=\"16\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .
@@ -1940,13 +1773,12 @@ switch( $Action ) {
 	break;
 }
 
-if ( $Action == 'SCR_V' ) {
-	$Logout_button = 0;
-} else {
+if ( $Action != 'SCR_V' ) {
 	$Logout_button = 1;
+
+	print(  "   </div> <!-- fin : zoneMilieuComplet -->\n" .
+	 $PageHTML->construireFooter( $Logout_button ) .
+	 $PageHTML->piedPageHTML() );
 }
-print(  "   </div> <!-- fin : zoneMilieuComplet -->\n" .
- $PageHTML->construireFooter( $Logout_button ) .
- $PageHTML->piedPageHTML() );
 
 ?>
