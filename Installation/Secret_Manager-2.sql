@@ -39,7 +39,7 @@ INSERT INTO `env_environments` (`env_id`, `env_name`) VALUES(4, 'L_Environment_4
 -- Contenu de la table `idn_identities`
 --
 
-INSERT INTO `idn_identities` (`idn_id`, `ent_id`, `cvl_id`, `idn_login`, `idn_authenticator`, `idn_salt`, `idn_change_authenticator`, `idn_super_admin`, `idn_auditor`, `idn_attempt`, `idn_disable`, `idn_logical_delete`, `idn_last_connection`, `idn_expiration_date`, `idn_updated_authentication`) VALUES(1, 1, 1, 'root', '658be8288e1156eccbcf7c62a8d731d55fe81e7d', '0.X-n:A/9', 0, 1, 0, 0, 0, 0, '2012-11-13 22:44:46', '2013-04-29 00:00:00', '2012-10-29 21:10:48');
+INSERT INTO `idn_identities` (`idn_id`, `ent_id`, `cvl_id`, `idn_login`, `idn_authenticator`, `idn_salt`, `idn_change_authenticator`, `idn_super_admin`, `idn_auditor`, `idn_attempt`, `idn_disable`, `idn_logical_delete`, `idn_last_connection`, `idn_expiration_date`, `idn_updated_authentication`) VALUES(1, 1, 1, 'root', '658be8288e1156eccbcf7c62a8d731d55fe81e7d', '0.X-n:A/9', 0, 1, 0, 0, 0, 0, '0000-00-00 00:00:00', '2099-01-01 00:00:00', '0000-00-00 00:00:00');
 
 
 --
