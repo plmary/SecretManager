@@ -82,6 +82,7 @@
 	$L_No_Profile = "Pas de Profil";
 	$L_Password = 'Mot de passe';
 	$L_Creation_Date = 'Date de création';
+	$L_Nothing = 'Aucun';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

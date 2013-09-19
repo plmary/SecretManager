@@ -83,6 +83,7 @@
 	$L_Creation_Date = 'Creation date';
 	$L_List_Entities = 'Entities list';
 	$L_Password = 'Password';
+	$L_Nothing = 'Nothing';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

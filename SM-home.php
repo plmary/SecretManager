@@ -520,13 +520,22 @@ switch( $Action ) {
 		}
 	}
 
+	$S_Group = '250';
+	$S_Type = '70';
+	$S_Environment = '95';
+	$S_Application = '95';
+	$S_Host = '70';
+	$S_User = '70';
+	$S_Comment = '150';
+	$S_Action = '80';
+
 	$myButtons = '<div style="float: right; display: inline;">' . $addButton . "</div>";
 
-	print( "     <div id=\"scroller\"> <!-- Début : scroller -->\n" .
-	 "     <table class=\"table-bordered\">\n" .
-	 "      <thead>\n" .
+	print( // "     <div id=\"scroller\"> <!-- Début : scroller -->\n" .
+	 "     <table class=\"table-bordered principal\">\n" .
+	 "      <thead class=\"fixedHeader\">\n" .
 	 "       <tr>\n" .
-	 "        <th colspan=\"8\">" . $L_List_Secrets . $myButtons . "</th>\n" .
+	 "        <th colspan=\"8\"><span style=\"height: 100%;vertical-align:middle;\">" . $L_List_Secrets ."</span>". $myButtons . "</th>\n" .
 	 "       </tr>\n" );
 		 
 	if ( $Action != 'R2' && ! isset( $_SESSION[ 'searchSecret' ] ) ) {
@@ -550,7 +559,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'group';
 	}
-	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+
+	print( "        <td style=\"width:". $S_Group ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Group . "</td>\n" );
 	 
 	if ( $orderBy == 'type' ) {
@@ -563,7 +573,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'type';
 	}
-	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+
+	print( "        <td style=\"width:". $S_Type ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Type . "</td>\n" );
 	 
 	if ( $orderBy == 'environment' ) {
@@ -576,7 +587,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'environment';
 	}
-	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+
+	print( "        <td style=\"width:". $S_Environment ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Environment . "</td>\n" );
 	 
 	if ( $orderBy == 'application' ) {
@@ -589,7 +601,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'application';
 	}
-	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+
+	print( "        <td style=\"width:". $S_Application ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Application . "</td>\n" );
 	 
 	if ( $orderBy == 'host' ) {
@@ -602,7 +615,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'host';
 	}
-	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+
+	print( "        <td style=\"width:". $S_Host ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Host . "</td>\n" );
 	 
 	if ( $orderBy == 'user' ) {
@@ -615,7 +629,8 @@ switch( $Action ) {
 		
 		$tmpSort = 'user';
 	}
-	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+
+	print( "        <td style=\"width:". $S_User ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</td>\n" );
 	 
 	if ( $orderBy == 'comment' ) {
@@ -628,14 +643,15 @@ switch( $Action ) {
 		
 		$tmpSort = 'comment';
 	}
-	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+
+	print( "        <td style=\"width:". $S_Comment ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Comment . "</td>\n" );
 
 
-	print( "        <td>" . $L_Actions . "</td>\n" .
+	print( "        <td style=\"width:". $S_Action ."px;\">" . $L_Actions . "</td>\n" .
 	 "       </tr>\n" .
 	 "      </thead>\n" .
-	 "      <tbody>\n" );
+	 "      <tbody class=\"scrollContent\">\n" );
 		
 	$BackGround = "pair";
 		
@@ -647,22 +663,22 @@ switch( $Action ) {
 			
 		print( "       <tr class=\"" . $BackGround .
 		 " surline\" style=\"cursor: pointer;\" >\n" .
-		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
-		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . ${$Secret->stp_name} . "</td>\n" .
-		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . ${$Secret->env_name} . "</td>\n" .
-		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
-		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
-		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" .
-		 "        <td class=\"align-middle\" onclick=\"viewPassword( " . 
-		 $Secret->scr_id . " );\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
+		 "        <td class=\"align-middle\" style=\"width:". $S_Group ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"width:". $S_Type ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . ${$Secret->stp_name} . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"width:". $S_Environment ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . ${$Secret->env_name} . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"width:". $S_Application ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"width:". $S_Host ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"width:". $S_User ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"width:". $S_Comment ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
 		
-		print( "        <td>\n" );
+		print( "        <td style=\"width:". $S_Action ."px;\">\n" );
 
 		$Update_Right = 0;
 		$Delete_Right = 0;
@@ -703,7 +719,7 @@ switch( $Action ) {
 	 count( $List_Secrets ) . "</span>" . $myButtons . "</th></tr></tfoot>\n" .
 	 "     </table>\n" .
 	 "\n" .
-	 "     </div> <!-- Fin : scroller -->\n" .
+//	 "     </div> <!-- Fin : scroller -->\n" .
 	 "    </div> <!-- fin : dashboard -->\n" );
 
    break;

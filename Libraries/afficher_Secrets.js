@@ -1,3 +1,8 @@
+$(document).keyup(function(e){
+    if(e.which == 27 || e.which == 13){
+        $('#afficherSecret').hide();
+    }
+});
 
 $(document).ready(function(){
     // Masque la modale quand on clique un objet de class "close"
@@ -34,9 +39,18 @@ function viewPassword( scr_id ){
                 });
 
                 var statut = resultat['Statut'];
+                var password = resultat['password'];
+
+                if ( password == null ) {
+                    password = '('+resultat['l_nothing']+')';
+                    var couleur_fond = '';
+                } else {
+                    var couleur_fond = 'bg-orange ';                    
+                }
 
                 if (statut == 'succes') {
-                    Message = '<p><span>'+resultat['l_password']+' : </span><span class="bg-orange td-aere">'+resultat['password']+'</span></p>';
+                    Message = '<p><span>'+resultat['l_password']+' : </span>'+
+                        '<span class="'+couleur_fond+'td-aere">'+password+'</span></p>';
                     $('#detailSecret').html(Message);
                 }
                 else if (statut == 'erreur') {

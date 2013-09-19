@@ -1265,6 +1265,7 @@ switch( $Action ) {
 		 'l_host' => $L_Host,
 		 'user' => $Secret->scr_user,
 		 'l_user' => $L_User,
+		 'l_nothing' => $L_Nothing,
 		 'password' => stripslashes( $Secret->scr_password ),
 		 'l_password' => $L_Password );
 	}
