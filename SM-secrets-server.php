@@ -15,7 +15,7 @@
 
 include( 'Constants.inc.php' );
 
-$VERSION = '0.3-0';
+$VERSION = '0.4-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -417,36 +417,41 @@ do {
 				if ( $FLAG_DEBUG ) {
 					print( $PREFIX_DEBUG . "Save old mother key\n" );
 				}
-				
-				$old_Secret_Key = explode('###', $Secret_Key );
-				$old_Secret_Key = $old_Secret_Key[ 3 ];
 
+				if ( $Secret_Key != '' ) {
+					$old_Secret_Key = explode('###', $Secret_Key );
+					$old_Secret_Key = $old_Secret_Key[ 3 ];
 
-				if ( $old_Secret_Key != $Mother_Key ) {
-					if ( $old_Secret_Key  == '' ) {
-						sendMessageToClient( $MsgSock, FLAG_ERROR .
-						 "###L_ERR_MOTHER_KEY_NOT_LOADED\n" );
-						break; // Déconnecte le client.
+					if ( $old_Secret_Key != $Mother_Key ) {
+						if ( $old_Secret_Key  == '' ) {
+							sendMessageToClient( $MsgSock, FLAG_ERROR .
+							 "###L_ERR_MOTHER_KEY_NOT_LOADED\n" );
+							break; // Déconnecte le client.
 
-					}
+						}
 
-					if ( $FLAG_DEBUG ) {
-						print( $PREFIX_DEBUG . "Database transcrypt : begin\n" );
-					}
+						if ( $FLAG_DEBUG ) {
+							print( $PREFIX_DEBUG . "Database transcrypt : begin\n" );
+						}
 
-					try {
-						$Secrets->transcrypt( $old_Secret_Key, $Mother_Key );
-					} catch( Exception $e ) {
-						print( $PREFIX_ERROR . $e->getCode() . ' -  ' . $e->getMessage() );
+						try {
+							$Secrets->transcrypt( $old_Secret_Key, $Mother_Key );
+						} catch( Exception $e ) {
+							print( $PREFIX_ERROR . $e->getCode() . ' -  ' . $e->getMessage() );
 
-						sendMessageToClient( $MsgSock, FLAG_ERROR .
-						 "###L_ERR_TRANSCRYPT\n" );
-						
-						break; // Déconnecte le client.
-					}
+							sendMessageToClient( $MsgSock, FLAG_ERROR .
+							 "###L_ERR_TRANSCRYPT\n" );
+							
+							break; // Déconnecte le client.
+						}
 
-					if ( $FLAG_DEBUG ) {
-						print( $PREFIX_DEBUG . "Database transcrypt : success\n" );
+						if ( $FLAG_DEBUG ) {
+							print( $PREFIX_DEBUG . "Database transcrypt : success\n" );
+						}
+					} else {
+						if ( $FLAG_DEBUG ) {
+							print( $PREFIX_DEBUG . "No Database transcrypt\n" );
+						}
 					}
 				}
 
@@ -483,8 +488,8 @@ do {
 				fclose( $PF_Data );
 				
 
-					 // Remonte au client la clé opérateur et la clé mère qui ont été
-					 // utilisées.				
+				// Remonte au client la clé opérateur et la clé mère qui ont été
+				// utilisées.				
 				$Secret = $Security->mc_encrypt( $Operator_Key . '===' . $Mother_Key,
 				 $Transport_Key ) ;
 				
@@ -507,6 +512,7 @@ do {
 			
 			// Sauvegarde l'ancienne clé mère.
 			if ( $Secret_Key != '' ) $Old_Secret_Key = $Secret_Key;
+			else $Old_Secret_Key = '';
 			
 			$T_Key = $Security->getTransportKey( $ID_Session );
 			if ( $T_Key[ 0 ] === FALSE ) {
@@ -526,14 +532,14 @@ do {
 			$PF_Data = fopen( $SecretFile, 'r' );
 			if ( $PF_Data === FALSE ) {
 				sendMessageToClient( $MsgSock, FLAG_ERROR .
-				 "###L_ERR_OPEN_SECRET_FILE\n" );
+				 "###L_ERR_SECRET_FILE_OPEN\n" );
 				break;
 			}
 
 			$Record = fgets( $PF_Data );
 			if ( $Record === FALSE ) {
 				sendMessageToClient( $MsgSock, FLAG_ERROR .
-				 "###L_ERR_READ_TRANSPORT_FILE\n" );
+				 "###L_ERR_TRANSPORT_FILE_READ\n" );
 				break;
 			}
 

@@ -1359,6 +1359,7 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 	 case 'LK':
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
+
 		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
