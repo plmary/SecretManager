@@ -49,8 +49,13 @@ function viewPassword( scr_id ){
                 }
 
                 if (statut == 'succes') {
-                    Message = '<p><span>'+resultat['l_password']+' : </span>'+
+                    Message = '<p><span>'+resultat['l_host']+' : </span>'+
+                        '<span class="td-aere">'+resultat['host']+'</span></p>'+
+                        '<p><span>'+resultat['l_user']+' : </span>'+
+                        '<span class="td-aere">'+resultat['user']+'</span></p>'+
+                        '<p><span>'+resultat['l_password']+' : </span>'+
                         '<span class="'+couleur_fond+'td-aere">'+password+'</span></p>';
+
                     $('#detailSecret').html(Message);
                 }
                 else if (statut == 'erreur') {
