@@ -455,6 +455,14 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "       </thead>\n" .
 		 "       <tbody>\n" .
 		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" .
+		 "<label for=\"id_expiration\">" . $L_Expiration_Time . "</label></td>\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
+		 "         <input id=\"id_expiration\" type=\"text\" name=\"Expiration_Time\" value=\"" .
+		 $PageHTML->getParameter( 'expiration_time' ) . "\" />\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
 		 "        <td class=\"impair align-right\" rowspan=\"6\">" .
 		 "<label for=\"id_pwd\">" . $L_Use_Password . "</label>" .
 		 "</td>\n" .
@@ -628,14 +636,6 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "        </td>\n" .
 		 "       </tr>\n" .
 
-		 "       <tr>\n" .
-		 "        <td class=\"impair align-right\" width=\"50%\">" .
-		 $L_Expiration_Time . "</td>\n" .
-		 "        <td class=\"pair\" colspan=\"2\">\n" .
-		 "         <input type=\"text\" name=\"Expiration_Time\" value=\"" .
-		 $PageHTML->getParameter( 'expiration_time' ) . "\" />\n" .
-		 "        </td>\n" .
-		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td>&nbsp;</td>\n" .
 		 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Save .

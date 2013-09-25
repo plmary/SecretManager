@@ -86,9 +86,10 @@ if ( array_key_exists( 'action', $_GET ) ) {
 	$Action = strtoupper( $_GET[ 'action' ] );
 }
 
-
 if ( ! preg_match("/X$/i", $Action ) ) {
-	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
+	$JS_Scripts = array( 'Ajax_users.js', 'jquery.notif.js', 'mustache.js', 'Ajax_profiles.js' );
+
+	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $JS_Scripts ) .
 	 "   <!-- debut : zoneTitre -->\n" .
 	 "   <div id=\"zoneTitre\">\n" .
 	 "    <div id=\"icon-users\" class=\"icon36\"></div>\n" .
@@ -650,15 +651,6 @@ switch( $Action ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
 		exit();
 	}
-
-/*
-	try {
-		$Civilities->delete( $cvl_id );
-	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Civility, $Return_Page, 1 ) );
-		exit();
-	}
-*/
 	
 	print( "<form method=\"post\" action=\"" . $Return_Page . "\" name=\"fInfoMessage\">\n" .
 	 " <input type=\"hidden\" name=\"infoMessage\" value=\"" . $L_User_Deleted . "\" />\n" .
@@ -709,7 +701,7 @@ switch( $Action ) {
 	 "       <tr>\n" .
 	 "        <td class=\"align-right align-middle td-aere\">" . $L_Entity . "</td>\n" .
 	 "        <td class=\"td-aere\">\n" .
-	 "         <select name=\"ent_id\">\n" );
+	 "         <select id=\"iSelectEntity\" name=\"ent_id\">\n" );
 
 	foreach( $T_Entities as $Entity ) {
 		if ( $Identity->ent_id == $Entity->ent_id )
@@ -723,15 +715,13 @@ switch( $Action ) {
 	}
 
 	print( "         </select>\n" .
-	 "         <a class=\"button\" href=\"" . $Script .
-	 "?action=ENT_V&rp=users_m&idn_id=" . $idn_id . "\">" .
-	 $L_Entities_Management . "</a>\n" .
+	 "         <a class=\"button\" href=\"javascript:putAddEntity();\" title=\"" . $L_Entity_Create . "\">+</a>\n" .
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td class=\"align-right align-middle td-aere\">" . $L_Civility . "</td>\n" .
 	 "        <td class=\"td-aere\">\n" .
-	 "         <select name=\"cvl_id\">\n" );
+	 "         <select id=\"iSelectCivility\" name=\"cvl_id\">\n" );
  	
 	foreach( $T_Civilities as $Civility ) {
 		if ( $Identity->cvl_id == $Civility->cvl_id )
@@ -784,8 +774,8 @@ switch( $Action ) {
 	
 
 	print( "         </select>\n" .
-	 "         <a class=\"button\" href=\"" . $Script . "?action=CVL_V&rp=users_m&idn_id=" . $idn_id . "\">" .
-	 $L_Civilities_Management . "</a>\n" .
+	 "         <a class=\"button\" href=\"javascript:putAddCivility();\" " . //$Script . "?action=CVL_V&rp=users_m&idn_id=" . $idn_id . "\" " .
+	 "title=\"" . $L_Civility_Create . "\">+</a>\n" .
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
@@ -832,6 +822,27 @@ switch( $Action ) {
 	 "       </tbody>\n" .
 	 "      </table>\n" .
 	 "     </form>\n" .
+
+	 "     <div id=\"addEntity\" class=\"tableau_synthese hide modal\" style=\"top:20%;width:400px;left: 35%;\">\n".
+	 "      <button type=\"button\" class=\"close\">×</button>\n".
+	 "      <p class=\"titre\">".$L_Entity_Create."</p>\n".
+	 "      <div id=\"detailEntity\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Code . "</span><span class=\"td-aere\"><input id=\"iEntityCode\" type=\"text\" name=\"Code\" size=\"10\" maxlength=\"10\" /></span></p>\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iEntityLabel\" type=\"text\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
+	 "       <p class=\"align-center\"><input id=\"iButtonCreateEntity\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
+	 "      </div>  <!-- Fin : detailEntity -->\n" .
+	 "     </div> <!-- Fin : addEntity -->\n" .
+
+	 "     <div id=\"addCivility\" class=\"tableau_synthese hide modal\" style=\"top:20%;width:400px;left: 35%;\">\n".
+	 "      <button type=\"button\" class=\"close\">×</button>\n".
+	 "      <p class=\"titre\">".$L_Civility_Create."</p>\n".
+	 "      <div id=\"detailCivility\" style=\"margin:6px;padding:6px;\" class=\"corps align-center\">\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_First_Name . "</span><span class=\"td-aere\"><input id=\"iCivilityFirstName\" type=\"text\" name=\"First_Name\" size=\"25\" maxlength=\"25\" /></span></p>\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Last_Name . "</span><span  class=\"td-aere\"><input id=\"iCivilityLastName\" type=\"text\" name=\"Last_Name\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Sex . "</span><span  class=\"td-aere\"><select id=\"iCivilitySex\" name=\"Sex\"><option value=\"0\" selected>".$L_Man."</option><option value=\"1\">".$L_Woman."</option></select></span></p>\n" .
+	 "       <p class=\"align-center\"><input id=\"iButtonCreateCivility\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
+	 "      </div>  <!-- Fin : detailCivility -->\n" .
+	 "     </div> <!-- Fin : addCivility -->\n" .
 	 "     <script>\n" .
 	 "document.m_identity.ent_id.focus();\n" .
 	 "     </script>\n"
@@ -1059,23 +1070,11 @@ switch( $Action ) {
 	print( "    <div id=\"dashboard\">\n" );
 
 	if ( $Authentication->is_administrator() ) {
-		$addButton = "<span style=\"float: right\"><a class=\"button\" href=\"" .
-		 $Script . "?action=ENT_C\">" . $L_Create . "</a></span>" ;
+		$addButton = "<span style=\"float: right\"><a class=\"button\" href=\"javascript:putAddEntity();\">" . // $Script . "?action=ENT_C\">" .
+			$L_Create . "</a></span>" ;
 
 		$returnButton = "<span style=\"float: right\"><a class=\"button\" href=\"" .
 		 $Prev_Action . "\">" . $Return_Button . "</a></span>";
-		
-		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"3\">" . $L_List_Entities . $addButton . $returnButton . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" );
-		 
-
-		print( "       <tr class=\"pair\">\n" );
-
 
 		if ( $orderBy == 'code' ) {
 			$tmpClass = 'order-select';
@@ -1087,11 +1086,17 @@ switch( $Action ) {
 		
 			$tmpSort = 'code';
 		}
-		print( "        <th width=\"30%\" onclick=\"javascript:document.location='" . $Script . 
-		 "?action=ENT_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
-		 $L_Code . "</th>\n" );
 
-		 
+		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		 "      <thead>\n" .
+		 "       <tr>\n" .
+		 "        <th colspan=\"3\">" . $L_List_Entities . $addButton . $returnButton . "</th>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td width=\"30%\" onclick=\"javascript:document.location='" . $Script . 
+		 "?action=ENT_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
+		 $L_Code . "</td>\n" );
+
 		if ( $orderBy == 'label' ) {
 			$tmpClass = 'order-select';
 		
@@ -1102,13 +1107,15 @@ switch( $Action ) {
 		
 			$tmpSort = 'label';
 		}
-		print( "        <th width=\"50%\" onclick=\"javascript:document.location='" . $Script . 
-		 "?action=ENT_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
-		 $L_Label . "</th>\n" );
-		 
 
-		print( "        <th width=\"20%\">" . $L_Actions . "</th>\n" .
-		 "       </tr>\n" );
+		print( "        <td width=\"50%\" onclick=\"javascript:document.location='" . $Script . 
+		 "?action=ENT_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
+		 $L_Label . "</td>\n" .
+		 "        <td width=\"20%\">" . $L_Actions . "</td>\n" .
+		 "       </tr>\n" .
+		 "      </thead>\n" .
+		 "      <tbody id=\"iListProfiles\">\n" );
+
 		
 		$List_Entities = $Entities->listEntities( 0, $orderBy );
 		
@@ -1120,7 +1127,7 @@ switch( $Action ) {
 			else
 				$BackGround = "pair";
 
-			print( "       <tr class=\"" . $BackGround . "\">\n" .
+			print( "       <tr id=\"entity_". $Entity->ent_id ."\" class=\"" . $BackGround . "\">\n" .
 			 "        <td>" . 
 			 $Security->XSS_Protection( $Entity->ent_code ) . "</td>\n" .
 			 "        <td>" . 
@@ -1129,8 +1136,7 @@ switch( $Action ) {
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=ENT_M&ent_id=" . $Entity->ent_id .
 			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
-			 "         <a class=\"simple\" href=\"" . $Script .
-			 "?action=ENT_D&ent_id=" . $Entity->ent_id .
+			 "         <a class=\"simple\" href=\"javascript:deleteEntity(".$Entity->ent_id.");" . // $Script . "?action=ENT_D&ent_id=" . $Entity->ent_id .
 			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "        </td>\n" .
 			 "       </tr>\n" );
@@ -1147,7 +1153,18 @@ switch( $Action ) {
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
 
-	print( "    </div> <!-- fin : dashboard -->\n" );
+	print(
+	 "     <div id=\"addEntity\" class=\"tableau_synthese hide modal\" style=\"top:20%;width:400px;left: 35%;\">\n".
+	 "      <button type=\"button\" class=\"close\">×</button>\n".
+	 "      <p class=\"titre\">".$L_Entity_Create."</p>\n".
+	 "      <div id=\"detailEntity\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Code . "</span><span class=\"td-aere\"><input id=\"iEntityCode\" type=\"text\" name=\"Code\" size=\"10\" maxlength=\"10\" /></span></p>\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iEntityLabel\" type=\"text\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
+	 "       <p class=\"align-center\"><input id=\"iButtonCreateEntity\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
+	 "      </div>  <!-- Fin : detailEntity -->\n" .
+	 "     </div> <!-- Fin : addEntity -->\n" .
+
+	 "    </div> <!-- fin : dashboard -->\n" );
 
 	break;
 
@@ -1192,37 +1209,66 @@ switch( $Action ) {
 
 
  case 'ENT_CX':
-	$Return_Page = $Script . '?action=ENT_V';
-
 	if ( ! $Code = $Security->valueControl( $_POST[ 'Code' ] ) ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Code)', $Return_Page, 1 ) );
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_Invalid_Value . ' (Code)'
+			);
+
+		print( json_encode( $Resultat ) );
+
 		exit();
 	}
 
 	if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_Invalid_Value . ' (Label)'
+			);
+
+		print( json_encode( $Resultat ) );
+		
 		exit();
 	}
 
 	try {
 		$Entities->set( '', $Code, $Label );
+
+		$Resultat = array(
+			'Status' => 'success',
+			'Title' => $L_Success,
+			'IdEntity' => $Entities->LastInsertId,
+			'Message' => $L_Entity_Created,
+			'Script' => $Script,
+			'URL_PICTURES' => URL_PICTURES,
+			'L_Modify' => $L_Modify,
+			'L_Delete' => $L_Delete
+			);
 	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Entity, $Return_Page, 1 ) );
-		exit();
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_ERR_CREA_Entity
+			);
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Entity, $Return_Page, 1 ) );
+			$Message = $L_ERR_DUPL_Entity;
 		} else {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Entity, $Return_Page, 1 ) );
+			$Message = $L_ERR_CREA_Entity;
 		}
-		exit();
+
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $Message
+			);
 	}
 
+	print( json_encode( $Resultat ) );
 
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"infoMessage\" value=\"" . $L_Entity_Created . "\" />\n" .
-		"</form>" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
+	exit();
 
 	break;
 
@@ -1364,21 +1410,40 @@ switch( $Action ) {
 	$Return_Page = $Script . '?action=ENT_V';
  
 	if ( ($ent_id = $Security->valueControl( $_POST[ 'ent_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (ent_id)', $Return_Page, 1 ) );
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_Invalid_Value . ' (ent_id)'
+			);
+
+		print( json_encode( $Resultat ) );
+
 		exit();
 	}
 
 	try {
 		$Entities->delete( $ent_id );
+
+		$Resultat = array(
+			'Status' => 'success',
+			'Title' => $L_Success,
+			'Message' => $L_Entity_Deleted
+			);
+
+		print( json_encode( $Resultat ) );
+
+		exit();
 	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Entity, $Return_Page, 1 ) );
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_ERR_DELE_Entity
+			);
+
+		print( json_encode( $Resultat ) );
+
 		exit();
 	}
-
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Entity_Deleted . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -1569,20 +1634,39 @@ switch( $Action ) {
 
 
  case 'CVL_CX':
-	$Return_Page = $Script . '?action=CVL_V';
- 
 	if ( ! $Last_Name = $Security->valueControl( $_POST[ 'Last_Name' ] ) ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Last_Name)', $Return_Page, 1 ) );
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_Invalid_Value . ' (Last_Name)'
+			);
+
+		print( json_encode( $Resultat ) );
+
 		exit();
 	}
 
 	if ( ! $First_Name = $Security->valueControl( $_POST[ 'First_Name' ] ) ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (First_Name)', $Return_Page, 1 ) );
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_Invalid_Value . ' (First_Name)'
+			);
+
+		print( json_encode( $Resultat ) );
+
 		exit();
 	}
 
-	if ( ($Sex = $Security->valueControl( $_POST[ 'Sex' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Sex)', $Return_Page, 1 ) );
+	if ( ($Sex = $Security->valueControl( $_POST[ 'Sex' ], 'NUMERIC' )) === FALSE ) {
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_Invalid_Value . ' (Sex)'
+			);
+
+		print( json_encode( $Resultat ) );
+
 		exit();
 	}
 
@@ -1592,25 +1676,39 @@ switch( $Action ) {
 	} else {
 		try {
 			$Civilities->set( '', $Last_Name, $First_Name, $Sex, '', '' );
+			$Resultat = array(
+				'Status' => 'success',
+				'Title' => $L_Success,
+				'IdCivility' => $Civilities->LastInsertId,
+				'Message' => $L_Civility_Created
+				);
+
 		} catch( PDOException $e ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Civility, $Return_Page, 1 ) );
-			exit();
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_ERR_CREA_Civility
+				);
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Civility, $Return_Page, 1 ) );
+				$Resultat = array(
+					'Status' => 'error',
+					'Title' => $L_Error,
+					'Message' => $L_ERR_DUPL_Civility
+					);
 			} else {
-				print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Civility, $Return_Page, 1 ) );
+				$Resultat = array(
+					'Status' => 'error',
+					'Title' => $L_Error,
+					'Message' => $L_ERR_CREA_Civility
+					);
 			}
-			exit();
 		}
-
-		$Message = $L_Civility_Created;
 	}
 
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $Message . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
+	print( json_encode( $Resultat ) );
+
+	exit();
 
 	break;
 
@@ -1837,8 +1935,7 @@ switch( $Action ) {
 
 	$Identity = $Identities->detailedGet( $idn_id );
 	
-	$Action_Button = "<a class=\"button\" href=\"" . $Script. "?action=PRF_V" .
-	 "&idn_id=" . $idn_id . "&store\">" . $L_Profiles_Management . "</a>" ;
+	$Action_Button = "<a class=\"button\" href=\"javascript:putAddProfile();\" title=\"" . $L_Profile_Create . "\">+</a>" ;
 	
 	print( "     <form method=\"post\" action=\"" . $Script . "?action=PX&idn_id=" .
 	 $idn_id . "\">\n" .
@@ -1878,7 +1975,7 @@ switch( $Action ) {
 	 "          <thead>\n" .
 	 "           <tr><th colspan=\"3\"><span class=\"div-right\">" . $Action_Button . "</span></th></tr>\n" .
 	 "          </thead>\n" .
-	 "          <tbody>\n" );
+	 "          <tbody id=\"iListProfiles\">\n" );
 
 	$List_Profiles = $Profiles->listProfiles();
 
@@ -1934,7 +2031,16 @@ switch( $Action ) {
 	 "       </tr>\n" .
 	 "       </tbody>\n" .
 	 "      </table>\n" .
-	 "     </form>\n"
+	 "     </form>\n" .
+
+	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\" style=\"top:50%;left:40%;\">\n".
+	 "      <button type=\"button\" class=\"close\">×</button>\n".
+	 "      <p class=\"titre\">".$L_Profile_Create."</p>\n".
+	 "      <div id=\"detailProfile\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iProfileLabel\" type=\"text\" class=\"obligatoire\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
+	 "       <p class=\"align-center\"><input id=\"iButtonCreateProfile\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
+	 "      </div>  <!-- Fin : detailProfil -->\n" .
+	 "     </div> <!-- Fin : addProfile -->\n"
 	);
 	
 	break;
@@ -2104,22 +2210,11 @@ switch( $Action ) {
 		$listButtons = '<div id="view-switch-list-current" class="view-switch" style="float: right" title="' . $L_Group_List . '"></div>' .
 		'<div id="view-switch-excerpt-current" class="view-switch" style="float: right" title="' . $L_Detail_List . '"></div>';
 		
-		$addButton = '<span style="float: right"><a class="button" href="' . $Script .
-		 '?action=PRF_A">' . $L_Create . '</a></span>';
+		$addButton = '<span style="float: right"><a class="button" href="javascript:putAddProfile();">' . $L_Create . '</a></span>';
 		$returnButton = '<span style="float: right"><a class="button" href="' . $_SESSION[ 'p_action' ] . '">' .
 		 $L_Return . '</a></span>' ;
 		
 		$Buttons = $addButton . $returnButton;
-		
-		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"2\">" . $L_List_Profiles . $Buttons . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" );
-		
-		print( "       <tr class=\"pair\">\n" );
 		
 		if ( $orderBy == 'label' ) {
 			$tmpClass = 'order-select';
@@ -2131,14 +2226,21 @@ switch( $Action ) {
 		
 			$tmpSort = 'label';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
-		 "?action=PRF_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
-		 $L_Label . "</th>\n" );
 
-		print( "        <th width=\"30%\">" . $L_Actions . "</th>\n" .
-		 "       </tr>\n" );
-		
-		 
+		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
+		 "      <thead>\n" .
+		 "       <tr>\n" .
+		 "        <th colspan=\"2\">" . $L_List_Profiles . $Buttons . "</th>\n" .
+		 "       </tr>\n" .
+		 "       <tr class=\"pair\">\n" .
+		 "        <td onclick=\"javascript:document.location='" . $Script . 
+		 "?action=PRF_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
+		 $L_Label . "</td>\n" .
+		 "        <td width=\"30%\">" . $L_Actions . "</td>\n" .
+		 "       </tr>\n" .
+		 "      </thead>\n" .
+		 "      <tbody id=\"iListProfiles\">\n" );
+				 
 		$List_Profiles = $Profiles->listProfiles( $orderBy );
 
 		$BackGround = "pair";
@@ -2149,16 +2251,15 @@ switch( $Action ) {
 			else
 				$BackGround = "pair";
 
-			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
+			print( "       <tr id=\"profil_" . $Profile->prf_id . "\" class=\"" . $BackGround . " surline\">\n" .
 			 "        <td class=\"align-middle\">" . 
 			 $Security->XSS_Protection( $Profile->prf_label ) . "</td>\n" .
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF_M&prf_id=" . $Profile->prf_id .
 			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
-			 "         <a class=\"simple\" href=\"" . $Script .
-			 "?action=PRF_D&prf_id=" . $Profile->prf_id .
-			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
+			 "         <a class=\"simple\" href=\"javascript:deleteProfile(" . $Profile->prf_id . ");\">" . //$Script . "?action=PRF_D&prf_id=" . $Profile->prf_id . "\">" .
+			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF_G&prf_id=" . $Profile->prf_id .
 			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_usrscr_2.png\" alt=\"" . $L_Groups_Associate . "\" title=\"" . $L_Groups_Associate . "\" /></a>\n" .
@@ -2175,93 +2276,95 @@ switch( $Action ) {
 		print( "<h1>" . $L_No_Authorize . "</h1>" );
 	}
 
-	print( "    </div> <!-- fin : dashboard -->\n" );
-
-	break;
-
-
- case 'PRF_A':
-	$Return_Page = $Script;
- 
-	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
-	
-	$P_Action = $_SERVER[ 'HTTP_REFERER' ];
-
-	$Profiles = new IICA_Profiles();
-
-	if ( $Authentication->is_administrator() ) {
-		print( "    <form name=\"add_profil\" method=\"post\" action=\"" . $Script . "?action=PRF_AX\" />\n" .
-		 "     <table cellspacing=\"0\" style=\"margin: 10px auto;width: 60%;\">\n" .
-		 "      <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"3\">" . $L_Profile_Create . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Label . "</th>\n" .
-		 "        <td><input type=\"text\" name=\"Label\" class=\"input-xlarge\" maxlength=\"60\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td colspan=\"2\">&nbsp;</td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td>&nbsp;</td>\n" .
-		 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /><a class=\"button\" href=\"" . $P_Action . "\">" . $L_Cancel . "</a></td>\n" .
-		 "       </tr>\n" .
-		 "      </tbody>\n" .
-		 "     </table>\n" .
-		 "    </form>\n" .
-		 "    <script>\n" .
-		 "document.add_profil.Label.focus();\n" .
-		 "    </script>\n" .
-		 "\n" );
-	} else {
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
-		break;
-	}
+	print( 
+	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\" style=\"top:50%;left:40%;\">\n".
+	 "      <button type=\"button\" class=\"close\">×</button>\n".
+	 "      <p class=\"titre\">".$L_Profile_Create."</p>\n".
+	 "      <div id=\"detailProfile\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iProfileLabel\" type=\"text\" class=\"obligatoire\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
+	 "       <p class=\"align-center\"><input id=\"iButtonCreateProfile\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
+	 "      </div>  <!-- Fin : detailProfil -->\n" .
+	 "     </div> <!-- Fin : addProfile -->\n" .
+	 "    </div> <!-- fin : dashboard -->\n" );
 
 	break;
 
 
  case 'PRF_AX':
-	$Return_Page = $Script . '?action=PRF_V';
- 
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
+	include( DIR_LABELS . '/' . $_SESSION['Language'] . '_SM-Secrets.php');
 	
 	$Profiles = new IICA_Profiles();
 
 	if ( $Authentication->is_administrator() ) {
 		if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
-			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Label)', $Return_Page, 1 ) );
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_Invalid_Value . ' (Label)'
+				);
+
+			print( json_encode( $Resultat ) );
+
 			exit();
 		}
 
 		try {
 			$Profiles->set( '', $Label );
 		} catch( PDOException $e ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Profile, $Return_Page, 1 ) );
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_ERR_CREA_Profile
+				);
+
+			print( json_encode( $Resultat ) );
+
 			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Profile, $Return_Page, 1 ) );
+				$Resultat = array(
+					'Status' => 'error',
+					'Title' => $L_Error,
+					'Message' => $L_ERR_DUPL_Profile
+					);
 			} else {
-				print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Profile, $Return_Page, 1 ) );
+				$Resultat = array(
+					'Status' => 'error',
+					'Title' => $L_Error,
+					'Message' => $L_ERR_CREA_Profile
+					);
 			}
+
+			print( json_encode( $Resultat ) );
+
 			exit();
 		}
 
-		$TypeMessage = "infoMessage";
-		$Message = $L_Profile_Created;
+		$Resultat = array(
+			'Status' => 'success',
+			'Title' => $L_Success,
+			'Message' => $L_Profile_Created,
+			'idProfile' => $Profiles->LastInsertId,
+			'Label' => $Label,
+			'URL_PICTURES' => URL_PICTURES,
+			'L_Groups_Associate' => $L_Groups_Associate,
+			'Script' => $Script,
+			'L_Modify' => $L_Modify,
+			'L_Delete' => $L_Delete
+			);
+
 	} else {
-		$TypeMessage = "alertMessage";
-		$Message = $L_No_Authorize;
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_No_Authorize
+			);
 	}
 
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"". $TypeMessage . "\" value=\"". $Message . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
+	print( json_encode( $Resultat ) );
+
+	exit();
 	
 	break;
 
@@ -2435,40 +2538,58 @@ switch( $Action ) {
 
 
  case 'PRF_DX':
-	$Return_Page = $Script . '?action=PRF_V';
- 
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
 	$Profiles = new IICA_Profiles();
 
 	if ( $Authentication->is_administrator() ) {
-		if ( ($prf_id = $Security->valueControl( $_POST[ 'prf_id' ], 'NUMERIC' )) == -1
-		 ) {
-			print( $PageHTML->infoBox( $L_Invalid_Value . ' (prf_id)', $Return_Page, 1
-			 ) );
-			break;
+		if ( ($prf_id = $Security->valueControl( $_POST[ 'prf_id' ], 'NUMERIC' )) == -1 ) {
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_Invalid_Value . ' (prf_id)'
+				);
+
+			print( json_encode( $Resultat ) );
+
+			exit();
 		}
 
 		try {
 			$Profiles->delete( $prf_id );
 		} catch( PDOException $e ) {
-			print( $PageHTML->infoBox( $L_ERR_DELE_Profile, $Return_Page, 1
-			 ) );
-			break;
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_ERR_DELE_Profile
+				);
+
+			print( json_encode( $Resultat ) );
+
+			exit();
 		}
 
-		$Message = $L_Profile_Deleted;
-		$TypeMessage = "infoMessage";
+		$Resultat = array(
+			'Status' => 'success',
+			'Title' => $L_Success,
+			'Message' => $L_Profile_Deleted
+			);
+
+		print( json_encode( $Resultat ) );
+
+		exit();
 	} else {
-		$Message = $L_No_Authorize;
-		$TypeMessage = 'alertMessage';
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_No_Authorize
+			);
+
+		print( json_encode( $Resultat ) );
+
+		exit();
 	}
 	
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"" . $TypeMessage . "\" value=\"". $Message . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
-
 	break;
 
 

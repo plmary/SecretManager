@@ -218,6 +218,7 @@ CREATE TABLE IF NOT EXISTS `scr_secrets` (
   `scr_alert` int(11) NOT NULL DEFAULT '0',
   `scr_creation_date` datetime NOT NULL,
   `scr_modification_date` datetime NOT NULL,
+  `scr_expiration_date` datetime NULL,
   PRIMARY KEY (`scr_id`),
   UNIQUE KEY `scr_secrets_idx` (`scr_host`,`scr_user`),
   KEY `env_environment_scr_secrets_fk` (`env_id`),

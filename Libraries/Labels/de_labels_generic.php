@@ -81,7 +81,9 @@
 	$L_No_Profile = 'Kein Profil';
 	$L_Profile_Not_Found = 'Profil nicht gefunden';
 	$L_Password = 'Passwort';
-	$L_Nothing = 'Niets';
+	$L_Nothing = 'Nichts';
+	$L_Success = 'Success';
+	$L_Error = 'Fehler';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

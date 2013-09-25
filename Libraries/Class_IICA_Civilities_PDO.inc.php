@@ -115,7 +115,18 @@ class IICA_Civilities extends IICA_DB_Connector {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
       
-      $this->LastInsertID = $this->lastInsertId();
+		
+		if ( $cvl_id == '' ) {
+			switch( $this->getAttribute(PDO::ATTR_DRIVER_NAME) ) {
+			 default;
+				$this->LastInsertId = $this->lastInsertId();
+				break;
+
+			 case 'pgsql';
+				$this->LastInsertId = $this->lastInsertId( 'cvl_civilities_cvl_id_seq' );
+				break;
+			}
+		}
 		
 		return true;
 	}

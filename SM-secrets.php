@@ -1418,6 +1418,11 @@ switch( $Action ) {
 		 "<img id=\"Result\" class=\"no-border\" width=\"16\" height=\"16\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
+		 "        <td class=\"align-right\">" . $L_Expiration_Date . "</td>\n" .
+		 "        <td><input name=\"Expiration_Date\" type=\"text\" size=\"19\" maxlength=\"19\" " .
+		 "value=\"" . htmlentities( stripslashes( $Secret->scr_expiration_date ), ENT_COMPAT, "UTF-8" ) . "\" /></td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .
 		 "        <td><input name=\"Comment\" type=\"text\" size=\"100\" maxlength=\"100\" " .
 		 "value=\"" . htmlentities( stripslashes( $Secret->scr_comment ), ENT_COMPAT, "UTF-8" ) . "\" /></td>\n" .
@@ -1533,7 +1538,8 @@ switch( $Action ) {
 			 $Security->valueControl( $_POST[ 'User' ] ), 
 			 $Security->valueControl( $_POST[ 'Password' ] ), 
 			 $Security->valueControl( $_POST[ 'Comment' ] ), $Alert, $env_id,
-			 $Security->valueControl( $_POST[ 'Application' ] ) );
+			 $Security->valueControl( $_POST[ 'Application' ] ),
+			 $Security->valueControl( $_POST[ 'Expiration_Date' ] ) );
 		} catch( PDOException $e ) {
 			$alert_message = $L_ERR_MODI_Secret ;
 		

@@ -14,6 +14,7 @@ class IICA_Profiles extends IICA_DB_Connector {
 * @author Pierre-Luc MARY
 * @version 1.0
 */
+	public $LastInsertId;
 
 	public function __construct() {
 	/**
@@ -85,6 +86,18 @@ class IICA_Profiles extends IICA_DB_Connector {
 			throw new Exception( $Command . $Error[ 2 ], $Error[ 1 ] );
 		}
 		
+		if ( $prf_id == '' ) {
+			switch( $this->getAttribute(PDO::ATTR_DRIVER_NAME) ) {
+			 default;
+				$this->LastInsertId = $this->lastInsertId();
+				break;
+
+			 case 'pgsql';
+				$this->LastInsertId = $this->lastInsertId( 'prf_profiles_prf_id_seq' );
+				break;
+			}
+		}
+
 		return true;
 	}
 

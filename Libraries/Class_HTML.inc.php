@@ -29,7 +29,7 @@ public function __construct() {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.6-3'; // Version de l'outil
+	$this->Version = '0.7-0'; // Version de l'outil
 
 	parent::__construct();
 	

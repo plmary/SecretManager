@@ -103,7 +103,7 @@ if ( array_key_exists( 'action', $_GET ) ) {
    $Action = strtoupper( $_GET[ 'action' ] );
 }
 
-$Javascripts = array( 'dashboard.js', 'afficher_Secrets.js' );
+$Javascripts = array( 'dashboard.js', 'Ajax_secrets.js' );
 
 print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts ) .
 /* "  <script>\n" .
@@ -460,11 +460,11 @@ switch( $Action ) {
 		 "       </p>\n" .
 		 "      </div>\n" .
 
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"comment_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_Comment . "</p>\n" .
+		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"expiration_date_criteria\">\n" .
+		 "       <p class=\"subtitle pair\">" . $L_Expiration_Date . "</p>\n" .
 		 "       <p class=\"impair\">\n" .
-		 "        <input type=\"text\" name=\"scr_comment\" size=\"50\" maxlength=\"100\" " .
-		 "value=\"" . $scr_comment . "\" />\n" . 
+		 "        <input type=\"text\" name=\"scr_expiration_date\" size=\"19\" maxlength=\"19\" " .
+		 "value=\"" . $scr_expiration_date . "\" />\n" . 
 		 "       </p>\n" .
 		 "      </div>\n" .
 
@@ -520,13 +520,14 @@ switch( $Action ) {
 		}
 	}
 
-	$S_Group = '250';
-	$S_Type = '70';
-	$S_Environment = '95';
-	$S_Application = '95';
+	$S_Group = '210';
+	$S_Type = '90';
+	$S_Environment = '100';
+	$S_Application = '100';
 	$S_Host = '70';
 	$S_User = '70';
-	$S_Comment = '150';
+	$S_Expiration_Date = '80';
+	$S_Comment = '110';
 	$S_Action = '80';
 
 	$myButtons = '<div style="float: right; display: inline;">' . $addButton . "</div>";
@@ -633,6 +634,20 @@ switch( $Action ) {
 	print( "        <td style=\"width:". $S_User ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</td>\n" );
 	 
+	if ( $orderBy == 'expiration_date' ) {
+		$tmpClass = 'order-select';
+		
+		$tmpSort = 'expiration_date-desc';
+	} else {
+		if ( $orderBy == 'expiration_date-desc' ) $tmpClass = 'order-select';
+		else $tmpClass = 'order';
+		
+		$tmpSort = 'expiration_date';
+	}
+
+	print( "        <td style=\"width:". $S_Expiration_Date ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Expiration_Date . "</td>\n" );
+	 
 	if ( $orderBy == 'comment' ) {
 		$tmpClass = 'order-select';
 		
@@ -674,9 +689,24 @@ switch( $Action ) {
 		 "        <td class=\"align-middle\" style=\"width:". $S_Host ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"width:". $S_User ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"width:". $S_Comment ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" );
+
+		$Date_1 = new DateTime('now');
+		$Date_2 = new DateTime($Secret->scr_expiration_date);
+		$Interval = $Date_1->diff($Date_2);
+
+		if ($Interval->format('%R%a') < '+2' && $Interval->format('%R%a') != '+0') {
+			$myClass = 'btn-danger ';
+		} elseif ($Interval->format('%R%a') > '+2' && $Interval->format('%R%a') < '+7') {
+			$myClass = 'btn-warning ';
+		} else {
+			$myClass = '';
+		}
+
+		 print( "        <td class=\"".$myClass."align-middle\" style=\"width:". $S_Expiration_Date ."px;\" onclick=\"viewPassword(" . 
+		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_expiration_date ) . "</td>\n" .
+		  "        <td class=\"align-middle\" style=\"width:". $S_Comment ."px;\" onclick=\"viewPassword(" . 
+		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
 		
 		print( "        <td style=\"width:". $S_Action ."px;\">\n" );
 

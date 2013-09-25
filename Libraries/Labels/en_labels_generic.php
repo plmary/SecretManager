@@ -84,6 +84,8 @@
 	$L_List_Entities = 'Entities list';
 	$L_Password = 'Password';
 	$L_Nothing = 'Nothing';
+	$L_Success = 'Success';
+	$L_Error = 'Error';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

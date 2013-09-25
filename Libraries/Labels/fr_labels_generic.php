@@ -83,6 +83,8 @@
 	$L_Password = 'Mot de passe';
 	$L_Creation_Date = 'Date de création';
 	$L_Nothing = 'Aucun';
+	$L_Success = 'Succès';
+	$L_Error = 'Erreur';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

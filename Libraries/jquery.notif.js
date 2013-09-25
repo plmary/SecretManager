@@ -21,9 +21,9 @@
 		timeout: false
 		}
 		if (options.cls == 'error')
-			settings.icon ="../../Images/cross.png";
+			settings.icon ="../Pictures/cross.png";
 		if (options.cls == 'success')
-			settings.icon = "../../Images/valide.png";
+			settings.icon = "../Pictures/valide.png";
 		var options = $.extend(settings, options);
 
 		// Création ou création à la suite

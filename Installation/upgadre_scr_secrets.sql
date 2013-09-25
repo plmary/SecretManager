@@ -1,0 +1,1 @@
+ALTER TABLE `scr_secrets` ADD `scr_expiration_date` DATETIME NULL ;

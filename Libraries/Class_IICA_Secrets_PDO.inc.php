@@ -543,7 +543,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 	** Crée ou modifie un Secret.
 	*/
 	public function set( $scr_id, $sgr_id, $stp_id, $scr_host, $scr_user, $scr_password,
-	 $scr_comment, $scr_alert, $env_id, $scr_application ) {
+	 $scr_comment, $scr_alert, $env_id, $scr_application, $scr_expiration_date = NULL ) {
 		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
@@ -562,21 +562,26 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		
 		if ( $scr_id == '' ) {
-			if ( ! $Result = $this->prepare( 'INSERT INTO scr_secrets ' .
+			$Request = 'INSERT INTO scr_secrets ' .
 				'( sgr_id, stp_id, scr_host, scr_user, scr_password, scr_comment, ' .
-				'scr_alert, scr_creation_date, env_id, scr_application ) ' .
+				'scr_alert, scr_creation_date, env_id, scr_application, scr_expiration_date ) ' .
 				'VALUES ( :sgr_id, :stp_id, :scr_host, :scr_user, :scr_password, ' .
-				':scr_comment, :scr_alert, "' . date( 'Y-m-d H:n:s' ) . '", :env_id, :scr_application ) ' ) ) {
+				':scr_comment, :scr_alert, "' . date( 'Y-m-d H:n:s' ) . '", :env_id, :scr_application, ' .
+				':scr_expiration_date ) ';
+
+			if ( ! $Result = $this->prepare( $Request ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
 		} else {
-			if ( ! $Result = $this->prepare( 'UPDATE scr_secrets SET ' .
+			$Request = 'UPDATE scr_secrets SET ' .
 				'scr_id = :scr_id, sgr_id = :sgr_id, stp_id = :stp_id, scr_host = :scr_host, ' .
 				'scr_user = :scr_user, scr_password = :scr_password, scr_comment = :scr_comment, ' .
 				'scr_alert = :scr_alert, scr_modification_date = "' . date( 'Y-m-d H:n:s' ) . '", ' .
-				'env_id = :env_id, scr_application = :scr_application ' .
-				'WHERE scr_id = :scr_id' ) ) {
+				'env_id = :env_id, scr_application = :scr_application, scr_expiration_date = :scr_expiration_date ' .
+				'WHERE scr_id = :scr_id';
+
+			if ( ! $Result = $this->prepare( $Request ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
@@ -646,6 +651,11 @@ class IICA_Secrets extends IICA_DB_Connector {
 		}
 				
 		if ( ! $Result->bindParam( ':scr_alert', $scr_alert, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->bindParam( ':scr_expiration_date', $scr_expiration_date, PDO::PARAM_STR, 19 ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -795,7 +805,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		$Request = 'SELECT DISTINCT ' .
 		 'scr_id, scr_application, scr_host, scr_user, scr_comment, scr_alert, ' .
-		 'T1.sgr_id, sgr_label, sgr_alert, ' .
+		 'T1.sgr_id, sgr_label, sgr_alert, scr_expiration_date, ' .
 		 'T1.stp_id, stp_name, ' .
 		 'T1.env_id, env_name ' .
 		 'FROM scr_secrets AS T1 ' .
@@ -980,7 +990,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 			'OR T1.scr_application like :secret ' .
 			'OR T1.scr_host like :secret ' .
 			'OR T1.scr_user like :secret ' .
-			'OR T1.scr_comment like :secret ';
+			'OR T1.scr_comment like :secret ' .
+			'OR T1.scr_expiration_date like :secret ';
 
 		if ( $Administrator == false ) {
 			$Where .= ') ' ;
@@ -989,7 +1000,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		$Request = 'SELECT DISTINCT ' .
 		 'scr_id, scr_application, scr_host, scr_user, scr_comment, scr_alert, ' .
-		 'T1.sgr_id, sgr_label, sgr_alert, ' .
+		 'T1.sgr_id, sgr_label, sgr_alert, scr_expiration_date, ' .
 		 'T1.stp_id, stp_name, ' .
 		 'T1.env_id, env_name ' .
 		 'FROM scr_secrets AS T1 ' .
@@ -1070,6 +1081,14 @@ class IICA_Secrets extends IICA_DB_Connector {
 		 case 'comment-desc':
 			$Request .= 'ORDER BY scr_comment DESC ';
 			break;
+
+		 case 'expiration_date':
+			$Request .= 'ORDER BY scr_expiration_date ';
+			break;
+
+		 case 'expiration_date-desc':
+			$Request .= 'ORDER BY scr_expiration_date DESC ';
+			break;
 		}
 
 //		print( $Request );
@@ -1128,7 +1147,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		
 		$Request = 'SELECT ' .
 		 'scr_id, scr_host, scr_user, scr_password, scr_comment, scr_alert, ' .
-		 'scr_creation_date, scr_modification_date, scr_application,' .
+		 'scr_creation_date, scr_modification_date, scr_application, scr_expiration_date, ' .
 		 'T1.sgr_id, sgr_label, sgr_alert, ' .
 		 'T1.stp_id, stp_name, ' .
 		 'T1.env_id, env_name ' .

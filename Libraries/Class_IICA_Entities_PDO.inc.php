@@ -13,6 +13,7 @@ class IICA_Entities extends IICA_DB_Connector {
 * @author Pierre-Luc MARY
 * @version 1.0
 */
+	public $LastInsertId;
 
 	public function __construct() {
 	/**
@@ -71,7 +72,7 @@ class IICA_Entities extends IICA_DB_Connector {
 			}
 		}
 				
-      $Code = strtoupper( $Code );
+		$Code = strtoupper( $Code );
 		if ( ! $Result->bindParam( ':Code', $Code, PDO::PARAM_STR, 6 ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
@@ -85,6 +86,18 @@ class IICA_Entities extends IICA_DB_Connector {
 		if ( ! $Result->execute() ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( $ent_id == '' ) {
+			switch( $this->getAttribute(PDO::ATTR_DRIVER_NAME) ) {
+			 default;
+				$this->LastInsertId = $this->lastInsertId();
+				break;
+
+			 case 'pgsql';
+				$this->LastInsertId = $this->lastInsertId( 'ent_entities_ent_id_seq' );
+				break;
+			}
 		}
 		
 		return true;
