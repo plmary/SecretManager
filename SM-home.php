@@ -561,7 +561,7 @@ switch( $Action ) {
 		$tmpSort = 'group';
 	}
 
-	print( "        <td style=\"width:". $S_Group ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_Group ."px; max-width:". $S_Group ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Group . "</td>\n" );
 	 
 	if ( $orderBy == 'type' ) {
@@ -575,7 +575,7 @@ switch( $Action ) {
 		$tmpSort = 'type';
 	}
 
-	print( "        <td style=\"width:". $S_Type ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_Type ."px; max-width:". $S_Type ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Type . "</td>\n" );
 	 
 	if ( $orderBy == 'environment' ) {
@@ -589,7 +589,7 @@ switch( $Action ) {
 		$tmpSort = 'environment';
 	}
 
-	print( "        <td style=\"width:". $S_Environment ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_Environment ."px; max-width:". $S_Environment ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Environment . "</td>\n" );
 	 
 	if ( $orderBy == 'application' ) {
@@ -603,7 +603,7 @@ switch( $Action ) {
 		$tmpSort = 'application';
 	}
 
-	print( "        <td style=\"width:". $S_Application ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_Application ."px; max-width:". $S_Application ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Application . "</td>\n" );
 	 
 	if ( $orderBy == 'host' ) {
@@ -617,7 +617,7 @@ switch( $Action ) {
 		$tmpSort = 'host';
 	}
 
-	print( "        <td style=\"width:". $S_Host ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_Host ."px; max-width:". $S_Host ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Host . "</td>\n" );
 	 
 	if ( $orderBy == 'user' ) {
@@ -631,7 +631,7 @@ switch( $Action ) {
 		$tmpSort = 'user';
 	}
 
-	print( "        <td style=\"width:". $S_User ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_User ."px; max-width:". $S_User ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</td>\n" );
 	 
 	if ( $orderBy == 'expiration_date' ) {
@@ -645,7 +645,7 @@ switch( $Action ) {
 		$tmpSort = 'expiration_date';
 	}
 
-	print( "        <td style=\"width:". $S_Expiration_Date ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_Expiration_Date ."px; max-width:". $S_Expiration_Date ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Expiration_Date . "</td>\n" );
 	 
 	if ( $orderBy == 'comment' ) {
@@ -659,7 +659,7 @@ switch( $Action ) {
 		$tmpSort = 'comment';
 	}
 
-	print( "        <td style=\"width:". $S_Comment ."px;\" onclick=\"javascript:document.location='" . $Script . 
+	print( "        <td style=\"width:". $S_Comment ."px; max-width:". $S_Comment ."px;\" onclick=\"javascript:document.location='" . $Script . 
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Comment . "</td>\n" );
 
 
@@ -678,37 +678,41 @@ switch( $Action ) {
 			
 		print( "       <tr class=\"" . $BackGround .
 		 " surline\" style=\"cursor: pointer;\" >\n" .
-		 "        <td class=\"align-middle\" style=\"width:". $S_Group ."px;\" onclick=\"viewPassword(" . 
+		 "        <td class=\"align-middle\" style=\"max-width:". $S_Group ."px; width:". $S_Group ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"width:". $S_Type ."px;\" onclick=\"viewPassword(" . 
+		 "        <td class=\"align-middle\" style=\"max-width:". $S_Type ."px; width:". $S_Type ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . ${$Secret->stp_name} . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"width:". $S_Environment ."px;\" onclick=\"viewPassword(" . 
+		 "        <td class=\"align-middle\" style=\"max-width:". $S_Environment ."px; width:". $S_Environment ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . ${$Secret->env_name} . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"width:". $S_Application ."px;\" onclick=\"viewPassword(" . 
+		 "        <td class=\"align-middle\" style=\"max-width:". $S_Application ."px; width:". $S_Application ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"width:". $S_Host ."px;\" onclick=\"viewPassword(" . 
+		 "        <td class=\"align-middle\" style=\"max-width:". $S_Host ."px; width:". $S_Host ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"width:". $S_User ."px;\" onclick=\"viewPassword(" . 
+		 "        <td class=\"align-middle\" style=\"max-width:". $S_User ."px; width:". $S_User ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" );
 
 		$Date_1 = new DateTime('now');
 		$Date_2 = new DateTime($Secret->scr_expiration_date);
 		$Interval = $Date_1->diff($Date_2);
 
-		if ($Interval->format('%R%a') < '+2' && $Interval->format('%R%a') != '+0') {
-			$myClass = 'btn-danger ';
-		} elseif ($Interval->format('%R%a') > '+2' && $Interval->format('%R%a') < '+7') {
-			$myClass = 'btn-warning ';
+		if ( $Secret->scr_expiration_date == '' or $Secret->scr_expiration_date == '0000-00-00 00:00:00' ) {
+			$Secret->scr_expiration_date = '';
 		} else {
-			$myClass = '';
+			if ($Interval->format('%R%a') < '+2' && $Interval->format('%R%a') != '+0') {
+				$myClass = 'btn-danger ';
+			} elseif ($Interval->format('%R%a') >= '+2' && $Interval->format('%R%a') <= '+7') {
+				$myClass = 'btn-warning ';
+			} else {
+				$myClass = '';
+			}
 		}
 
-		 print( "        <td class=\"".$myClass."align-middle\" style=\"width:". $S_Expiration_Date ."px;\" onclick=\"viewPassword(" . 
+		 print( "        <td class=\"".$myClass."align-middle\" style=\"max-width:". $S_Expiration_Date ."px; width:". $S_Expiration_Date ."px;\" onclick=\"viewPassword(" . 
 		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_expiration_date ) . "</td>\n" .
-		  "        <td class=\"align-middle\" style=\"width:". $S_Comment ."px;\" onclick=\"viewPassword(" . 
+		  "        <td class=\"align-middle\" style=\"max-width:". $S_Comment ."px; width:". $S_Comment ."px;\" onclick=\"viewPassword(" . 
 		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
 		
-		print( "        <td style=\"width:". $S_Action ."px;\">\n" );
+		print( "        <td style=\"max-width:". $S_Action ."px; width:". $S_Action ."px;\">\n" );
 
 		$Update_Right = 0;
 		$Delete_Right = 0;

@@ -94,12 +94,19 @@ if ( array_key_exists( 'action', $_GET ) ) {
 $Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 	
 if ( $Action != 'SCR_V' ) {
-	 // Cas de l'import des fonctions JS gérant les mots de passe.
-	if ( $Action == 'SCR_A' or $Action == 'SCR_M' ) include( DIR_LIBRARIES . '/password_js.php' );
-	else $innerJS = '';
+	$innerJS = '';
 
+	 // Cas de l'import des fonctions JS gérant les mots de passe.
+	if ( $Action == 'SCR_A' or $Action == 'SCR_M' )	include( DIR_LIBRARIES . '/password_js.php' );
+
+	if ( $Action == '' ) {
+		$JS_Scripts = array( 'Ajax_secrets.js', 'jquery.notif.js', 'mustache.js' );
+	} else {
+		$JS_Scripts = '';
+	}
+	
 	if ( ! preg_match("/X$/i", $Action ) ) {
-		print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, '', $innerJS ) .
+		print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $JS_Scripts, $innerJS ) .
 		 "   <!-- debut : zoneTitre -->\n" .
 		 "   <div id=\"zoneTitre\">\n" .
 		 "    <div id=\"icon-access\" class=\"icon36\"></div>\n" .
@@ -143,7 +150,8 @@ switch( $Action ) {
 		$listButtons = '<div id="view-switch-list-current" class="view-switch" style="float: right" title="' . $L_Group_List . '"></div>' .
 		'<div id="view-switch-excerpt-current" class="view-switch" style="float: right" title="' . $L_Detail_List . '"></div>';
 		
-		$addButton = '<span style="float: right"><a class="button" href="' . $Script . '?action=add">' . $L_Create . '</a></span>' ;
+		$addButton = '<span style="float: right"><a class="button" href="javascript:putAddGroup(\''. addslashes( $L_Group_Create ) ."', " .
+			"'', '', '', '" . $L_Create . '\');">' . $L_Create . '</a></span>' ; // $Script . '?action=add">' . $L_Create . '</a></span>' ;
 
 		if ( array_key_exists( 'rp', $_GET ) ) {
 			switch( $_GET[ 'rp' ] ) {
@@ -232,14 +240,14 @@ switch( $Action ) {
 			else
 				$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
-
 			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
-			 "        <td class=\"align-middle\">" . stripslashes( $Group->sgr_label ) . "</td>\n" .
-			 "        <td class=\"align-middle\">" . $Flag_Alert . "</td>\n" .
+			 "        <td id=\"label_" . $Group->sgr_id . "\" class=\"align-middle\">" . stripslashes($Group->sgr_label) . "</td>\n" .
+			 "        <td id=\"alert_" . $Group->sgr_id . "\" class=\"align-middle\">" . $Flag_Alert . "</td>\n" .
 			 "        <td>\n" .
-			 "         <a class=\"simple\" href=\"" . $Script .
-			 "?action=M&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "         <a id=\"modify_" . $Group->sgr_id . "\" class=\"simple\" href=\"javascript:putAddGroup('". addslashes( $L_Group_Modify ) . "'," .
+			  "'" . $Group->sgr_id . "','" . htmlspecialchars( $Group->sgr_label, ENT_COMPAT ) . "','" . $Group->sgr_alert . "'," .
+			  "'" . $L_Modify . "')\">" . // $Script . "?action=M&sgr_id=" . $Group->sgr_id . "\">".
+			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=D&sgr_id=" . $Group->sgr_id .
 			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . 
@@ -268,44 +276,18 @@ switch( $Action ) {
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
 
-	print( "    </div> <!-- fin : dashboard -->\n" );
+	print( 
+	 "     <div id=\"addGroup\" class=\"tableau_synthese hide modal\" style=\"width:650px;\">\n".
+	 "      <button type=\"button\" class=\"close\">×</button>\n".
+	 "      <p id=\"addGroupTitle\" class=\"titre\">".$L_Group_Create."</p>\n".
+	 "      <div id=\"detailGroup\" style=\"margin:6px;padding:6px;\" class=\"corps align-center\">\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iGroupLabel\" type=\"text\" class=\"obligatoire input-xxlarge\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Alert . "</span><span  class=\"td-aere\"><input id=\"iGroupAlert\" type=\"checkbox\" class=\"obligatoire\" name=\"Alert\" /></span></p>\n" .
+	 "       <p class=\"align-center\"><input id=\"iButtonAddGroup\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
+	 "      </div> <!-- Fin : detailGroup -->\n" .
+	 "     </div> <!-- Fin : addGroup -->\n" .
+	 "    </div> <!-- fin : dashboard -->\n" );
 
-	break;
-
-
- case 'ADD':
-	print( "     <form name=\"a_group\" method=\"post\" action=\"" . $Script .
-	 "?action=ADDX\">\n" .
-	 "      <table class=\"table-center table-min\">\n" .
-	 "       <thead>\n" .
-	 "       <tr>\n" .
-	 "        <th colspan=\"2\">" . $L_Group_Create . "</th>\n" .
-	 "       </tr>\n" .
-	 "       </thead>\n" .
-	 "       <tbody>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\"><label for=\"iLabel\">" . $L_Label . "</label></td>\n" .
-	 "        <td><input type=\"text\" id=\"iLabel\" name=\"Label\" size=\"60\" maxlength=\"60\" /></td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\"><label for=\"iAlert\">" . $L_Alert . "</label></td>\n" .
-	 "        <td><input type=\"checkbox\" id=\"iAlert\" name=\"Alert\" /></td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td colspan=\"2\">&nbsp;</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /><a class=\"button\" href=\"" . $Script . "\">" . $L_Cancel . "</a></td>\n" .
-	 "       </tr>\n" .
-	 "       </tbody>\n" .
-	 "      </table>\n" .
-	 "     </form>\n" .
-	 "     <script>\n" .
-	 "document.a_group.Label.focus();\n" .
-	 "     </script>\n"
-	);
-	
 	break;
 
 
@@ -441,74 +423,35 @@ switch( $Action ) {
 	break;
 
 
- case 'M':
-	$Return_Page = $Script;
- 
-	if ( ! $sgr_id = $Security->valueControl( $_GET[ 'sgr_id' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
-		break;
-	}
-
-	$Group = $Groups->get( $sgr_id );
-	
-	if ( $Group->sgr_alert == 1 )
-		$Flag_Check_Alert = ' checked';
-	else
-		$Flag_Check_Alert = '';
-
-	
-	print(
-	 "     <form method=\"post\" action=\"" . $Script . "?action=MX\">\n" .
-	 "      <input type=\"hidden\" name=\"origin_alert\" value=\"" .
-	 $Group->sgr_alert . "\" />\n" .
-	 "      <input type=\"hidden\" name=\"sgr_id\" value=\"" . $sgr_id . "\" />\n" .
-	 "      <table class=\"table-center table-min\">\n" .
-	 "       <thead>\n" .
-	 "       <tr>\n" .
-	 "        <th colspan=\"2\">" . $L_Group_Modify . "</th>\n" .
-	 "       </tr>\n" .
-	 "       </thead>\n" .
-	 "       <tbody>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\"><label for=\"iLabel\">" . $L_Label . "<label></td>\n" .
-	 "        <td><input type=\"text\" id=\"iLabel\" name=\"Label\" class=\"input-xxlarge\" size=\"60\" maxlength=\"60\" value=\"" . 
-	 htmlentities( stripslashes( $Group->sgr_label ), ENT_COMPAT, "UTF-8" ) . "\" /></td>\n" .
- 	"       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right\"><label for=\"iAlert\">" . $L_Alert . "</label></td>\n" .
-	 "        <td><input id=\"iAlert\" name=\"Alert\" type=\"checkbox\" " .
-	 $Flag_Check_Alert . " /></td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td colspan=\"2\">&nbsp;</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td>&nbsp;</td>\n" .
-	 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Modify . "\" /><a class=\"button\" href=\"" . $Script . "\">" . $L_Cancel . "</a></td>\n" .
-	 "       </tr>\n" .
-	 "       </tbody>\n" .
-	 "      </table>\n" .
-	 "     </form>\n"
-	);
-	
-	break;
-
-
  case 'MX':
 	$Return_Page = $Script;
  
+	$Alert = 0;
+
 	if ( isset( $_POST[ 'Alert' ] ) ) {
 		if ( $_POST[ 'Alert' ] == 'on' )
 			$Alert = 1;
-	} else {
-		$Alert = 0;
 	}
 	
 	try {
 		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) == -1 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 )
-			 );
-			break;
+			$Resultat = array( 'Status' => 'error',
+			 'Title' => $L_Error,
+			 'Message' => $L_Invalid_Value . ' (sgr_id)' );
+
+			echo json_encode( $Resultat );
+
+			exit();
+		}
+
+		if ( ($sgr_label = $Security->valueControl( $_POST[ 'Label' ], 'ASCII' )) == -1 ) {
+			$Resultat = array( 'Status' => 'error',
+			 'Title' => $L_Error,
+			 'Message' => $L_Invalid_Value . ' (Label)' );
+
+			echo json_encode( $Resultat );
+
+			exit();
 		}
 
 		if ( $Verbosity_Alert == 2 ) {
@@ -518,35 +461,47 @@ switch( $Action ) {
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		}
 		
-		$Groups->set( $sgr_id, addslashes( $_POST[ 'Label' ] ), $Alert );
+		$Groups->set( $sgr_id, addslashes( $sgr_label ), $Alert );
 	} catch( PDOException $e ) {
 		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_MODI_Group, $sgr_id );
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Group, $Return_Page, 1 ) );
-		break;
+		$Resultat = array( 'Status' => 'error',
+		 'Title' => $L_Error,
+		 'Message' => $L_ERR_MODI_Group );
+
+		echo json_encode( $Resultat );
+
+		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Group, $Return_Page, 1 ) );
+			$Message = $L_ERR_DUPL_Group;
 		} else {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Group, $Return_Page, 1 ) );
+			$Message = $L_ERR_CREA_Group;
 		}
-		break;
+
+		$Resultat = array( 'Status' => 'error',
+		 'Title' => $L_Error,
+		 'Message' => $Message );
+
+		echo json_encode( $Resultat );
+
+		exit();
 	}
 
 
 	$alert_message = $Secrets->formatHistoryMessage( $L_Group_Modified, $sgr_id );
-		
 	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-			
-	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Group_Modified . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fMessage.submit();</script>" );
+	$Resultat = array( 'Status' => 'success',
+	 'Title' => $L_Success,
+	 'Message' => $L_Group_Modified,
+	 'URL_PICTURES' => URL_PICTURES );
 
-	break;
+	echo json_encode( $Resultat );
+
+	exit();
 
 
  case 'PRF':
@@ -1061,6 +1016,10 @@ switch( $Action ) {
 		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" width=\"16\" height=\"16\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
+		 "        <td class=\"align-right\">" . $L_Expiration_Date . "</td>\n" .
+		 "        <td><input name=\"Expiration_Date\" type=\"text\" size=\"19\" maxlength=\"19\" /></td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .
 		 "        <td><input name=\"Comment\" type=\"text\" size=\"100\" maxlength=\"100\" /></td>\n" .
 		 "       </tr>\n" .
@@ -1412,7 +1371,7 @@ switch( $Action ) {
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
 		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" " .
-		 "onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"" .
+		 "onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\" " .
 		 "value=\"" . htmlentities( stripslashes( $Secret->scr_password ), ENT_COMPAT, "UTF-8" ) . "\"/>" .
 		 "<a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a>" .
 		 "<img id=\"Result\" class=\"no-border\" width=\"16\" height=\"16\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
@@ -1672,6 +1631,10 @@ switch( $Action ) {
 		 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
 		 "        <td class=\"pair\">*********</td>\n" .
 //		 "        <td class=\"pair\">" . $Secret->scr_password . "</td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"align-right\">" . $L_Expiration_Date . "</td>\n" .
+		 "        <td class=\"pair\">" . htmlentities( stripslashes( $Secret->scr_expiration_date ), ENT_COMPAT, "UTF-8" ) . "</td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .

@@ -29,7 +29,7 @@ public function __construct() {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.7-0'; // Version de l'outil
+	$this->Version = '0.7-1'; // Version de l'outil
 
 	parent::__construct();
 	
@@ -274,16 +274,16 @@ public function afficherActions( $Administrator ) {
 		include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 	}
 	
-	$Actions = "    <span id=\"menu-icon-actions\" class=\"icon28\" title=\"Actions\" onMouseOver=\"javascript:document.getElementById('actions').style.visibility='visible';\"></span>\n" .
-	 "    <!-- debut : actions -->\n" .
-	 "    <div id=\"actions\" class=\"hidden\" onMouseOut=\"javascript:document.getElementById('actions').style.visibility='hidden';\" onMouseOver=\"javascript:document.getElementById('actions').style.visibility='visible';\">\n" .
+	$Actions = "    <!-- debut : actions -->\n" .
+	 "    <div id=\"actions\">\n" .
 	 "     <span id=\"menu-icon-home\" class=\"icon28\" title=\"" . $L_Dashboard . "\" onClick=\"javascript:document.location='SM-home.php'\"></span>\n" ;
 
 	if ( $Administrator ) {
 	 	$Actions .= "     <span id=\"menu-icon-access\" class=\"icon28\" title=\"" .
 	 	 $L_Secrets_Management . "\"  onClick=\"javascript:document.location='SM-secrets.php'\"></span>\n" .
 		"     <span id=\"menu-icon-users\" class=\"icon28\" title=\"" . $L_Users_Management . "\" onClick=\"javascript:document.location='SM-users.php'\"></span>\n" .
-		"     <span id=\"menu-icon-options\" class=\"icon28\" title=\"" . $L_Preferences_Management . "\" onClick=\"javascript:document.location='SM-preferences.php'\"></span>\n";
+		"     <span id=\"menu-icon-options\" class=\"icon28\" title=\"" . $L_Preferences_Management . "\" onClick=\"javascript:document.location='SM-preferences.php'\"></span>\n" .
+		"    <span id=\"menu-icon-actions\" class=\"icon28\" title=\"Actions\"></span>\n" ;
 	}
 
 	$Actions .= "    </div> <!-- fin : actions -->\n";

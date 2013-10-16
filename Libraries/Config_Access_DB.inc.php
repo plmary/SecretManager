@@ -13,7 +13,7 @@
 $_Host = 'localhost';
 $_Port = "3306" ;
 $_Driver = "mysql" ; // mysql, pgsql, sqlite, sqlite2 
-$_Base = 'Secret_Manager';
+$_Base = 'secret_manager';
 $_User = 'iica_user';
 $_Password = 'Ax36!PioS';
 

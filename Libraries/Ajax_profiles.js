@@ -161,3 +161,60 @@ function deleteProfile( Id ){
         }
     });
 }
+
+
+// Gestion des modifications "en place".
+function modifyProfile(event, Id) {
+    var oldValue = $('#field_'+Id).html();
+
+    if ( document.getElementById('field_'+Id).tagName.toLowerCase() == 'span' ) {
+        $('#label_'+Id).html( '<input id="field_'+Id+'" data-old-value="'+oldValue+'" value="'+oldValue+'" onkeydown="modifyProfile(event,\''+Id+'\');"/>' );
+        document.getElementById('field_'+Id).focus();
+        document.getElementById('field_'+Id).selectionStart = oldValue.length;
+    } else if(event.keyCode == 27) {
+        $('#label_'+Id).html( '<span id="field_'+Id+'">'+$('#field_'+Id).data('oldValue')+'</span>' );
+    } else if (event.keyCode == 13) {
+        $.ajax({
+            url: 'SM-users.php?action=PRF_MX',
+            type: 'POST',
+            data: $.param({'prf_id': Id, 'Label': $('#field_'+Id).val()}),
+            dataType: 'json',
+            success: function(reponse) {
+                var resultat = new Array();
+
+                $.each(reponse, function(attribut, valeur) {
+                    resultat[attribut]=valeur;
+                });
+
+                var statut = resultat['Status'];
+
+                if (statut == 'success') {
+                    $('#label_'+Id).html( '<span id="field_'+Id+'">'+$('#field_'+Id).val()+'</span>' );
+    
+                    $('body').notif({
+                        title: resultat['Title'],
+                        content: resultat['Message'],
+                        cls: 'success',
+                        timeout: 2000
+                    });
+                } else if (statut == 'error') {
+                    $('body').notif({
+                        title: resultat['Title'],
+                        content: resultat['Message'],
+                        cls: 'error'
+                    });
+                }
+            },
+            error: function(reponse) {
+                var resultat = new Array();
+
+                $.each(reponse, function(attribut, valeur) {
+                    resultat[attribut]=valeur;
+                });
+
+                alert('Erreur sur serveur : ' + resultat['responseText']);
+            }
+        });
+    }
+
+}

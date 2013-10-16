@@ -2252,12 +2252,11 @@ switch( $Action ) {
 				$BackGround = "pair";
 
 			print( "       <tr id=\"profil_" . $Profile->prf_id . "\" class=\"" . $BackGround . " surline\">\n" .
-			 "        <td class=\"align-middle\">" . 
-			 $Security->XSS_Protection( $Profile->prf_label ) . "</td>\n" .
+			 "        <td id=\"label_" . $Profile->prf_id . "\" class=\"align-middle\"><span id=\"field_" . $Profile->prf_id . "\">" . 
+			 $Security->XSS_Protection( $Profile->prf_label ) . "</span></td>\n" .
 			 "        <td>\n" .
-			 "         <a class=\"simple\" href=\"" . $Script .
-			 "?action=PRF_M&prf_id=" . $Profile->prf_id .
-			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
+			 "         <a class=\"simple\" href=\"#\" onclick=\"modifyProfile(event," . $Profile->prf_id . ");\">" . //$Script . "?action=PRF_M&prf_id=" . $Profile->prf_id . "\">" .
+			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"javascript:deleteProfile(" . $Profile->prf_id . ");\">" . //$Script . "?action=PRF_D&prf_id=" . $Profile->prf_id . "\">" .
 			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
@@ -2283,7 +2282,7 @@ switch( $Action ) {
 	 "      <div id=\"detailProfile\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
 	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iProfileLabel\" type=\"text\" class=\"obligatoire\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
 	 "       <p class=\"align-center\"><input id=\"iButtonCreateProfile\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
-	 "      </div>  <!-- Fin : detailProfil -->\n" .
+	 "      </div> <!-- Fin : detailProfil -->\n" .
 	 "     </div> <!-- Fin : addProfile -->\n" .
 	 "    </div> <!-- fin : dashboard -->\n" );
 
@@ -2433,8 +2432,6 @@ switch( $Action ) {
 
 
  case 'PRF_MX':
-	$Return_Page = $Script . '?action=PRF_V';
- 
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
 	$Profiles = new IICA_Profiles();
@@ -2442,43 +2439,69 @@ switch( $Action ) {
 	if ( $Authentication->is_administrator() ) {
 		if ( ($prf_id = $Security->valueControl( $_POST[ 'prf_id' ], 'NUMERIC' )) == -1
 		 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (prf_id)', $Return_Page,
-			 1 ) );
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_Invalid_Value . ' (prf_id)'
+				);
+
+			print( json_encode( $Resultat ) );
+
 			exit();
 		}
 
 		if ( ! $Label = $Security->valueControl( $_POST[ 'Label' ] ) ) {
-			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Label)', $Return_Page,
-			 1 ) );
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_Invalid_Value . ' (prf_id)'
+				);
+
+			print( json_encode( $Resultat ) );
+
 			exit();
 		}
 
 		try {
 			$Profiles->set( $prf_id, $Label );
-		} catch( PDOException $e ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Profile, $Return_Page, 1 ) );
-			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Profile, $Return_Page, 1 ) );
+				$Message = $L_ERR_DUPL_Profile;
 			} else {
-				print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Profile, $Return_Page, 1 ) );
+				$Message = $L_ERR_MODI_Profile;
 			}
+
+			$Resultat = array(
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $Message
+				);
+
+			print( json_encode( $Resultat ) );
+
 			exit();
 		}
 
+		$Resultat = array(
+			'Status' => 'success',
+			'Title' => $L_Success,
+			'Message' => $L_Profile_Modified
+			);
 
-		$TypeMessage = 'infoMessage';
-		$Message =  $L_Profile_Modified;
+		print( json_encode( $Resultat ) );
+
+		exit();
 	} else {
-		$TypeMessage = 'alertMessage';
-		$Message =  $L_No_Authorize;
-	}
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_No_Authorize
+			);
 
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"" . $TypeMessage . "\" value=\"". $Message . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
+		print( json_encode( $Resultat ) );
+
+		exit();
+	}
 	
 	break;
 
