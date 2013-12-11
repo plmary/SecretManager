@@ -772,7 +772,7 @@ switch( $Action ) {
 		$Msg_Color = 'bg-orange';
 	}
 
-	$Msg_Expiration_Date = '<span class="' . $Msg_Color . '">&nbsp;' .
+	$Msg_Expiration_Date = '<span  id="expiration-date" class="' . $Msg_Color . '">&nbsp;' .
 	 $Identity->idn_expiration_date . '&nbsp;</span>';
 	
 
@@ -796,25 +796,25 @@ switch( $Action ) {
  	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td class=\"align-right td-aere\">" . $L_Password . "</td>\n" .
-	 "        <td class=\"td-aere\"><a class=\"button\" href=\"" . $Script. "?action=RST_PWDX" .
-	 "&idn_id=" . $idn_id . "\">" . $L_Authenticator_Reset . "</a></td>\n" .
+	 "        <td class=\"td-aere\"><a class=\"button\" href=\"javascript:resetPassword('" . $idn_id . "');" .
+	 "\">" . $L_Authenticator_Reset . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td class=\"align-right td-aere\">" . $L_Attempt . "</td>\n" .
-	 "        <td class=\"td-aere\"><span class=\"" . $Attempt_Color . "\">&nbsp;" . $Identity->idn_attempt . "&nbsp;</span>&nbsp;/&nbsp; " .
-	 $_Max_Attempt . " <a class=\"button\" href=\"" . $Script. "?action=RST_ATTX" .
-	 "&idn_id=" . $idn_id . "\">" . $L_Attempt_Reset . "</a></td>\n" .
+	 "        <td class=\"td-aere\"><span id=\"total-attempt\" class=\"" . $Attempt_Color . "\">&nbsp;" . $Identity->idn_attempt .
+	 "&nbsp;</span>&nbsp;/&nbsp; " .
+	 $_Max_Attempt . " <a class=\"button\" href=\"javascript:resetAttempt('" . $idn_id . "');\">" . $L_Attempt_Reset .
+	 "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td class=\"align-right td-aere\">" . $L_Expiration_Date . "</td>\n" .
-	 "        <td class=\"td-aere\">" . $Msg_Expiration_Date . "&nbsp;<a class=\"button\" href=\"" . $Script. "?action=RST_EXPX" .
-	 "&idn_id=" . $idn_id . "\">" . $L_Expiration_Date_Reset . "</a></td>\n" .
+	 "        <td class=\"td-aere\">" . $Msg_Expiration_Date . "&nbsp;<a class=\"button\" href=\"javascript:resetExpirationDate('" . $idn_id . "');\">" . $L_Expiration_Date_Reset . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td class=\"align-right td-aere\">" . $L_Disabled . "</td>\n" .
-	 "        <td class=\"td-aere\"><span class=\"" . $Disable_Color . "\">&nbsp;" . $Disable_Msg .
-	 "&nbsp;</span>&nbsp;<a class=\"button\" href=\"" . $Script. "?action=RST_DISX" .
-	 "&idn_id=" . $idn_id . "&status=" . $Disable_Status . "\">" . $Disable_Action . "</a></td>\n" .
+	 "        <td class=\"td-aere\"><span id=\"disabled-user\" class=\"" . $Disable_Color . "\">&nbsp;" . $Disable_Msg .
+	 "&nbsp;</span>&nbsp;<a id=\"action-button\" class=\"button\" href=\"javascript:enableDisableUser('" . $idn_id . "','" . $Disable_Status .
+	 "');\">" . $Disable_Action . "</a></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td colspan=\"2\">&nbsp;</td>\n" .
@@ -826,27 +826,6 @@ switch( $Action ) {
 	 "       </tbody>\n" .
 	 "      </table>\n" .
 	 "     </form>\n" .
-
-	 "     <div id=\"addEntity\" class=\"tableau_synthese hide modal\" style=\"top:20%;width:400px;left: 35%;\">\n".
-	 "      <button type=\"button\" class=\"close\">×</button>\n".
-	 "      <p class=\"titre\">".$L_Entity_Create."</p>\n".
-	 "      <div id=\"detailEntity\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Code . "</span><span class=\"td-aere\"><input id=\"iEntityCode\" type=\"text\" name=\"Code\" size=\"10\" maxlength=\"10\" /></span></p>\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iEntityLabel\" type=\"text\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
-	 "       <p class=\"align-center\"><input id=\"iButtonCreateEntity\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
-	 "      </div>  <!-- Fin : detailEntity -->\n" .
-	 "     </div> <!-- Fin : addEntity -->\n" .
-
-	 "     <div id=\"addCivility\" class=\"tableau_synthese hide modal\" style=\"top:20%;width:400px;left: 35%;\">\n".
-	 "      <button type=\"button\" class=\"close\">×</button>\n".
-	 "      <p class=\"titre\">".$L_Civility_Create."</p>\n".
-	 "      <div id=\"detailCivility\" style=\"margin:6px;padding:6px;\" class=\"corps align-center\">\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_First_Name . "</span><span class=\"td-aere\"><input id=\"iCivilityFirstName\" type=\"text\" name=\"First_Name\" size=\"25\" maxlength=\"25\" /></span></p>\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Last_Name . "</span><span  class=\"td-aere\"><input id=\"iCivilityLastName\" type=\"text\" name=\"Last_Name\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Sex . "</span><span  class=\"td-aere\"><select id=\"iCivilitySex\" name=\"Sex\"><option value=\"0\" selected>".$L_Man."</option><option value=\"1\">".$L_Woman."</option></select></span></p>\n" .
-	 "       <p class=\"align-center\"><input id=\"iButtonCreateCivility\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
-	 "      </div>  <!-- Fin : detailCivility -->\n" .
-	 "     </div> <!-- Fin : addCivility -->\n" .
 	 "     <script>\n" .
 	 "document.m_identity.ent_id.focus();\n" .
 	 "     </script>\n"
@@ -1800,23 +1779,32 @@ switch( $Action ) {
 
 
  case 'RST_PWDX':
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Script, 1 ) );
+	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_Invalid_Value . ' (idn_id)'
+            ) );
+
 		exit();
 	}
 
 	try {
 		$Authentication->resetPassword( $idn_id );
+
+        echo json_encode( array(
+            'Status' => 'success',
+            'Message' => $L_Password_Reseted
+            ) );
+
+		exit();
 	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Password, $Script, 1 ) );
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_ERR_RST_Password
+            ) );
+
 		exit();
 	}
-
-
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=M&idn_id=" . $_GET[ 'idn_id' ] . "\">\n" .
-		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Password_Reseted . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
@@ -1967,85 +1955,123 @@ switch( $Action ) {
 
 
  case 'RST_ATTX':
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_Invalid_Value . ' (idn_id)'
+            ) );
+
 		exit();
 	}
-
-	$Return_Page = $Script . '?action=M&idn_id=' . $idn_id;
  
 	try {
 		$Authentication->resetAttempt( $idn_id );
+
+        echo json_encode( array(
+            'Status' => 'success',
+            'Message' => $L_Attempt_Reseted
+            ) );
+            
+        exit();
 	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Attempt, $Return_Page, 1 ) );
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_ERR_RST_Attempt
+            ) );
+
 		exit();
 	}
-
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Attempt_Reseted . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
 
  case 'RST_EXPX':
-	$Return_Page = $Script;
+	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_Invalid_Value . ' (idn_id)'
+            ) );
 
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
 		exit();
 	}
-
-	$Return_Page .= '?action=M&idn_id=' . $idn_id;
  
 	try {
-		$Authentication->resetExpirationDate( $idn_id );
+		$Expiration_Date = $Authentication->resetExpirationDate( $idn_id );
+
+        echo json_encode( array(
+            'Status' => 'success',
+            'Message' => $L_Expiration_Date_Reseted,
+            'Expiration_Date' => $Expiration_Date
+            ) );
+
+        exit();
 	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Expiration, $Return_Page, 1 ) );
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_ERR_RST_Expiration
+            ) );
+
 		exit();
 	}
-
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Expiration_Date_Reseted . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 
 
  case 'RST_DISX':
-	$Return_Page = $Script;
- 
-	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
+	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_Invalid_Value . ' (idn_id)'
+        ) );
+
 		exit();
 	}
 
-	$Return_Page .= '?action=M&idn_id=' . $idn_id;
+	if ( ($Action = $Security->valueControl( $_POST[ 'Status' ], 'NUMERIC' )) == -1 ) {
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_Invalid_Value . ' (Status)'
+        ) );
 
-	if ( ($Action = $Security->valueControl( $_GET[ 'status' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (status)', $Return_Page, 1 ) );
 		exit();
 	}
 
 
 	try {
 		$Authentication->setDisable( $idn_id, $Action );
+
+        if ( $Action == 1 ) {
+            $Disable_Color = "bg-orange";
+            $Disable_Msg = $L_Yes;
+            $Disable_Action = $L_To_Activate_User;
+            $Disable_Status = 0;
+            $Message = $L_User_Disabled;
+        } else {
+            $Disable_Color = "bg-green";
+            $Disable_Msg = $L_No;
+            $Disable_Action = $L_To_Deactivate_User;
+            $Disable_Status = 1;
+            $Message = $L_User_Enabled;
+        }
+
+        echo json_encode( array(
+            'Status' => 'success',
+            'Message' => $Message,
+            'Disable_Color' => $Disable_Color,
+            'Disable_Msg' => $Disable_Msg,
+            'Disable_Action' => $Disable_Action,
+            'Disable_Status' => $Disable_Status
+        ) );
+
+		exit();
 	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_RST_Disable, $Return_Page, 1 ) );
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_ERR_RST_Disable
+        ) );
+
 		exit();
 	}
-
-	if ( $Action == 1 ) 
-		$Message = $L_User_Disabled;
-	else
-		$Message = $L_User_Enabled;
-
-	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $Message . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
 

@@ -62,64 +62,85 @@ $(document).ready(function(){
 });
 
 
-// Gestion des créations de Civilité à la volée.
-function putAddCivility(){
-    $('#addCivility').show('slow');
-    $('#iCivilityFirstName').focus();
+function resetPassword( Id ) {
+    $.ajax({
+        url: 'SM-users.php?action=RST_PWDX',
+        type: 'POST',
+        data: $.param({'idn_id': Id}),
+        dataType: 'json',
+        success: function(reponse) {
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+        },
+        error: function(reponse) {
+            alert('Erreur serveur : ' + reponse['responseText']);
+        }
+    });
 }
 
-function addCivility(){
-    if ($('#iCivilityLastName').val() != '' && $('#iCivilityFirstName').val() != '' && $('#iCivilitySex').val() != '') {
-        $.ajax({
-            url: 'SM-users.php?action=CVL_CX',
-            type: 'POST',
-            data: $.param({'Last_Name': $('#iCivilityLastName').val(), 'First_Name': $('#iCivilityFirstName').val(),
-                'Sex': $('#iCivilitySex').val()}),
-            dataType: 'json',
-            success: function(reponse) {
-                $('#addCivility').hide();
 
-                var First_Name = $('#iCivilityFirstName').val();
-                var Last_Name = $('#iCivilityLastName').val();
-                var Sex = $('#iCivilitySex').val();
+function resetAttempt( Id ) {
+    $.ajax({
+        url: 'SM-users.php?action=RST_ATTX',
+        type: 'POST',
+        data: $.param({'idn_id': Id}),
+        dataType: 'json',
+        success: function(reponse) {
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            
+            var CurrentClass = $("#total-attempt").attr("class");
+            $("#total-attempt").removeClass(CurrentClass).addClass("bg-green").html('&nbsp;0&nbsp;');
+        },
+        error: function(reponse) {
+            alert('Erreur serveur : ' + reponse['responseText']);
+        }
+    });
+}
 
-                $('#iCivilityFirstName').val('');
-                $('#iCivilityLastName').val('');
-                $('#iCivilitySex').val('');
 
-                var resultat = new Array();
+function resetExpirationDate( Id ) {
+    $.ajax({
+        url: 'SM-users.php?action=RST_EXPX',
+        type: 'POST',
+        data: $.param({'idn_id': Id}),
+        dataType: 'json',
+        success: function(reponse) {
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            
+            var CurrentClass = $("#expiration-date").attr("class");
+            $("#expiration-date").removeClass(CurrentClass).addClass("bg-green").html('&nbsp;'+
+                reponse['Expiration_Date']+'&nbsp;00:00:00&nbsp;');
+        },
+        error: function(reponse) {
+            alert('Erreur serveur : ' + reponse['responseText']);
+        }
+    });
+}
 
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
 
-                var statut = resultat['Status'];
-
-                if (statut == 'success') {
-                    var Id = resultat['IdCivility'];
-
-                    $('#iSelectCivility option').attr('selected','off')
-
-                    $('#iSelectCivility').prepend('<option value="'+Id+'" selected>'+First_Name+' '+Last_Name+'</option>');
-                    $('body').notif({title: resultat['Title'],
-                        content: resultat['Message'],
-                        cls: 'success',
-                        timeout: 2000});
-                } else if (statut == 'error') {
-                    $('body').notif({title: resultat['Title'],
-                        content: resultat['Message'],
-                        cls: 'error'});
-                }
-            },
-            error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur serveur : ' + resultat['responseText']);
-            }
-        });
-    }
+function enableDisableUser( Id, Status ) {
+    $.ajax({
+        url: 'SM-users.php?action=RST_DISX',
+        type: 'POST',
+        data: $.param({'idn_id': Id, 'Status': Status}),
+        dataType: 'json',
+        success: function(reponse) {
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            
+/*            'Activated' => $Activated,
+            'Disable_Color' => $Disable_Color,
+            'Disable_Msg' => $Disable_Msg,
+            'Disable_Action' => $Disable_Action,
+            'Disable_Status' => $Disable_Status */
+            
+            var CurrentClass = $("#disabled-user").attr("class");
+            $("#disabled-user").removeClass(CurrentClass).addClass(reponse['Disable_Color']).html('&nbsp;'+
+                reponse['Disable_Msg']+'&nbsp;');
+            
+            $('#action-button').attr('href',"javascript:enableDisableUser('" + Id + "','" +
+                reponse['Disable_Status'] + "');").text( reponse['Disable_Action'] );
+        },
+        error: function(reponse) {
+            alert('Erreur serveur : ' + reponse['responseText']);
+        }
+    });
 }

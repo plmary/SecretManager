@@ -248,7 +248,7 @@ function modifyCivility( Id, L_Man, L_Woman, CancelButton, ModifyButton ) {
 		"</select></td>\n" +
 		"        <td class=\"align-middle blue-border-line\"><a class=\"button\" href=\"javascript:endModifyCivility('" +
 		Id + "');\">" + CancelButton + "</a>&nbsp;<a class=\"button\" href=\"javascript:saveModifyCivility('" +
-		Id + "');\">" + ModifyButton + "</a></td>\n" +
+		Id + "','" + L_Man + "','" + L_Woman + "');\">" + ModifyButton + "</a></td>\n" +
 		"       </tr>\n" ).insertAfter( '#civility-'+Id );
     
     document.getElementById('iFirstName').focus();
@@ -304,7 +304,7 @@ function saveModifyCivility( Id, L_Man, L_Woman ) {
 
             var statut = resultat['Status'];
 
-            if ( Sex == 0 ) {
+            if ( Sex == '0' ) {
                 var L_Sex = L_Man;
             } else {
                 var L_Sex = L_Woman;

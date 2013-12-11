@@ -704,6 +704,9 @@ switch( $Action ) {
 
 
  case 'S':
+    // Informations sur le SecretServer.
+    $Secret_Server = new Secret_Server();
+
     try {
         list( $Status, $Operator, $Creating_Date ) = $Secret_Server->SS_statusMotherKey();
     } catch( Exception $e ) {
@@ -1046,7 +1049,7 @@ case 'STOR':
      "       <tr>\n" .
      "        <td class=\"impair align-right\"><a class=\"button\" href=\"javascript:backupTotal();\">" . $L_Total_Backup . "</a></td>\n" .
      "        <td class=\"impair\">" . $L_Last_Total_Backup . "</td>\n" .
-     "        <td class=\"impair bold\">" . "&nbsp;" . "</td>\n" .
+     "        <td class=\"impair bold\" id=\"iTotalDateBackup\">" . $PageHTML->getParameter( 'Backup_Total_Date' ) . "</td>\n" .
      "       </tr>\n" .
      "       </tbody>\n" .
      "       <tfoot>\n" .
@@ -1076,6 +1079,32 @@ case 'STOR_SX':
     }
 
     $PageHTML->setParameter( 'Backup_Secrets_Date', $Date_Backup );
+
+    $alert_message = $Secrets->formatHistoryMessage( $Result );
+
+    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+
+    echo json_encode( array( 'Status' => $Status, 'Message' => $Result,
+        'Date' => $Date_Backup ) );
+
+    exit();
+
+
+case 'STOR_TX':
+    include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
+    
+    $Backup = new Backup();
+    
+    try {
+        $Date_Backup = $Backup->backup_total();
+        $Result = $L_Backup_Total_Successful;
+        $Status = 'success';
+    } catch( Exception $e ) {
+        $Result = $e->getMessage();
+        $Status = 'error';
+    }
+
+    $PageHTML->setParameter( 'Backup_Total_Date', $Date_Backup );
 
     $alert_message = $Secrets->formatHistoryMessage( $Result );
 

@@ -24,6 +24,8 @@ function showInfoMessage( Type, Message ) {
         var Image_Name = 's_warn';
         myInterval = setInterval( function() { hideInfoMessage() }, 9000);
     }
+
+    $('#info_message').remove();
     
     $('     <div id="info_message" class="' + Type + '" onClick="hideInfoMessage();">\n' +
      '    <button type="button" class="close" data-dismiss="alert">&times;</button>\n' +

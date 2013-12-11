@@ -595,7 +595,7 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @param[in] $idn_id Identifiant de l'utilisateur
 	*
-	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
+	* @return Retourne la date remise à jour en cas de succès, sinon lève une exception en cas d'erreur
 	*/
 		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 
@@ -632,7 +632,7 @@ class IICA_Authentications extends IICA_Parameters {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
 
- 		return true;
+ 		return $NextDate;
 	}
 
 

@@ -486,5 +486,27 @@ function backupSecrets() {
 
 
 function backupTotal() {
-    showInfoMessage( 'error', 'Pas encore implémenté' ); // SecretManager.js
+    $.ajax({
+        url: '../SM-admin.php?action=STOR_TX',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse){
+            var resultat = new Array();
+
+            $.each(reponse, function(attribut, valeur) {
+                resultat[attribut]=valeur;
+            });
+
+            if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
+                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+
+                $('#iTotalDateBackup').text( resultat['Date'] );
+            } else {
+                alert('Erreur sur serveur : ' + reponse);
+            }
+        },
+        error: function(reponse) {
+            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+        }
+    }); 
 }
