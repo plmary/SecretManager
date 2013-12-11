@@ -6,8 +6,7 @@
 * PHP version 5.4
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.3
-* @date 2013-07-09
+* @date 2013-11-22
 *
 */
 
@@ -16,49 +15,64 @@ include( 'Constants.inc.php' );
 session_save_path( DIR_SESSION );
 session_start();
 
-$Search_Style = 2;
-
 // Par défaut langue Française.
 if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
 
 if ( array_key_exists( 'Lang', $_GET ) ) {
    $_SESSION[ 'Language' ] = $_GET[ 'Lang' ];
 }
+
 	
 $Script = URL_BASE . $_SERVER[ 'SCRIPT_NAME' ];
 $URI = $_SERVER[ 'REQUEST_URI' ];
+$IP_Source = $_SERVER['REMOTE_ADDR'];
 
+// Force l'utilisateur à travailler en HTTPS.
 if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
 	header( 'Location: ' . URL_BASE . $URI );
+
 
 $Action = '';
 $Choose_Language = 0;
 
-include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
-include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
+
+// Tailles des colonnes.
+$S_Group = '210';
+$S_Type = '90';
+$S_Environment = '100';
+$S_Application = '100';
+$S_Host = '70';
+$S_User = '70';
+$S_Expiration_Date = '80';
+$S_Comment = '110';
+$S_Action = '80';
 
 
-$Authentication = new IICA_Authentications( 
- $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+// Création du gestionnaire de page ainsi que du contexte.
+include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 
-if ( ! $Authentication->is_connect() ) {
+$PageHTML = new HTML();
+
+
+// Si l'utilisateur n'est pas passé par le processus de connexion, il est rerouté vers ce dernier.
+if ( ! $PageHTML->is_connect() ) {
    header( 'Location: ' . URL_BASE . '/SM-login.php' );
 	exit();
 }
 
 
-include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
+
+
+// Charge le fichier de "Hash", dans la mesure où le SecretServer ne sera pas utilisé.
 include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+
 include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-include( DIR_LIBRARIES . '/Class_Security.inc.php' );
-
-$PageHTML = new HTML();
 
 
 // Charge les différents objets utiles à cet écran.
@@ -70,8 +84,6 @@ $Secrets = new IICA_Secrets();
 
 $Referentials = new IICA_Referentials();
 
-$Security = new Security();
-
 
 // Récupère la liste des Droits, des Types et des Environnements.
 $List_Rights = $Referentials->listRights();
@@ -80,20 +92,19 @@ $List_Environments = $Referentials->listEnvironments();
 
 
 // Récupère les Droits que cet utilisateur a sur les différents Groupes de Secrets.
-$groupsRights = $Authentication->getGroups( $_SESSION[ 'idn_id' ] );
-
+$groupsRights = $PageHTML->getGroups( $_SESSION[ 'idn_id' ] );
 
 // Contrôle si la session n'a pas expirée.
-if ( ! $Authentication->validTimeSession() ) {
+if ( ! $PageHTML->validTimeSession() ) {
 	header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX&expired' );
 } else {
-	$Authentication->saveTimeSession();
+	$PageHTML->saveTimeSession();
 }
 
 
 // Si l'utilisateur n'est pas Administrateur alors il est bridé sur les Groupes de Secrets
 // auxquels il a accès.
-if ( ! $Authentication->is_administrator() )
+if ( ! $PageHTML->is_administrator() )
 	$List_Groups = $Groups->listGroups( $_SESSION[ 'idn_id' ] );
 else
 	$List_Groups = $Groups->listGroups();
@@ -102,33 +113,6 @@ else
 if ( array_key_exists( 'action', $_GET ) ) {
    $Action = strtoupper( $_GET[ 'action' ] );
 }
-
-$Javascripts = array( 'dashboard.js', 'Ajax_secrets.js' );
-
-print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts ) .
-/* "  <script>\n" .
- "function viewPassword( scr_id ) {\n" .
- " var WindowHeight = 400;\n" .
- " var WindowWidth = 950;\n" .
- " window.open('SM-secrets.php?action=SCR_V&scr_id='+ scr_id,'Mot de passe',\n" .
- " 'width=' + WindowWidth + ',height=' + WindowHeight + ',' +\n" .
- " 'left=' + (screen.width - WindowWidth) / 2 + ',' +\n" .
- " 'top=' + (screen.height - WindowHeight) / 2 );\n" .
- "}\n" .
- "  </script>\n" . */
- "   <!-- debut : zoneTitre -->\n" .
- "   <div id=\"zoneTitre\">\n" .
- "    <div id=\"icon-home\" class=\"icon36\"></div>\n" .
- "    <span id=\"titre\">". $L_Title . "</span>\n" .
- $PageHTML->afficherActions( $Authentication->is_administrator() ) .
- "    </div> <!-- Fin : zoneTitre -->\n" .
- "\n" .
-// "   <!-- debut : zoneGauche -->\n" .
-// "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
- "\n" .
- "   <!-- debut : zoneMilieuComplet -->\n" .
- "   <div id=\"zoneMilieuComplet\">\n" .
- "\n" );
 
 $sgr_id = '';
 $stp_id = '';
@@ -146,58 +130,158 @@ if ( array_key_exists( 'orderby', $_GET ) ) {
 }
 
 
+function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
+	include_once( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
+	include_once( DIR_LIBRARIES . '/Class_HTML.inc.php' );
+	include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
+
+	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
+
+	$Security = new Security();
+
+	$PageHTML = new HTML();
+
+	$Secrets = new IICA_Secrets();
+
+	// Lance la recherche à partir des critères.
+	$List_Secrets = $Secrets->listSecrets2( $Search_Secrets, $_SESSION[ 'idn_id' ],
+		$PageHTML->is_administrator(), $orderBy );
+
+	$Total = count( $List_Secrets );
+
+	foreach( $List_Secrets as $Secret ) {
+
+		print( "       <tr class=\"surline\" id=\"" . $Secret->scr_id . "\" " .
+		 "style=\"cursor: pointer;\" data-total=\"" . $Total . "\" " .
+		 "data-cancel=\"" . $GLOBALS['L_Cancel'] . "\" data-modify=\"" . $GLOBALS['L_Modify'] . "\" " .
+		 "data-delete=\"" . $GLOBALS['L_Delete'] . "\">\n" .
+		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Group'] ."px; " .
+		 "width:". $GLOBALS['S_Group'] ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\" data-id=\"" . $Secret->sgr_id . "\">" . 
+		 $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Type'] ."px; " .
+		 "width:". $GLOBALS['S_Type'] ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\" data-id=\"" . $Secret->stp_id . "\">" . ${$Secret->stp_name} . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Environment'] ."px; " .
+		 "width:". $GLOBALS['S_Environment'] ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\" data-id=\"" . $Secret->env_id . "\">" . ${$Secret->env_name} . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Application'] ."px; " .
+		 "width:". $GLOBALS['S_Application'] ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Host'] ."px; " .
+		 "width:". $GLOBALS['S_Host'] ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
+		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_User'] ."px; " .
+		 "width:". $GLOBALS['S_User'] ."px;\" onclick=\"viewPassword(" . 
+		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" );
+
+		$Date_1 = new DateTime('now');
+		$Date_2 = new DateTime($Secret->scr_expiration_date);
+		$Interval = $Date_1->diff($Date_2);
+
+		if ( $Secret->scr_expiration_date == '' or $Secret->scr_expiration_date == '0000-00-00 00:00:00' ) {
+			$Secret->scr_expiration_date = '';
+			$myClass = '';
+		} else {
+			if ($Interval->format('%R%a') < '+2' && $Interval->format('%R%a') != '+0') {
+				$myClass = 'btn-danger ';
+			} elseif ($Interval->format('%R%a') >= '+2' && $Interval->format('%R%a') <= '+7') {
+				$myClass = 'btn-warning ';
+			} else {
+				$myClass = '';
+			}
+		}
+
+		 print( "        <td class=\"".$myClass."align-middle\" style=\"max-width:". $GLOBALS['S_Expiration_Date'] ."px; " .
+		  "width:". $GLOBALS['S_Expiration_Date'] ."px;\" onclick=\"viewPassword(" . 
+		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_expiration_date ) . "</td>\n" .
+		  "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Comment'] ."px; " .
+		  "width:". $GLOBALS['S_Comment'] ."px;\" onclick=\"viewPassword(" . 
+		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
+
+		$Update_Right = 0;
+		$Delete_Right = 0;
+
+		$groupsRights = $GLOBALS['groupsRights'];
+
+		if ( ! $PageHTML->is_administrator() ) {
+			if ( array_key_exists( $Secret->sgr_id, $groupsRights ) ) {
+				$Update_Right = in_array( 3, $groupsRights[ $Secret->sgr_id ] );
+				$Delete_Right = in_array( 4, $groupsRights[ $Secret->sgr_id ] );
+			}
+		}
+
+		if ( $Action == 'R2' ) $Home = 'home-r2';
+		else $Home = 'home';
+
+		$Buttons = '';
+		$B_Rights = '';
+		
+		if ( $PageHTML->is_administrator() or $Update_Right ) {
+			$Buttons .= "         <a class=\"simple\" href=\"javascript:setSecret(" . $Secret->scr_id .
+			 ")\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" .
+			 $GLOBALS['L_Modify'] . "\" title=\"" . $GLOBALS['L_Modify'] . "\" /></a>\n";
+
+			$B_Rights .= 'M';
+		}
+		
+		if ( $PageHTML->is_administrator() or $Delete_Right ) {
+			$Buttons .= "         <a class=\"simple\" href=\"javascript:setSecret(" . $Secret->scr_id .
+			 ", 'D')\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" .
+			 $GLOBALS['L_Delete'] . "\" title=\"" . $GLOBALS['L_Delete'] . "\" /></a>\n";
+
+			$B_Rights .= 'D';
+		}
+
+		$Buttons .= "         <a class=\"simple\" href=\"javascript:viewPassword( " . 
+		 $Secret->scr_id . " );\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_eye.png\" alt=\"" .
+		 $GLOBALS['L_Password_View'] . "\" title=\"" . $GLOBALS['L_Password_View'] . "\" /></a>\n";
+		
+		print( "        <td style=\"max-width:". $GLOBALS['S_Action'] ."px; width:". $GLOBALS['S_Action'] ."px;\" data-right=\"" . $B_Rights . "\">\n" .
+		 $Buttons .
+		 "        </td>\n" .
+		 "       </tr>\n" );
+	}
+
+	return $Total;
+}
+
+
 switch( $Action ) {
  case 'R': // Fonction de Recherche.
-	if ( $_POST[ 'sgr_id' ] != '' ) {
-		if ( ($sgr_id = $Security->XSS_Protection( $_POST[ 'sgr_id' ], 'NUMERIC' )) == -1 ) {
-			print( "    <div id=\"dashboard\">\n" .
-			 "     <h1>" . $L_Invalid_Characters . " (Id)</h1>" .
-			 "    </div> <!-- fin : dashboard -->\n" );
-			break;
-		}
-	}
+ 	if ( $_POST[ 'Search_Secrets' ] != '' ) {
+	 	$Search_Secrets = $_POST[ 'Search_Secrets' ];
+ 	} else {
+ 		$Search_Secrets = '';
+ 	}
 
-	if ( $_POST[ 'stp_id' ] != '' ) {
-		if ( ($stp_id = $Security->XSS_Protection( $_POST[ 'stp_id' ], 'NUMERIC' )) == -1 ) {
-			print( "    <div id=\"dashboard\">\n" .
-			 "     <h1>" . $L_Invalid_Characters . " (Id)</h1>" .
-			 "    </div> <!-- fin : dashboard -->\n" );
-		}
-	}
+	construireListe( $Search_Secrets, $orderBy );
 
-	if ( $_POST[ 'env_id' ] != '' ) {
-		if ( ($env_id = $Security->XSS_Protection( $_POST[ 'env_id' ], 'NUMERIC' )) == -1 ) {
-			print( "    <div id=\"dashboard\">\n" .
-			 "     <h1>" . $L_Invalid_Characters . " (Id)</h1>" .
-			 "    </div> <!-- fin : dashboard -->\n" );
-		}
-	}
-
-	if ( $_POST[ 'scr_application' ] != '' ) {
-		$scr_application = $Security->XSS_Protection( $_POST[ 'scr_application' ] );
-	}
-
-	if ( $_POST[ 'scr_host' ] != '' ) {
-		$scr_host = $Security->XSS_Protection( $_POST[ 'scr_host' ] );
-	}
-
-	if ( $_POST[ 'scr_user' ] != '' ) {
-		$scr_user = $Security->XSS_Protection( $_POST[ 'scr_user' ] );
-	}
-
-	if ( $_POST[ 'scr_comment' ] != '' ) {
-		$scr_comment = $Security->XSS_Protection( $_POST[ 'scr_comment' ] );
-	}
+ 	exit();
 
 
- default:
-	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-	
+ default: // Affichage des secrets.
+
+	$Javascripts = array( 'Ajax_secrets.js', 'Ajax_home.js', 'SecretManager.js' );
+
+	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts ) .
+	 "   <!-- debut : zoneTitre -->\n" .
+	 "   <div id=\"zoneTitre\">\n" .
+	 "    <div id=\"icon-home\" class=\"icon36\"></div>\n" .
+	 "    <span id=\"titre\">". $L_Title . "</span>\n" .
+	 $PageHTML->afficherActions( $PageHTML->is_administrator() ) .
+	 "    </div> <!-- Fin : zoneTitre -->\n" .
+	 "\n" .
+	 "   <!-- debut : zoneMilieuComplet -->\n" .
+	 "   <div id=\"zoneMilieuComplet\">\n" .
+	 "\n" );
+
 	print( "    <div id=\"dashboard\">\n\n" );
 
-	if ( $Authentication->is_administrator() ) $idn_id = '';
+	if ( $PageHTML->is_administrator() ) $idn_id = '';
 	else $idn_id = $_SESSION[ 'idn_id' ];
 	
+	// A la première connexion, on affiche les informations relatives à la dernière connexion.
 	if ( array_key_exists( 'last_login', $_GET ) ) {
 		print( 
 		 "<script>\n" .
@@ -213,340 +297,44 @@ switch( $Action ) {
 		 "</b></div>\n" );
 	}
 
-	// ===========================================
-	// Tableau d'affichage des Utilisateurs.
-	if ( $Authentication->is_administrator() ) {
-		include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Entities_PDO.inc.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Civilities_PDO.inc.php' );
-		
-		$Profiles = new IICA_Profiles();
-
-		$Entities = new IICA_Entities();
-
-		$Civilities = new IICA_Civilities();
-
-
-		print( "\n" .
-		 "     <!-- Début : affichage de la synthèse des utilisateurs -->\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"users\">" . $L_List_Users . "</p>\n" .
-		 "      <div class=\"corps hide\" id=\"c_users\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Identities->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Disabled . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalDisabled() . "</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Expired . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalExpired() . "</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Attempted . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalAttempted() . "</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Super_Admin . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalSuperAdmin() . "</span>\n" .
-		 "       </p>\n" .
-		 "      </div> <!-- Fin : corps -->\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php\">" . $L_Manage_Users . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des utilisateurs -->\n\n" .
-
-		 // ===========================================
-		 // Tableau d'affichage des Groupes de Secrets.
-		 "     <!-- Début : affichage de la synthèse des groupes -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"groups\">" . $L_List_Groups . "</p>\n" .
-		 "      <div class=\"corps hide\" id=\"c_groups\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Groups_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Groups->total( $idn_id ) . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-secrets.php?rp=home\">" . $L_Manage_Groups . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" .
-
-		 // ===========================================
-		 // Tableau d'affichage des Profils.
-		 "     <!-- Début : affichage de la synthèse des profils -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"profiles\">" . $L_List_Profiles . "</p>\n" .
-		 "      <div class=\"corps hide\" id=\"c_profiles\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Profiles_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Profiles->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=PRF_V&rp=home\">" . $L_Manage_Profiles . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" .
-
-		 // ===========================================
-		 // Tableau d'affichage des Entités.
-		 "     <!-- Début : affichage de la synthèse des entités -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"entities\">" . $L_List_Entities . "</p>\n" .
-		 "      <div class=\"corps hide\" id=\"c_entities\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Entities->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=ENT_V&rp=home\">" . $L_Manage_Entities . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des entités -->\n\n" .
-
-		 // ===========================================
-		 // Tableau d'affichage des Civilités.
-		 "     <!-- Début : affichage de la synthèse des civilités -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Civilities . "</p>\n" .
-		 "      <div class=\"corps hide\" id=\"c_civilities\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Civilities->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=CVL_V&rp=home\">" . $L_Manage_Civilities . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des civilités -->\n\n" .
-		 "     <div style=\"clear: both;\"></div>\n" );
-	}
-
-
-	// ====================
-	// Tableau de recherche
-	if ( $Search_Style == 1 ) {
-		$searchButton = '<span style="float: right">' .
-		 '<a id="search_icon" class="simple" style="cursor: pointer;" ' .
-		 'onclick="javascript:hiddeTableBody();">' .
-		 '<img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
-		 '" title="' . $L_Search . '" />' .
-		 '</a></span>' ;
-
-		print( 
-		 "     <script>\n" .
-		 "function hiddeTableBody() {\n" .
-		 " var displaySelection;\n" .
-		 " if ( document.getElementById( 'search_icon' ).className == 'simple' ) {\n" .
-		 "  document.getElementById( 'search_icon' ).className = 'simple-selected';\n" .
-		 "  displaySelection = 'none';\n" .
-		 " } else {\n" .
-		 "  document.getElementById( 'search_icon' ).className = 'simple';\n" .
-		 "  displaySelection = 'block';\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'group_criteria' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'type_criteria' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'environment_criteria' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'application_criteria' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'host_criteria' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'user_criteria' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'comment_criteria' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'group_criteria' ) ) {\n" .
-		 "  document.getElementById( 'search_buttons' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 "}\n" .
-		 "     </script>\n" .
-		 "     <!-- Début : search -->\n\n" .
-		 "     <div class=\"search\">\n" .
-		 "     <form class=\"simple\" method=\"post\" name=\"searchForm\" action=\"" .
-		 $Script . "?action=R\" >\n" .
-		 "      <div style=\"width: 100%;float: left;\">\n" .
-		 "       <p class=\"title\">" . $L_Search_Secrets . $searchButton . "</p>\n" .
-		 "      </div>\n" .
-		 "     <script>\n" .
-		 "hiddeTableBody();\n" .
-		 "     </script>\n" .
-	 
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"group_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_Group . "</p>\n" .
-		 "       <p class=\"impair\">\n" .
-		 "        <select name=\"sgr_id\" " .
-		 "onChange=\"javascript:document.searchForm.submit();\">\n" .
-		 "         <option value=\"\">&nbsp;</option>\n" );
-
-		foreach( $List_Groups as $Group ) {
-			if ( $Group->sgr_id == $sgr_id ) $Status = ' selected ';
-			else $Status = '';
-		
-			print( "         <option value=\"" . stripslashes( $Group->sgr_id ) . '"' . $Status . '>' .
-			 $Group->sgr_label . "</option>\n" );
-		}
-
-		print( "        </select>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"type_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_Type . "</p>\n" .
-		 "       <p class=\"impair\">\n" .
-		 "        <select name=\"stp_id\" " .
-		 "onChange=\"javascript:document.searchForm.submit();\">\n" .
-		 "         <option value=\"\">&nbsp;</option>\n" );
-	 
-		foreach( $List_Types as $Type ) {
-			if ( $Type->stp_id == $stp_id ) $Status = ' selected ';
-			else $Status = '';
-		
-			print( "         <option value=\"" . $Type->stp_id . '"' . $Status . '>' .
-			 ${$Type->stp_name} . "</option>\n" );
-		}
-
-		print( "         </select>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-	 
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"environment_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_Environment . "</p>\n" .
-		 "       <p class=\"impair\">\n" .
-		 "        <select name=\"env_id\" " .
-		 "onChange=\"javascript:document.searchForm.submit();\">\n" .
-		 "         <option value=\"\">&nbsp;</option>\n" );
-
-		foreach( $List_Environments as $Environment ) {
-			if ( $Environment->env_id == $env_id ) $Status = ' selected ';
-			else $Status = '';
-		
-			print( "         <option value=\"" . $Environment->env_id . "\"" . $Status .
-			 ">" . ${$Environment->env_name} . "</option>\n" );
-		}
-
-		print( "         </select>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <div style=\"clear:both;\"></div>\n" .
-
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"application_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_Application . "</p>\n" .
-		 "       <p class=\"impair\">\n" .
-		 "        <input type=\"text\" name=\"scr_application\" size=\"30\" maxlength=\"60\" " .
-		 "value=\"" . $scr_application . "\" />\n" . 
-		 "       </p>\n" .
-		 "      </div>\n" .
-
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"host_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_Host . "</p>\n" .
-		 "       <p class=\"impair\">\n" .
-		 "        <input type=\"text\" name=\"scr_host\" size=\"30\" maxlength=\"255\" " .
-		 "value=\"" . $scr_host . "\" />\n" . 
-		 "       </p>\n" .
-		 "      </div>\n" .
-
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"user_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_User . "</p>\n" .
-		 "       <p class=\"impair\">\n" .
-		 "        <input type=\"text\" name=\"scr_user\" size=\"25\" maxlength=\"25\" " . 
-		 "value=\"" . $scr_user . "\" />\n" . 
-		 "       </p>\n" .
-		 "      </div>\n" .
-
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"expiration_date_criteria\">\n" .
-		 "       <p class=\"subtitle pair\">" . $L_Expiration_Date . "</p>\n" .
-		 "       <p class=\"impair\">\n" .
-		 "        <input type=\"text\" name=\"scr_expiration_date\" size=\"19\" maxlength=\"19\" " .
-		 "value=\"" . $scr_expiration_date . "\" />\n" . 
-		 "       </p>\n" .
-		 "      </div>\n" .
-
-		 "      <div class=\"search_criteria\" style=\"display: none;\" id=\"search_buttons\">\n" .
-		 "       <p class=\"subtitle space\">\n" .
-		 "        <input type=\"submit\" class=\"button\" value=\"" . $L_Search . "\" />\n" . 
-		 "        <a href=\"" . $Script . "\" class=\"button\">" . $L_Reset . "</a>\n" . 
-		 "       </p>\n" .
-		 "      </div>\n" .
-	 
-		 "      <div style=\"clear:both;height: 10px\"></div>\n" .
-		 "    </form>\n" .
-		 "    </div>\n" );
-	}
-
 
 	// =====================
 	// Tableau des résultats
+
+	// Prend en compte le critère de recherche.
 	if ( array_key_exists( 'searchSecret', $_POST ) ) {
-		$searchSecret = $_POST[ 'searchSecret' ];
-		$_SESSION[ 'searchSecret' ] = $searchSecret;
+		$Search_Secrets = $_POST[ 'searchSecret' ];
+		$_SESSION[ 'searchSecret' ] = $Search_Secrets;
 	} else {
-		if ( array_key_exists( 'searchSecret', $_SESSION ) ) $searchSecret = $_SESSION[ 'searchSecret' ];
-		else $searchSecret = '';
+		if ( array_key_exists( 'searchSecret', $_SESSION ) ) $Search_Secrets = $_SESSION[ 'searchSecret' ];
+		else $Search_Secrets = '';
 	}
+
 
 	$myButtons = '';
 
-	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
+	if ( $PageHTML->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
     	$addButton = '<a class="btn btn-small" href="' . URL_BASE . '/SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
+    } else {
+    	$addButton = '';
+    }
 
-		if ( $Search_Style == 2 ) {
-		   	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' .
-			 $Script . '?action=R2" >' .
-		   	 '<div class="input-append">' .
-			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
-			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
-			 '" /></button>' .
-			 '</div>' .
-			 $addButton .
-			 '</form>';
-		}
-	} else {
-		if ( $Search_Style == 2 ) {
-		   	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' .
-			 $Script . '?action=R2" >' .
-		   	 '<div class="input-append">' .
-			 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $searchSecret . '" />' .
-			 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
-			 '" /></button>' .
-			 '</div>' .
-			 '</form>';
-		}
-	}
-
-	$S_Group = '210';
-	$S_Type = '90';
-	$S_Environment = '100';
-	$S_Application = '100';
-	$S_Host = '70';
-	$S_User = '70';
-	$S_Expiration_Date = '80';
-	$S_Comment = '110';
-	$S_Action = '80';
+   	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' . $Script . '?action=R2">' .
+   	 '<div class="input-append">' .
+	 '<input type="text" class="span2 search-query" id="iSearchSecret" name="searchSecret" value="' . $Search_Secrets . '" />' .
+	 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
+	 '" /></button>' .
+	 '</div>' .
+	 $addButton .
+	 '</form>';
 
 	$myButtons = '<div style="float: right; display: inline;">' . $addButton . "</div>";
 
-	print( // "     <div id=\"scroller\"> <!-- Début : scroller -->\n" .
-	 "     <table class=\"table-bordered principal\">\n" .
+	print( "     <table class=\"table-bordered principal\">\n" .
 	 "      <thead class=\"fixedHeader\">\n" .
 	 "       <tr>\n" .
 	 "        <th colspan=\"8\"><span style=\"height: 100%;vertical-align:middle;\">" . $L_List_Secrets ."</span>". $myButtons . "</th>\n" .
 	 "       </tr>\n" );
-		 
-	if ( $Action != 'R2' && ! isset( $_SESSION[ 'searchSecret' ] ) ) {
-		$List_Secrets = $Secrets->listSecrets( $sgr_id, $_SESSION[ 'idn_id' ], $stp_id,
-		 $env_id, $scr_application, $scr_host, $scr_user, $scr_comment,
-		 $Authentication->is_administrator(), $orderBy );
-	} else {
-		$List_Secrets = $Secrets->listSecrets2( $searchSecret, $_SESSION[ 'idn_id' ],
-		 $Authentication->is_administrator(), $orderBy );
-	}
 	
 	print( "       <tr class=\"pair\">\n" );
 	
@@ -666,104 +454,137 @@ switch( $Action ) {
 	print( "        <td style=\"width:". $S_Action ."px;\">" . $L_Actions . "</td>\n" .
 	 "       </tr>\n" .
 	 "      </thead>\n" .
-	 "      <tbody class=\"scrollContent\">\n" );
-		
-	$BackGround = "pair";
-		
-	foreach( $List_Secrets as $Secret ) {
-		if ( $BackGround == "pair" )
-			$BackGround = "impair";
-		else
-			$BackGround = "pair";
-			
-		print( "       <tr class=\"" . $BackGround .
-		 " surline\" style=\"cursor: pointer;\" >\n" .
-		 "        <td class=\"align-middle\" style=\"max-width:". $S_Group ."px; width:". $S_Group ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"max-width:". $S_Type ."px; width:". $S_Type ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . ${$Secret->stp_name} . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"max-width:". $S_Environment ."px; width:". $S_Environment ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . ${$Secret->env_name} . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"max-width:". $S_Application ."px; width:". $S_Application ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"max-width:". $S_Host ."px; width:". $S_Host ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
-		 "        <td class=\"align-middle\" style=\"max-width:". $S_User ."px; width:". $S_User ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" );
+	 "      <tbody id=\"listeSecrets\" class=\"scrollContent\">\n" );
 
-		$Date_1 = new DateTime('now');
-		$Date_2 = new DateTime($Secret->scr_expiration_date);
-		$Interval = $Date_1->diff($Date_2);
-
-		if ( $Secret->scr_expiration_date == '' or $Secret->scr_expiration_date == '0000-00-00 00:00:00' ) {
-			$Secret->scr_expiration_date = '';
-		} else {
-			if ($Interval->format('%R%a') < '+2' && $Interval->format('%R%a') != '+0') {
-				$myClass = 'btn-danger ';
-			} elseif ($Interval->format('%R%a') >= '+2' && $Interval->format('%R%a') <= '+7') {
-				$myClass = 'btn-warning ';
-			} else {
-				$myClass = '';
-			}
-		}
-
-		 print( "        <td class=\"".$myClass."align-middle\" style=\"max-width:". $S_Expiration_Date ."px; width:". $S_Expiration_Date ."px;\" onclick=\"viewPassword(" . 
-		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_expiration_date ) . "</td>\n" .
-		  "        <td class=\"align-middle\" style=\"max-width:". $S_Comment ."px; width:". $S_Comment ."px;\" onclick=\"viewPassword(" . 
-		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
-		
-		print( "        <td style=\"max-width:". $S_Action ."px; width:". $S_Action ."px;\">\n" );
-
-		$Update_Right = 0;
-		$Delete_Right = 0;
-
-		if ( ! $Authentication->is_administrator() ) {
-			if ( array_key_exists( $Secret->sgr_id, $groupsRights ) ) {
-				$Update_Right = in_array( 3, $groupsRights[ $Secret->sgr_id ] );
-				$Delete_Right = in_array( 4, $groupsRights[ $Secret->sgr_id ] );
-			}
-		}
-
-		if ( $Action == 'R2' ) $Home = 'home-r2';
-		else $Home = 'home';
-		
-		if ( $Authentication->is_administrator() or $Update_Right ) {
-			print( "         <a class=\"simple\" href=\"" . URL_BASE .
-			 "/SM-secrets.php?action=SCR_M&scr_id=" . $Secret->scr_id .
-			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" .
-			 $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" );
-		}
-		
-		if ( $Authentication->is_administrator() or $Delete_Right ) {
-			print( "         <a class=\"simple\" href=\"" . URL_BASE .
-			 "/SM-secrets.php?action=SCR_D&scr_id=" . $Secret->scr_id .
-			 "&rp=" . $Home . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" .
-			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" );
-		}
-
-		print( "         <a class=\"simple\" href=\"javascript:viewPassword( " . 
-		 $Secret->scr_id . " );\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_eye.png\" alt=\"" .
-		 $L_Password_View . "\" title=\"" . $L_Password_View . "\" /></a>\n" );
-		print( "        </td>\n" .
-		 "       </tr>\n" );
-	}
+	$Total = construireListe( $Search_Secrets, $orderBy );
 		
 	print( "      </tbody>\n" .
-	 "      <tfoot><tr><th colspan=\"8\">Total : <span class=\"green\">" . 
-	 count( $List_Secrets ) . "</span>" . $myButtons . "</th></tr></tfoot>\n" .
+	 "      <tfoot><tr><th colspan=\"8\">Total : <span id=\"total\" class=\"green\">" . 
+	 $Total . "</span>" . $myButtons . "</th></tr></tfoot>\n" .
 	 "     </table>\n" .
 	 "\n" .
-//	 "     </div> <!-- Fin : scroller -->\n" .
 	 "    </div> <!-- fin : dashboard -->\n" );
 
    break;
+
+
+ // ============================================
+ // Réponses aux appels AJAX
+
+ case 'AJAX_LV':
+    // Cet appel remonte les listes et libellés utiles à la création ou la modification d'un secret.
+
+    // Force la traduction des libellés des Types.
+    foreach( $List_Types as $KeyT => $ValueP ) {
+        foreach( $ValueP as $Key => $Value ) {
+            if ( $Key == 'stp_name' ) $Value = ${$Value};
+
+            $List_Types_2[ $KeyT ][ $Key ] = $Value;
+        }
+    }
+
+    // Force la traduction des libellés des Environnements.
+    foreach( $List_Environments as $KeyT => $ValueP ) {
+        foreach( $ValueP as $Key => $Value ) {
+            if ( $Key == 'env_name' ) $Value = ${$Value};
+
+            $List_Environments_2[ $KeyT ][ $Key ] = $Value;
+        }
+    }
+
+    $Secret = $Secrets->get( $_POST[ 'scr_id' ] );
+
+    $Resultat = array( 'statut' => 'success',
+        'listGroups' => $List_Groups,
+        'listTypes' => $List_Types_2,
+        'listEnvironments' => $List_Environments_2,
+        'L_Group' => $L_Group,
+        'L_Type' => $L_Type,
+        'L_Environment' => $L_Environment,
+        'L_Application' => $L_Application,
+        'L_Host' => $L_Host,
+        'L_User' => $L_User,
+        'L_Expiration_Date' => $L_Expiration_Date,
+        'L_Comment' => $L_Comment,
+        'L_Secret' => $L_Secret,
+        'L_Alert' => $L_Alert,
+        'alert' => $Secret->scr_alert,
+        'L_Password' => $L_Password,
+        'Password' => $Secret->scr_password
+        );
+
+    echo json_encode( $Resultat );
+    exit();
+
+	break;
+
+
+ case 'AJAX_S':
+    // Cet appel sauvegarde les informations modifiées d'un secret.
+
+    $Secret = $Secrets->set( $_POST['scr_id'], $_POST['sgr_id'], $_POST['stp_id'],
+        $_POST['scr_host'], $_POST['scr_user'], $_POST['scr_password'],
+	    $_POST['scr_comment'], $_POST['scr_alert'], $_POST['env_id'],
+	    $_POST['scr_application'], $_POST['scr_expiration_date'] );
+
+    if ( $Secret === true ) {
+        $Status = 'success';
+        $Message = $L_Secret_Modified;
+    } else {
+        $Status = 'error';
+        $Message = $L_ERR_MODI_Secret;
+    }
+
+    $Resultat = array(
+        'status' => $Status,
+        'message' => $Message
+        );
+
+    echo json_encode( $Resultat );
+    exit();
+
+	break;
+
+
+ case 'AJAX_R':
+    // Cet appel actualise tous les secrets.
+
+    construireListe('');
+    exit();
+
+	break;
+
+
+ case 'AJAX_D':
+    // Cet appel sauvegarde les informations modifiées d'un secret.
+
+    $Secret = $Secrets->delete( $_POST['scr_id'] );
+
+    if ( $Secret === true ) {
+        $Status = 'success';
+        $Message = $L_Secret_Deleted;
+    } else {
+        $Status = 'error';
+        $Message = $L_ERR_DELE_Secret;
+    }
+
+    $Resultat = array(
+        'status' => $Status,
+        'message' => $Message
+        );
+
+    echo json_encode( $Resultat );
+    exit();
+
+	break;
 }
 
 print( "   </div> <!-- Fin : zoneMilieuComplet -->\n" .
- "   <div id=\"afficherSecret\" class=\"tableau_synthese hide modal\" style=\"top:50%;left:40%;\">\n".
+ "   <!-- Début : afficherSecret -->\n" .
+ "   <div id=\"afficherSecret\" class=\"tableau_synthese hide modal\" style=\"left:45%;\">\n".
  "    <button type=\"button\" class=\"close\">×</button>\n".
  "    <p class=\"titre\">".$L_Secret_View."</p>\n".
- "    <div id=\"detailSecret\" style=\"margin:6px;padding:6px;min-width:150px;\" class=\"corps vertical-align align-center\"></div>\n" .
+ "    <div id=\"detailSecret\" style=\"margin:6px;padding:6px;min-width:250px;\" class=\"corps vertical-align align-center\"></div>\n" .
  "   </div> <!-- Fin : afficherSecret -->\n" .
  $PageHTML->construireFooter( 1, 'home' ) .
  $PageHTML->piedPageHTML() );

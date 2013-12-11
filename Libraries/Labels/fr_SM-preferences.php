@@ -25,8 +25,14 @@
 	$L_Technical_Verbosity = 'Technique'; // Verbosité technique remontée
 	$L_Normal_Verbosity = 'Normale'; // Verbosité intelligible remontée
 
-	$L_Save = 'Sauvegarder';
+	$L_Parameter_Updated = 'Paramètre mis à jour';
 	$L_Parameters_Updated = 'Paramètres mis à jour';
+
+	$L_SecretServer_Keys = 'Sécurisation des clés utilisées par le SecretServer';
+	$L_Min_Key_Size = 'Taille minimum de la clé';
+	$L_Key_Complexity = 'Complexité de la clé';
+	$L_Mother_Key = 'Clé Mère';
+	$L_Operator_Key = 'Clé Opérateur';
 
 	$L_Mail_From = "Nom de l'émetteur";
 	$L_Mail_To = "Les noms des destinataires doivent être séparés par des virgules";
@@ -37,7 +43,7 @@
 	$L_Use_LDAP = 'Utilisation de l\'authentification par LDAP';
 
 	$L_Min_Size_Password = 'Taille minimum des mots de passe';
-	$L_Password_Complexity = 'Compléxité des mots de passe';
+	$L_Password_Complexity = 'Complexité des mots de passe';
 	$L_Default_User_Lifetime = 'Durée de vie d\'un utilisateur (en mois)';
 	$L_Max_Attempt = 'Nombre de tentatives maximum';
 	$L_Default_Password = 'Mot de passe par défaut';
@@ -55,12 +61,4 @@
 	
 	$L_ERR_MAJ_Alert = 'Erreur durant la mise à jour des paramètres d\'Alertes';
 	$L_ERR_MAJ_Connection = 'Erreur durant la mise à jour des paramètres de Connexion';
-	
-	$L_Specify_Purge_Date_History = 'Préciser une date de purge dans l\'historique';
-	$L_Oldest_Date_History = 'plus vieille date dans historique';
-	$L_Purge_Historical = 'Purge de l\'historique';
-	$L_No_Purge_Date = 'Pas de date purge précisée, donc pas de purge réalisée';
-	$L_Success_Purge = 'Les événements de l\'historique, avant la date du "%s", ont été purgés';
-	
-	$L_SecretServer_Management = 'Gestion du SecretServer';
 ?>

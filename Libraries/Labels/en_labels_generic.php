@@ -86,6 +86,11 @@
 	$L_Nothing = 'Nothing';
 	$L_Success = 'Success';
 	$L_Error = 'Error';
+	$L_Management = 'Administration';
+	$L_Warning = 'Warning';
+
+    $L_Save = 'Save';
+	$L_Confirm = 'Confirm';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

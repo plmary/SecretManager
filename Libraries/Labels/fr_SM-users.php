@@ -119,4 +119,7 @@
 	$L_Users_Associate = 'Associer des utilisateurs';
 	
 	$L_Reactivated_Civility = 'La civilité a été réactivée';
+	
+	$L_Confirm_Delete_Entity = 'Confirmez vous la suppression de cette Entité : ';
+    $L_Confirm_Delete_Civility = 'Confirmez vous la suppression de cette Civilité : ';
 ?>

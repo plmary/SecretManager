@@ -28,6 +28,8 @@
 	$L_Status = "Statut";
 	$L_Enable = "Actif";
 	$L_Disable = "Inactif";
+	$L_Disabled = 'Désactiver';
+	$L_Enabled = 'Activer';
 	$L_Return = "Retour";
 	$L_Alert = "Alerte";
 	$L_Name = "Nom";
@@ -68,6 +70,7 @@
 	$L_Date = 'Date';
 	$L_Identity = 'Identité';
 	$L_IP_Source = 'IP source';
+	$L_Management = 'Administration';
 	$L_Message = 'Message';
 	$L_Action = 'Action';
 	$L_Begin = 'Début';
@@ -85,6 +88,10 @@
 	$L_Nothing = 'Aucun';
 	$L_Success = 'Succès';
 	$L_Error = 'Erreur';
+	$L_Warning = 'Attention';
+
+	$L_Save = 'Sauvegarder';
+	$L_Confirm = 'Confirmer';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

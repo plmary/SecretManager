@@ -67,6 +67,7 @@
 	$L_Groups_Associate = 'Gruppe von Secrets verbinden';
 	$L_Secret_Management = 'Secrets verwalten';
 	$L_Association_Complited = 'Verbindung abgeschlossen';
+	$L_Confirm_Group_Delete = 'Sie bestätigen die Unterdrückung dieser Gruppe Secrets: ';
 		
 	$L_Generate = "Generate";
 	

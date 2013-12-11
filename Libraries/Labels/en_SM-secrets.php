@@ -65,6 +65,7 @@
 	$L_Groups_Associate = 'Associate Groups of Secrets';
 	$L_Secret_Management = 'Manage Secrets';
 	$L_Association_Complited = 'Association completed';
+	$L_Confirm_Group_Delete = 'Do you confirm the suppression of this group of secrets: ';
 	
 	$L_No_Profile = 'No Profile';
 	$L_Profile_Not_Found = 'Profile not found';

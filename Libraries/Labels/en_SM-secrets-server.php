@@ -12,7 +12,7 @@
 
 	$L_ERR_SERVER_NOT_LOADED = 'SecretServer not loaded';
 	$L_ERR_SERVER_NOT_STARTED = 'SecretServer non started';
-	$L_ERR_MOTHER_KEY_CORRUPTED = "Mother key corrupted";
+	$L_ERR_MOTHER_KEY_CORRUPTED = "Mother key corrupted or invalid";
 	$L_ERR_NO_CMD_SEND = 'No command send';
 	$L_ERR_NO_SESSION = 'No ID Session';
 	$L_ERR_NO_VALUE = 'No value';
@@ -20,6 +20,7 @@
 	$L_ERR_SESSION_EXPIRED = 'Session expired';
 	$L_ERR_USER_NOT_CONNECTED = 'User not connected';
 	$L_ERR_USER_NOT_ADMIN = 'The user is not an administrator';
+	$L_ERR_OPERATOR_KEY_EMPTY = 'Error Operator key is empty';
 	$L_ERR_MOTHER_KEY_EMPTY = 'Error Mother key is empty';
 	$L_ERR_INVALID_OPERATOR_KEY = 'Secret\'s file corrupted or invalid Operator key';
 	$L_ERR_MOTHER_KEY_NOT_LOADED = 'Mother key not loaded';
@@ -35,11 +36,12 @@
 	$L_MOTHER_KEY_LOADED = 'Mother key loaded';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mother key automatically created';
 	$L_MOTHER_KEY_MANUALLY_CREATED = 'Mother key manually created';
+	$L_MOTHER_KEY_TRANSCRYPTED = 'Mother key transcrypted';
 
 	$L_Operator = 'Operator';
 	$L_Load_Mother_Key = 'Load mother key';
-	$L_Operator_Key = 'Operator\'s key';
-	$L_Mother_Key = 'Mother key';
+//	$L_Operator_Key = 'Operator key';
+//	$L_Mother_Key = 'Mother key';
 	$L_Insert_Operator_Key = 'Insert operator key';
 	$L_Insert_Mother_Key = 'Insert mother key';
 	$L_Use_SecretServer = 'Use SecretServer';

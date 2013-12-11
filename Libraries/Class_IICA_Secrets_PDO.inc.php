@@ -15,6 +15,7 @@ class IICA_Groups extends IICA_DB_Connector {
 * @version 1.1
 * @date 2012-11-19
 */
+    public $LastInsertId;
 
 	public function __construct() {
 	/**
@@ -74,7 +75,7 @@ class IICA_Groups extends IICA_DB_Connector {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
 				
-		if ( ! $Result->bindParam( ':Alert', $Alert, PDO::PARAM_STR, 60 ) ) {
+		if ( ! $Result->bindParam( ':Alert', $Alert, PDO::PARAM_INT ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -82,6 +83,18 @@ class IICA_Groups extends IICA_DB_Connector {
 		if ( ! $Result->execute() ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( $sgr_id == '' ) {
+			switch( $this->getAttribute(PDO::ATTR_DRIVER_NAME) ) {
+			 default;
+				$this->LastInsertId = $this->lastInsertId();
+				break;
+
+			 case 'pgsql';
+				$this->LastInsertId = $this->lastInsertId( 'sgr_secrets_groups_sgr_id_seq' );
+				break;
+			}
 		}
 		
 		return true;
@@ -978,7 +991,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		$Where = '';
 		
 
-		if ( $Administrator == false ) {
+		if ( $Administrator === false ) {
 			$Where = 'WHERE T6.idn_id = :idn_id AND (';
 		}
 		
@@ -993,7 +1006,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			'OR T1.scr_comment like :secret ' .
 			'OR T1.scr_expiration_date like :secret ';
 
-		if ( $Administrator == false ) {
+		if ( $Administrator === false ) {
 			$Where .= ') ' ;
 		}
 
@@ -1008,7 +1021,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
 		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ';
 		
-		if ( $Administrator == false ) {
+		if ( $Administrator === false ) {
 			$Request .=
 			 'LEFT JOIN prsg_profiles_secrets_groups AS T5 ON T2.sgr_id = T5.sgr_id ' .
 			 'LEFT JOIN idpr_identities_profiles AS T6 ON T5.prf_id = T6.prf_id ';
@@ -1091,7 +1104,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			break;
 		}
 
-//		print( $Request );
+		//print( $Request ); print('<hr/>');
 		
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -1402,8 +1415,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 	 $ach_access = '', $ach_ip = '' ) {
 		$Request = 'SELECT ' .
 		 'min(ach_date) as first_date, count(*) as total ' .
-		 'FROM ach_access_history as T1 ' .
-		 'LEFT JOIN idn_identities as T2 ON T1.idn_id = T2.idn_id ' ;
+		 'FROM ach_access_history as T1 ' /*.
+		 'LEFT JOIN idn_identities as T2 ON T1.idn_id = T2.idn_id '*/ ;
 		
 		if ( $scr_id != '' ) {
 			$Where = 'WHERE scr_id = ' . $scr_id . ' ';

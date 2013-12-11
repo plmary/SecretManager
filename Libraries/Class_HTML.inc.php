@@ -16,7 +16,7 @@ class HTML extends IICA_Authentications {
 */
 public $Version; // Version de l'outil (précisé dans le constructeur)
 
-public function __construct() {
+public function __construct( $DB_Access = 1 ) {
 /**
 * Charge les variables d'environnements
 *
@@ -24,14 +24,17 @@ public function __construct() {
 * @author Pierre-Luc MARY
 * @version 1.0
 * @date 2013-02-19
+*
+* @param[in] $DB_Access Par défaut, il y a un accès (une ouverture) de la base avec les informations par défaut.
+*
 */
 	if ( file_exists( DIR_LIBRARIES . '/Environnement.inc.php' ) ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.7-1'; // Version de l'outil
+	$this->Version = '0.8-0-alpha'; // Version de l'outil
 
-	parent::__construct();
+	if ( $DB_Access == 1 ) parent::__construct();
 	
 	return ;
 }
@@ -62,8 +65,7 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 		$Date = date( 'd' ) . ' ' . $Month[ date( 'n' ) ] . ' ' . date( 'Y' );
 	}
 	
-	if ( file_exists( DIR_LABELS . "/" . $_SESSION[ 'Language' ] .
-	 "_labels_generic.php" ) ) {
+	if ( file_exists( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" ) ) {
 		include( DIR_LABELS . "/" . $_SESSION[ 'Language' ] . "_labels_generic.php" );
 	}
 	
@@ -85,8 +87,9 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 	 "type=\"text/css\" />\n" .
 	 "  <link rel=\"stylesheet\" href=\"" . URL_LIBRARIES . "/SecretManager-icons.css\" " .
 	 "type=\"text/css\" />\n" .
-//	 "  <script  type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.min.js\"></script>\n" ;
-	 "  <script type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.js\"></script>\n" ;
+//	 "  <script type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.min.js\"></script>\n" .
+	 "  <script type=\"text/javascript\" src=\"" . URL_LIBRARIES . "/jquery-2.0.3.js\"></script>\n" .
+	 "  <script type=\"text/javascript\" src=\"" . URL_BASE . "/bootstrap/js/bootstrap.js\"></script>\n" ;
 
 	if ( $Fichiers_JavaScript != '' ) {
         if ( is_array( $Fichiers_JavaScript ) ) {
@@ -279,11 +282,11 @@ public function afficherActions( $Administrator ) {
 	 "     <span id=\"menu-icon-home\" class=\"icon28\" title=\"" . $L_Dashboard . "\" onClick=\"javascript:document.location='SM-home.php'\"></span>\n" ;
 
 	if ( $Administrator ) {
-	 	$Actions .= "     <span id=\"menu-icon-access\" class=\"icon28\" title=\"" .
-	 	 $L_Secrets_Management . "\"  onClick=\"javascript:document.location='SM-secrets.php'\"></span>\n" .
-		"     <span id=\"menu-icon-users\" class=\"icon28\" title=\"" . $L_Users_Management . "\" onClick=\"javascript:document.location='SM-users.php'\"></span>\n" .
+	 	$Actions .= //"     <span id=\"menu-icon-access\" class=\"icon28\" title=\"" .
+//	 	 $L_Secrets_Management . "\"  onClick=\"javascript:document.location='SM-secrets.php'\"></span>\n" .
+//		"     <span id=\"menu-icon-users\" class=\"icon28\" title=\"" . $L_Users_Management . "\" onClick=\"javascript:document.location='SM-users.php'\"></span>\n" .
 		"     <span id=\"menu-icon-options\" class=\"icon28\" title=\"" . $L_Preferences_Management . "\" onClick=\"javascript:document.location='SM-preferences.php'\"></span>\n" .
-		"    <span id=\"menu-icon-actions\" class=\"icon28\" title=\"Actions\"></span>\n" ;
+        "     <span id=\"menu-icon-tools\" class=\"icon28\" title=\"" . $L_Management . "\" onClick=\"javascript:document.location='SM-admin.php'\"></span>\n";
 	}
 
 	$Actions .= "    </div> <!-- fin : actions -->\n";

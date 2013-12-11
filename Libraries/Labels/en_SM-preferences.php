@@ -25,6 +25,8 @@
 	$L_Normal_Verbosity = 'Normal'; // Verbosité normale remontée
 
 	$L_Save = 'Save';
+	
+	$L_Parameter_Updated = 'Parameter updated';
 	$L_Parameters_Updated = 'Parameters updated';
 
 	$L_Mail_From = "Issuer Name";
@@ -62,4 +64,10 @@
 	$L_Success_Purge = 'The events of history, before the date of "%s", have been purged';
 	
 	$L_SecretServer_Management = 'SecretServer management';
+
+	$L_SecretServer_Keys = 'Security keys used with SecretServer';
+	$L_Min_Key_Size = 'Key minimum size';
+	$L_Key_Complexity = 'Key complexity';
+	$L_Mother_Key = 'Mother key';
+	$L_Operator_Key = 'Operator key';
 ?>

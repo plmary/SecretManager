@@ -100,7 +100,7 @@ if ( $Action != 'SCR_V' ) {
 	if ( $Action == 'SCR_A' or $Action == 'SCR_M' )	include( DIR_LIBRARIES . '/password_js.php' );
 
 	if ( $Action == '' ) {
-		$JS_Scripts = array( 'Ajax_secrets.js', 'jquery.notif.js', 'mustache.js' );
+		$JS_Scripts = array( 'Ajax_secrets.js', 'SecretManager.js' );
 	} else {
 		$JS_Scripts = '';
 	}
@@ -149,9 +149,12 @@ switch( $Action ) {
 	if ( $Authentication->is_administrator() ) {
 		$listButtons = '<div id="view-switch-list-current" class="view-switch" style="float: right" title="' . $L_Group_List . '"></div>' .
 		'<div id="view-switch-excerpt-current" class="view-switch" style="float: right" title="' . $L_Detail_List . '"></div>';
-		
-		$addButton = '<span style="float: right"><a class="button" href="javascript:putAddGroup(\''. addslashes( $L_Group_Create ) ."', " .
-			"'', '', '', '" . $L_Create . '\');">' . $L_Create . '</a></span>' ; // $Script . '?action=add">' . $L_Create . '</a></span>' ;
+
+//putAddGroup(Title,Label,Alert,Cancel,ButtonName)
+
+		$addButton = '<span style="float: right"><a class="button" href="javascript:putAddGroup(\''. 
+		    addslashes( $L_Group_Create ) ."', '" . $L_Label . "', '" . $L_Alert . "', '" . $L_Cancel . "', '" . 
+			$L_Create . '\');">' . $L_Create . '</a></span>';
 
 		if ( array_key_exists( 'rp', $_GET ) ) {
 			switch( $_GET[ 'rp' ] ) {
@@ -159,6 +162,12 @@ switch( $Action ) {
 				$returnButton = "<span style=\"float: right\">" .
 				 "<a class=\"button\" href=\"" . URL_BASE .
 				 "/SM-home.php\">" . $L_Return . "</a></span>";
+				break;
+
+			 case 'admin':
+				$returnButton = "<span style=\"float: right\">" .
+				 "<a class=\"button\" href=\"" . URL_BASE .
+				 "/SM-admin.php\">" . $L_Return . "</a></span>";
 				break;
 
 			 case 'users-prf_g':
@@ -185,9 +194,7 @@ switch( $Action ) {
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"4\">" . $L_List_Groups . $Buttons . "</th>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" );
+		 "       </tr>\n" );
 		 
 		$List_Groups = $Groups->listGroups( '', $orderBy );
 		
@@ -204,9 +211,9 @@ switch( $Action ) {
 		
 			$tmpSort = 'label';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
-		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
-		 $L_Label . "</th>\n" );
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
+		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\" width=\"70%\">" . 
+		 $L_Label . "</td>\n" );
 
 		 
 		if ( $orderBy == 'alert' ) {
@@ -219,38 +226,36 @@ switch( $Action ) {
 		
 			$tmpSort = 'alert';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
-		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
-		 $L_Alert . "</th>\n" );
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
+		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\" width=\"10%\">" . 
+		 $L_Alert . "</td>\n" );
 
-		print( "        <th>" . $L_Actions . "</th>\n" .
-		 "       </tr>\n" );
-		
-		$BackGround = "pair";
+		print( "        <td width=\"20%\">" . $L_Actions . "</td>\n" .
+		 "       </tr>\n" .
+		 "      </thead>\n" .
+		 "      <tbody id=\"listeSecrets\">\n" );
 		
 		foreach( $List_Groups as $Group ) {
-			if ( $BackGround == "pair" )
-				$BackGround = "impair";
-			else
-				$BackGround = "pair";
-				
 	
 			if ( $Group->sgr_alert == 1 )
-				$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+				$Flag_Alert = "<img class=\"no-border\" id=\"image-" . $Group->sgr_id .
+				    "\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Yes\" />";
 			else
-				$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+				$Flag_Alert = "<img class=\"no-border\" id=\"image-" . $Group->sgr_id .
+				    "\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"No\" />";
 
-			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
-			 "        <td id=\"label_" . $Group->sgr_id . "\" class=\"align-middle\">" . stripslashes($Group->sgr_label) . "</td>\n" .
-			 "        <td id=\"alert_" . $Group->sgr_id . "\" class=\"align-middle\">" . $Flag_Alert . "</td>\n" .
+			print( "       <tr id=\"sgr_id-" . $Group->sgr_id . "\" class=\"surline\">\n" .
+			 "        <td  id=\"label-" . $Group->sgr_id . "\"class=\"align-middle\">" . 
+			 stripslashes($Group->sgr_label) . "</td>\n" .
+			 "        <td  id=\"alert-" . $Group->sgr_id . "\"class=\"align-middle\">" . $Flag_Alert . "</td>\n" .
 			 "        <td>\n" .
-			 "         <a id=\"modify_" . $Group->sgr_id . "\" class=\"simple\" href=\"javascript:putAddGroup('". addslashes( $L_Group_Modify ) . "'," .
-			  "'" . $Group->sgr_id . "','" . htmlspecialchars( $Group->sgr_label, ENT_COMPAT ) . "','" . $Group->sgr_alert . "'," .
-			  "'" . $L_Modify . "')\">" . // $Script . "?action=M&sgr_id=" . $Group->sgr_id . "\">".
-			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
-			 "         <a class=\"simple\" href=\"" . $Script .
-			 "?action=D&sgr_id=" . $Group->sgr_id .
-			 "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . 
+			 "         <a id=\"modify_" . $Group->sgr_id . "\" class=\"simple\" href=\"javascript:editFields(". 
+			  "'" . $Group->sgr_id . "','" . $L_Cancel . "', '" . $L_Modify . "')\">" .
+			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" .
+			 $L_Modify . "\" /></a>\n" .
+			 "         <a class=\"simple\" href=\"javascript:confirmDeleteGroup( '".$Group->sgr_id . "', '" . 
+			 htmlspecialchars( $L_Confirm_Group_Delete, ENT_COMPAT ) . "', '" . $L_Warning . "', '" . $L_Cancel . "', '" .
+			 $L_Confirm . "');\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . 
 			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF&sgr_id=" . $Group->sgr_id .
@@ -266,7 +271,7 @@ switch( $Action ) {
 		}
 		
 		print( "      </tbody>\n" .
-		 "      <tfoot><tr><th colspan=\"4\">Total : <span class=\"green\">" . 
+		 "      <tfoot><tr><th colspan=\"4\">Total : <span id=\"total\" class=\"green\">" . 
 		 count( $List_Groups ) . "</span>" . $Buttons . "</th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "\n" );
@@ -276,17 +281,7 @@ switch( $Action ) {
 		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
 	}
 
-	print( 
-	 "     <div id=\"addGroup\" class=\"tableau_synthese hide modal\" style=\"width:650px;\">\n".
-	 "      <button type=\"button\" class=\"close\">×</button>\n".
-	 "      <p id=\"addGroupTitle\" class=\"titre\">".$L_Group_Create."</p>\n".
-	 "      <div id=\"detailGroup\" style=\"margin:6px;padding:6px;\" class=\"corps align-center\">\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iGroupLabel\" type=\"text\" class=\"obligatoire input-xxlarge\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Alert . "</span><span  class=\"td-aere\"><input id=\"iGroupAlert\" type=\"checkbox\" class=\"obligatoire\" name=\"Alert\" /></span></p>\n" .
-	 "       <p class=\"align-center\"><input id=\"iButtonAddGroup\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
-	 "      </div> <!-- Fin : detailGroup -->\n" .
-	 "     </div> <!-- Fin : addGroup -->\n" .
-	 "    </div> <!-- fin : dashboard -->\n" );
+	print( "    </div> <!-- fin : dashboard -->\n" );
 
 	break;
 
@@ -294,103 +289,79 @@ switch( $Action ) {
  case 'ADDX':
 	$Return_Page = $Script;
  
-	if ( isset( $_POST[ 'Alert' ] ) ) {
-		if ( $_POST[ 'Alert' ] == 'on' )
-			$Alert = 1;
-	} else {
-		$Alert = 0;
-	}
+	$Alert = $_POST[ 'Alert' ];
 	
 	try {
 		if ( $Verbosity_Alert == 2 ) {
-			$alert_message = $Secrets->formatHistoryMessage( 'Groups->set( \'\', Label=\'' . $_POST[ 'Label' ] . '\', Alert=' . $Alert . ')' );
+			$alert_message = $Secrets->formatHistoryMessage( 'Groups->set( \'\', Label=\'' . $_POST[ 'Label' ] .
+			    '\', Alert=' . $Alert . ')' );
 		
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		}
 		
 		$Groups->set( '', $Security->valueControl( $_POST[ 'Label' ] ), $Alert );
+
+        $alert_message = $Secrets->formatHistoryMessage( '[' . addslashes( $_POST[ 'Label' ] ) . '] ' . $L_Group_Created );
+        
+        $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+
+        $Resultat = array(
+            'Status' => 'success',
+            'Message' => $L_Group_Created,
+            'URL_PICTURES' => URL_PICTURES,
+            'IdGroup' => $Groups->LastInsertId,
+            'Script' => $Script,
+            'L_Modify' => $L_Modify,
+            'L_Delete' => $L_Delete,
+            'L_Cancel' => $L_Cancel,
+            'L_Profiles_Associate' => $L_Profiles_Associate,
+            'L_Secret_Management' => $L_Secret_Management
+        );
+
+        echo json_encode( $Resultat );
+
+        exit();        
 	} catch( PDOException $e ) {
 		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_CREA_Group );
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Group, $Return_Page, 1 ) );
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $L_ERR_CREA_Group
+        );
+
+    	echo json_encode( $Resultat );
+
+	    exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Group, $Return_Page, 1 ) );
+			$Message = $L_ERR_DUPL_Group;
 		} else {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Group, $Return_Page, 1 ) );
+			$Message = $L_ERR_CREA_Group;
 		}
-		break;
-	}
-
-
-	$alert_message = $Secrets->formatHistoryMessage( '[' . addslashes( $_POST[ 'Label' ] ) . '] ' . $L_Group_Created );
 		
-	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $Message
+        );
 
-			
-	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Group_Created . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fMessage.submit();</script>" );
+    	echo json_encode( $Resultat );
 
-	break;
-
-
- case 'D':
-	$Return_Page = $Script;
- 
-	if ( ($sgr_id = $Security->valueControl( $_GET[ 'sgr_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
-		break;
+	    exit();
 	}
 
-	$Group = $Groups->get( $sgr_id );
-	
-	if ( $Group->sgr_alert == 1 )
-		$Flag_Alert = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
-	else
-		$Flag_Alert = "<img class=\"no-border\" src=\"". URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
-
-	print( "     <form method=\"post\" action=\"" . $Script . 
-	 "?action=DX\">\n" .
-	 "      <input type=\"hidden\" name=\"origin_alert\" value=\"" . $Group->sgr_alert .
-	 "\" />\n" .
-	 "      <input type=\"hidden\" name=\"sgr_id\" value=\"" . $sgr_id . "\" />\n" .
-	 "      <table class=\"table-center table-min\">\n" .
-	 "       <thead>\n" .
-	 "       <tr>\n" .
-	 "        <th colspan=\"2\">" . $L_Group_Delete . "</th>\n" .
-	 "       </tr>\n" .
-	 "       </thead>\n" .
-	 "       <tbody>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right td-aere\">" . $L_Label . "</td>\n" .
-	 "        <td class=\"bg-light-grey td-aere\">\n" . stripslashes( $Group->sgr_label ) . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"align-right td-aere\">" . $L_Alert . "</td>\n" .
-	 "        <td class=\"bg-light-grey td-aere\">" . $Flag_Alert . "</td>\n" .
-	 "       </tr>\n" .
-	 "       <tr>\n" .
-	 "        <td class=\"td-aere\">&nbsp;</td>\n" .
-	 "        <td class=\"td-aere\"><input type=\"submit\" class=\"button\" value=\"". $L_Delete . "\" /><a  class=\"button\" href=\"". $Script . "\">" . $L_Cancel . "</a></td>\n" .
-	 "       </tr>\n" .
-	 "       </tbody>\n" .
-	 "      </table>\n" .
-	 "     </form>\n" 
-	);
-	
-	break;
+    break;
 
 
  case 'DX':
-	$Return_Page = $Script;
- 
 	if ( ! $sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ] ) ) {
-		print( $PageHTML->infoBox( $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 ) );
-		break;
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_Invalid_Value . ' (sgr_id)'
+        ) );
+        
+        exit();
 	}
 
 	try {
@@ -400,25 +371,30 @@ switch( $Action ) {
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		}
 
+    	$alert_message = $Secrets->formatHistoryMessage( $L_Group_Deleted, $sgr_id );
+		
+	    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+
 		$Groups->delete( $sgr_id );
+
+        echo json_encode( array(
+            'Status' => 'success',
+            'Message' => $L_Group_Deleted
+        ) );
+        
+        exit();
 	} catch( PDOException $e ) {
 		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_DELE_Group, $sgr_id );
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Group, $Return_Page, 1 ) );
-		break;
+        echo json_encode( array(
+            'Status' => 'error',
+            'Message' => $L_ERR_DELE_Group . ' (sgr_id)'
+        ) );
+        
+        exit();
 	}
-
-	$alert_message = $Secrets->formatHistoryMessage( $L_Group_Deleted, $sgr_id );
-		
-	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
-		
-			
-	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
-		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Group_Deleted . "\" />\n" .
-		"</form>\n" .
-		"<script>document.fMessage.submit();</script>" );
 
 	break;
 
@@ -426,12 +402,7 @@ switch( $Action ) {
  case 'MX':
 	$Return_Page = $Script;
  
-	$Alert = 0;
-
-	if ( isset( $_POST[ 'Alert' ] ) ) {
-		if ( $_POST[ 'Alert' ] == 'on' )
-			$Alert = 1;
-	}
+	$Alert = $_POST[ 'Alert' ];
 	
 	try {
 		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) == -1 ) {
@@ -461,7 +432,9 @@ switch( $Action ) {
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		}
 		
+		// Mise à jour de la base de données.
 		$Groups->set( $sgr_id, addslashes( $sgr_label ), $Alert );
+		
 	} catch( PDOException $e ) {
 		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_MODI_Group, $sgr_id );
 		
@@ -1172,10 +1145,16 @@ switch( $Action ) {
 
 
  case 'SCR_V': // Réponse à la requête AJAX
+    include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+    
 	$Secrets = new IICA_Secrets();
 	
 	try {
-		$Secret = $Secrets->get( $_POST[ 'scr_id' ] );
+		while ( 1 ) {
+			$Secret = $Secrets->get( $_POST[ 'scr_id' ] );
+			if ( $Secret->scr_password != '' ) break;
+			usleep(500000);
+		}
 	} catch( Exception $e ) {
 		$Resultat = array( 'Statut' => 'erreur',
 			'Message' => $e->getMessage() );
@@ -1225,6 +1204,7 @@ switch( $Action ) {
 		 'user' => $Secret->scr_user,
 		 'l_user' => $L_User,
 		 'l_nothing' => $L_Nothing,
+		 'l_invalid_mother_key' => $L_ERR_MOTHER_KEY_CORRUPTED,
 		 'password' => stripslashes( $Secret->scr_password ),
 		 'l_password' => $L_Password );
 	}

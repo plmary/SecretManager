@@ -232,24 +232,14 @@ class IICA_Entities extends IICA_DB_Connector {
 		
 		
 		/*
-		** Détruit l'entité (logiquement ou physiquement.
+		** Détruit l'entité physiquement.
 		*/
-		if ( $Type == 0 ) {  // Suppression logique
-			if ( ! $Result = $this->prepare( 'UPDATE ' .
-			 'ent_entities ' .
-			 'SET ent_logical_delete = true ' .
-			 'WHERE ent_id = :ent_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		} else {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM ent_entities ' .
-			 'WHERE ent_id = :ent_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
+        if ( ! $Result = $this->prepare( 'DELETE ' .
+         'FROM ent_entities ' .
+         'WHERE ent_id = :ent_id' ) ) {
+            $Error = $Result->errorInfo();
+            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+        }
 		
 		$Result->bindParam( ':ent_id', $ent_id, PDO::PARAM_INT ) ;
 		

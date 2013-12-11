@@ -14,7 +14,6 @@
 	$L_List_Users = 'Benutzer Liste';
 	$L_List_Entities = 'Instanzen Liste';
 	$L_List_Civilities = 'Civilities Liste';
-	$L_List_Profiles = 'Profilliste';
 	$L_First_Name = 'Vorname' ;
 	$L_Last_Name = 'Nachname' ;
 	$L_Sex = 'Geschlecht';
@@ -34,10 +33,6 @@
 	$L_Civility_Modify = 'Civility bearbeiten';
 	$L_Civility_Delete = 'Civility löschen';
 	
-	$L_Profile_Create = 'Profil erstellen';
-	$L_Profile_Modify = 'Profil bearbeiten';
-	$L_Profile_Delete = 'Profil löschen';
-	
 	$L_Entity = 'Instanz';
 	$L_Civility = 'Civility';
 	$L_Auditor = 'Auditor';
@@ -55,10 +50,6 @@
 	$L_Civility_Created = 'Civility erstellt' ;
 	$L_Civility_Modified = 'Civility bearbeitet' ;
 	$L_Civility_Deleted = 'Civility gelöscht' ;
-	
-	$L_Profile_Created = 'Profil erstellt' ;
-	$L_Profile_Modified = 'Profile bearbeitet' ;
-	$L_Profile_Deleted = 'Profile gelöscht' ;
 
 	$L_Change_Authenticator_Flag = 'Passwort ändern';
 	$L_Attempt = 'Versuch';
@@ -99,13 +90,6 @@
 	$L_ERR_RST_Expiration = 'Fehler beim Zurücksetzen des Ablaufdatums';
 	$L_ERR_RST_Disable = 'Fehler bei der Aktivierung oder Deaktivierung des Benutzers';
 	
-	$L_ERR_CREA_Profile = 'Fehler beim Erstellen des Profils';
-	$L_ERR_MODI_Profile = 'Fehler beim Bearbeiten des Profils';
-	$L_ERR_DELE_Profile = 'Fehler beim Löschen des Profils';
-	$L_ERR_DUPL_Profile = '"Label" bereits in Verwendung';
-	
-	$L_ERR_ASSO_Identity = 'Fehler bei der Zuordnung der Profile zur Identität';
-	
 	$L_Attempt_Exceeded = 'Maximale Anzahl Anmeldeversuche erreicht';
 	$L_User_Disabled = 'BenutzerUser deaktiviert';
 	$L_User_Enabled = 'Benutzer aktiviert';
@@ -113,12 +97,9 @@
 	$L_Expiration_Date_Exceeded = 'Ablaufdatum erreicht';
 	$L_Last_Connection_Old = 'Letzter Login zu lange her';
 	$L_Association_Terminated = 'Zuordnung erstellt';
-
-	$L_Users_Profiles = 'Profile zu Identität zuordnen';
-	$L_Profiles_Management = "Profilmanagement";
-	$L_Associate = "Zuordnen";
-	$L_Associated_Profiles = "Nicht zugeordnete Profile";
-	$L_Users_Associate = 'Benutzer zuordnen';
 	
 	$L_Reactivated_Civility = 'Civility wurde erneut aktiviert';
+	
+	$L_Confirm_Delete_Entity = 'Sie bestätigen die Unterdrückung dieser Entität: ';
+	$L_Confirm_Delete_Civility = 'Sie bestätigen die Unterdrückung dieser Civility: ';
 ?>

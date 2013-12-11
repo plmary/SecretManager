@@ -23,6 +23,7 @@ define( 'DIR_LIBRARIES', APPLICATION_PATH . '/Libraries' );
 define( 'DIR_LABELS',    APPLICATION_PATH . '/Libraries/Labels' );
 define( 'DIR_RADIUS',    APPLICATION_PATH . '/Libraries/Radius' );
 define( 'DIR_PICTURES',  APPLICATION_PATH . '/Pictures' );
+define( 'DIR_BACKUP',    APPLICATION_PATH . '/Backup' );
 
 define( 'FLAG_ERROR', 0 );
 define( 'FLAG_SUCCESS',  1 );

@@ -8,14 +8,14 @@
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2013-02-18
+* @version 1.1
+* @date 2013-11-12
 *
 */
 
 include( 'Constants.inc.php' );
 
-$VERSION = '0.4-0';
+$VERSION = '0.5-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -84,13 +84,13 @@ foreach( $Options as $Option => $Valeur ) {
 if ( file_exists( $Config_File ) ) {
 	include( $Config_File );
 } else {
-	print( $PREFIX_ERROR . 'configuration file "' . $Config_File .
-	 "\" not exists or inaccessible\n" );
+	print( $PREFIX_ERROR . 'Configuration file (' . $Config_File .
+	 ") not exists or inaccessible\n" );
 	exit( 1 );
 }
 if ( $FLAG_DEBUG ) {
-	print( $PREFIX_DEBUG . 'configuration file "' . $Config_File .
-	 "\" loaded\n" );
+	print( $PREFIX_DEBUG . 'Configuration file (' . $Config_File .
+	 ") loaded\n" );
 }
 
 
@@ -99,14 +99,14 @@ if ( $FLAG_DEBUG ) {
 if ( file_exists( $Security_File ) ) {
 	include( $Security_File );
 } else {
-	print( $PREFIX_ERROR . 'security module "' . $Security_File .
-	 "\" not exists or inaccessible\n" );
+	print( $PREFIX_ERROR . '"Security module" (' . $Security_File .
+	 ") not exists or inaccessible\n" );
 	exit( 1 );
 }
 
 $Security = new Security();
 if ( $FLAG_DEBUG ) {
-	print( $PREFIX_DEBUG . "\"Security Object\" loaded\n" );
+	print( $PREFIX_DEBUG . "\"Security module\" loaded\n" );
 }
 
 
@@ -114,17 +114,24 @@ if ( $FLAG_DEBUG ) {
 // Charge le module utile pour les transchiffrements.
 if ( file_exists( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' ) ) {
 	include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-	include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 } else {
-	print( $PREFIX_ERROR . 'transcrypt module "Libraries/Class_IICA_Secrets_PDO.inc.php" ' .
+	print( $PREFIX_ERROR . '"Transcrypt module" (' . DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php) ' .
 	 " not exists or inaccessible\n" );
 	exit( 1 );
 }
 
+$Secrets = new IICA_Secrets();
+
 
 // ==============================================
 // Charge l'environnement d'analyse des Sessions.
-include( DIR_LIBRARIES . '/Class_Session.inc.php' );
+if ( file_exists( DIR_LIBRARIES . '/Class_Session.inc.php' ) ) {
+	include( DIR_LIBRARIES . '/Class_Session.inc.php' );
+} else {
+	print( $PREFIX_ERROR . '"Session_Parser module" (' . DIR_LIBRARIES . '/Class_Session.inc.php) ' .
+	 " not exists or inaccessible\n" );
+	exit( 1 );
+}
 
 if ( is_dir( $Session_Dir ) ) {
 	$Rep = $Session_Dir;
@@ -133,11 +140,11 @@ if ( is_dir( $Session_Dir ) ) {
 }
 
 if ( ($Session_Parser = new Session_Parser( $Rep )) == false ) {
-	print( $PREFIX_ERROR . "\"Session_Parser\" not loaded\n" );
+	print( $PREFIX_ERROR . "\"Session_Parser module\" not loaded\n" );
 	exit(1);
 }
 if ( $FLAG_DEBUG ) {
-	print( $PREFIX_DEBUG . "\"Session_Parser\" loaded\n" );
+	print( $PREFIX_DEBUG . "\"Session_Parser module\" loaded\n" );
 }
 
 
@@ -189,7 +196,7 @@ set_time_limit( 0 );
 // nous lisons au fur et à mesure.
 ob_implicit_flush();
 
-$Address = $IP_Address; //'127.0.0.1';
+$Address = $IP_Address; //Information provenant du fichier de configuration (127.0.0.1). PLM***
 $Port = $IP_Port; // Information provenant du fichier de configuration.
 
 if ( ($Sock = socket_create( AF_INET, SOCK_STREAM, SOL_TCP )) === false) {
@@ -213,7 +220,7 @@ if ( socket_bind( $Sock, $Address, $Port ) === false ) {
 	exit( 1 );
 }
 if ( $FLAG_DEBUG ) {
-	print( $PREFIX_DEBUG . "\"socket_bind\" = OK\n" );
+	print( $PREFIX_DEBUG . "\"socket_bind\" = OK (IP: ".$Address.")(Port: ".$Port.")\n" );
 }
 
 if ( socket_listen( $Sock, 5 ) === false ) {
@@ -224,6 +231,7 @@ if ( socket_listen( $Sock, 5 ) === false ) {
 if ( $FLAG_DEBUG ) {
 	print( $PREFIX_DEBUG . "\"socket_listen\" = OK\n" );
 }
+
 
 $Buf = '';
 
@@ -348,8 +356,8 @@ do {
 
 
 		// ========================================
-		// Création ou modification de la clé mère.
-		if ( $Command == 'init' ) {
+		// Création de la clé mère.
+		if ( $Command == 'create' ) {
 			if ( ! validAdminUser( $user_session ) ) {
 				sendMessageToClient( $MsgSock, FLAG_ERROR .
 				 "###L_ERR_USER_NOT_ADMIN\n" );
@@ -366,19 +374,13 @@ do {
 				break; // Déconnecte le client.
 			}
 			
+			
+			// Teste le paramètre reçu.
 			if ( $Parameter == '' ) {
-				if ( $FLAG_DEBUG ) {
-					print( $PREFIX_DEBUG . "Mode: create key activated\n" );
-				}
-				$Mother_Key = $Security->passwordGeneration( 32, 2 );
-				$Operator_Key = $Security->passwordGeneration( 10, 2 );
-				
-				$Result = FLAG_SUCCESS . '###L_MOTHER_KEY_AUTOMATICALLY_CREATED';
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_NO_KEYS\n" );
+				break; // Déconnecte le client.
 			} else {
-				if ( $FLAG_DEBUG ) {
-					print( $PREFIX_DEBUG . "Mode: modify key activated\n" );
-				}
-				
 				$Mother_Key = '';
 				$Operator_Key = '';
 				
@@ -392,14 +394,114 @@ do {
 				@list( $Operator_Key, $Mother_Key ) = explode( '===', $Parameter );
 				
 				if ( $Operator_Key == '' ) {
-    				$Operator_Key = $Security->passwordGeneration( 10, 2 );
+    				sendMessageToClient( $MsgSock, FLAG_ERROR .
+	    			 "###L_ERR_OPERATOR_KEY_EMPTY\n" );
+		    		break; // Déconnecte le client.
 				}
 				
-				$Result = FLAG_SUCCESS . '###L_MOTHER_KEY_MANUALLY_CREATED';
+				if ( $Mother_Key == '' ) {
+    				sendMessageToClient( $MsgSock, FLAG_ERROR .
+	    			 "###L_ERR_MOTHER_KEY_EMPTY\n" );
+		    		break; // Déconnecte le client.
+				}
+			}
+			
+			
+			// Stockage de la clé mère.
+            if ( $FLAG_DEBUG ) {
+                print( $PREFIX_DEBUG . "Prepare new mother key\n" );
+            }
+            
+            $_Create_Date = time();
+            
+            $Secret_Key = "OK###" . $user_session[ 'idn_login' ] . "###" .
+             $_Create_Date . "###" . $Mother_Key;
+
+            $Record = $Security->mc_encrypt( $Secret_Key, $Operator_Key );
+
+            // Sauvegarde le chiffré de la clé mère.
+            if ( $FLAG_DEBUG ) {
+                print( $PREFIX_DEBUG . "Create new Secret file (for Mother Key)\n" );
+            }
+            
+            if ( file_exists( $SecretFile ) ) {
+                $Path_Parts = pathinfo( $SecretFile );
+                
+                rename( $SecretFile, $Path_Parts['dirname'] .'/'. date( 'Y_m_d-H_i_s',
+                 $_Create_Date ) . '-' . $Path_Parts['basename'] );
+            }
+            
+            $PF_Data = fopen( $SecretFile, 'w' );
+            if ( $PF_Data === FALSE ) {
+                sendMessageToClient( $MsgSock, FLAG_ERROR .
+                 "###L_ERR_SECRET_FILE_CREATION\n" );
+                break; // Déconnecte le client
+            }
+            
+            fwrite( $PF_Data, $Record ); // . "\n" );
+            fclose( $PF_Data );
+            
+
+            // Remonte au client la clé opérateur et la clé mère qui ont été
+            // utilisées.				
+            $Secret = $Security->mc_encrypt( $Operator_Key . '===' . $Mother_Key,
+             $Transport_Key ) ;
+            
+            sendMessageToClient( $MsgSock, FLAG_SUCCESS . '###' . $Secret . "###" .
+             $_Create_Date . "\n" );
+
+            break; // Déconnecte le client
+		}
+
+
+		// ========================================
+		// Modification de la clé mère.
+		if ( $Command == 'change' ) {
+			if ( ! validAdminUser( $user_session ) ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_USER_NOT_ADMIN\n" );
+				break; // Déconnecte le client.
+			}
+			
+			// Récupère la clé de transport.
+			$T_Key = $Security->getTransportKey( $ID_Session );
+			if ( $T_Key[ 0 ] === TRUE ) {
+				 $Transport_Key = $T_Key[ 1 ];
+			} else {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_READ_TRANSPORT_FILE\n" );
+				break; // Déconnecte le client.
+			}
+			
+			
+			// Teste le paramètre reçu.
+			if ( $Parameter == '' ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_NO_KEYS\n" );
+				break; // Déconnecte le client.
+			} else {
+				$Mother_Key = '';
+				$Operator_Key = '';
+				
+				// Déchiffre le paramètre protégé par la clé de transport.
+				if ( $FLAG_DEBUG ) {
+					print( $PREFIX_DEBUG . "Decrypt given parameter\n" );
+				}
+				$Parameter = $Security->mc_decrypt( $Parameter, $Transport_Key );
+
+				// Sépare la clé opérateur de la clé mère.
+				@list( $Operator_Key, $Mother_Key ) = explode( '===', $Parameter );
+				
+				if ( $Operator_Key == '' ) {
+    				sendMessageToClient( $MsgSock, FLAG_ERROR .
+	    			 "###L_ERR_OPERATOR_KEY_EMPTY\n" );
+		    		break; // Déconnecte le client.
+				}
 				
 				if ( $Mother_Key == '' ) {
-    				$Mother_Key = $Security->passwordGeneration( 32, 2 );
-    				$Result = FLAG_SUCCESS . '###L_MOTHER_KEY_AUTOMATICALLY_CREATED';
+    				sendMessageToClient( $MsgSock, FLAG_ERROR .
+	    			 "###L_ERR_MOTHER_KEY_EMPTY\n" );
+		    		break; // Déconnecte le client.
 				}
 			}
 			
@@ -410,19 +512,15 @@ do {
 				 "###L_ERR_MOTHER_KEY_EMPTY\n" );
 				break; // Déconnecte le client.
 			} else {
-				$Secrets = new IICA_Secrets( 
-				 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
-
-
 				if ( $FLAG_DEBUG ) {
 					print( $PREFIX_DEBUG . "Save old mother key\n" );
 				}
 
 				if ( $Secret_Key != '' ) {
-					$old_Secret_Key = explode('###', $Secret_Key );
-					$old_Secret_Key = $old_Secret_Key[ 3 ];
+					$old_Mother_Key = explode('###', $Secret_Key );
+					$old_Mother_Key = $old_Mother_Key[ 3 ];
 
-					if ( $old_Secret_Key != $Mother_Key ) {
+					if ( $old_Mother_Key != $Mother_Key ) {
 						if ( $old_Secret_Key  == '' ) {
 							sendMessageToClient( $MsgSock, FLAG_ERROR .
 							 "###L_ERR_MOTHER_KEY_NOT_LOADED\n" );
@@ -435,7 +533,7 @@ do {
 						}
 
 						try {
-							$Secrets->transcrypt( $old_Secret_Key, $Mother_Key );
+							$Secrets->transcrypt( $old_Mother_Key, $Mother_Key );
 						} catch( Exception $e ) {
 							print( $PREFIX_ERROR . $e->getCode() . ' -  ' . $e->getMessage() );
 
@@ -525,10 +623,14 @@ do {
 			if ( $FLAG_DEBUG ) {
 				print( $PREFIX_DEBUG . "Decrypt given parameter\n" );
 			}
+			
 			$O_Key = $Security->mc_decrypt( $Parameter, $T_Key[ 1 ] );
 
 
 			// Récupère la clé mère.
+			if ( $FLAG_DEBUG ) {
+				print( $PREFIX_DEBUG . "Open file : '" . $SecretFile . "'\n" );
+			}
 			$PF_Data = fopen( $SecretFile, 'r' );
 			if ( $PF_Data === FALSE ) {
 				sendMessageToClient( $MsgSock, FLAG_ERROR .
@@ -536,6 +638,9 @@ do {
 				break;
 			}
 
+			if ( $FLAG_DEBUG ) {
+				print( $PREFIX_DEBUG . "Read file : '" . $SecretFile . "'\n" );
+			}
 			$Record = fgets( $PF_Data );
 			if ( $Record === FALSE ) {
 				sendMessageToClient( $MsgSock, FLAG_ERROR .
@@ -547,8 +652,14 @@ do {
 			
 			
 			// Déchiffre la clé mère avec la clé opérateur.
+			if ( $FLAG_DEBUG ) {
+				print( $PREFIX_DEBUG . "Decrypt Mother Key with Operator Key\n" );
+			}
 			$Secret_Key = $Security->mc_decrypt( $Record, $O_Key );
 			
+			if ( $FLAG_DEBUG ) {
+				print( $PREFIX_DEBUG . "Analyze Mother Key\n" );
+			}
 			$Record = explode( '###', $Secret_Key );
 			if ( $Record[ 0 ] != 'OK' ) {
 				if ( isset( $Old_Secret_Key ) ) $Secret_Key = $Old_Secret_Key;
@@ -560,10 +671,67 @@ do {
 				break; // Déconnecte le client.
 			} else {
 				sendMessageToClient( $MsgSock, FLAG_SUCCESS .
-				 "###L_MOTHER_KEY_LOADED\n" );
+				 "###L_MOTHER_KEY_LOADED###". $Record[ 1 ] .
+				 "###" . date( 'Y-m-d H:i:s', $Record[ 2 ] ) . "\n" );
 
 				break; // Déconnecte le client.
 			}
+		}
+
+
+		// =========================================================================
+		// Chiffre la clé mère qui est dans la mémoire du SecretServer et stocke le
+		// résultat dans le fichier.
+		if ( $Command == 'transcrypt-mk' ) {
+			if ( ! validAdminUser( $user_session ) ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_USER_NOT_ADMIN\n" );
+				break; // Déconnecte le client.
+			}
+			
+            // Récupère la clé de transport.
+			$T_Key = $Security->getTransportKey( $ID_Session );
+			if ( $T_Key[ 0 ] === FALSE ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR . "###" . $T_Key[ 1 ] . "\n" );
+				break;
+			}
+
+				
+			// Déchiffre la clé opérateur protégée par la clé de transport.
+			if ( $FLAG_DEBUG ) {
+				print( $PREFIX_DEBUG . "Decrypt given parameter\n" );
+			}
+			$O_Key = $Security->mc_decrypt( $Parameter, $T_Key[ 1 ] );
+
+			
+			// Sauvegarde l'ancienne clé mère.
+			if ( $Secret_Key == '' ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_MOTHER_KEY_NOT_LOADED\n" );
+				break; // Déconnecte le client.
+			}
+			
+
+            // Chiffre la clé Mère en mémoire par la clé Opérateur reçu.
+			$NMK_Key = $Security->mc_encrypt( $Secret_Key, $O_Key );
+
+
+			// Ecrase la clé mère.
+			$PF_Data = fopen( $SecretFile, 'w' );
+			if ( $PF_Data === FALSE ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_SECRET_FILE_CREATION\n" );
+				break;
+			}
+
+			$Record = fwrite( $PF_Data, $NMK_Key );
+
+			fclose( $PF_Data );
+			
+			sendMessageToClient( $MsgSock, FLAG_SUCCESS .
+			    "###L_MOTHER_KEY_TRANSCRYPTED\n" );
+
+			break; // Déconnecte le client.
 		}
 
 

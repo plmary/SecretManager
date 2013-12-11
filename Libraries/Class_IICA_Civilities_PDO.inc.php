@@ -331,24 +331,13 @@ class IICA_Civilities extends IICA_DB_Connector {
 	* @return Renvoi vrai si l'occurrence a été supprimée
 	*/
 		$this->beginTransaction();
-		
-		
-		if ( $Type == 0 ) {  // Suppression logique
-			if ( ! $Result = $this->prepare( 'UPDATE ' .
-			 'cvl_civilities ' .
-			 'SET cvl_logical_delete = true ' .
-			 'WHERE cvl_id = :cvl_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		} else {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM cvl_civilities ' .
-			 'WHERE cvl_id = :cvl_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
+
+        if ( ! $Result = $this->prepare( 'DELETE ' .
+         'FROM cvl_civilities ' .
+         'WHERE cvl_id = :cvl_id' ) ) {
+            $Error = $Result->errorInfo();
+            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+        }
 		
 		$Result->bindParam( ':cvl_id', $cvl_id, PDO::PARAM_INT ) ;
 		

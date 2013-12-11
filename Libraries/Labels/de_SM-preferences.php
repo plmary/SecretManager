@@ -26,6 +26,7 @@
 	$L_Normal_Verbosity = 'Normal'; // Verbosité normale remontée
 
 	$L_Save = 'Speichern';
+	$L_Parameter_Updated = 'Aktualisiert Parameter';
 	$L_Parameters_Updated = 'Einstellungen aktualisiert';
 
 	$L_Mail_From = "Ersteller";
@@ -42,11 +43,11 @@
 	$L_Max_Attempt = 'Maximale Anzahl Versuche';
 	$L_Default_Password = 'Standard Passwort';
 	$L_Expiration_Time = 'Session Gültigkeit (Minuten)';
-	$L_Radius_Server = 'RADIUS Server IP Adresse';
+	$L_Radius_Server = 'RADIUS Server IP Address';
 	$L_Radius_Authentication_Port = 'RADIUS Server IP Authentication Port';
 	$L_Radius_Accounting_Port = 'RADIUS Server IP Accounting Port';
 	$L_Radius_Secret_Common = 'RADIUS Shared Secret';
-	$L_LDAP_Server = 'LDAP Server IP Addresse';
+	$L_LDAP_Server = 'LDAP Server IP Address';
 	$L_LDAP_Port = 'LDAP port';
 	$L_LDAP_Protocol_Version = 'LDAP protocol version';
 	$L_LDAP_Organization = 'LDAP Organization';
@@ -63,4 +64,10 @@
 	$L_Success_Purge = 'Ereignisse vor dem "%s" wurden gelöscht';
 	
 	$L_SecretServer_Management = 'SecretServer verwalten';
+
+	$L_SecretServer_Keys = 'Security keys used with SecretServer';
+	$L_Min_Key_Size = 'Minium Schlüsselgröße';
+	$L_Key_Complexity = 'Komplexität des Schlüssels';
+	$L_Mother_Key = 'Key Mutter';
+	$L_Operator_Key = 'Key Operator';
 ?>

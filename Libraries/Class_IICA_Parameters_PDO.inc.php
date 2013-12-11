@@ -80,8 +80,11 @@ class IICA_Parameters extends IICA_DB_Connector {
 		}
 
 		$Occurrence = $Result->fetchObject();
+		
+		if ( isset( $Occurrence->spr_value ) ) $Value = $Occurrence->spr_value;
+		else $Value = '';
 
- 		return $Occurrence->spr_value;
+ 		return $Value;
 	}
 
 

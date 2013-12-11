@@ -36,6 +36,7 @@ if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
 $Action = '';
 $Choose_Language = 0;
 $Logout_button = 1;
+$Javascript = array( 'SecretManager.js', 'Ajax_preferences.js' );
 
 include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
@@ -79,109 +80,93 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 	header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX' );
 }
 
-	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
-	 "   <!-- debut : zoneTitre -->\n" .
-	 "   <div id=\"zoneTitre\">\n" .
-	 "    <div id=\"icon-options\" class=\"icon36\"></div>\n" .
-	 "    <span id=\"titre\">" . $L_Title . "</span>\n" .
-	 $PageHTML->afficherActions( $Authentication->is_administrator() ) .
-	 "   </div> <!-- fin : zoneTitre -->\n" .
-	 "\n" .
-	 "\n" .
-	 "   <!-- debut : zoneMilieuComplet -->\n" .
-	 "   <div id=\"zoneMilieuComplet\">\n" .
-	 "\n" );
 
-	if ( isset( $_POST[ 'iMessage']) ) {
-		print( "<script>\n" .
-		 "     var myVar=setInterval(function(){cacherInfo()},3000);\n" .
-		 "     function cacherInfo() {\n" .
-		 "        document.getElementById(\"success\").style.display = \"none\";\n" .
-		 "        clearInterval(myVar);\n" .
-		 "     }\n" .
-		 "</script>\n" .
-		 "    <div id=\"success\">\n" .
-		 stripslashes( $_POST[ 'iMessage' ] ) .
-		 "    </div>\n" );
-	}
+if ( ! preg_match("/X$/i", $Action ) ) {
+    print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascript ) .
+     "   <!-- debut : zoneTitre -->\n" .
+     "   <div id=\"zoneTitre\">\n" .
+     "    <div id=\"icon-options\" class=\"icon36\"></div>\n" .
+     "    <span id=\"titre\">" . $L_Title . "</span>\n" .
+     $PageHTML->afficherActions( $Authentication->is_administrator() ) .
+     "   </div> <!-- fin : zoneTitre -->\n" .
+     "\n" .
+     "\n" .
+     "   <!-- debut : zoneMilieuComplet -->\n" .
+     "   <div id=\"zoneMilieuComplet\">\n" .
+     "\n" );
 
-	print( "    <!-- debut : dashboard -->\n" .
-	 "    <div id=\"dashboard\">\n" );
+    if ( isset( $_POST[ 'iMessage']) ) {
+        print( "<script>\n" .
+         "     var myVar=setInterval(function(){cacherInfo()},3000);\n" .
+         "     function cacherInfo() {\n" .
+         "        document.getElementById(\"success\").style.display = \"none\";\n" .
+         "        clearInterval(myVar);\n" .
+         "     }\n" .
+         "</script>\n" .
+         "    <div id=\"success\">\n" .
+         stripslashes( $_POST[ 'iMessage' ] ) .
+         "    </div>\n" );
+    }
 
-	if ( $Authentication->is_administrator() ) {
-		print( "     <style type=\"text/css\" media=\"all\">\n" .
-		 "      @import url(Libraries/tabs.css);\n" .
-		 "     </style>\n" .
-		 "     <!-- debut : tabs -->\n" .
-		 "     <div id=\"tabs\">\n" .
-		 "      <ul>\n" );
+    print( "    <!-- debut : dashboard -->\n" .
+     "    <div id=\"dashboard\">\n" );
+}
 
-	switch( $Action ) {
-	 default:
-		print( "       <li class=\"active\">" . $L_Welcome . "</li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
-		 "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
-		 "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
-		 "</a></li>\n"
-		);
-		break;
+if ( $Authentication->is_administrator() ) {
+    if ( ! preg_match("/X$/i", $Action ) ) {
+        print( "     <style type=\"text/css\" media=\"all\">\n" .
+         "      @import url(Libraries/tabs.css);\n" .
+         "     </style>\n" .
+         "     <!-- debut : tabs -->\n" .
+         "     <div id=\"tabs\">\n" .
+         "      <ul>\n" );
 
-	 case 'A':
-	 case 'AX':
-		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li class=\"active\">" . $L_Alerts . "</li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
-		 "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
-		 "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
-		 "</a></li>\n"
-		);
-		break;
+        switch( $Action ) {
+         default:
+            print( "       <li class=\"active\">" . $L_Welcome . "</li>\n" .
+             "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n"
+            );
+            break;
 
-	 case 'C':
-	 case 'CX':
-		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
-		 "       <li class=\"active\">" . $L_Connection . "</li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
-		 "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
-		 "</a></li>\n"
-		);
-		break;
+         case 'A':
+         case 'AX':
+            print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
+             "       <li class=\"active\">" . $L_Alerts . "</li>\n" .
+             "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n"
+            );
+            break;
 
-	 case 'H':
-	 case 'HX':
-	 case 'PH':
-		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
-		 "       <li class=\"active\">" . $L_Historical . "</li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
-		 "</a></li>\n"
-		);
-		break;
+         case 'C':
+         case 'CX':
+            print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
+             "       <li class=\"active\">" . $L_Connection . "</li>\n" .
+             "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n"
+            );
+            break;
 
-	 case 'S':
-	 case 'LK':
-		print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
-		 "       <li><a href=\"" . $Script . "?action=H\">" . $L_Historical .
-		 "</a></li>\n" .
-		 "       <li class=\"active\">" . $L_SecretServer . "</li>\n"
-		);
-		break;
-	}
+         case 'S':
+         case 'LK':
+            print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
+             "       <li class=\"active\">" . $L_SecretServer . "</li>\n"
+            );
+            break;
+        }
 
-	print( "      </ul>\n" .
-	 "      <!-- debut : pagelet -->\n" .
-	 "      <div class=\"pagelet\">\n" );
-
+        print( "      </ul>\n" .
+         "      <!-- debut : pagelet -->\n" .
+         "      <div class=\"pagelet\">\n" );
+    }
 
 	switch( $Action ) {
 	 default:
@@ -890,364 +875,8 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		break;
 
 
-	 // ========================
-	 // Gestion de l'Historique
-	 case 'H':
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-		
-		$Identities = new IICA_Identities();
-		
-		$Secrets = new IICA_Secrets();
-
-		$List_Identities = $Identities->listIdentities( 1 );
-		
-		if ( array_key_exists( 'scr_id', $_POST ) ) {
-			$scr_id = $_POST[ 'scr_id' ];
-		} else {
-			$scr_id = '';
-		}
-
-		if ( array_key_exists( 'idn_id', $_POST ) ) {
-			$idn_id = $_POST[ 'idn_id' ];
-		} else {
-			$idn_id = '';
-		}
-		
-		if ( array_key_exists( 'h_date', $_POST ) ) {
-			$h_date = $_POST[ 'h_date' ];
-		} else {
-			$h_date = '';
-		}
-		
-		if ( array_key_exists( 'ip_source', $_POST ) ) {
-			$ip_source = $_POST[ 'ip_source' ];
-		} else {
-			$ip_source = '';
-		}
-
-		if ( array_key_exists( 'message', $_POST ) ) {
-			$message = $_POST[ 'message' ];
-		} else {
-			$message = '';
-		}
-
-		print( "     <form method=\"post\" name=\"f_historical\" id=\"i_historical\" action=\"" . $Script .
-		 "?action=H\">\n" .
-		 "      <script>\n" .
-		 "function hiddeRow() {\n" .
-		 " var displaySelection;\n" .
-		 " if ( document.getElementById( 'search_icon' ).className == 'simple' ) {\n" .
-		 "  document.getElementById( 'search_icon' ).className = 'simple-selected';\n" .
-		 "  displaySelection = 'none';\n" .
-		 " } else {\n" .
-		 "  document.getElementById( 'search_icon' ).className = 'simple';\n" .
-		 "  displaySelection = '';\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'r_search' ) ) {\n" .
-		 "  document.getElementById( 'r_search' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 "}\n" .
-		 "      </script>\n" .
-		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:98%\">\n" .
-		 "       <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"6\">" . $L_Historical_Management . "</th>\n" .
-		 "       </tr>\n" .
-		 "       </thead>\n" .
-
-		 "       <tbody>\n" .
-		 "       <tr>\n" .
-		 "        <th>" . $L_Secret . "</th>\n" .
-		 "        <th>" . $L_Identity . "</th>\n" .
-		 "        <th>" . $L_Date . "</th>\n" .
-		 "        <th>" . $L_IP_Source . "</th>\n" .
-		 "        <th>" . $L_Message . "</th>\n" .
-		 "        <th class=\"align-right\"><a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></th>\n" .
-		 "       </tr>\n" .
-		 "       <tr style=\"display: none;\" id=\"r_search\" class=\"pair\">\n" .
-		 "        <td><input type=\"text\" name=\"scr_id\" class=\"input-mini\" " .
-		 "value=\"" .  $scr_id . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" );
-		 
-		print( "        <td>\n" .
-		 "         <select name=\"idn_id\" class=\"input-small\" onChange=\"document.getElementById( 'i_historical' ).submit();\">\n" .
-		 "          <option value=\"\">&nbsp;</option>\n" );
-
-		foreach( $List_Identities as $Occurrence ) {
-			if ( $Occurrence->idn_id == $idn_id ) {
-				$Selected = ' selected';
-			} else {
-				$Selected = '';
-			}
-			
-			print( "          <option value=\"" . $Occurrence->idn_id . "\"" . 
-			 $Selected . ">" . $Occurrence->idn_login . "</option>\n" );
-		}
-		
-		print( "         </select>\n" .
-		 "        </td>\n" );
-		
-		print( "        <td><input type=\"text\" name=\"h_date\" class=\"input-small\" " .
-		 "value=\"" . $h_date . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
-		 "        <td><input type=\"text\" name=\"ip_source\" class=\"input-small\" " .
-		 "maxlength=\"40\" value=\"" . $ip_source . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
-		 "        <td class=\"align-middle\"><input type=\"text\" class=\"input-xlarge\" name=\"message\" " .
-		 "value=\"" . $message . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
-		 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Search . "\" /></td>\n" .
-		 "       </tr>\n" );
-
-		$Tmp = $Secrets->totalHistoryEvents( $scr_id, $idn_id, $h_date, $message,
-		 $ip_source );
-		
-		$Total = $Tmp->total ;
-		$First_Date = $Tmp->first_date;
-
-		if ( array_key_exists( 'size', $_GET ) ) {
-			$size = $_GET[ 'size' ];
-		} else {
-			$size = 10;
-		}
-		
-		if ( array_key_exists( 'start', $_GET ) ) {
-			$start = $_GET[ 'start' ];
-			
-			$previous = $start - $size;
-			if ( $previous < 0 ) $previous = 0;
-			
-			$next = $start + $size;
-			if ( $next > ($Total - $size) ) $next = $Total - $size;
-
-		} else {
-			$start = 0;
-			$previous = 0;
-			$next = 10;
-		}
-		
-		$Occurrences = $Secrets->listHistoryEvents( $scr_id, $idn_id, $h_date, $message,
-		 $ip_source, $start, $size );
-				
-		$BG_Color = 'pair';
-		 
-		foreach( $Occurrences as $Occurrence ) {
-			if ( $BG_Color == 'pair' ) {
-				$BG_Color = 'impair';
-			} else {
-				$BG_Color = 'pair';
-			}
-			
-			print( "       <tr class=\"" . $BG_Color . "\">\n" .
-			 "        <td>" . $Occurrence->scr_id . "</td>\n" .
-			 "        <td>" . $Occurrence->idn_login . "</td>\n" .
-			 "        <td>" . $Occurrence->ach_date . "</td>\n" .
-			 "        <td>" . $Occurrence->ach_ip . "</td>\n" .
-			 "        <td colspan=\"2\">" . $Occurrence->ach_access . "</td>\n" .
-			 "       </tr>\n" );
-		}
-		
-		$default_date  = strftime( "%Y-%m-%d",
-		 mktime( 0, 0, 0, date("m") - 6, date("d"), date("Y") ) );
-
-		
-		print( "       </tbody>\n" .
-		 "       <tfoot>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"2\">Total : <span class=\"green\">" . $Total . "</span></th>\n" .
-		 "        <th colspan=\"4\" class=\"align-center\">\n" .
-		 "<a class=\"btn\" href=\"" . $Script . "?action=H&start=0&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_premier.gif\" alt=\"First\" /></a>" .
-		 "<a class=\"btn\" href=\"?action=H&start=" . $previous . "&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_precedent.gif\" alt=\"Previous\" /></a>" .
-		 "&nbsp;" . ($start + 1) . "&nbsp;/&nbsp;" . ($start + $size) . "&nbsp;" .
-		 "<a class=\"btn\" href=\"?action=H&start=" . $next . "&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_suivant.gif\" alt=\"Next\" /></a>" .
-		 "<a class=\"btn\" href=\"?action=H&start=" . ( $Total - $size ) . "&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_dernier.gif\" alt=\"Last\" /></a>" .
-		 "        </th>\n" .
-		 "       </tr>\n" .
-		 "       </tfoot>\n" .
-		 "      </table>\n" .
-		 "     </form>\n" .
-
-		 "     <form method=\"post\" name=\"fPurge\" action=\"" . $Script .
-		 "?action=PH\">\n" .
-		 "      <p>" . $L_Specify_Purge_Date_History . " :" .
-		 "       <input type=\"text\" size=\"10\" maxlength=\"10\" name=\"purge_date\" value=\"" . $default_date . "\" />\n" .
-		 "       (" . $L_Oldest_Date_History . " : <span class=\"green\">" .
-		 substr( $First_Date, 0, 10 ) . "</span>)\n" .
-		 "       <input type=\"submit\" class=\"button\" value=\"Purge\" /></p>\n" .
-		 "     </form>\n" );
-		
-		break;
-
-	 case 'HX':
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
-		
-		$Identities = new IICA_Identities(
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
-		
-		$List_Identities = $Identities->listIdentities( 1 );
-
-		print( "     <form method=\"post\" name=\"f_historical\" action=\"" . $Script .
-		 "?action=HX\">\n" .
-		 "      <script>\n" .
-		 "function hiddeRow() {\n" .
-		 " var displaySelection;\n" .
-		 " if ( document.getElementById( 'search_icon' ).className == 'simple' ) {\n" .
-		 "  document.getElementById( 'search_icon' ).className = 'simple-selected';\n" .
-		 "  displaySelection = 'none';\n" .
-		 " } else {\n" .
-		 "  document.getElementById( 'search_icon' ).className = 'simple';\n" .
-		 "  displaySelection = '';\n" .
-		 " }\n" .
-		 " if ( document.getElementById( 'r_search' ) ) {\n" .
-		 "  document.getElementById( 'r_search' ).style.display = displaySelection;\n" .
-		 " }\n" .
-		 "}\n" .
-		 "      </script>\n" .
-		 "      <table style=\"margin:10px auto;width:98%\">\n" .
-		 "       <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"5\">" . $L_Historical_Management . "</th>\n" .
-		 "       </tr>\n" .
-		 "       </thead>\n" .
-
-		 "       <tbody>\n" .
-		 "       <tr id=\"r_search\" class=\"pair\">\n" .
-		 "        <td><input type=\"text\" name=\"scr_id\" size=\"6\" maxlength=\"6\" " .
-		 " /></td>\n" );
-		 
-		print( "        <td>\n" .
-		 "         <select name=\"idn_id\">\n" );
-
-		foreach( $List_Identities as $Occurrence ) {
-			print( "          <option value=\"" . $Occurrence->idn_id . "\">" .
-			 $Occurrence->idn_login .
-			 "</option>\n" );
-		}
-		
-		print( "         </select>\n" .
-		 "        </td>\n" );
-		
-		print( "        <td><input type=\"text\" name=\"date\" size=\"10\" " .
-		 "maxlength=\"10\" /></td>\n" .
-		 "        <td><input type=\"text\" name=\"ip_source\" size=\"15\" " .
-		 "maxlength=\"40\" /></td>\n" .
-		 "        <td class=\"align-middle\"><input type=\"text\" name=\"message\" size=\"30\" " .
-		 "maxlength=\"100\" /></td>\n" .
-		 "       </tr>\n" .
-
-		 "       <tr>\n" .
-		 "        <th>" . $L_Secret . "</th>\n" .
-		 "        <th>" . $L_Identity . "</th>\n" .
-		 "        <th>" . $L_Date . "</th>\n" .
-		 "        <th>" . $L_IP_Source . "</th>\n" .
-		 "        <th>" . $L_Message . "<span style=\"float: right\">" .
-		 "<a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></span></th>\n" .
-		 "       </tr>\n" );
-		 
-
-		print( "       <tr>\n" .
-		 "        <td colspan=\"5\" class=\"align-center\"><input type=\"submit\" class=\"button\" value=\"". $L_Search .
-		 "\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       </tbody>\n" .
-		 "      </table>\n" .
-		 "     </form>\n"
-		);
-		break;
-
-
-	 case 'PH':
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-		
-		$Secrets = new IICA_Secrets();
-
-		if ( array_key_exists( 'purge_date', $_POST ) ) {
-			$purge_date = $_POST[ 'purge_date' ];
-		} else {
-			$purge_date = '';
-		}
-
-		print( "     <form method=\"post\" name=\"f_purgeHistorical\" action=\"" .
-		 $Script . "?action=PHX\">\n" .
-		 "      <input type=\"hidden\" name=\"purge_date\" value=\"" . $purge_date . 
-		 "\" />\n" .
-		 "      <table style=\"margin:10px auto;\">\n" .
-		 "       <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"2\">" . $L_Purge_Historical . "</th>\n" .
-		 "       </tr>\n" .
-		 "       </thead>\n" .
-
-		 "       <tbody>\n" .
-		 "       <tr>\n" .
-		 "        <th width=\"50%\">" . $L_Specify_Purge_Date_History . "</th>\n" .
-		 "        <td class=\"bg-green\">" . $purge_date . "</td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td>&nbsp;</td>\n" .
-		 "        <td><input type=\"submit\" class=\"button\" value=\"" . $L_Purge .
-		 "\" /><a class=\"button\" href=\"" . $Script . "\">" . $L_Cancel .
-		 "</a></td>\n" .
-		 "       </tr>\n" .
-		 "      </table>\n" .
-		 "     </form>\n" );
-		
-		break;
-
-
-	 case 'PHX':
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-		
-		$Secrets = new IICA_Secrets();
-
-		if ( array_key_exists( 'purge_date', $_POST ) ) {
-			$purge_date = $_POST[ 'purge_date' ];
-		} else {
-			print( $PageHTML->infoBox( $L_No_Purge_Date, $Script . '?action=H' ) );
-
-			exit();
-		}
-		
-		try {
-			$Secrets->purgeHistoryEvents( $purge_date );
-		} catch( Exception $e ) {
-			$alert_message = $Secrets->formatHistoryMessage( $e->getMessage() );
-
-			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message,
-			 $IP_Source );
-			
-			print( $PageHTML->infoBox( $e->getMessage(), $Script . '?action=H', 1 ) );
-
-			exit();
-		}
-
-		$Message = sprintf( $L_Success_Purge, $purge_date );
-		
-		$alert_message = $Secrets->formatHistoryMessage( $Message );
-
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
-			
-//		print( $PageHTML->infoBox( $Message, $Script . '?action=H', 2 ) );
-
-		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=H\">\n" .
-			" <input type=\"hidden\" name=\"iMessage\" value=\"" . htmlentities( $Message ) . "\" />\n" .
-			"</form>\n" .
-			"<script>document.fMessage.submit();</script>" );
-		
-		break;
-
 	 case 'S':
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
-
-		$Secret_Server = new Secret_Server();
-
-		try {
-			list( $Status, $Operator, $Creating_Date ) = $Secret_Server->SS_statusMotherKey();
-		} catch( Exception $e ) {
-			$Status = $e->getMessage();
-		}
 
 		if ( $PageHTML->getParameter( 'use_SecretServer' ) == '1' ) {
 			$Select_Yes = 'selected';
@@ -1257,11 +886,66 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 			$Select_No = 'selected';
 		}
 
+        $Operator_Key_Size = $PageHTML->getParameter( 'Operator_Key_Size' );
+        $Operator_Key_Complexity = $PageHTML->getParameter( 'Operator_Key_Complexity' );
+
+        $Mother_Key_Size = $PageHTML->getParameter( 'Mother_Key_Size' );
+        $Mother_Key_Complexity = $PageHTML->getParameter( 'Mother_Key_Complexity' );
+
+		$Operator_Active_1 = '';
+		$Operator_Active_2 = '';
+		$Operator_Active_3 = '';
+		$Operator_Active_4 = '';
+
+		switch( $Operator_Key_Complexity ) {
+		 case 1:
+			$Operator_Active_1 = ' selected';
+			break;
+
+		 case 2:
+			$Operator_Active_2 = ' selected';
+			break;
+
+         default:
+		 case 3:
+			$Operator_Active_3 = ' selected';
+			break;
+
+		 case 4:
+			$Operator_Active_4 = ' selected';
+			break;
+		}
+
+
+		$Mother_Active_1 = '';
+		$Mother_Active_2 = '';
+		$Mother_Active_3 = '';
+		$Mother_Active_4 = '';
+		
+		switch( $Mother_Key_Complexity ) {
+		 case 1:
+			$Mother_Active_1 = ' selected';
+			break;
+
+		 case 2:
+			$Mother_Active_2 = ' selected';
+			break;
+
+		 case 3:
+			$Mother_Active_3 = ' selected';
+			break;
+
+		 case 4:
+			$Mother_Active_4 = ' selected';
+			break;
+		}
+
+
 		print(
-		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:70%\">\n" .
+		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:95%\">\n" .
 		 "       <thead>\n" .
 		 "       <tr>\n" .
-		 "        <th colspan=\"2\">" . $L_SecretServer_Management . "</th>\n" .
+		 "        <th colspan=\"2\">SecretServer</th>\n" .
 		 "       </tr>\n" .
 		 "       </thead>\n" .
 		 
@@ -1269,85 +953,75 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		 "       <tr>\n" .
 		 "        <td class=\"pair align-right align-middle\" width=\"30%\">" . $L_Use_SecretServer . "</td>\n" .
 		 "        <td class=\"pair\">\n" .
-		 "         <form name=\"f_use_server\" method=\"post\" action=\"" . $Script . "?action=US\">\n" .
-		 "          <table>\n" .
-		 "           <tr>\n" .
-		 "            <td>\n" .
-		 "             <select name=\"Use_SecretServer\">\n" .
-		 "              <option value=\"0\" " . $Select_No . ">" .  $L_No . "</option>\n" .
-		 "              <option value=\"1\" " . $Select_Yes . ">" .  $L_Yes . "</option>\n" .
-		 "             </select>\n" .
-		 "            </td>\n" .
-		 "            <td>\n" .
-		 "             <input type=\"submit\" class=\"button\" value=\"" . $L_Save . "\" />\n" .
-		 "            </td>\n" .
-		 "           </tr>\n" .
-		 "          </table>\n" .
-		 "         </form>\n" .
+		 "         <table>\n" .
+		 "          <tbody>\n" .
+		 "          <tr>\n" .
+		 "           <td class=\"align-middle\">\n" .
+		 "            <select id=\"Use_SecretServer\">\n" .
+		 "             <option value=\"0\" " . $Select_No . ">" .  $L_No . "</option>\n" .
+		 "             <option value=\"1\" " . $Select_Yes . ">" .  $L_Yes . "</option>\n" .
+		 "            </select>\n" .
+		 "           </td>\n" .
+		 "           <td>\n" .
+		 "            <a href=\"#\" class=\"button\" id=\"iSaveUseServer\">" . $L_Save . "</a>\n" .
+		 "           </td>\n" .
+		 "          </tr>\n" .
+		 "          </tbody>\n" .
+		 "         </table>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
-		 "        <td class=\"pair align-right align-middle\">" . $L_Status . "</td>\n" .
-		 "        <td class=\"pair\">\n" );
-		
-		if ( $Status == 'OK' ) {
-			print( "         <table>\n" .
-			 "          <tr>\n" .
-			 "           <td class=\"bold green\" colspan=\"2\">" . $L_MOTHER_KEY_LOADED . "</td>\n" .
-			 "          </tr>\n" .
-			 "          <tr>\n" .
-			 "           <td class=\"pair\">" . $L_Operator . "</td>\n" .
-			 "           <td class=\"pair bold\">" . $Operator . "</td>\n" .
-			 "          </tr>\n" .
-			 "          <tr>\n" .
-			 "           <td class=\"pair\">" . $L_Creation_Date . "</td>\n" .
-			 "           <td class=\"pair bold\">" . $Creating_Date . "</td>\n" .
-			 "          </tr>\n" .
-			 "         </table>\n" );
-		} else {
-			print( '<span class="bold bg-orange">&nbsp;' . ${$Status} . "&nbsp;</span>\n" );
-		}
-
-		print( "        </td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"pair align-right align-middle\">" .
-		 $L_Load_Mother_Key . "</td>\n" .
+		 "        <td class=\"pair align-right align-middle\" width=\"30%\">" . $L_SecretServer_Keys . "</td>\n" .
 		 "        <td class=\"pair\">\n" .
-		 "         <form name=\"f_load_key\" method=\"post\" action=\"" . $Script . "?action=LK\">\n" .
-		 "          <table>\n" .
-		 "           <tr>\n" .
-		 "            <td class=\"pair\">" . $L_Insert_Operator_Key . "</td>\n" .
-		 "            <td><input type=\"text\" name=\"Load_Operator_Key\" /></td>\n" .
-		 "            <td><input type=\"submit\" class=\"button\" value=\"" . $L_Load . "\" /></td>\n" .
-		 "           </tr>\n" .
-		 "          </table>\n" .
-		 "         </form>\n" .
-		 "        </td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"pair align-right align-middle\">" .
-		 $L_Create_New_Keys . "</td>\n" .
-		 "        <td class=\"pair\">\n" .
-		 "         <form name=\"f_create_key\" method=\"post\" action=\"" . $Script . "?action=NK\">\n" .
-		 "          <table>\n" .
-		 "           <tr>\n" .
-		 "            <td class=\"pair\">" . $L_Insert_Operator_Key . "</td>\n" .
-		 "            <td><input type=\"text\" name=\"New_Operator_Key\" /></td>\n" .
-		 "            <td class=\"pair\">" . $L_Insert_Mother_Key . "</td>\n" .
-		 "            <td><input type=\"text\" name=\"New_Mother_Key\" /></td>\n" .
-		 "            <td><input type=\"submit\" class=\"button\" value=\"" . $L_Create . "\" /></td>\n" .
-		 "           </tr>\n" .
-		 "          </table>\n" .
-		 "         </form>\n" .
-		 "        </td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"pair align-right align-middle\" width=\"30%\">" . $L_Shutdown_SecretServer . "</td>\n" .
-		 "        <td class=\"pair\">\n" .
-		 "         <form name=\"f_use_server\" method=\"post\" action=\"" . $Script . "?action=SHUT\">\n" .
-		 "          <p><input type=\"submit\" class=\"button\" value=\"" . $L_Execute . "\" /></p>\n" .
-		 "         </form>\n" .
+		 "         <table>\n" .
+		 "          <tr>\n" .
+		 "           <th width=\"15%\">" . $L_Operator_Key . "</th>\n" .
+		 "           <td width=\"25%\" class=\"impair\">" . $L_Min_Key_Size . "</td>\n" .
+		 "           <td width=\"60%\" class=\"impair\">\n" .
+		 "            <input type=\"text\" class=\"input-mini\" id=\"Operator_Key_Size\" value=\"" .
+		 $Operator_Key_Size . "\" />\n" .
+		 "           </td>\n" .
+		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <th>&nbsp;</th>\n" .
+		 "           <td class=\"pair\">" . $L_Key_Complexity . "</td>\n" .
+		 "           <td class=\"pair\">\n" .
+		 "            <select class=\"input-xxlarge\" id=\"Operator_Key_Complexity\">\n" .
+		 "             <option value=\"1\"" . $Operator_Active_1 . ">" . $_Password_Complexity_1 . "</option>\n" .
+		 "             <option value=\"2\"" . $Operator_Active_2 . ">" . $_Password_Complexity_2 . "</option>\n" .
+		 "             <option value=\"3\"" . $Operator_Active_3 . ">" . $_Password_Complexity_3 . "</option>\n" .
+		 "             <option value=\"4\"" . $Operator_Active_4 . ">" . $_Password_Complexity_4 . "</option>\n" .
+		 "            </select>\n" .
+		 "           </td>\n" .
+		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <th>" . $L_Mother_Key . "</th>\n" .
+		 "           <td class=\"impair\">" . $L_Min_Key_Size . "</td>\n" .
+		 "           <td class=\"impair\">\n" .
+		 "            <input type=\"text\" class=\"input-mini\" id=\"Mother_Key_Size\" value=\"" .
+		 $Mother_Key_Size . "\" />\n" .
+		 "           </td>\n" .
+		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <th>&nbsp;</th>\n" .
+		 "           <td class=\"pair\">" . $L_Key_Complexity . "</td>\n" .
+		 "           <td class=\"pair\">\n" .
+		 "            <select class=\"input-xxlarge\" id=\"Mother_Key_Complexity\">\n" .
+		 "             <option value=\"1\"" . $Mother_Active_1 . ">" . $_Password_Complexity_1 . "</option>\n" .
+		 "             <option value=\"2\"" . $Mother_Active_2 . ">" . $_Password_Complexity_2 . "</option>\n" .
+		 "             <option value=\"3\"" . $Mother_Active_3 . ">" . $_Password_Complexity_3 . "</option>\n" .
+		 "             <option value=\"4\"" . $Mother_Active_4 . ">" . $_Password_Complexity_4 . "</option>\n" .
+		 "            </select>\n" .
+		 "           </td>\n" .
+		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <th>&nbsp;</th>\n" .
+		 "           <td>&nbsp;</td>\n" .
+		 "           <td>\n" .
+		 "            <a href=\"#\" class=\"button\" id=\"iSaveKeysProperties\">" . $L_Save . "</a>\n" .
+		 "           </td>\n" .
+		 "          </tr>\n" .
+		 "         </table>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       </tbody>\n" .
@@ -1356,156 +1030,80 @@ if ( array_key_exists( 'Expired', $_SESSION ) ) {
 		
 		break;
 
-	 case 'LK':
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 
-		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+	 case 'SUX':
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets();
-
-		$Secret_Server = new Secret_Server();
 
 		try {
-			$Result = $Secret_Server->SS_loadMotherKey( $_POST[ 'Load_Operator_Key' ] );
-			
-			if ( isset( ${$Result} ) ) $Result = ${$Result};
-			
-			$Flag_Error = 2;
-		} catch( Exception $e ) {
-			$Result = ${$e->getMessage()};
-			$Flag_Error = 1;
+		    $PageHTML->setParameter( 'use_SecretServer', $_POST[ 'UseSecretServer' ] );
+		} catch( PDOException $e ) {
+		    $Ajax_Result = array(
+                'Status' => 'error',
+                'Message' => $e->getMessage()
+            );
+        
+            echo json_encode( $Ajax_Result );
+            exit();
 		}
 
-		$alert_message = $Secrets->formatHistoryMessage( $Result );
-
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
-			
-		if ( $Flag_Error == 1 ) {
-			print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
-		} else {
-			print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=S\">\n" .
-			 " <input type=\"hidden\" name=\"iMessage\" value=\"". $Result . "\" />\n" .
-			 "</form>\n" .
-			 "<script>document.fInfoMessage.submit();</script>\n" );
-		}
-		
-		break;
-
-	 case 'NK':
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-		
-		$Secrets = new IICA_Secrets();
-
-		$Secret_Server = new Secret_Server();
-
-		try {
-			list( $Status, $O_Key, $M_Key, $C_Date ) = $Secret_Server->SS_initMotherKey(
-			 $_POST[ 'New_Operator_Key' ], $_POST[ 'New_Mother_Key' ] );
-			
-			// Faire une page imprimable qui récapitule les informations créées.
-			$Result = $L_Success_Page .
-			 "<table class=\"table-bordered\">\n" .
-			 " <thead>\n" .
-			 " <tr>\n" .
-			 "  <th colspan=\"2\">" . $L_New_Keys_Created . "</td>\n" .
-			 " </tr>\n" .
-			 " </thead>\n" .
-			 " <tbody>\n" .
-			 " <tr>\n" .
-			 "  <td class=\"align-right impair\" width=\"50%\">" . $L_Type . "</td>\n" .
-			 "  <td class=\"align-left pair\">" . ${$Status} . "</td>\n" .
-			 " </tr>\n" .
-			 " <tr>\n" .
-			 "  <td class=\"align-right impair\">" . $L_Operator_Key . "</td>\n" .
-			 "  <td class=\"align-left pair\">" . $O_Key . "</td>\n" .
-			 " </tr>\n" .
-			 " <tr>\n" .
-			 "  <td class=\"align-right impair\">" . $L_Mother_Key . "</td>\n" .
-			 "  <td class=\"align-left pair\">" . $M_Key . "</td>\n" .
-			 " </tr>\n" .
-			 " <tr>\n" .
-			 "  <td class=\"align-right impair\">" . $L_Creation_Date . "</td>\n" .
-			 "  <td class=\"align-left pair\">" . date( 'Y-m-d H:i:s', $C_Date ) . "</td>\n" .
-			 " </tr>\n" .
-			 "</table>\n";
-			
-			$Flag_Error = 3;
-		} catch( Exception $e ) {
-			$Result = ${$e->getMessage()};
-			$Flag_Error = 1;
-		}
-
-		$alert_message = $Secrets->formatHistoryMessage( $Result );
-
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
-		
-		print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
-		
-		break;
-
-
-	 case 'US':
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-		
-		$Secrets = new IICA_Secrets();
-
-		$PageHTML->setParameter( 'use_SecretServer', $_POST[ 'Use_SecretServer' ] );
-
-		if ( $_POST[ 'Use_SecretServer' ] == 0 ) $Value = $L_No;
+		if ( $_POST[ 'UseSecretServer' ] == 0 ) $Value = $L_No;
 		else $Value = $L_Yes;
 		
-		$Result = $L_Use_SecretServer . ' : ' . $Value;
+		$Result = $L_Parameter_Updated;
 
 		$alert_message = $Secrets->formatHistoryMessage( $Result );
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 			
-		print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=S\">\n" .
-		 " <input type=\"hidden\" name=\"iMessage\" value=\"". $Result . "\" />\n" .
-		 "</form>\n" .
-		 "<script>document.fInfoMessage.submit();</script>\n" );
-		
+        $Ajax_Result = array(
+            'Status' => 'success',
+            'Message' => $Result
+        );
+        
+        echo json_encode( $Ajax_Result );
+        exit();
+        
 		break;
 
 
-	 case 'SHUT':
+	 case 'SKX':
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
 		$Secrets = new IICA_Secrets();
 
-		$Secret_Server = new Secret_Server();
-
 		try {
-			$Result = $Secret_Server->SS_Shutdown();
-			$Result = 'SecretServer ' . $Result;
-			$Flag_Error = 2;
-		} catch( Exception $e ) {
-			$Result = ${$e->getMessage()};
-			$Flag_Error = 1;
+		    $PageHTML->setParameter( 'Operator_Key_Size', $_POST[ 'Operator_Key_Size' ] );
+		    $PageHTML->setParameter( 'Operator_Key_Complexity', $_POST[ 'Operator_Key_Complexity' ] );
+		    $PageHTML->setParameter( 'Mother_Key_Size', $_POST[ 'Mother_Key_Size' ] );
+		    $PageHTML->setParameter( 'Mother_Key_Complexity', $_POST[ 'Mother_Key_Complexity' ] );
+		} catch( PDOException $e ) {
+		    $Ajax_Result = array(
+                'Status' => 'error',
+                'Message' => $e->getMessage()
+            );
+        
+            echo json_encode( $Ajax_Result );
+            exit();
 		}
+
+		$Result = $L_Parameters_Updated;
 
 		$alert_message = $Secrets->formatHistoryMessage( $Result );
 
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
-
-		if ( $Flag_Error == 1 ) {
-			print( $PageHTML->infoBox( $Result, $Script . '?action=S', $Flag_Error ) );
-		} else {
-			print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Script . "?action=S\">\n" .
-			 " <input type=\"hidden\" name=\"iMessage\" value=\"". $Result . "\" />\n" .
-			 "</form>\n" .
-			 "<script>document.fInfoMessage.submit();</script>\n" );
-		}
-		
+			
+        $Ajax_Result = array(
+            'Status' => 'success',
+            'Message' => $Result
+        );
+        
+        echo json_encode( $Ajax_Result );
+        exit();
+        
 		break;
 	}
 } else {

@@ -44,7 +44,7 @@
 	 "   var regex_lcase = new RegExp('[a-z]', 'g');\n" .
 	 "   var regex_ucase = new RegExp('[A-Z]', 'g');\n" .
 	 "   var regex_num = new RegExp('[0-9]', 'g');\n" .
-	 "   var regex_sc = new RegExp('[^\\\\w]', 'g');\n" .
+	 "   var regex_sc = new RegExp('[^\\\\w]|[:punct:]|[:space:]', 'g');\n" .
 	 "   if ( ! pwd.match( regex_lcase ) ) {\n" .
 	 "    Result += '" . $L_Use_Lowercase . ". ';\n" .
 	 "    document.getElementById(Result_Field).title = Result;\n" .
@@ -65,7 +65,7 @@
 	 "  }\n" .
 //		 "  element = document.getElementById(Result_Field);\n" .
 //		 "  element.innerHTML = Result;\n" . 
-	 "  if ( Result != '' && pwd != '' ) {\n" .
+	 "  if ( Result != '' ) {\n" .
 	 "   document.getElementById(Result_Field).alt = 'Ko';\n" .
 	 "   document.getElementById(Result_Field).src = '" . URL_PICTURES . "/s_attention.png'\n" .
 	 "  }\n" .

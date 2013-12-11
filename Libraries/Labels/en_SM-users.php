@@ -32,10 +32,6 @@
 	$L_Civility_Modify = 'Edit civility';
 	$L_Civility_Delete = 'Delete civility';
 	
-	$L_Profile_Create = 'Create profile';
-	$L_Profile_Modify = 'Edit profile';
-	$L_Profile_Delete = 'Delete profile';
-	
 	$L_Entity = 'Entity';
 	$L_Civility = 'Civility';
 	$L_Auditor = 'Auditor';
@@ -54,10 +50,6 @@
 	$L_Civility_Created = 'Civility created' ;
 	$L_Civility_Modified = 'Civility modified' ;
 	$L_Civility_Deleted = 'Civility deleted' ;
-	
-	$L_Profile_Created = 'Profile created' ;
-	$L_Profile_Modified = 'Profile modified' ;
-	$L_Profile_Deleted = 'Profile deleted' ;
 
 	$L_Change_Authenticator_Flag = 'Change password';
 	$L_Attempt = 'Attempt';
@@ -98,13 +90,6 @@
 	$L_ERR_RST_Expiration = 'Error while resetting the expiration date';
 	$L_ERR_RST_Disable = 'Error during user activation or deactivation';
 	
-	$L_ERR_CREA_Profile = 'Error during profile creation';
-	$L_ERR_MODI_Profile = 'Error during profile modification';
-	$L_ERR_DELE_Profile = 'Error during profile deletion';
-	$L_ERR_DUPL_Profile = '"Label" already used';
-	
-	$L_ERR_ASSO_Identity = 'Error while associating profiles to the identity';
-	
 	$L_Attempt_Exceeded = 'Maximum login attempts reached';
 	$L_User_Disabled = 'User disabled';
 	$L_User_Enabled = 'User enabled';
@@ -113,10 +98,8 @@
 	$L_Last_Connection_Old = 'Last login date too old';
 	$L_Association_Terminated = 'Association completed';
 
-	$L_Users_Profiles = 'Association Profiles to Identity';
-	$L_Profiles_Management = "Profiles management";
-	$L_Associated_Profiles = "Profiles to associate";
-	$L_Users_Associate = 'Associate users';
-	
 	$L_Reactivated_Civility = 'Civility was reactivated';
+	
+	$L_Confirm_Delete_Entity = 'Do you confirm the suppression of this Entity: ';
+	$L_Confirm_Delete_Civility = 'Do you confirm the suppression of this Civility: ';
 ?>

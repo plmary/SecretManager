@@ -65,6 +65,7 @@
 	$L_Groups_Associate = 'Associer des Groupes de Secrets';
 	$L_Secret_Management = 'Gérer des Secrets';
 	$L_Association_Complited = 'Association terminée';
+	$L_Confirm_Group_Delete = 'Confirmez vous la suppression de ce Groupe de Secrets : ';
 	
 	$L_Generate = "Générer";
 	

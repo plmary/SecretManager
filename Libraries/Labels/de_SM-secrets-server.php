@@ -12,7 +12,7 @@
 
 	$L_ERR_SERVER_NOT_LOADED = 'SecretServer nicht geladen';
 	$L_ERR_SERVER_NOT_STARTED = 'SecretServer nicht gestartet';
-	$L_ERR_MOTHER_KEY_CORRUPTED = "Mutterkey korrupt";
+	$L_ERR_MOTHER_KEY_CORRUPTED = "Mutterkey korrupt oder ungültig";
 	$L_ERR_NO_CMD_SEND = 'Kein Befehl versendet';
 	$L_ERR_NO_SESSION = 'Keine Session ID vorhanden';
 	$L_ERR_NO_VALUE = 'Kein Wert';
@@ -20,6 +20,7 @@
 	$L_ERR_SESSION_EXPIRED = 'Session abgelaufen';
 	$L_ERR_USER_NOT_CONNECTED = 'User nicht verbunden';
 	$L_ERR_USER_NOT_ADMIN = 'Der User ist kein Administrator';
+	$L_ERR_OPERATOR_KEY_EMPTY = 'Operatorkey ist leer';
 	$L_ERR_MOTHER_KEY_EMPTY = 'Mutterkey ist leer';
 	$L_ERR_INVALID_OPERATOR_KEY = 'Secret Datei korrupt oder ungültiger Operatorkey';
 	$L_ERR_MOTHER_KEY_NOT_LOADED = 'Mutterkey nicht geladen';
@@ -35,6 +36,7 @@
 	$L_MOTHER_KEY_LOADED = 'Mutterkey geladen';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mutterkey automatisch erstellt';
 	$L_MOTHER_KEY_MANUALLY_CREATED = 'Mutterkey manuell erstellt';
+	$L_MOTHER_KEY_TRANSCRYPTED = 'Mutterkey transcrypted';
 
 	$L_Operator = 'Verwalter';
 	$L_Creation_Date = 'Erstellungsdatum';

@@ -226,7 +226,7 @@ class Security {
 		$Password = '';
 		 		 
  		for( $i = 0; $i < $size; $i++ )
- 			$Password .= $caracters[ mt_rand( 0, strlen( $caracters ) ) ];
+ 			$Password .= $caracters[ mt_rand( 0, (strlen( $caracters ) - 1) ) ];
  		
  		return $Password;
  	}
@@ -539,14 +539,18 @@ class Security {
 		if ( $mc_key == '' ) {
 			include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 			
-			$mc_key = $_salt_secret;
+			if ( isset( $_salt_secret ) ) {
+    			$mc_key = $_salt_secret;
+    		} else {
+    		    $mc_key = 'PLM-Orasys-2013';
+    		}
 		}
 		
-		$iv = mcrypt_create_iv(
-		 mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND );
+		$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
 
-		$passcrypt = trim( mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $mc_key, trim($encrypt),
-		 MCRYPT_MODE_ECB, $iv ) );
+		$passcrypt = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $mc_key, trim($encrypt),
+		 MCRYPT_MODE_ECB, $iv );
 
 		$encode = base64_encode($passcrypt);
 		
@@ -571,18 +575,22 @@ class Security {
 		if ( $mc_key == '' ) {
 			include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 			
-			$mc_key = $_salt_secret;
+			if ( isset( $_salt_secret ) ) {
+    			$mc_key = $_salt_secret;
+    		} else {
+    		    $mc_key = 'PLM-Orasys-2013';
+    		}
 		}
 		
 		$decoded = base64_decode( $decrypt );
 		
-		$iv = mcrypt_create_iv(
-		 mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB ), MCRYPT_RAND );
+		$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
+		$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
 
-		$decrypted = trim( mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $mc_key, trim( $decoded ),
-		 MCRYPT_MODE_ECB, $iv ) );
+		$decrypted = mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $mc_key, $decoded,
+		 MCRYPT_MODE_ECB, $iv );
 	
-		return $decrypted;
+		return trim($decrypted);
 	}
 
 
@@ -603,6 +611,8 @@ class Security {
 	* @return array(status,value) Retourne le statut de la fonction ainsi que la valeur 
 	* associée au résultat.
 	*/
+	    $PREFIX_DEBUG = '%D ';
+	    
 		if ( $ID_Session == '' ) {
 			$ID_Session = session_id();
 
@@ -658,6 +668,8 @@ class Security {
 	* @return array(status,value) Retourne le statut de la fonction ainsi que la valeur 
 	* associée au résultat.
 	*/
+	    $PREFIX_DEBUG = '%D ';
+	    
 		if ( $ID_Session == '' ) {
 			$ID_Session = session_id();
 
