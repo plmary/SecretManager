@@ -346,13 +346,14 @@ switch( $Action ) {
 	// ===========================================
 	// Tableau de gestion des sauvegardes du SecretManager.
     $Backup_Secrets_Date = $PageHTML->getParameter( 'Backup_Secrets_Date' );
+    $Backup_Total_Date = $PageHTML->getParameter( 'Backup_Total_Date' );
 
-    $Backup_Date_1 = date_create( '2013-11-20' ); //$Backup_Secrets_Date );
+    $Backup_Date_1 = date_create( '2013-11-11' ); //$Backup_Secrets_Date );
     $Current_Date = date_create( date('Y-m-d') );
     
-    $Interval = date_diff($Current_Date, $Backup_Date_1);
-    
-    if ( $Interval->format('%R%a days') < -5 ) $Color = 'green';
+    $Interval = date_diff($Current_Date,$Backup_Date_1);
+
+    if ( $Interval->format('%R%a') >= '-30' ) $Color = 'green';
     else $Color = 'orange';
 	
 	print( "     <!-- Début : affichage de la sauvegarde du SecretManager -->\n\n" .
@@ -365,7 +366,7 @@ switch( $Action ) {
 		 "       </p>\n" .
 		 "       <p>\n" .
 		 "        <span>" . $L_Last_Total_Backup . " : </span>\n" .
-		 "        <span class=\"bg-".$Color." bold\">&nbsp;" . "&nbsp;" . "&nbsp;</span>\n" .
+		 "        <span class=\"bg-".$Color." bold\">&nbsp;" . $Backup_Total_Date . "&nbsp;</span>\n" .
 		 "       </p>\n" .
 		 "      </div>\n" .
 		 "      <p class=\"align-center\"><a class=\"button\" href=\"" . $Script . "?action=STOR\">" .
