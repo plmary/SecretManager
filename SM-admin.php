@@ -348,13 +348,19 @@ switch( $Action ) {
     $Backup_Secrets_Date = $PageHTML->getParameter( 'Backup_Secrets_Date' );
     $Backup_Total_Date = $PageHTML->getParameter( 'Backup_Total_Date' );
 
-    $Backup_Date_1 = date_create( '2013-11-11' ); //$Backup_Secrets_Date );
+    $Backup_Date_1 = date_create( $Backup_Secrets_Date );
+    $Backup_Date_2 = date_create( $Backup_Total_Date );
     $Current_Date = date_create( date('Y-m-d') );
     
     $Interval = date_diff($Current_Date,$Backup_Date_1);
 
-    if ( $Interval->format('%R%a') >= '-30' ) $Color = 'green';
-    else $Color = 'orange';
+    if ( $Interval->format('%R%a') >= '-30' ) $BS_Color = 'green';
+    else $BS_Color = 'orange';
+    
+    $Interval = date_diff($Current_Date,$Backup_Date_2);
+
+    if ( $Interval->format('%R%a') >= '-30' ) $BT_Color = 'green';
+    else $BT_Color = 'orange';
 	
 	print( "     <!-- Début : affichage de la sauvegarde du SecretManager -->\n\n" .
 		 "     <div class=\"tableau_synthese\">\n" .
@@ -362,11 +368,11 @@ switch( $Action ) {
 		 "      <div class=\"corps\" id=\"c_secretserver\">\n" .
 		 "       <p>\n" .
 		 "        <span>" . $L_Last_Secrets_Backup . " : </span>\n" .
-		 "        <span class=\"bg-".$Color." bold\">&nbsp;" . $Backup_Secrets_Date . "&nbsp;</span>\n" .
+		 "        <span class=\"bg-".$BS_Color." bold\">&nbsp;" . $Backup_Secrets_Date . "&nbsp;</span>\n" .
 		 "       </p>\n" .
 		 "       <p>\n" .
 		 "        <span>" . $L_Last_Total_Backup . " : </span>\n" .
-		 "        <span class=\"bg-".$Color." bold\">&nbsp;" . $Backup_Total_Date . "&nbsp;</span>\n" .
+		 "        <span class=\"bg-".$BT_Color." bold\">&nbsp;" . $Backup_Total_Date . "&nbsp;</span>\n" .
 		 "       </p>\n" .
 		 "      </div>\n" .
 		 "      <p class=\"align-center\"><a class=\"button\" href=\"" . $Script . "?action=STOR\">" .
