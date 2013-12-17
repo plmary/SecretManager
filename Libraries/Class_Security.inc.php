@@ -621,7 +621,7 @@ class Security {
 			}
 		}
 	
-	    $Filename = 'Temp/trp_' . $ID_Session;
+	    $Filename = DIR_SESSION . '/trp_' . $ID_Session;
 
 		if ( $FLAG_DEBUG ) {
 			print( $PREFIX_DEBUG . "Open Transport file '" . $Filename .
@@ -678,7 +678,7 @@ class Security {
 			}
 		}
 	
-	    $Filename = 'Temp/trp_' . $ID_Session;
+	    $Filename = DIR_SESSION . '/trp_' . $ID_Session;
 
 		if ( $FLAG_DEBUG ) {
 			print( $PREFIX_DEBUG . "Open Transport file '" . $Filename .

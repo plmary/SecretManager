@@ -32,7 +32,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.8-0-alpha1'; // Version de l'outil
+	$this->Version = '0.8-0-alpha2'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	
@@ -104,6 +104,10 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 	if ( $innerJS != '' ) {
 		$Header .= "  <script type=\"text/javascript\">\n" .
 			$innerJS .
+			'   var Parameters = new Array();' . "\n" .
+			'   Parameters["URL_BASE"] = "' . URL_BASE . '";' . "\n" .
+			'   Parameters["URL_LIBRARIES"] = "' . URL_LIBRARIES . '";' . "\n" .
+			'   Parameters["URL_PICTURES"] = "' . URL_PICTURES . '";' . "\n" .
 			"  </script>\n";
 	}
 

@@ -5,6 +5,7 @@
 	 " var Ok_Size = 0;\n" .
 	 " var Result = '';\n" .
 	 " var pwd = document.getElementById(Password_Field).value;\n" .
+	 " if (pwd == '') return false;\n" .
 	 " if ( Complexity < 1 || Complexity > 3 ) Complexity = 3;\n" .
 	 " if ( pwd.length < Size ) {\n" .
 	 "  Result += '" . $L_No_Good_Size . " ' + Size + '). ';\n" .

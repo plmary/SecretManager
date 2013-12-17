@@ -48,18 +48,12 @@ function viewPassword( scr_id ){
             success: function(reponse) {
                 $('#afficherSecret').show();
 
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                var statut = resultat['Statut'];
-                var password = resultat['password'];
+                var statut = reponse['Statut'];
+                var password = reponse['password'];
                 var Message = '';
 
                 if ( password == null ) {
-                    password = '('+resultat['l_invalid_mother_key']+')';
+                    password = '('+reponse['l_invalid_mother_key']+')';
                     var couleur_fond = '';
                     //Message += resultat['responseText'];
                 } else {
@@ -67,28 +61,22 @@ function viewPassword( scr_id ){
                 }
 
                 if (statut == 'succes') {
-                    Message += '<p><span>'+resultat['l_host']+' : </span>'+
-                        '<span class="td-aere">'+resultat['host']+'</span></p>'+
-                        '<p><span>'+resultat['l_user']+' : </span>'+
-                        '<span class="td-aere">'+resultat['user']+'</span></p>'+
-                        '<p><span>'+resultat['l_password']+' : </span>'+
+                    Message += '<p><span>'+reponse['l_host']+' : </span>'+
+                        '<span class="td-aere">'+reponse['host']+'</span></p>'+
+                        '<p><span>'+reponse['l_user']+' : </span>'+
+                        '<span class="td-aere">'+reponse['user']+'</span></p>'+
+                        '<p><span>'+reponse['l_password']+' : </span>'+
                         '<span class="'+couleur_fond+'td-aere">'+password+'</span></p>';
 
                     $('#detailSecret').html(Message);
                 }
                 else if (statut == 'erreur') {
-                    $('#detailSecret').text(resultat['Message']);
+                    $('#detailSecret').text(reponse['Message']);
                 }
 
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur serveur : ' + resultat['responseText']);
+                alert('Erreur serveur : ' + reponse['responseText']);
             }
         });
     }
@@ -165,23 +153,17 @@ function saveEditFields( Id ){
             data: $.param({'sgr_id': Id, 'Alert': Alert, 'Label': Label}),
             dataType: 'json',
             success: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                var statut = resultat['Status'];
+                var statut = reponse['Status'];
 
                 if (statut == 'success') {
-                    showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                     $('#MOD_'+Id).remove();
                     
                     if ( Alert == 1 ) {
-                        Alert = "<img class=\"no-border\" id=\"image-" + Id + "\" src=\"" + resultat['URL_PICTURES'] +
+                        Alert = "<img class=\"no-border\" id=\"image-" + Id + "\" src=\"" + reponse['URL_PICTURES'] +
                             "/bouton_coche.gif\" alt=\"Yes\" />";
                     } else {
-                        Alert = "<img class=\"no-border\" id=\"image-" + Id + "\" src=\"" + resultat['URL_PICTURES'] +
+                        Alert = "<img class=\"no-border\" id=\"image-" + Id + "\" src=\"" + reponse['URL_PICTURES'] +
                             "/bouton_non_coche.gif\" alt=\"No\" />";
                     }
                     
@@ -191,18 +173,12 @@ function saveEditFields( Id ){
                     $('#sgr_id-'+Id).show();                    
                 }
                 else if (statut == 'erreur') {
-                    showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                 }
 
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur serveur : ' + resultat['responseText']);
+                alert('Erreur serveur : ' + reponse['responseText']);
             }
         });
     }
@@ -273,27 +249,22 @@ function addGroup(){
             dataType: 'json',
             success: function(reponse) {
                 // Récupère le statut de l'appel Ajax
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
                 $('#addGroup').hide();
 
                 $('#iGroupLabel').val('');
 
-                var statut = resultat['Status'];
+                var statut = reponse['Status'];
 
                 if (statut == 'success') {
-                    var Id = resultat['IdGroup'];
-                    var Script = resultat['Script'];
-                    var URL_PICTURES = resultat['URL_PICTURES'];
-                    var L_Modify = resultat['L_Modify'];
-                    var L_Delete = resultat['L_Delete'];
-                    var L_Cancel = resultat['L_Cancel'];
-                    var L_Groups_Associate = resultat['L_Groups_Associate'];
-                    var L_Profiles_Associate = resultat['L_Profiles_Associate'];
-                    var L_Secret_Management = resultat['L_Secret_Management'];
+                    var Id = reponse['IdGroup'];
+                    var Script = reponse['Script'];
+                    var URL_PICTURES = reponse['URL_PICTURES'];
+                    var L_Modify = reponse['L_Modify'];
+                    var L_Delete = reponse['L_Delete'];
+                    var L_Cancel = reponse['L_Cancel'];
+                    var L_Groups_Associate = reponse['L_Groups_Associate'];
+                    var L_Profiles_Associate = reponse['L_Profiles_Associate'];
+                    var L_Secret_Management = reponse['L_Secret_Management'];
                     
                     if ( Secret_Alert == 1 ) {
                         var Image = '<img class="no-border" alt="Ok" src="' +
@@ -333,13 +304,7 @@ function addGroup(){
                 showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur sur serveur : ' + resultat['responseText']);
+                alert('Erreur sur serveur : ' + reponse['responseText']);
             }
         });
     }
@@ -379,12 +344,6 @@ function deleteGroup( Id ) {
         dataType: 'json',
         success: function(reponse) {
             // Récupère le statut de l'appel Ajax
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
             showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
             if (reponse['Status'] == 'success') {

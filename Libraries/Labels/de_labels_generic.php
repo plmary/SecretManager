@@ -86,6 +86,8 @@
 	$L_Error = 'Fehler';
 	$L_Management = 'Verwaltung';
 	$L_Warning = 'Achtung';
+	$L_Shutdown = 'Shutdown';
+	$L_Print = 'Drucken';
 
     $L_Save = 'Speichern';
     $L_Confirm = 'Confirm';

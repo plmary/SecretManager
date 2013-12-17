@@ -25,13 +25,7 @@ $(document).ready( function() {
                 }
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur sur serveur : ' + resultat['responseText']);
+                alert('Erreur sur serveur : ' + reponse['responseText']);
             }
         }); 
     });
@@ -47,14 +41,8 @@ $(document).ready( function() {
             data: $.param({'UseSecretServer': UseSecretServer}),
             dataType: 'json',
             success: function(reponse){
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                    showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+                if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                 } else {
                     alert('Erreur sur serveur : ' + reponse);
                 }
@@ -85,54 +73,17 @@ $(document).ready( function() {
                 }),
             dataType: 'json',
             success: function(reponse){
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                    showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+                if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                 } else {
                     alert('Erreur sur serveur : ' + reponse);
                 }
             },
             error: function(reponse) {
-                alert('Erreur interne sur serveur : ' + reponse['responseText']);
+                document.write( reponse['responseText'] );
             }
         }); 
-    });
-
-
-    // Sauvegarde la valeur de la nouvelle clé Mère ainsi que sa clé Opérateur.
-    $("#iSaveNewOeratorKey_1").click(function(){
-        if ( $("#iNew_Operator_Key_1").val() == '' ) {
-            var Warning = $("#iSaveNewOeratorKey_1").attr('data-cancel-op');
-            showInfoMessage( 'error', Warning ); // SecretManager.js
-            return;
-        }
-        
-        var Warning = $("#iSaveNewOeratorKey_1").attr('data-warning');
-        var Confirm = $("#iSaveNewOeratorKey_1").attr('data-confirm');
-        var Cancel = $("#iSaveNewOeratorKey_1").attr('data-cancel');
-        var Text_1 = $("#iSaveNewOeratorKey_1").attr('data-text-1');
-        
-        $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
-         '<div class="modal-header">' +
-         '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" onClick="javascript:hideConfirmMessage();">×</button>' +
-         '<h3 id="myModalLabel">'+Warning+'</h3>' +
-         '</div>' +
-         '<div class="modal-body">' +
-         '<div class="row-fluid"style="width:82%; margin-top:8px;">' +
-         '<p>' + Text_1 + '</p>' +
-         '</div>' +
-         '</div>' +
-         '<div class="modal-footer">' +
-         '<a class="button" href="javascript:hideConfirmMessage();">'+Cancel+'</a>&nbsp;<a class="button" href="javascript:transcryptMotherKey();">'+Confirm+'</a>' +
-         '</div>' +
-         '</div>\n' ).prependTo( 'body' );
-    });
-    
+    });    
 });
 
 
@@ -160,7 +111,8 @@ function confirmCreateMotherKey() {
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
-     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
      '<h3 id="myModalLabel">'+Warning+'</h3>' +
      '</div>' +
      '<div class="modal-body">' +
@@ -169,10 +121,12 @@ function confirmCreateMotherKey() {
      '</div>' +
      '</div>' +
      '<div class="modal-footer">' +
-     '<a class="button" href="javascript:hideConfirmMessage();">'+Cancel+'</a>&nbsp;<a class="button" href="javascript:createMotherKey();">'+Confirm+'</a>' +
+     '<a class="button" id="cancel_confirm_message" href="javascript:hideConfirmMessage();">' +
+     Cancel+'</a>&nbsp;<a class="button" href="javascript:createMotherKey();">'+Confirm+'</a>' +
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
 
+    $('#cancel_confirm_message').focus();
 }
 
 
@@ -188,7 +142,7 @@ function createMotherKey(){
     }
 
     $.ajax({
-        url: '../SM-admin.php?action=CMKX',
+        url: '../SM-admin.php?action=CRMKX',
         type: 'POST',
         data: $.param({
             'Operator_Key': Operator_Key,
@@ -196,16 +150,15 @@ function createMotherKey(){
             }),
         dataType: 'json',
         success: function(reponse){
-            var resultat = new Array();
+            if ( reponse['Status'] == 'error' ) {
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            } else if ( reponse['Status'] == 'success' ) {
+                hideConfirmMessage();
 
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            if ( resultat['Status'] == 'error' ) {
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
-            } else if ( resultat['Status'] == 'success' ) {
-                w = open('','popup','width=650,height=400,toolbar=no,scrollbars=no,resizable=yes');
+                $('#iNew_Operator_Key_2').val('');
+                $('#iNew_Mother_Key').val('');
+                
+                w = open('','popup','width=700,height=400,toolbar=no,scrollbars=no,resizable=yes');
                 w.document.write( '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" '+
                     '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n' +
                     '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">\n' +
@@ -217,14 +170,27 @@ function createMotherKey(){
                     '  <link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css" />\n' +
                     '  <link rel="stylesheet" href="https://secretmanager.localhost/Libraries/SecretManager.css" type="text/css" />\n' +
                     '  <link rel="stylesheet" href="https://secretmanager.localhost/Libraries/SecretManager-icons.css" type="text/css" />\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/Libraries/jquery-2.0.3.js"></script>\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/bootstrap/js/bootstrap.js"></script>\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/Libraries/dashboard.js"></script>\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/Libraries/SecretManager.js"></script>\n' +
+                    '<style>\n' +
+                    ' body {\n' +
+                    '  background-color: white;\n' +
+                    '  padding: 6px;\n' +
+                    '  margin: 12px;\n' +
+                    ' }\n' +
+                    ' button.btn:focus {\n' +
+                    '  outline-style: none;\n' +
+                    ' }\n' +
+                    '</style>\n' +
                     '  <title>Secret</title>\n' +
                     ' </head>\n' +
-                    ' <body>\n' +
-                    resultat['Message'] +
+                    ' <body bgcolor="white">\n' +
+                    reponse['Message'] +
+                    '<p class="align-center tbrl_margin_12">' +
+                    '<button id="iPrint" class="btn tbrl_margin_3" onClick="javascript:window.print();">' +
+                    reponse['L_Print'] + '</button>' +
+                    '<button class="btn tbrl_margin_3" onClick="javascript:window.close();">' +
+                    reponse['L_Close'] + '</button>' +
+                    '</p>\n' +
+                    '<script>document.getElementById("iPrint").focus();</script>\n' +
                     ' </body>\n' +
                     '</html>\n' );
                 w.document.close();
@@ -233,7 +199,7 @@ function createMotherKey(){
             }
         },
         error: function(reponse) {
-            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+            document.write( reponse['responseText'] );
         }
     }); 
 }
@@ -258,7 +224,8 @@ function confirmChangeMotherKey(){
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
-     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
      '<h3 id="myModalLabel">'+Warning+'</h3>' +
      '</div>' +
      '<div class="modal-body">' +
@@ -267,13 +234,17 @@ function confirmChangeMotherKey(){
      '</div>' +
      '</div>' +
      '<div class="modal-footer">' +
-     '<a class="button" href="javascript:hideConfirmMessage();">'+Cancel+
+     '<a class="button" id="iCancelWindow" href="javascript:hideConfirmMessage();">'+Cancel+
      '</a>&nbsp;<a class="button" href="javascript:changeMotherKey();">'+Confirm+'</a>' +
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
+    
+    $('#iCancelWindow').focus();
 }
 
 
+// ==========================================================
+// Change la clé Mère, transchiffre les Secrets dans la base et stocke la nouvelle clé Mère avec la clé Opérateur précisée.
 function changeMotherKey() {
     var Operator_Key = $('#iNew_Operator_Key_2').val();
     var Mother_Key = $('#iNew_Mother_Key').val();
@@ -294,16 +265,15 @@ function changeMotherKey() {
             }),
         dataType: 'json',
         success: function(reponse){
-            var resultat = new Array();
+            hideConfirmMessage();
+            
+            if ( reponse['Status'] == 'error' ) {
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            } else if ( reponse['Status'] == 'success' ) {
+                $('#iNew_Operator_Key_2').val('');
+                $('#iNew_Mother_Key').val('');
 
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            if ( resultat['Status'] == 'error' ) {
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
-            } else if ( resultat['Status'] == 'success' ) {
-                w = open('','popup','width=650,height=400,toolbar=no,scrollbars=no,resizable=yes');
+                w = open('','popup','width=700,height=400,toolbar=no,scrollbars=no,resizable=yes');
                 w.document.write( '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" '+
                     '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n' +
                     '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">\n' +
@@ -315,14 +285,27 @@ function changeMotherKey() {
                     '  <link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css" />\n' +
                     '  <link rel="stylesheet" href="https://secretmanager.localhost/Libraries/SecretManager.css" type="text/css" />\n' +
                     '  <link rel="stylesheet" href="https://secretmanager.localhost/Libraries/SecretManager-icons.css" type="text/css" />\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/Libraries/jquery-2.0.3.js"></script>\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/bootstrap/js/bootstrap.js"></script>\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/Libraries/dashboard.js"></script>\n' +
-                    '  <script type="text/javascript" src="https://secretmanager.localhost/Libraries/SecretManager.js"></script>\n' +
+                    '<style>\n' +
+                    ' body {\n' +
+                    '  background-color: white;\n' +
+                    '  padding: 6px;\n' +
+                    '  margin: 12px;\n' +
+                    ' }\n' +
+                    ' button.btn:focus {\n' +
+                    '  outline-style: none;\n' +
+                    ' }\n' +
+                    '</style>\n' +
                     '  <title>Secret</title>\n' +
                     ' </head>\n' +
-                    ' <body>\n' +
-                    resultat['Message'] +
+                    ' <body bgcolor="white">\n' +
+                    reponse['Message'] +
+                    '<p class="align-center tbrl_margin_12">' +
+                    '<button id="iPrint" class="btn tbrl_margin_3" onClick="javascript:window.print();">' +
+                    reponse['L_Print'] + '</button>' +
+                    '<button class="btn tbrl_margin_3" onClick="javascript:window.close();">' +
+                    reponse['L_Close'] + '</button>' +
+                    '</p>\n' +
+                    '<script>document.getElementById("iPrint").focus();</script>\n' +
                     ' </body>\n' +
                     '</html>\n' );
                 w.document.close();
@@ -331,9 +314,43 @@ function changeMotherKey() {
             }
         },
         error: function(reponse) {
-            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+            document.write( reponse['responseText'] );
         }
     }); 
+}
+
+
+// Sauvegarde la valeur de la nouvelle clé Mère ainsi que sa clé Opérateur.
+function confirmTranscryptMotherKey(){
+    if ( $("#iNew_Operator_Key_1").val() == '' ) {
+        var Warning = $("#iSaveNewOeratorKey_1").attr('data-cancel-op');
+        showInfoMessage( 'error', Warning ); // SecretManager.js
+        return;
+    }
+    
+    var Warning = $("#iSaveNewOeratorKey_1").attr('data-warning');
+    var Confirm = $("#iSaveNewOeratorKey_1").attr('data-confirm');
+    var Cancel = $("#iSaveNewOeratorKey_1").attr('data-cancel');
+    var Text_1 = $("#iSaveNewOeratorKey_1").attr('data-text-1');
+    
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h3 id="myModalLabel">'+Warning+'</h3>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:82%; margin-top:8px;">' +
+     '<p>' + Text_1 + '</p>' +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id=\"iConfirmSaveNewOeratorKey_1\" href="javascript:hideConfirmMessage();">'+
+     Cancel+'</a>&nbsp;<a class="button" href="javascript:transcryptMotherKey();">'+Confirm+'</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    $('#iConfirmSaveNewOeratorKey_1').focus();
 }
 
 
@@ -349,14 +366,8 @@ function transcryptMotherKey() {
             }),
         dataType: 'json',
         success: function(reponse){
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+            if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                 $('#iNew_Operator_Key_1').val('');
                 hideConfirmMessage();
             } else {
@@ -364,7 +375,7 @@ function transcryptMotherKey() {
             }
         },
         error: function(reponse) {
-            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+            document.write( reponse['responseText'] );
         }
     }); 
 }
@@ -387,32 +398,26 @@ function LoadMotherKey() {
             }),
         dataType: 'json',
         success: function(reponse){
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
             var L_Operator = $('#iSecretServerStatus').attr('data-operator');
             var L_Creation_Date = $('#iSecretServerStatus').attr('data-date-crea');
             var L_Mother_Loaded = $('#iSecretServerStatus').attr('data-mk-loaded');
         
-            if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+            if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
                 $('#iOperator_Key').val('');
 
                 $('#iSecretServerStatus').html( "         <table>\n" +
                  "          <tr>\n" +
-                 "           <td class=\"bold green\" colspan=\"2\">" + resultat['Message'] + "</td>\n" +
+                 "           <td class=\"bold green\" colspan=\"2\">" + reponse['Message'] + "</td>\n" +
                  "          </tr>\n" +
                  "          <tr>\n" +
                  "           <td class=\"pair\">" + L_Operator + "</td>\n" +
-                 "           <td class=\"pair bold\">" + resultat['Operator'] + "</td>\n" +
+                 "           <td class=\"pair bold\">" + reponse['Operator'] + "</td>\n" +
                  "          </tr>\n" +
                  "          <tr>\n" +
                  "           <td class=\"pair\">" + L_Creation_Date + "</td>\n" +
-                 "           <td class=\"pair bold\">" + resultat['Date'] + "</td>\n" +
+                 "           <td class=\"pair bold\">" + reponse['Date'] + "</td>\n" +
                  "          </tr>\n" +
                  "         </table>\n" );
 
@@ -421,7 +426,7 @@ function LoadMotherKey() {
             }
         },
         error: function(reponse) {
-            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+            document.write( reponse['responseText'] );
         }
     }); 
 }
@@ -433,14 +438,8 @@ function shutdownSecretServer() {
         type: 'POST',
         dataType: 'json',
         success: function(reponse){
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+            if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
                 $('#iSecretServerStatus').html(
                     '         <span class="bold bg-orange">&nbsp;' +
@@ -452,7 +451,7 @@ function shutdownSecretServer() {
             }
         },
         error: function(reponse) {
-            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+            document.write(reponse['responseText']);
         }
     }); 
 }
@@ -464,22 +463,16 @@ function backupSecrets() {
         type: 'POST',
         dataType: 'json',
         success: function(reponse){
-            var resultat = new Array();
+            if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
-
-                $('#iDateBackup').text( resultat['Date'] );
+                $('#iDateBackup').text( reponse['Date'] );
             } else {
                 alert('Erreur sur serveur : ' + reponse);
             }
         },
         error: function(reponse) {
-            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+            document.write(reponse['responseText']);
         }
     }); 
 }
@@ -491,22 +484,28 @@ function backupTotal() {
         type: 'POST',
         dataType: 'json',
         success: function(reponse){
-            var resultat = new Array();
+            if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
-
-                $('#iTotalDateBackup').text( resultat['Date'] );
+                $('#iTotalDateBackup').text( reponse['Date'] );
             } else {
                 alert('Erreur sur serveur : ' + reponse);
             }
         },
         error: function(reponse) {
-            alert('Erreur interne sur serveur : ' + reponse['responseText']);
+            document.write(reponse['responseText']);
         }
     }); 
+}
+
+
+function resetEmptyField( Field_Name, Image_Name ) {
+    if ( $('#'+Field_Name).val() == '' ) {
+        $('#'+Image_Name).attr( 'src', Parameters['URL_PICTURES'] + '/blank.gif' );
+    }
+}
+
+
+function noEnterKey( evt ) {
+    if ( evt.which == 13 ) return false;
 }

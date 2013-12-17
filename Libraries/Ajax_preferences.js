@@ -1,10 +1,3 @@
-$(document).keyup(function(e){
-    if(e.which == 27) { // || e.which == 13){
-            cancel();
-    }
-});
-
-
 $(document).ready( function() {
     $("#iSearchSecret").on('click', function(){
         var recherche = $(this).val();
@@ -25,13 +18,7 @@ $(document).ready( function() {
                 }
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur sur serveur : ' + resultat['responseText']);
+                alert('Erreur sur serveur : ' + reponse['responseText']);
             }
         }); 
     });
@@ -45,14 +32,8 @@ $(document).ready( function() {
             data: $.param({'UseSecretServer': UseSecretServer}),
             dataType: 'json',
             success: function(reponse){
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                    showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+                if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                 } else {
                     alert('Erreur sur serveur : ' + reponse);
                 }
@@ -81,14 +62,8 @@ $(document).ready( function() {
                 }),
             dataType: 'json',
             success: function(reponse){
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                if ( resultat['Status'] == 'success' || resultat['Status'] == 'error' ) {
-                    showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+                if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                 } else {
                     alert('Erreur sur serveur : ' + reponse);
                 }
@@ -112,20 +87,12 @@ function setSecret( secret_id, action ) {
     
     cancel();
 
-    var resultat;
-
     $.ajax({
         url: '../SM-home.php?action=AJAX_LV',
         type: 'POST',
         data: $.param({'scr_id': secret_id}),
         dataType: 'json', // le résultat est transmit dans un objet JSON
         success: function(reponse){
-            resultat = new Array();
-            
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
             if ( $('#' + secret_id + ' td p').length == 0 ) {
                 var group, group_id, type, type_id, environment, environment_id, application,
                     host, user, expiration, comment, right, dirname, L_Edit, L_Delete, L_View;
@@ -133,7 +100,7 @@ function setSecret( secret_id, action ) {
                     if ( index == 0 ) {                        
                         group_id = $(this).attr('data-id');
 
-                        $.each(resultat['listGroups'], function(attribut, valeur) {
+                        $.each(reponse['listGroups'], function(attribut, valeur) {
                             if ( group_id == valeur['sgr_id'] ) {
                                 var Selected = ' selected';
                             } else {
@@ -148,7 +115,7 @@ function setSecret( secret_id, action ) {
                     } else if ( index == 1 ) {
                         type_id = $(this).attr('data-id');
                             
-                        $.each(resultat['listTypes'], function(attribut, valeur) {
+                        $.each(reponse['listTypes'], function(attribut, valeur) {
                             if ( type_id == valeur['stp_id'] ) {
                                 var Selected = ' selected';
                             } else {
@@ -163,7 +130,7 @@ function setSecret( secret_id, action ) {
                     } else if ( index == 2 ) {
                         environment_id = $(this).attr('data-id');
 
-                        $.each(resultat['listEnvironments'], function(attribut, valeur) {
+                        $.each(reponse['listEnvironments'], function(attribut, valeur) {
                             if ( environment_id == valeur['env_id'] ) {
                                 var Selected = ' selected';
                             } else {
@@ -196,13 +163,13 @@ function setSecret( secret_id, action ) {
                 var L_Modify = $('tr#' + secret_id).attr('data-modify');
                 var L_Delete = $('tr#' + secret_id).attr('data-delete');
                 
-                if ( resultat['Password'] == null ) {
+                if ( reponse['Password'] == null ) {
                     var password = '*********';
                 } else {
-                    var password = resultat['Password'];
+                    var password = reponse['Password'];
                 }
                 
-                if ( resultat['alert'] == true ) {
+                if ( reponse['alert'] == true ) {
                     var alert = 'checked';
                 } else {
                     var alert = '';
@@ -211,28 +178,28 @@ function setSecret( secret_id, action ) {
                 var newOcc = '<tr id="MOD_' + secret_id + '" class="' + currentClass + '" style="cursor: pointer;">' +
                     '<td colspan="9" style="margin:0;padding:0;border:2px solid #568EB6;">' +
                     '<div id="modification-zone">' +
-                    '<label for="'+'group_'+secret_id+'">' + resultat['L_Group'] + '</label>' +
+                    '<label for="'+'group_'+secret_id+'">' + reponse['L_Group'] + '</label>' +
                     '<select id="'+'group_'+secret_id+'" class="input-xlarge"' + Delete_Mode + '>' +
                     group +
                     '</select>' +
-                    '<label for="'+'type_'+secret_id+'">' + resultat['L_Type'] + '</label>' +
+                    '<label for="'+'type_'+secret_id+'">' + reponse['L_Type'] + '</label>' +
                     '<select id="'+'type_'+secret_id+'" class="input-medium"' + Delete_Mode + '>' +
                     type +
                     '</select>' +
-                    '<label for="'+'environment_'+secret_id+'">' + resultat['L_Environment'] + '</label>' +
+                    '<label for="'+'environment_'+secret_id+'">' + reponse['L_Environment'] + '</label>' +
                     '<select id="'+'environment_'+secret_id+'"' + ' class="input-medium"' + Delete_Mode + '>' +
                     environment +
                     '</select><br/>' +
-                    '<label for="'+'application_'+secret_id+'">' + resultat['L_Application'] + '</label>' +
+                    '<label for="'+'application_'+secret_id+'">' + reponse['L_Application'] + '</label>' +
                     '<input id="'+'application_'+secret_id+'" type="text" value="' + application +
                     '" class="input-medium"' + Delete_Mode + '>' +
-                    '<label for="'+'host_'+secret_id+'">' + resultat['L_Host'] + '</label>' +
+                    '<label for="'+'host_'+secret_id+'">' + reponse['L_Host'] + '</label>' +
                     '<input id="'+'host_'+secret_id+'" type="text" value="' + host + '" class="input-medium"' + 
                     Delete_Mode + '>' +
-                    '<label for="'+'user_'+secret_id+'">' + resultat['L_User'] + '</label>' +
+                    '<label for="'+'user_'+secret_id+'">' + reponse['L_User'] + '</label>' +
                     '<input id="'+'user_'+secret_id+'" type="text" value="' + user + '" class="input-medium"' + 
                     Delete_Mode + '>' +
-                    '<label for="'+'secret_'+secret_id+'">' + resultat['L_Password'] + '</label>';
+                    '<label for="'+'secret_'+secret_id+'">' + reponse['L_Password'] + '</label>';
 
                 if ( action == 'D' ) {
                     password = '************';
@@ -240,12 +207,12 @@ function setSecret( secret_id, action ) {
                     
                 newOcc = newOcc + '<input id="'+'secret_'+secret_id+'" type="text" value="' + password + 
                     '" class="input-medium"' + Delete_Mode + '><br/>' +
-                    '<label for="'+'alert_'+secret_id+'">' + resultat['L_Alert'] + '</label>' +
+                    '<label for="'+'alert_'+secret_id+'">' + reponse['L_Alert'] + '</label>' +
                     '<input id="'+'alert_'+secret_id+'" type="checkbox" ' + alert + Delete_Mode + '>' +
-                    '<label for="'+'expiration_'+secret_id+'">' + resultat['L_Expiration_Date'] + '</label>' +
+                    '<label for="'+'expiration_'+secret_id+'">' + reponse['L_Expiration_Date'] + '</label>' +
                     '<input id="'+'expiration_'+secret_id+'" type="text" value="' + expiration + '" class="input-medium"' +
                     Delete_Mode + '>' +
-                    '<label for="'+'comment_'+secret_id+'">' + resultat['L_Comment'] + '</label>' +
+                    '<label for="'+'comment_'+secret_id+'">' + reponse['L_Comment'] + '</label>' +
                     '<input id="'+'comment_'+secret_id+'" type="text" value="' + comment + '" class="input-xxlarge"' + 
                     Delete_Mode + '>' +
                     '</div>' +
@@ -271,13 +238,7 @@ function setSecret( secret_id, action ) {
 
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     }); 
     
@@ -341,25 +302,13 @@ function save( secret_id ) {
                         $('tbody#listeSecrets').html(reponse);
                     },
                     error: function(reponse) {
-                        var resultat = new Array();
-
-                        $.each(reponse, function(attribut, valeur) {
-                            resultat[attribut]=valeur;
-                        });
-
-                        alert('Erreur sur serveur : ' + resultat['responseText']);
+                        alert('Erreur sur serveur : ' + reponse['responseText']);
                     }
                 });
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     }); 
 
@@ -385,13 +334,7 @@ function remove( secret_id ) {
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     }); 
 

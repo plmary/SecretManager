@@ -82,28 +82,20 @@ function addCivility(){
             data: $.param({'Last_Name': LastName, 'First_Name': FirstName, 'Sex': Sex}),
             dataType: 'json',
             success: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                var statut = resultat['Status'];
-
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
                 if (statut == 'success') {
-                    var Id = resultat['IdCivility'];
-                    var Script = resultat['Script'];
-                    var URL_PICTURES = resultat['URL_PICTURES'];
-                    var L_Modify = resultat['L_Modify'];
-                    var L_Delete = resultat['L_Delete'];
-                    var L_Warning = resultat['L_Warning'];
-                    var L_Cancel = resultat['L_Cancel'];
-                    var L_Confirm_Delete_Civility = resultat['L_Confirm_Delete_Civility'];
-                    var L_Confirm = resultat['L_Confirm'];
-                    var L_Man = resultat['L_Man'];
-                    var L_Woman = resultat['L_Woman'];
+                    var Id = reponse['IdCivility'];
+                    var Script = reponse['Script'];
+                    var URL_PICTURES = reponse['URL_PICTURES'];
+                    var L_Modify = reponse['L_Modify'];
+                    var L_Delete = reponse['L_Delete'];
+                    var L_Warning = reponse['L_Warning'];
+                    var L_Cancel = reponse['L_Cancel'];
+                    var L_Confirm_Delete_Civility = reponse['L_Confirm_Delete_Civility'];
+                    var L_Confirm = reponse['L_Confirm'];
+                    var L_Man = reponse['L_Man'];
+                    var L_Woman = reponse['L_Woman'];
 
                     if ( Sex == 0 ) Sex = L_Man;
                     else Sex = L_Woman;
@@ -141,13 +133,7 @@ function addCivility(){
                 }
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur serveur : ' + resultat['responseText']);
+                alert('Erreur serveur : ' + reponse['responseText']);
             }
         });
     }
@@ -187,17 +173,9 @@ function deleteCivility( Id ){
         data: $.param({'cvl_id': Id}),
         dataType: 'json',
         success: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            var statut = resultat['Status'];
-
-            showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
             
-            if (statut == 'success') {
+            if (reponse['Status'] == 'success') {
                 $('#civility-'+Id).remove();
                 hideConfirmMessage();
 
@@ -207,13 +185,7 @@ function deleteCivility( Id ){
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     });
 }
@@ -296,14 +268,6 @@ function saveModifyCivility( Id, L_Man, L_Woman ) {
         data: $.param({'cvl_id': Id, 'First_Name': First_Name, 'Last_Name': Last_Name, 'Sex': Sex}),
         dataType: 'json',
         success: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            var statut = resultat['Status'];
-
             if ( Sex == '0' ) {
                 var L_Sex = L_Man;
             } else {
@@ -312,7 +276,7 @@ function saveModifyCivility( Id, L_Man, L_Woman ) {
 
             showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
-            if (statut == 'success') {
+            if (reponse['Status'] == 'success') {
                 $('#last_name-'+Id).text(Last_Name);
                 $('#first_name-'+Id).text(First_Name);
                 $('#sex-'+Id).text(L_Sex);
@@ -322,13 +286,7 @@ function saveModifyCivility( Id, L_Man, L_Woman ) {
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     });
 }

@@ -89,6 +89,8 @@
 	$L_Success = 'Succès';
 	$L_Error = 'Erreur';
 	$L_Warning = 'Attention';
+	$L_Shutdown = 'Eteindre';
+	$L_Print = 'Imprimer';
 
 	$L_Save = 'Sauvegarder';
 	$L_Confirm = 'Confirmer';

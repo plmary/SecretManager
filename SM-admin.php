@@ -294,13 +294,14 @@ switch( $Action ) {
 
         if ( $Status == 'OK' ) {
         	$Status_Server = $L_MOTHER_KEY_LOADED;
-        	$Color = 'green';
+        	$Status_Color = 'green';
         } else {
         	$Status_Server = ${$Status};
-        	$Color = 'orange';
+        	$Status_Color = 'orange';
         }
         
         $UseSecretServer = $L_Yes;
+        $Color = 'green';
     } else {
         $UseSecretServer = $L_No;
         $Color = 'orange';
@@ -321,7 +322,7 @@ switch( $Action ) {
     if ( $_UseSecretServer == 1 ) {
     	print( "       <p>\n" . 
 	         "        <span>" . $L_Status . " : </span>\n" .
-		     "        <span class=\"bg-".$Color." bold\">&nbsp;" . $Status_Server . "&nbsp;</span>\n" .
+		     "        <span class=\"bg-".$Status_Color." bold\">&nbsp;" . $Status_Server . "&nbsp;</span>\n" .
     		 "       </p>\n" .
 	    	 "       <p>\n" .
 		     "        <span>" . $L_Operator . " : </span>\n" .
@@ -788,30 +789,30 @@ switch( $Action ) {
      "        <td class=\"pair align-right align-middle\">" .
      $L_Transcrypt_Mother_Key . "</td>\n" .
      "        <td class=\"pair\">\n" .
-     "         <form class=\"form-search simple\" method=\"post\" " .
-     "action=\"javascript:generatePassword( 'iNew_Operator_Key_1', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\">\n" .
      "         <table>\n" .
      "          <tr>\n" .
      "           <td class=\"pair\">" . $L_Insert_New_Operator_Key . "</td>\n" .
      "           <td>\n" .
      "            <div class=\"input-append\">\n" .
-     "             <input type=\"text\" class=\"search-query input-large\" " .
+     "             <input type=\"text\" class=\"left-search input-large\" " .
      "id=\"iNew_Operator_Key_1\" name=\"New_Operator_Key\" " .
      "onFocus=\"checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
      ", " . $Operator_Key_Size . ");\" " .
+     "onBlur=\"resetEmptyField('iNew_Operator_Key_1', 'Result_1');\" " .
      "onKeyup=\"checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
      ", " . $Operator_Key_Size . ");\" />\n" .
-     "             <button type=\"submit\" class=\"btn btn-small\">" . $L_Generate . "</button>\n" .
+     "             <button class=\"btn right-search btn-small\" " .
+     "onClick=\"javascript:generatePassword( 'iNew_Operator_Key_1', " . $Operator_Key_Complexity .
+     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
+     ", " . $Operator_Key_Size . ");\">" . $L_Generate . "</button>\n" .
      "            </div>\n" .
-     "<img id=\"Result_1\" class=\"no-border\" width=\"16\" height=\"16\" " .
+     "<img id=\"Result_1\" class=\"no-border align-middle\" width=\"16\" height=\"16\" " .
      "src=\"https://secretmanager.localhost/Pictures/blank.gif\" alt=\"Ok\">\n" .
      "           </td>\n" .
      "          </tr>\n" .
      "          <tr>\n" .
      "           <td class=\"pair\">&nbsp;</td>\n" .
-     "           <td><a href=\"#\" class=\"button\" id=\"iSaveNewOeratorKey_1\" " .
+     "           <td><a href=\"javascript:confirmTranscryptMotherKey();\" class=\"button\" id=\"iSaveNewOeratorKey_1\" " .
      "data-cancel-op=\"".$L_Operation_Cancel_Not_Given_O_Key."\" " .
      "data-warning=\"".$L_Warning."\" " .
      "data-confirm=\"".$L_Confirm."\" " .
@@ -819,7 +820,6 @@ switch( $Action ) {
      "data-text-1=\"".$L_Warning_Transcrypt_mother_key."\">" . $L_Transcrypt . "</a></td>\n" .
      "          </tr>\n" .
      "         </table>\n" .
-     "         </form>\n" .
      "        </td>\n" .
      "       </tr>\n" .
 
@@ -831,44 +831,42 @@ switch( $Action ) {
      "           <tr>\n" .
      "            <td class=\"pair\">" . $L_Insert_Operator_Key . "</td>\n" .
      "            <td>\n" .
-     "             <form class=\"form-search simple\" method=\"post\" " .
-     "action=\"javascript:generatePassword( 'iNew_Operator_Key_2', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\">\n" .
      "             <div class=\"input-append\">\n" .
-     "              <input type=\"text\" class=\"search-query input-large\" " .
+     "              <input type=\"text\" class=\"left-search input-large\" " .
      "id=\"iNew_Operator_Key_2\" name=\"New_Operator_Key\" " .
      "onFocus=\"checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
      ", " . $Operator_Key_Size . ");\" " .
+     "onBlur=\"resetEmptyField('iNew_Operator_Key_2', 'Result_2');\" " .
      "onKeyup=\"checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
      ", " . $Operator_Key_Size . ");\" />\n" .
-     "              <button type=\"submit\" class=\"btn btn-small\">" .
+     "              <button type=\"submit\" class=\"btn right-search btn-small\" " .
+     "onClick=\"javascript:generatePassword( 'iNew_Operator_Key_2', " . $Operator_Key_Complexity .
+     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
+     ", " . $Operator_Key_Size . ");\">" .
      $L_Generate . "</button>\n" .
      "             </div>\n" .
      "<img id=\"Result_2\" class=\"no-border\" width=\"16\" height=\"16\" " .
      "src=\"https://secretmanager.localhost/Pictures/blank.gif\" alt=\"Ok\">\n" .
-     "             </form>\n" .
      "            </td>\n" .
      "           </tr>\n" .
      "           <tr>\n" .
      "            <td class=\"pair\">" . $L_Insert_New_Mother_Key . "</td>\n" .
      "            <td>\n" .
-     "             <form class=\"form-search simple\" method=\"post\" " .
-     "action=\"javascript:generatePassword( 'iNew_Mother_Key', " . $Mother_Key_Complexity .
-     ", " . $Mother_Key_Size . " );checkPassword('iNew_Mother_Key', 'Result_3', " . $Mother_Key_Complexity .
-     ", " . $Mother_Key_Size . ");\">\n" .
      "             <div class=\"input-append\">\n" .
-     "              <input type=\"text\" class=\"search-query input-large\" " .
+     "              <input type=\"text\" class=\"left-search input-large\" " .
      "id=\"iNew_Mother_Key\" name=\"New_Mother_Key\" " .
      "onFocus=\"checkPassword('iNew_Mother_Key', 'Result_3', " . $Operator_Key_Complexity .
      ", " . $Operator_Key_Size . ");\" " .
+     "onBlur=\"resetEmptyField('iNew_Mother_Key', 'Result_3');\" " .
      "onKeyup=\"checkPassword('iNew_Mother_Key', 'Result_3', " . $Mother_Key_Complexity .
      ", " . $Mother_Key_Size . ");\"/>\n" .
-     "              <button type=\"submit\" class=\"btn btn-small\">" . $L_Generate . "</button>\n" .
+     "              <button type=\"submit\" class=\"btn right-search btn-small\" " .
+     "onClick=\"javascript:generatePassword( 'iNew_Mother_Key', " . $Mother_Key_Complexity .
+     ", " . $Mother_Key_Size . " );checkPassword('iNew_Mother_Key', 'Result_3', " . $Mother_Key_Complexity .
+     ", " . $Mother_Key_Size . ");\">" . $L_Generate . "</button>\n" .
      "             </div>\n" .
      "<img id=\"Result_3\" class=\"no-border\" width=\"16\" height=\"16\" " .
      "src=\"https://secretmanager.localhost/Pictures/blank.gif\" alt=\"Ok\">\n" .
-     "             </form>\n" .
      "            </td>\n" .
      "           </tr>\n" .
      "           <tr>\n" .
@@ -892,7 +890,7 @@ switch( $Action ) {
      "        <td class=\"pair\">\n" .
      "          <p><a href=\"javascript:shutdownSecretServer();\" class=\"button\" " .
      "id=\"iShutdownSecretServer\" " .
-     "data-text=\"".$L_ERR_SERVER_NOT_STARTED."\" >" . $L_Execute . "</a></p>\n" .
+     "data-text=\"".$L_ERR_SERVER_NOT_STARTED."\" >" . $L_Shutdown . "</a></p>\n" .
      "        </td>\n" .
      "       </tr>\n" .
      "       </tbody>\n" .
@@ -965,7 +963,62 @@ switch( $Action ) {
     break;
 
 
- case 'CMKX':
+ case 'CMKX': // Change la clé mère et transchiffre la base de données.
+    $Secret_Server = new Secret_Server();
+
+    try {
+        $Operator_Key = $_POST[ 'Operator_Key' ];
+        $Mother_Key = $_POST[ 'Mother_Key' ];
+
+        list( $Operator_Key_2, $Mother_Key_2, $C_Date) = $Secret_Server->SS_changeMotherKey(
+            $Operator_Key, $Mother_Key );
+
+        $C_Date = date( 'Y-m-d H:i:s', (int)$C_Date );
+        
+        // Faire une page imprimable qui récapitule les informations créées.
+        $Message = $L_Success_Page . "\n" .
+         "<div id=\"dashboard\" class=\"align-center tbrl_margin_12\">" .
+         "<table class=\"table-bordered\">\n" .
+         " <thead>\n" .
+         " <tr>\n" .
+         "  <th colspan=\"2\">" . $L_New_Keys_Created . "</th>\n" .
+         " </tr>\n" .
+         " </thead>\n" .
+         " <tbody>\n" .
+         " <tr>\n" .
+         "  <td class=\"align-right impair\">" . $L_Operator_Key . "</td>\n" .
+         "  <td class=\"align-left pair\">" . $Operator_Key_2 . "</td>\n" .
+         " </tr>\n" .
+         " <tr>\n" .
+         "  <td class=\"align-right impair\">" . $L_Mother_Key . "</td>\n" .
+         "  <td class=\"align-left pair\">" . $Mother_Key_2 . "</td>\n" .
+         " </tr>\n" .
+         " <tr>\n" .
+         "  <td class=\"align-right impair\">" . $L_Creation_Date . "</td>\n" .
+         "  <td class=\"align-left pair\">" . $C_Date . "</td>\n" .
+         " </tr>\n" .
+         "</table>\n" .
+         "</div>\n";
+        
+        $Status = 'success';
+        $Result = $L_New_Keys_Created;
+    } catch( Exception $e ) {
+        $Status = 'error';
+        $Result = ${$e->getMessage()};
+        $Message = $Result;
+    }
+
+    $alert_message = $Secrets->formatHistoryMessage( $Result );
+
+    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    
+    echo json_encode( array( 'Status' => $Status, 'Message' => $Message, 'L_Close' => $L_Close,
+        'L_Print' => $L_Print ) );
+
+    exit();
+
+
+ case 'CRMKX': // Créée la clé mère et transchiffre la base de données.
     $Secret_Server = new Secret_Server();
 
     try {
@@ -976,10 +1029,10 @@ switch( $Action ) {
             $Operator_Key, $Mother_Key );
 
         $C_Date = date( 'Y-m-d H:i:s', (int)$C_Date );
-//        print( $File.', '.$C_Date.', '.$Operator_Key_2.', '.$Mother_Key_2 );
         
         // Faire une page imprimable qui récapitule les informations créées.
-        $Message = $L_Success_Page .
+        $Message = $L_Success_Page . "\n" .
+         "<div id=\"dashboard\" class=\"align-center tbrl_margin_12\">" .
          "<table class=\"table-bordered\">\n" .
          " <thead>\n" .
          " <tr>\n" .
@@ -999,7 +1052,8 @@ switch( $Action ) {
          "  <td class=\"align-right impair\">" . $L_Creation_Date . "</td>\n" .
          "  <td class=\"align-left pair\">" . $C_Date . "</td>\n" .
          " </tr>\n" .
-         "</table>\n";
+         "</table>\n".
+         "</div>\n";
         
         $Status = 'success';
         $Result = $L_New_Keys_Created;
@@ -1013,9 +1067,11 @@ switch( $Action ) {
 
     $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
     
-    echo json_encode( array( 'Status' => $Status, 'Message' => $Message ) );
+    echo json_encode( array( 'Status' => $Status, 'Message' => $Message, 'L_Close' => $L_Close,
+        'L_Print' => $L_Print ) );
 
     exit();
+
 
  case 'SHUTX':
     $Secret_Server = new Secret_Server();

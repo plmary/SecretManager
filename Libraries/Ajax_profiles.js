@@ -61,25 +61,19 @@ function addProfile(){
 
                 $('#iProfileLabel').val('');
 
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                var statut = resultat['Status'];
+                var statut = reponse['Status'];
 
                 if (statut == 'success') {
-                    var Id = resultat['idProfile'];
-                    var Label = resultat['Label'];
-                    var Script = resultat['Script'];
-                    var URL_PICTURES = resultat['URL_PICTURES'];
-                    var L_Modify = resultat['L_Modify'];
-                    var L_Delete = resultat['L_Delete'];
-                    var L_Cancel = resultat['L_Cancel'];
-                    var L_Delete_Profile_Confirmation = resultat['L_Delete_Profile_Confirmation'];
-                    var L_Warning = resultat['L_Warning'];
-                    var L_Groups_Associate = resultat['L_Groups_Associate'];
+                    var Id = reponse['idProfile'];
+                    var Label = reponse['Label'];
+                    var Script = reponse['Script'];
+                    var URL_PICTURES = reponse['URL_PICTURES'];
+                    var L_Modify = reponse['L_Modify'];
+                    var L_Delete = reponse['L_Delete'];
+                    var L_Cancel = reponse['L_Cancel'];
+                    var L_Delete_Profile_Confirmation = reponse['L_Delete_Profile_Confirmation'];
+                    var L_Warning = reponse['L_Warning'];
+                    var L_Groups_Associate = reponse['L_Groups_Associate'];
 
                     if ($('#dashboard').length == 0) {
                         $('#listeSecrets').prepend(
@@ -121,13 +115,7 @@ function addProfile(){
                 }
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur sur serveur : ' + resultat['responseText']);
+                alert('Erreur sur serveur : ' + reponse['responseText']);
             }
         });
     }
@@ -142,13 +130,7 @@ function deleteProfile( Id ){
         data: $.param({'prf_id': Id}),
         dataType: 'json',
         success: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            var statut = resultat['Status'];
+            var statut = reponse['Status'];
 
             showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
@@ -162,13 +144,7 @@ function deleteProfile( Id ){
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     });
 }
@@ -210,13 +186,7 @@ function saveModifyProfile( Id ) {
         data: $.param({'prf_id': Id, 'Label': Label}),
         dataType: 'json',
         success: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            var statut = resultat['Status'];
+            var statut = reponse['Status'];
 
             showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
@@ -228,13 +198,7 @@ function saveModifyProfile( Id ) {
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     });
 }

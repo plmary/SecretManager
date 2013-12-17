@@ -217,8 +217,7 @@ public function SS_changeMotherKey( $Operator_Key, $Mother_Key ) {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2013-03-18
+	* @date 2013-12-16
 	*
 	* @param[in] $Operator_Key Clé opérateur utilisée pour chiffrer la clé mère.
 	* @param[in] $Mother_Key Clé mère utilisée pour chiffrer les données dans la base.
@@ -228,26 +227,41 @@ public function SS_changeMotherKey( $Operator_Key, $Mother_Key ) {
 	* la clé mère, le 2ème élément est la clé opérateur qui a été utilisée et
 	* le 3ème élément est la mère utilisée est stockée ou lève une Exception.
 	*/
+	include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
+    
+    $Backup = new Backup();
+    
+    try {
+        $Date_Backup = $Backup->backup_secrets();
+    } catch( Exception $e ) {
+        throw new Exception( $e->getMessage() );
+    }
+
+    $Backup->setParameter( 'Backup_Secrets_Date', $Date_Backup );
+
+	// Récupère l'enregistrement contenant la clé de transport.
 	$Result = $this->setTransportKey( session_id() );
 	if ( $Result[ 0 ] === FALSE ) {
 		throw new Exception( trim( $Result[ 1 ] ) );
 	}
 
+    // Extrait la clé de transport de l'enregistrement.
 	$T_Key = $Result[ 1 ];
 		
+    // Chiffre les clés avec la clé de transport avant de l'envoyer au SecretServer.
 	$Keys = $this->mc_encrypt( $Operator_Key . '===' . $Mother_Key, $T_Key );
 	
+	// Envoi l'information au SecretServer.
 	$Result = $this->__sendServerSocket( session_id() . '###change###' . $Keys . "\n" );
 		
 	if ( $Result[0] == FLAG_ERROR ) {
 		throw new Exception( trim( $Result[ 1 ] ) );
 	}
 	
-	$Keys = $this->mc_decrypt( $Result[ 2 ], $T_Key );
+	$Keys = $this->mc_decrypt( $Result[ 1 ], $T_Key );
 	$Keys = explode( '===', trim( $Keys ) );
 	
-	return array( trim( $Result[ 1 ] ), trim( $Keys[ 0 ] ), trim( $Keys[ 1 ] ),
-	 trim( $Result[ 3 ] ) );
+	return array( trim( $Keys[ 0 ] ), trim( $Keys[ 1 ] ), trim( $Result[ 2 ] ) );
 }
 
 

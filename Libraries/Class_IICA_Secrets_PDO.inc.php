@@ -753,6 +753,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			}
 		}
 
+        $this->commit();
 		
 		return true;
 	}

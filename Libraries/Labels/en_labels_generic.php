@@ -88,6 +88,8 @@
 	$L_Error = 'Error';
 	$L_Management = 'Administration';
 	$L_Warning = 'Warning';
+	$L_Shutdown = 'Shutdown';
+	$L_Print = 'Print';
 
     $L_Save = 'Save';
 	$L_Confirm = 'Confirm';

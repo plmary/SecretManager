@@ -78,26 +78,18 @@ function addEntity(){
             data: $.param({'Code': Code, 'Label': Label}),
             dataType: 'json',
             success: function(reponse) {
-                var resultat = new Array();
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                var statut = resultat['Status'];
-
-                showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
-
-                if (statut == 'success') {
-                    var Id = resultat['IdEntity'];
-                    var Script = resultat['Script'];
-                    var URL_PICTURES = resultat['URL_PICTURES'];
-                    var L_Modify = resultat['L_Modify'];
-                    var L_Delete = resultat['L_Delete'];
-                    var L_Warning = resultat['L_Warning'];
-                    var L_Cancel = resultat['L_Cancel'];
-                    var L_Confirm_Delete_Entity = resultat['L_Confirm_Delete_Entity'];
-                    var L_Confirm = resultat['L_Confirm'];
+                if (reponse['Status'] == 'success') {
+                    var Id = reponse['IdEntity'];
+                    var Script = reponse['Script'];
+                    var URL_PICTURES = reponse['URL_PICTURES'];
+                    var L_Modify = reponse['L_Modify'];
+                    var L_Delete = reponse['L_Delete'];
+                    var L_Warning = reponse['L_Warning'];
+                    var L_Cancel = reponse['L_Cancel'];
+                    var L_Confirm_Delete_Entity = reponse['L_Confirm_Delete_Entity'];
+                    var L_Confirm = reponse['L_Confirm'];
 
                     hideConfirmMessage();
 
@@ -130,13 +122,7 @@ function addEntity(){
                 }
             },
             error: function(reponse) {
-                var resultat = new Array();
-
-                $.each(reponse, function(attribut, valeur) {
-                    resultat[attribut]=valeur;
-                });
-
-                alert('Erreur serveur : ' + resultat['responseText']);
+                alert('Erreur serveur : ' + reponse['responseText']);
             }
         });
     }
@@ -176,17 +162,9 @@ function deleteEntity( Id ){
         data: $.param({'ent_id': Id}),
         dataType: 'json',
         success: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            var statut = resultat['Status'];
-
-            showInfoMessage( resultat['Status'], resultat['Message'] ); // SecretManager.js
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
             
-            if (statut == 'success') {
+            if (reponse['Status'] == 'success') {
                 $('#entity_'+Id).remove();
                 hideConfirmMessage();
 
@@ -196,13 +174,7 @@ function deleteEntity( Id ){
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     });
 }
@@ -261,17 +233,9 @@ function saveModifyEntity( Id ) {
         data: $.param({'ent_id': Id, 'Code': Code, 'Label': Label}),
         dataType: 'json',
         success: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            var statut = resultat['Status'];
-
             showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
-            if (statut == 'success') {
+            if (reponse['Status'] == 'success') {
                 $('#code-'+Id).text(Code);
                 $('#label-'+Id).text(Label);
                 
@@ -280,13 +244,7 @@ function saveModifyEntity( Id ) {
             }
         },
         error: function(reponse) {
-            var resultat = new Array();
-
-            $.each(reponse, function(attribut, valeur) {
-                resultat[attribut]=valeur;
-            });
-
-            alert('Erreur sur serveur : ' + resultat['responseText']);
+            alert('Erreur sur serveur : ' + reponse['responseText']);
         }
     });
 }

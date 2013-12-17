@@ -219,9 +219,6 @@ switch( $Action ) {
 	 "         </tr>\n" .
 	 "        </table>\n" .
 	 "       </center>\n" .
-	 "       <script>\n" .
-	 "        document.connectForm.User.focus();\n" .
-	 "       </script>\n" .
 	 "      </form>\n" .
 	 "     </center>\n" .
 	 "    </div> <!-- fin : zoneMilieuComplet -->\n" .
