@@ -164,7 +164,7 @@ switch( $Action ) {
 
 
 		// Récupère la liste détaillée des Identités (avec toutes les liaisons)
-		$List_Identities = $Identities->detailedListIdentities( $orderBy, 0, $particular );
+		$List_Identities = $Identities->detailedListIdentities( $orderBy, $particular );
 
 		print( "       <tr class=\"pair\">\n" );
 	 
@@ -1107,7 +1107,7 @@ switch( $Action ) {
 		 "      <tbody id=\"listeSecrets\">\n" );
 
 		
-		$List_Entities = $Entities->listEntities( 0, $orderBy );
+		$List_Entities = $Entities->listEntities( $orderBy );
 		
 		foreach( $List_Entities as $Entity ) {
 			print( "       <tr id=\"entity_". $Entity->ent_id ."\" class=\"surline\">\n" .
@@ -1544,7 +1544,7 @@ switch( $Action ) {
 		 "      <tbody id=\"listeSecrets\">\n" );
 
 		 
-		$List_Civilities = $Civilities->listCivilities( 0, $orderBy );
+		$List_Civilities = $Civilities->listCivilities( $orderBy );
 
 		
 		foreach( $List_Civilities as $Civility ) {
@@ -1862,7 +1862,7 @@ switch( $Action ) {
 	 "          <thead>\n" .
 	 "           <tr><th colspan=\"3\"><span class=\"div-right\">" . $Action_Button . "</span></th></tr>\n" .
 	 "          </thead>\n" .
-	 "          <tbody id=\"iListProfiles\">\n" );
+	 "          <tbody id=\"listeSecrets\">\n" );
 
 	$List_Profiles = $Profiles->listProfiles();
 
@@ -1918,7 +1918,15 @@ switch( $Action ) {
 	 "       </tr>\n" .
 	 "       </tbody>\n" .
 	 "      </table>\n" .
-	 "     </form>\n"
+	 "     </form>\n" .
+	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\" style=\"top:50%;left:40%;\">\n".
+	 "      <button type=\"button\" class=\"close\">×</button>\n".
+	 "      <p class=\"titre\">".$L_Profile_Create."</p>\n".
+	 "      <div id=\"detailProfile\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
+	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iProfileLabel\" type=\"text\" class=\"obligatoire\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
+	 "       <p class=\"align-center\"><input id=\"iButtonCreateProfile\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
+	 "      </div> <!-- Fin : detailProfil -->\n" .
+	 "     </div> <!-- Fin : addProfile -->\n"
 	);
 	
 	break;

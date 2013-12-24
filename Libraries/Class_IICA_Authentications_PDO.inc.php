@@ -10,7 +10,6 @@ class IICA_Authentications extends IICA_Parameters {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 * @date 2012-11-07
 *
 */
@@ -22,7 +21,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
@@ -40,7 +38,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.1
 	* @date 2013-04-07
 	*
 	* @param[in] $Login Nom de connexion de l'utilisateur
@@ -102,8 +99,6 @@ class IICA_Authentications extends IICA_Parameters {
 		 'LEFT JOIN cvl_civilities AS T2 ON T1.cvl_id = T2.cvl_id ' .
 		 'LEFT JOIN ent_entities AS T3 ON T1.ent_id = T3.ent_id ' .
 		 'WHERE T1.idn_login = :Login ' ;
-				
-		$Request .= 'AND T1.idn_logical_delete = false ' ;
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -303,7 +298,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Retourne vrai si l'utilisateur est connecté. Sinon, retourne faux.
@@ -322,7 +316,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Retourne toujours vrai

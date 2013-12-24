@@ -11,7 +11,6 @@ class IICA_Entities extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 */
 	public $LastInsertId;
 
@@ -42,7 +41,6 @@ class IICA_Entities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $ent_id Identifiant de l'entité à modifier (si précisé)
@@ -104,14 +102,13 @@ class IICA_Entities extends IICA_DB_Connector {
 	}
 
 
-	public function listEntities( $Type = 0, $orderBy = 'code' ) {
+	public function listEntities( $orderBy = 'code' ) {
 	/**
 	* Lister les Entités.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $Type Permet d'afficher ou pas les Entités supprimées logiquement.
 	* @param[in] $orderBy Permet de gérer l'ordre d'affichage.
@@ -121,10 +118,6 @@ class IICA_Entities extends IICA_DB_Connector {
 		$Request = 'SELECT ' .
 		 'ent_id, ent_code, ent_label ' .
 		 'FROM ent_entities ' ;
-
-		if ( $Type == 0 ) {
-			$Request .= 'WHERE ent_logical_delete = false ' ;
-		}
 		
 		switch( $orderBy ) {
 		 default:
@@ -165,17 +158,15 @@ class IICA_Entities extends IICA_DB_Connector {
 	}
 
 
-	public function get( $ent_id, $Type = 0 ) {
+	public function get( $ent_id ) {
 	/**
 	* Récupère les informations d'une Entité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $ent_id Identifiant de l'entité à récupérer
-	* @param[in] $Type Permet d'afficher ou pas une Entité supprimée logiquement.
 	*
 	* @return Renvoi l'occurrence d'une Entité
 	*/
@@ -185,10 +176,6 @@ class IICA_Entities extends IICA_DB_Connector {
 		 'ent_id, ent_code, ent_label ' .
 		 'FROM ent_entities ' .
 		 'WHERE ent_id = :ent_id ' ;
-
-		if ( $Type == 0 ) {
-			$Request .= 'AND ent_logical_delete = false' ;
-		}
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -209,17 +196,15 @@ class IICA_Entities extends IICA_DB_Connector {
 	}
 
 
-	public function delete( $ent_id, $Type = 0 ) {
+	public function delete( $ent_id ) {
 	/**
 	* Supprimer une Entité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $ent_id Identifiant de l'entité à supprimer
-	* @param[in] $Type Permet de supprimer une Entité logiquement ou physiquement.
 	*
 	* @return Renvoi vrai si l'Entité a été supprimée
 	*/
@@ -335,7 +320,6 @@ class IICA_Entities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $ent_id Identifiant de l'entité à contrôler
@@ -398,15 +382,13 @@ class IICA_Entities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @return Renvoi le nombre total d'Entités de stocker en base
 	*/
 		$Request = 'SELECT ' .
 		 'count(*) AS total ' .
-		 'FROM ent_entities ' .
-		 'WHERE ent_logical_delete = 0 ';
+		 'FROM ent_entities ' ;
 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();

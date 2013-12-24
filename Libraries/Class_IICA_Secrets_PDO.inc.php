@@ -537,6 +537,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 * @version 1.1
 * @date 2012-11-19
 */
+    public $LastInsertId;
 
 	/* ===============================
 	** Connexion à la base de données.
@@ -676,6 +677,18 @@ class IICA_Secrets extends IICA_DB_Connector {
 		if ( ! $Result->execute() ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( $scr_id == '' ) {
+			switch( $this->getAttribute(PDO::ATTR_DRIVER_NAME) ) {
+			 default;
+				$this->LastInsertId = $this->lastInsertId();
+				break;
+
+			 case 'pgsql';
+				$this->LastInsertId = $this->lastInsertId( 'scr_secrets_scr_id_seq' );
+				break;
+			}
 		}
 		
 		return true;

@@ -389,7 +389,7 @@ switch( $Action ) {
  // ========================
  // Gestion de l'Historique
  case 'H':
-    $List_Identities = $Identities->listIdentities( 1 );
+    $List_Identities = $Identities->listIdentities();
     
     if ( array_key_exists( 'scr_id', $_POST ) ) {
         $scr_id = $_POST[ 'scr_id' ];
@@ -567,7 +567,7 @@ switch( $Action ) {
     break;
 
  case 'HX':
-    $List_Identities = $Identities->listIdentities( 1 );
+    $List_Identities = $Identities->listIdentities();
 
     print( "     <form method=\"post\" name=\"f_historical\" action=\"" . $Script .
      "?action=HX\">\n" .

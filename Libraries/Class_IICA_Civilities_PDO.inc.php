@@ -12,7 +12,6 @@ class IICA_Civilities extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 * @date 2012-11-07
 */
 
@@ -24,7 +23,6 @@ class IICA_Civilities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
@@ -45,7 +43,6 @@ class IICA_Civilities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $cvl_id Identifiant de la civilité (à préciser si modification)
@@ -132,16 +129,14 @@ class IICA_Civilities extends IICA_DB_Connector {
 	}
 
 
-	public function listCivilities( $Type = 0, $Order = 'last_name' ) {
+	public function listCivilities( $Order = 'last_name' ) {
 	/**
 	* Lister les Civilités.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
-	* @param[in] $Type Type d'affichage pour les données supprimées
 	* @param[in] $Order Permet de gérer l'ordre d'affichage
 	*
 	* @return Renvoi une liste de civilité ou une liste vide
@@ -152,10 +147,6 @@ class IICA_Civilities extends IICA_DB_Connector {
 		 'cvl_id, cvl_last_name, cvl_first_name, cvl_sex, cvl_birth_date, ' .
 		 'cvl_born_town ' .
 		 'FROM cvl_civilities ' ;
-
-		if ( $Type == 0 ) {
-			$Request .= 'WHERE cvl_logical_delete = false ' ;
-		}
 		
 		switch( $Order ) {
 		 case 'last_name':
@@ -204,17 +195,15 @@ class IICA_Civilities extends IICA_DB_Connector {
 	}
 
 
-	public function get( $cvl_id, $Type = 0 ) {
+	public function get( $cvl_id ) {
 	/**
 	* Récupère les informations d'une Civilité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $cvl_id Identifiant de la civilité à afficher
-	* @param[in] $Type Type d'affichage pour les données supprimées
 	*
 	* @return Renvoi l'occurrence d'une civilité
 	*/
@@ -223,10 +212,6 @@ class IICA_Civilities extends IICA_DB_Connector {
 		 'cvl_born_town ' .
 		 'FROM cvl_civilities ' .
 		 'WHERE cvl_id = :cvl_id ' ;
-
-		if ( $Type == 0 ) {
-			$Request .= 'AND cvl_logical_delete = false ' ;
-		}
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -265,8 +250,7 @@ class IICA_Civilities extends IICA_DB_Connector {
 		 'cvl_id ' .
 		 'FROM cvl_civilities ' .
 		 'WHERE cvl_last_name = :cvl_last_name ' .
-		 'AND cvl_first_name = :cvl_first_name ' . 
-		 'AND cvl_logical_delete = true ';
+		 'AND cvl_first_name = :cvl_first_name ' ;
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -316,17 +300,15 @@ class IICA_Civilities extends IICA_DB_Connector {
 	}
 
 
-	public function delete( $cvl_id, $Type = 0 ) {
+	public function delete( $cvl_id ) {
 	/**
 	* Supprime une Civilité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $cvl_id Identifiant de la civilité à supprimer
-	* @param[in] $Type Type de suppression à réaliser (0 = logique, 1 = physique)
 	*
 	* @return Renvoi vrai si l'occurrence a été supprimée
 	*/
@@ -426,15 +408,13 @@ class IICA_Civilities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @return Renvoi le total d'occurrences trouvé
 	*/
 		$Request = 'SELECT ' .
 		 'count(*) AS total ' .
-		 'FROM cvl_civilities ' .
-		 'WHERE cvl_logical_delete = 0 ';
+		 'FROM cvl_civilities ' ;
 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();

@@ -1,14 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 3.5.2
+-- version 4.0.4
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le: Mar 19 Février 2013 à 16:07
--- Version du serveur: 5.5.25a
--- Version de PHP: 5.4.4
+-- Généré le: Mer 18 Décembre 2013 à 07:46
+-- Version du serveur: 5.5.31
+-- Version de PHP: 5.4.16
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT=0;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -22,7 +22,7 @@ SET time_zone = "+00:00";
 -- Base de données: `secret_manager`
 --
 DROP DATABASE IF EXISTS `secret_manager`;
-CREATE DATABASE `secret_manager` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `secret_manager` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `secret_manager`;
 
 -- --------------------------------------------------------
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `ach_access_history` (
   KEY `idn_identities_ach_access_history_fk` (`idn_id`),
   KEY `scr_secrets_ach_access_history_fk` (`scr_id`),
   KEY `ach_type` (`aht_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=400 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2592 ;
 
 -- --------------------------------------------------------
 
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `aht_access_history_type` (
   `aht_name` varchar(60) NOT NULL,
   PRIMARY KEY (`aht_id`),
   UNIQUE KEY `aht_name` (`aht_name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -74,10 +74,9 @@ CREATE TABLE IF NOT EXISTS `cvl_civilities` (
   `cvl_sex` tinyint(1) NOT NULL DEFAULT '0',
   `cvl_birth_date` date DEFAULT NULL,
   `cvl_born_town` varchar(60) CHARACTER SET latin1 DEFAULT NULL,
-  `cvl_logical_delete` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cvl_id`),
   UNIQUE KEY `cvl_civilities_idx` (`cvl_last_name`,`cvl_first_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 ;
 
 -- --------------------------------------------------------
 
@@ -90,11 +89,10 @@ CREATE TABLE IF NOT EXISTS `ent_entities` (
   `ent_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `ent_code` varchar(10) CHARACTER SET latin1 NOT NULL,
   `ent_label` varchar(60) CHARACTER SET latin1 NOT NULL,
-  `ent_logical_delete` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ent_id`),
   UNIQUE KEY `ent_entites_idx` (`ent_code`),
   UNIQUE KEY `ent_entites_idx1` (`ent_label`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=57 ;
 
 -- --------------------------------------------------------
 
@@ -129,7 +127,6 @@ CREATE TABLE IF NOT EXISTS `idn_identities` (
   `idn_auditor` tinyint(1) NOT NULL DEFAULT '0',
   `idn_attempt` smallint(6) NOT NULL DEFAULT '0',
   `idn_disable` tinyint(1) NOT NULL DEFAULT '0',
-  `idn_logical_delete` tinyint(1) NOT NULL DEFAULT '0',
   `idn_last_connection` datetime NOT NULL,
   `idn_expiration_date` datetime NOT NULL,
   `idn_updated_authentication` datetime NOT NULL,
@@ -137,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `idn_identities` (
   UNIQUE KEY `idn_identities_idx` (`idn_login`),
   KEY `ent_entities_idn_identities_fk` (`ent_id`),
   KEY `civilités_idn_identities_fk` (`cvl_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
 
 -- --------------------------------------------------------
 
@@ -149,7 +146,6 @@ DROP TABLE IF EXISTS `idpr_identities_profiles`;
 CREATE TABLE IF NOT EXISTS `idpr_identities_profiles` (
   `idn_id` bigint(20) NOT NULL,
   `prf_id` bigint(20) NOT NULL,
-  `idpr_logical_delete` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idn_id`,`prf_id`),
   KEY `profils_identité_rattaché_à_profils_fk` (`prf_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -166,7 +162,7 @@ CREATE TABLE IF NOT EXISTS `prf_profiles` (
   `prf_label` varchar(60) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`prf_id`),
   UNIQUE KEY `prf_profiles_idx` (`prf_label`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=55 ;
 
 -- --------------------------------------------------------
 
@@ -218,13 +214,14 @@ CREATE TABLE IF NOT EXISTS `scr_secrets` (
   `scr_alert` int(11) NOT NULL DEFAULT '0',
   `scr_creation_date` datetime NOT NULL,
   `scr_modification_date` datetime NOT NULL,
-  `scr_expiration_date` datetime NULL,
+  `scr_expiration_date` datetime DEFAULT NULL,
+  `pipo` datetime DEFAULT NULL,
   PRIMARY KEY (`scr_id`),
   UNIQUE KEY `scr_secrets_idx` (`scr_host`,`scr_user`),
   KEY `env_environment_scr_secrets_fk` (`env_id`),
   KEY `stp_secret_type_scr_secrets_fk` (`stp_id`),
   KEY `sgr_secrets_groups_scr_secrets_fk` (`sgr_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
 
 -- --------------------------------------------------------
 
@@ -239,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `sgr_secrets_groups` (
   `sgr_alert` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`sgr_id`),
   UNIQUE KEY `sgr_label` (`sgr_label`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=48 ;
 
 -- --------------------------------------------------------
 

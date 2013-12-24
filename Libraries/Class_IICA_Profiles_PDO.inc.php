@@ -12,7 +12,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 */
 	public $LastInsertId;
 
@@ -22,7 +21,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
@@ -43,7 +41,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.1
 	* @date 2013-02-18
 	*
 	* @param[in] $prf_id Identifiant du Profil à mettre à jour s'il est précisé
@@ -108,7 +105,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $order Ordre d'affichage des éléments dans la liste
@@ -156,7 +152,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $prf_id Identifiant du Profil à récupérer
@@ -193,7 +188,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $prf_id Identifiant du Profil à supprimer
@@ -275,7 +269,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Id_Profil Identifiant du Profil à associer
@@ -309,7 +302,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Id_Profil Identifiant du Profil à dissocier
@@ -342,7 +334,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Id_Profil Identifiant du Profil à recherher
@@ -381,7 +372,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Id_Profil Identifiant du Profil à associer
@@ -417,7 +407,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Id_Profil Identifiant du Profil à dissocier
@@ -450,7 +439,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Id_Profil Identifiant du Profil de référence
@@ -491,7 +479,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $prf_id Identifiant du Profil à contrôler
@@ -554,7 +541,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $prf_id Identifiant du Profil de référence
@@ -600,7 +586,6 @@ class IICA_Profiles extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un entier représentant le total de Profils trouvé en base

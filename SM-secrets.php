@@ -480,6 +480,7 @@ switch( $Action ) {
  case 'PRF':
 	$Return_Page = $Script;
  
+    include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-profils.php' );
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 	
 
@@ -890,6 +891,77 @@ switch( $Action ) {
 	break;
 
 
+ case 'LIST_ENV_X':
+	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
+		$Referentials = new IICA_Referentials();
+
+		$List_Environments = $Referentials->listEnvironments();
+
+		foreach( $List_Environments as $Environment ) {
+			print( "          <option value=\"" . $Environment->env_id . "\">" .
+			 ${$Environment->env_name} . "</option>\n" );
+		}
+	}
+    
+    exit();
+
+
+ case 'LIST_TYP_X':
+	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
+		$Referentials = new IICA_Referentials();
+
+		$List_Types = $Referentials->listSecretTypes();
+
+		foreach( $List_Types as $Type ) {
+			print( "          <option value=\"" . $Type->stp_id . "\">" .
+			 ${$Type->stp_name} . "</option>\n" );
+		}
+	}
+    
+    exit();
+
+
+ case 'LIST_GRP_X':
+	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
+		if ( $Authentication->is_administrator() ) {
+			$List_Groups = $Groups->listGroups();
+		} else {
+			$List_Groups = $Groups->listGroups( $_SESSION[ 'idn_id' ], '', 2 );
+		}
+
+		foreach( $List_Groups as $Group ) {
+			$Status = '';
+			if ( array_key_exists( 'sgr_id', $_SESSION ) ) {
+				if ( $Group->sgr_id == $_SESSION[ 'sgr_id' ] ) $Status = ' selected ';
+			}
+		
+			print( "          <option value=\"" . $Group->sgr_id . "\"" . $Status . ">" .
+			 $Security->XSS_Protection( $Group->sgr_label ) . "</option>\n" );
+		}
+	}
+    
+    exit();
+
+ case 'LABELS_X':
+    echo json_encode( array(
+        'L_Secret_Create' => $L_Secret_Create,
+        'L_Group' => $L_Group,
+        'L_Type' => $L_Type,
+        'L_Environment' => $L_Environment,
+        'L_Application' => $L_Application,
+        'L_Host' => $L_Host,
+        'L_User' => $L_User,
+        'L_Password' => $L_Password,
+        'L_Generate' => $L_Generate,
+        'L_Cancel' => $L_Cancel,
+        'L_Create' => $L_Create,
+        'L_Alert' => $L_Alert,
+        'L_Comment' => $L_Comment,
+        'L_Expiration_Date' => $L_Expiration_Date
+    ) );
+
+    exit();
+
  case 'SCR_A':
 	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
 		$Referentials = new IICA_Referentials();
@@ -1025,16 +1097,6 @@ switch( $Action ) {
 
 
  case 'SCR_AX':
-	$Return_Page = $Script . '?action=SCR';
-
-	if ( array_key_exists( 'rp', $_GET ) ) {
-		switch( $_GET[ 'rp' ] ) {
-		 case 'home':
-			$Return_Page = URL_BASE . '/SM-home.php';
-			break;
-		}
-	}
- 
 	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
 		$Secrets = new IICA_Secrets();
 	 
@@ -1043,8 +1105,11 @@ switch( $Action ) {
 
 		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) ==
 		 -1 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (sgr_id)', $Return_Page, 1 )
-			 );
+		    echo json_encode( array(
+		        'Status' => 'error',
+		        'Message' => $L_Invalid_Value . ' (sgr_id)'
+		    ) );
+
 			exit();
 		}
 		
@@ -1052,17 +1117,44 @@ switch( $Action ) {
 		
 		if ( ($stp_id = $Security->valueControl( $_POST[ 'stp_id' ], 'NUMERIC' )) ==
 		 -1 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (stp_id)', $Return_Page, 1 )
-			 );
+		    echo json_encode( array(
+		        'Status' => 'error',
+		        'Message' => $L_Invalid_Value . ' (stp_id)'
+		    ) );
+		    
 			exit();
 		}
 		
 		if ( ($env_id = $Security->valueControl( $_POST[ 'env_id' ], 'NUMERIC' )) ==
 		 -1 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (env_id)', $Return_Page, 1 )
-			 );
+		    echo json_encode( array(
+		        'Status' => 'error',
+		        'Message' => $L_Invalid_Value . ' (env_id)'
+		    ) );
+
 			exit();
 		}
+
+        $Update_Right = 0;
+        $Delete_Right = 0;
+
+        if ( ! $PageHTML->is_administrator() ) {
+            if ( array_key_exists( $_POST['sgr_id'], $groupsRights ) ) {
+                $Update_Right = in_array( 3, $groupsRights[ $_POST['sgr_id' ] ] );
+                $Delete_Right = in_array( 4, $groupsRights[ $_POST['sgr_id' ] ] );
+            }
+        }
+
+        $B_Rights = '';
+    
+        if ( $PageHTML->is_administrator() or $Update_Right ) {
+            $B_Rights .= 'M';
+        }
+    
+        if ( $PageHTML->is_administrator() or $Delete_Right ) {
+            $B_Rights .= 'D';
+        }
+ 
 		
 
 		try {
@@ -1084,16 +1176,21 @@ switch( $Action ) {
 			 $Security->valueControl( $_POST[ 'User' ] ),
 			 $Security->valueControl( $_POST[ 'Password' ] ),
 			 $Security->valueControl( $_POST[ 'Comment' ] ), $Alert, 
-			 $env_id, $Security->valueControl( $_POST[ 'Application' ] ) );
+			 $env_id, $Security->valueControl( $_POST[ 'Application' ] ),
+			 $Security->valueControl( $_POST[ 'Expiration_Date' ] ) );
+			 
+			$scr_id = $Secrets->LastInsertId;
 		} catch( PDOException $e ) {
 			$alert_message = $Secrets->formatHistoryMessage( $L_ERR_CREA_Secret );
 		
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message,
 			 $IP_Source );
 
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Secret, URL_BASE .
-			 $Script . "?action=P&sgr_id=" . $_GET[ 'sgr_id' ], 1 )
-			 );
+		    echo json_encode( array(
+		        'Status' => 'error',
+		        'Message' => $L_ERR_CREA_Secret
+		    ) );
+
 			exit();
 		} catch( Exception $e ) {
 			if ( $PageHTML->getParameter( 'use_SecretServer' ) == '1' ) {
@@ -1101,12 +1198,21 @@ switch( $Action ) {
 				
 				if ( isset( ${$Error} ) ) $Error = ${$Error};
 				
-				print( $PageHTML->returnPage( $L_Title, $Error, $Return_Page, 1 ) );
+                echo json_encode( array(
+                    'Status' => 'error',
+                    'Message' => $Error
+                ) );
 			} else {
 				if ( $e->getCode() == 1062 ) {
-					print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Secret, $Return_Page, 1 ) );
+                    echo json_encode( array(
+                        'Status' => 'error',
+                        'Message' => $L_ERR_DUPL_Secret
+                    ) );
 				} else {
-					print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Secret, $Return_Page, 1 ) );
+                    echo json_encode( array(
+                        'Status' => 'error',
+                        'Message' => $L_ERR_CREA_Secret
+                    ) );
 				}
 			}
 			exit();
@@ -1129,15 +1235,25 @@ switch( $Action ) {
 			}
 		}
 
-		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
-			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Secret_Created . "\" />\n" .
-			"</form>\n" .
-			"<script>document.fMessage.submit();</script>" );
 
+        echo json_encode( array(
+            'Status' => 'success',
+            'Message' => $L_Secret_Created,
+            'scr_id' => $scr_id,
+            'L_Delete' => $L_Delete,
+            'L_Cancel' => $L_Cancel,
+            'L_Modify' => $L_Modify,
+            'Rights' => $B_Rights,
+            'L_Password_View' => $L_Password_View
+        ) );
+
+        exit();
 	} else {
-		$Return_Page = URL_BASE . '/SM-home.php';
- 
-		print( $PageHTML->returnPage( $L_Title, $L_No_Authorize, $Return_Page, 1 ) );
+        echo json_encode( array(
+            'Status' => 'success',
+            'Message' => $L_No_Authorize
+        ) );
+
 		exit();
 	}
 

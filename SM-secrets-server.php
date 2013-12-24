@@ -871,6 +871,10 @@ print( ">> New Secret_Key : " . $Secret_Key . "\n" );
 				sendMessageToClient( $MsgSock, FLAG_ERROR . "###" . $T_Key[ 1 ] . "\n" );
 				break;
 			}
+			
+			// Retire la protection sur le fichier généré.
+    	    $Filename = DIR_SESSION . '/trp_' . $ID_Session;
+			chmod( $Filename, 0777 );
 
 
 			// Chiffre la donnée par la clé de transport.

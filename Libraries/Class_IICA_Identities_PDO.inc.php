@@ -11,7 +11,6 @@ class IICA_Identities extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 */
 
 	public function __construct() {
@@ -20,7 +19,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
@@ -271,16 +269,13 @@ class IICA_Identities extends IICA_DB_Connector {
 	}
 
 
-	public function listIdentities( $Type = 0 ) {
+	public function listIdentities() {
 	/**
 	* Lister les Identités.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
-	*
-	* @param[in] $Type Permet d'afficher les identités qui ont été supprimées logiquement
+	* @date 2013-12-24
 	*
 	* @return Renvoi une liste d'identités ou une liste vide
 	*/
@@ -299,10 +294,6 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'idn_disable ' .
 		 'FROM idn_identities ' ;
 
-		if ( $Type == 0 ) {
-			$Request .= 'WHERE idn_logical_delete = false' ;
-		}
-		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
@@ -326,17 +317,16 @@ class IICA_Identities extends IICA_DB_Connector {
 	/* -------------------
 	** Lister les Identités de façon détaillées.
 	*/
-	public function detailedListIdentities( $orderBy = '', $Type = 0, $SpecificIdentities = '' ) {
+	public function detailedListIdentities( $orderBy = '', $SpecificIdentities = '' ) {
 	/**
 	* Lister les Identités.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $orderBy Permet de changer l'ordre d'affichage des identités
-	* @param[in] $Type Permet d'afficher les identités qui ont été supprimées logiquement
+	* @param[in] $SpecificIdentities Permet de préciser des critères spécifiques
 	*
 	* @return Renvoi une liste détaillée d'identités (avec toutes les relations) ou une liste vide
 	*/
@@ -361,10 +351,6 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'FROM idn_identities as T1 ' .
     	 'LEFT JOIN cvl_civilities as T2 ON T1.cvl_id = T2.cvl_id ' .
     	 'LEFT JOIN ent_entities as T3 ON T1.ent_id = T3.ent_id ';
-
-		if ( $Type == 0 ) {
-			$Request .= 'WHERE idn_logical_delete = false ' ;
-		}
 
 		if ( $SpecificIdentities != '' ) {
 			if ( ! preg_match("/WHERE/i", $Request ) ) {
@@ -476,17 +462,15 @@ class IICA_Identities extends IICA_DB_Connector {
 	}
 
 
-	public function get( $idn_id, $Type = 0 ) {
+	public function get( $idn_id ) {
 	/**
 	* Récupérer les informations d'une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $idn_id Identifiant de l'Identité à récupérer
-	* @param[in] $Type Permet d'afficher les identités qui ont été supprimées logiquement
 	*
 	* @return Renvoi l'occurrence d'une Identité
 	*/
@@ -505,10 +489,6 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'idn_auditor ' .
 		 'FROM idn_identities ' .
 		 'WHERE idn_id = :idn_id ';
-
-		if ( $Type == 0 ) {
-			$Request .= 'AND idn_logical_delete = false' ;
-		}
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -529,17 +509,15 @@ class IICA_Identities extends IICA_DB_Connector {
 	}
 
 
-	public function detailedGet( $idn_id, $Type = 0 ) {
+	public function detailedGet( $idn_id ) {
 	/**
 	* Afficher une Identité en détail.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $idn_id Identifiant de l'Identité à récupérer
-	* @param[in] $Type Permet d'afficher les identités qui ont été supprimées logiquement
 	*
 	* @return Renvoi l'occurrence détaillée d'une Identité
 	*/
@@ -564,10 +542,6 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'LEFT JOIN cvl_civilities AS T2 ON T1.cvl_id = T2.cvl_id ' .
 		 'LEFT JOIN ent_entities AS T3 ON T1.ent_id = T3.ent_id ' .
 		 'WHERE idn_id = :idn_id ';
-
-		if ( $Type == 0 ) {
-			$Request .= 'AND idn_logical_delete = false' ;
-		}
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -588,14 +562,13 @@ class IICA_Identities extends IICA_DB_Connector {
 	}
 
 
-	public function delete( $idn_id, $Type = 0 ) {
+	public function delete( $idn_id ) {
 	/**
 	* Supprimer une Identité en détail.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2013-12-24
 	*
 	* @param[in] $idn_id Identifiant de l'Identité à supprimer
 	* @param[in] $Type Permet de supprimer les identités logiquement ou physiquement
@@ -610,22 +583,12 @@ class IICA_Identities extends IICA_DB_Connector {
 		*/
 		$this->beginTransaction();
 	
-		if ( $Type == 0 ) {  // Suppression logique
-			if ( ! $Result = $this->prepare( 'UPDATE ' .
-			 'idn_identities ' .
-			 'SET idn_logical_delete = true ' .
-			 'WHERE idn_id = :idn_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		} else {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM idn_identities ' .
-			 'WHERE idn_id = :idn_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
+        if ( ! $Result = $this->prepare( 'DELETE ' .
+         'FROM idn_identities ' .
+         'WHERE idn_id = :idn_id' ) ) {
+            $Error = $Result->errorInfo();
+            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+        }
 		
 		$Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ;
 		
@@ -758,7 +721,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité de référence
@@ -794,7 +756,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité de référence
@@ -827,7 +788,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité de référence
@@ -867,7 +827,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité de référence
@@ -913,7 +872,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -949,7 +907,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -982,7 +939,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -1021,7 +977,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -1055,7 +1010,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -1088,7 +1042,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -1119,7 +1072,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -1159,7 +1111,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -1193,7 +1144,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
@@ -1226,15 +1176,13 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @return Renvoi le nombre total d'Identités
 	*/
 		if ( ! $Result = $this->prepare( 'SELECT ' .
 		 'count(*) as total ' .
-		 'FROM idn_identities ' .
-		 'WHERE idn_logical_delete = 0 ' ) ) {
+		 'FROM idn_identities ' ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -1256,7 +1204,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @return Renvoi le nombre total d'Identités désactivées
@@ -1286,7 +1233,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @return Renvoi le nombre total d'Identités expirées
@@ -1317,7 +1263,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @return Renvoi le nombre total d'Identités Super Administrateur
@@ -1347,7 +1292,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @return Renvoi le nombre total d'Identités Auditor
@@ -1378,7 +1322,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @return Renvoi le nombre total d'Identités ayant atteint le maximum de tentative de
@@ -1422,7 +1365,6 @@ connexion.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $idn_id Identifiant de l'Identité
@@ -1484,7 +1426,6 @@ connexion.
 		
 		return true ;
 	}
-
 
 } // Fin class IICA_Identities
 

@@ -4,18 +4,15 @@
 	$L_Right_2 = 'Create';
 	$L_Right_3 = 'Edit';
 	$L_Right_4 = 'Delete';
-	$_Total_Rights = 4;
 	
 	$L_Secret_Type_1 = 'OS password';
 	$L_Secret_Type_2 = 'Software password';
 	$L_Secret_Type_3 = 'Test password';
-	$_Total_Types = 4;
 
 	$L_Environment_1 = 'Production';
 	$L_Environment_2 = 'Staging';
 	$L_Environment_3 = 'Integration';
-	$L_Environment_4 = 'Test';
-	$_Total_Environments = 4;
+	$L_Environment_4 = 'Development';
 
 	$_Password_Complexity_1 = 'Minimum one uppercase and one lowercase';
 	$_Password_Complexity_2 = 'Minimum one uppercase, one lowercase and one number';

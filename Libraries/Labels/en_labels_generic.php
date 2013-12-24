@@ -7,7 +7,6 @@
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY, Samuel MAC ALEESE
 * @date 2013-03-25
-* @version 1.2
 */
 
 	$L_Subtitle = "Password-sharing Tool ";

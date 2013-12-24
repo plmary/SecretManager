@@ -261,10 +261,10 @@ switch( $Action ) {
 
 
  default: // Affichage des secrets.
-
+    include( DIR_LIBRARIES . '/password_js.php' );
 	$Javascripts = array( 'Ajax_secrets.js', 'Ajax_home.js', 'SecretManager.js' );
 
-	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts ) .
+	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts, $innerJS ) .
 	 "   <!-- debut : zoneTitre -->\n" .
 	 "   <div id=\"zoneTitre\">\n" .
 	 "    <div id=\"icon-home\" class=\"icon36\"></div>\n" .
@@ -314,7 +314,8 @@ switch( $Action ) {
 	$myButtons = '';
 
 	if ( $PageHTML->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
-    	$addButton = '<a class="btn btn-small" href="' . URL_BASE . '/SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
+//    	$addButton = '<a class="btn btn-small" href="' . URL_BASE . '/SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
+    	$addButton = '<a class="btn btn-small" href="javascript:getCreateSecret();" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
     } else {
     	$addButton = '';
     }

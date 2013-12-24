@@ -5,6 +5,7 @@ $(document).ready(function(){
             hideModal();
             hideAllEditFields();
             hideConfirmMessage();
+            hideInfoMessage();
         }
     });
 
@@ -354,6 +355,267 @@ function deleteGroup( Id ) {
                     
             var Total = $('#total').text();
             Total = Number(Total) - 1;
+            $('#total').text( Total );
+        }
+    });
+}
+
+
+// ============================================
+// Gestion des créations de Profil à la volée et dans une "modale".
+function getCreateSecret(){
+    var L_Secret_Create,
+        L_Group,
+        L_Type,
+        L_Environment,
+        L_Application,
+        L_Host,
+        L_User,
+        L_Password,
+        L_Generate,
+        L_Cancel,
+        L_Create,
+        L_Alert,
+        L_Comment,
+        L_Expiration_Date;
+
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=LABELS_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            L_Secret_Create = reponse['L_Secret_Create'];
+            L_Group = reponse['L_Group'];
+            L_Type = reponse['L_Type'];
+            L_Environment = reponse['L_Environment'];
+            L_Application = reponse['L_Application'];
+            L_Host = reponse['L_Host'];
+            L_User = reponse['L_User'];
+            L_Password = reponse['L_Password'];
+            L_Generate = reponse['L_Generate'];
+            L_Cancel = reponse['L_Cancel'];
+            L_Create = reponse['L_Create'];
+            L_Alert = reponse['L_Alert'];
+            L_Comment = reponse['L_Comment'];
+            L_Expiration_Date = reponse['L_Expiration_Date'];
+        }
+    });
+
+    var List_Environments;
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=LIST_ENV_X',
+        type: 'POST',
+        success: function(reponse) {
+            List_Environments = reponse;
+        }
+    });
+
+    var List_Groups;
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=LIST_GRP_X',
+        type: 'POST',
+        success: function(reponse) {
+            List_Groups = reponse;
+        }
+    });
+
+    var List_Types;
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=LIST_TYP_X',
+        type: 'POST',
+        success: function(reponse) {
+            List_Types = reponse;
+        }
+    });
+
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h4 id="myModalLabel">'+L_Secret_Create+'</h4>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="margin-top:8px;">' +
+     '<table style="margin:10px auto;width:80%">' +
+     '<tbody>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Group + '</td>' +
+     '<td>' +
+     '<select id="i_sgr_id" class="input-xlarge">' +
+     '  <option value="-">---</option>'+
+     List_Groups +
+     '</select>' +
+     '</td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Type + '</td>' +
+     '<td>' +
+     '<select id="i_stp_id">' +
+     '  <option value="-">---</option>'+
+     List_Types +
+     '</select>' +
+     '</td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Environment + '</td>' +
+     '<td>' +
+     '<select id="i_env_id">' +
+     '  <option value="-">---</option>'+
+     List_Environments +
+     '</select>' +
+     '</td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Application + '</td>' +
+     '<td><input id="i_Application" type="text" size="60" maxlength="60" /></td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Host + '</td>' +
+     '<td><input id="i_Host" type="text" size="100" maxlength="255" /></td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_User + '</td>' +
+     '<td><input id="i_User" type="text" size="100" maxlength="100\" /></td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Password + '</td>' +
+     '<td><input name="Password" id="i_Password" type="text" size="64" maxlength="64" onkeyup="checkPassword(\'i_Password\', \'Result\', 3, 8);" onfocus="checkPassword(\'i_Password\', \'Result\', 3, 8);"/><a class="button" onclick="generatePassword( \'i_Password\', 3, 8 )">' + L_Generate + '</a><img id="Result" class="no-border" width="16" height="16" alt="Ok" src="' + Parameters['URL_PICTURES'] + '/blank.gif" /></td>' +
+     "</tr>" +
+     "<tr>" +
+     "<td class=\"align-right\">" + L_Expiration_Date + "</td>" +
+     "<td><input id=\"i_Expiration_Date\" type=\"text\" size=\"19\" maxlength=\"19\" /></td>" +
+     "</tr>" +
+     "<tr>" +
+     "<td class=\"align-right\">" + L_Comment + "</td>" +
+     "<td><input id=\"i_Comment\" type=\"text\" size=\"100\" maxlength=\"100\" /></td>" +
+     "</tr>" +
+     "<tr>" +
+     "<td class=\"align-right\">" + L_Alert + "</td>" +
+     "<td><input id=\"i_Alert\" type=\"checkbox\" /></td>" +
+     "</tr>" +
+     "</tbody>" +
+     "</table>" +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="iCancel" href="javascript:hideConfirmMessage();">' +
+     L_Cancel + '</a>&nbsp;' +
+     '<a class="button" href="javascript:CreateSecret();">' +
+     L_Create+'</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    // Met le focus sur le 1er champ du calque.
+    $('#i_sgr_id').focus();
+
+
+    $('#i_sgr_id, #i_stp_id, #i_env_id, #i_Application, #i_Host, #i_User, #i_Password, '+
+        '#i_Expiration_Date, #i_Comment, #i_Alert').keyup(function(e){
+        if (e.which == 13) {
+            if ( $('#i_sgr_id').val() != '-'
+             && $('#i_stp_id').val() != '-'
+             && $('#i_env_id').val() != '-'
+             && $('#i_Application').val() != ''
+             && $('#i_Host').val() != ''
+             && $('#i_User').val() != ''
+             && $('#i_Password').val() != '' ) {
+                CreateSecret();
+            } else {
+                showInfoMessage( 'error', 'pouet' ); // SecretManager.js
+            }
+       }
+    });
+}
+
+
+// ============================================
+// Gestion des créations de Profil à la volée et dans une "modale".
+function CreateSecret(){
+    var ID_Group = $('#i_sgr_id').val();
+    var L_Group = $('#i_sgr_id option:selected').text();
+    
+    var ID_Type = $('#i_stp_id').val();
+    var L_Type = $('#i_stp_id option:selected').text();
+    
+    var ID_Environment = $('#i_env_id').val();
+    var L_Environment = $('#i_env_id option:selected').text();
+    
+    var Application = $('#i_Application').val();
+    var Host = $('#i_Host').val();
+    var User = $('#i_User').val();
+    var Password = $('#i_Password').val();
+    var Expiration_Date = $('#i_Expiration_Date').val();
+    var Comment = $('#i_Comment').val();
+    var Alert = $('#i_Alert').is(':checked');
+     
+    if ( Alert == true ) Alert = 1;
+    else Alert = 0;
+
+    $.ajax({
+        url: 'SM-secrets.php?action=SCR_AX',
+        type: 'POST',
+        data: $.param({
+            'sgr_id': ID_Group,
+            'stp_id': ID_Type,
+            'env_id': ID_Environment,
+            'Alert': Alert,
+			'Host': Host,
+			'User': User,
+			'Password': Password,
+			'Expiration_Date': Expiration_Date,
+			'Comment': Comment,
+			'Alert': Alert,
+			'Application': Application
+        }),
+        dataType: 'json',
+        success: function(reponse) {
+            // Récupère le statut de l'appel Ajax
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+
+            if (reponse['Status'] == 'success') {
+                var Total = $('#total').text();
+                Total = Number(Total) + 1;
+
+                $('#listeSecrets').prepend(
+                    '<tr id="'+reponse['scr_id']+'" class="surline" data-delete="'+reponse['L_Delete']+
+                     '" data-modify="'+reponse['L_Modify']+'" data-cancel="'+reponse['L_Cancel']+
+                     '" data-total="'+Total+'" style="cursor: pointer;">\n' +
+                     '<td class="align-middle" data-id="'+ID_Group+'" onclick="viewPassword('+
+                     reponse['scr_id']+');" style="max-width:210px; width:210px;">'+L_Group+'</td>\n' +
+                     '<td class="align-middle" data-id="'+ID_Type+'" onclick="viewPassword('+
+                     reponse['scr_id']+');" style="max-width:90px; width:90px;">'+L_Type+'</td>\n' +
+                     '<td class="align-middle" data-id="'+ID_Environment+'" onclick="viewPassword('+
+                     reponse['scr_id']+');" style="max-width:100px; width:100px;">'+L_Environment+'</td>\n' +
+                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                     ');" style="max-width:100px; width:100px;">'+Application+'</td>\n' +
+                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                     ');" style="max-width:70px; width:70px;">'+Host+'</td>\n' +
+                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                     ');" style="max-width:70px; width:70px;">'+User+'</td>\n' +
+                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                     ');" style="max-width:80px; width:80px;">'+Expiration_Date+'</td>\n'+
+                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                     ');" style="max-width:110px; width:110px;">'+Comment+'</td>\n' +
+                     '<td data-right="'+reponse['Rights']+'" style="max-width:80px; width:80px;">\n' +
+                     '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+')">\n' +
+                     '<img class="no-border" title="'+reponse['L_Modify']+'" alt="'+reponse['L_Modify']+
+                     '" src="'+Parameters['URL_PICTURES']+'/b_edit.png"></a>' +
+                     '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+',\'D\')">\n' +
+                     '<img class="no-border" title="'+reponse['L_Delete']+'" alt="'+reponse['L_Delete']+
+                     '" src="'+Parameters['URL_PICTURES']+'/b_drop.png"></a>\n' +
+                     '<a class="simple" href="javascript:viewPassword( '+reponse['scr_id']+' );">' +
+                     '<img class="no-border" title="'+reponse['L_Password_View']+'" alt="'+
+                     reponse['L_Password_View']+'" src="'+Parameters['URL_PICTURES']+'/b_eye.png"></a>\n' +
+                     '</td>'
+                );
+                
+                hideConfirmMessage();
+            }
+                    
             $('#total').text( Total );
         }
     });

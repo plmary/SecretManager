@@ -14,18 +14,15 @@
 	$L_Right_2 = 'Erstellen';
 	$L_Right_3 = 'Bearbeiten';
 	$L_Right_4 = 'Löschen';
-	$_Total_Rights = 4;
 	
 	$L_Secret_Type_1 = 'OS Passwort';
 	$L_Secret_Type_2 = 'Software Passwort';
 	$L_Secret_Type_3 = 'Test Passwort';
-	$_Total_Types = 4;
 
 	$L_Environment_1 = 'Produktion';
 	$L_Environment_2 = 'Staging';
 	$L_Environment_3 = 'Integration';
-	$L_Environment_4 = 'Test';
-	$_Total_Environments = 4;
+	$L_Environment_4 = 'Development';
 
 	$_Password_Complexity_1 = 'Mindestens ein Großbuchstabe und ein Kleinbuchstabe';
 	$_Password_Complexity_2 = 'Mindestens ein Großbuchstabe, ein Kleinbuchstabe und eine Ziffer';
