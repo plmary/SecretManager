@@ -90,8 +90,7 @@ function addProfile(){
                          '<tr id="profil_'+Id+'" class="surline">'+
                          '<td id="label_'+Id+'" class="align-middle">'+Label+'</td>'+
                          '<td>'+
-                         '<a class="simple" href="javascript:modifyProfile(\'' +
-                         Id + "','" + L_Cancel + "','" + L_Modify + '\');">'+
+                         '<a class="simple" href="javascript:modifyProfile(\'' + Id + "');\">"+
                          '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+
                          '" /></a>\n'+
                          '<a class="simple" href="javascript:confirmDeleteProfile(\''+Id+'\',\''+
@@ -151,8 +150,25 @@ function deleteProfile( Id ){
 
 
 // Gestion des modifications "en place".
-function modifyProfile( Id, CancelButton, ModifyButton ) {
+function modifyProfile( Id ) {
     endAllModifyProfile();
+    
+    var CancelButton, ModifyButton;
+    
+     $.ajax({
+        async: false,
+        url: 'SM-users.php?action=L_MODIF_PROFILE_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            CancelButton = reponse['Cancel'];
+            ModifyButton = reponse['Modify'];
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur : ' + reponse['responseText']);
+        }
+    });
+   
 
     $('#profil_'+Id).hide();
     
@@ -226,7 +242,25 @@ function hideConfirmMessage() {
 }
 
 
-function confirmDeleteProfile( Id, Message, Warning, Cancel, Confirm) {
+function confirmDeleteProfile( Id ) {
+    var Message, Warning, Cancel, Confirm;
+
+    $.ajax({
+        async: false,
+        url: 'SM-users.php?action=L_DELETE_PROFILE_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            Message = reponse['Message'];
+            Warning = reponse['Warning'];
+            Cancel = reponse['Cancel'];
+            Confirm = reponse['Confirm'];
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur : ' + reponse['responseText']);
+        }
+    });
+
     var Label = $('#label_'+Id).text();
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
@@ -247,5 +281,4 @@ function confirmDeleteProfile( Id, Message, Warning, Cancel, Confirm) {
      '</div>\n' ).prependTo( 'body' );
     
     document.getElementById('iCancel').focus();
-
 }

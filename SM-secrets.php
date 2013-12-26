@@ -150,11 +150,8 @@ switch( $Action ) {
 		$listButtons = '<div id="view-switch-list-current" class="view-switch" style="float: right" title="' . $L_Group_List . '"></div>' .
 		'<div id="view-switch-excerpt-current" class="view-switch" style="float: right" title="' . $L_Detail_List . '"></div>';
 
-//putAddGroup(Title,Label,Alert,Cancel,ButtonName)
-
-		$addButton = '<span style="float: right"><a class="button" href="javascript:putAddGroup(\''. 
-		    addslashes( $L_Group_Create ) ."', '" . $L_Label . "', '" . $L_Alert . "', '" . $L_Cancel . "', '" . 
-			$L_Create . '\');">' . $L_Create . '</a></span>';
+		$addButton = '<span style="float: right"><a class="button" href="javascript:putAddGroup();">' .
+		    $L_Create . '</a></span>';
 
 		if ( array_key_exists( 'rp', $_GET ) ) {
 			switch( $_GET[ 'rp' ] ) {
@@ -249,13 +246,10 @@ switch( $Action ) {
 			 stripslashes($Group->sgr_label) . "</td>\n" .
 			 "        <td  id=\"alert-" . $Group->sgr_id . "\"class=\"align-middle\">" . $Flag_Alert . "</td>\n" .
 			 "        <td>\n" .
-			 "         <a id=\"modify_" . $Group->sgr_id . "\" class=\"simple\" href=\"javascript:editFields(". 
-			  "'" . $Group->sgr_id . "','" . $L_Cancel . "', '" . $L_Modify . "')\">" .
+			 "         <a id=\"modify_" . $Group->sgr_id . "\" class=\"simple\" href=\"javascript:editFields('" . $Group->sgr_id . "')\">" .
 			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" .
 			 $L_Modify . "\" /></a>\n" .
-			 "         <a class=\"simple\" href=\"javascript:confirmDeleteGroup( '".$Group->sgr_id . "', '" . 
-			 htmlspecialchars( $L_Confirm_Group_Delete, ENT_COMPAT ) . "', '" . $L_Warning . "', '" . $L_Cancel . "', '" .
-			 $L_Confirm . "');\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . 
+			 "         <a class=\"simple\" href=\"javascript:confirmDeleteGroup('".$Group->sgr_id . "');\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . 
 			 $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF&sgr_id=" . $Group->sgr_id .
@@ -400,8 +394,6 @@ switch( $Action ) {
 
 
  case 'MX':
-	$Return_Page = $Script;
- 
 	$Alert = $_POST[ 'Alert' ];
 	
 	try {
@@ -427,13 +419,13 @@ switch( $Action ) {
 
 		if ( $Verbosity_Alert == 2 ) {
 			$alert_message = $Secrets->formatHistoryMessage( 'Groups->set( IdGroup=\'' . $sgr_id . '\', Label=\'' .
-			 addslashes( $_POST[ 'Label' ] ) . '\', Alert=\'' . $Alert . '\' )', $sgr_id );
+			 $_POST[ 'Label' ] . '\', Alert=\'' . $Alert . '\' )', $sgr_id );
 		
 			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 		}
 		
 		// Mise à jour de la base de données.
-		$Groups->set( $sgr_id, addslashes( $sgr_label ), $Alert );
+		$Groups->set( $sgr_id, $sgr_label, $Alert );
 		
 	} catch( PDOException $e ) {
 		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_MODI_Group, $sgr_id );
@@ -1844,6 +1836,38 @@ switch( $Action ) {
 	}
 
 	break;
+
+
+ case 'L_ADD_GROUP_X':
+    echo json_encode( array(
+        'Title' => $L_Group_Create,
+        'Label' => $L_Label,
+        'Alert' => $L_Alert,
+        'Cancel' => $L_Cancel,
+        'ButtonName' => $L_Create
+    ) );
+    
+    exit();
+
+
+ case 'L_DELETE_GROUP_X':
+    echo json_encode( array(
+        'Message' => $L_Confirm_Group_Delete,
+        'Warning' => $L_Warning,
+        'Cancel' => $L_Cancel,
+        'Confirm' => $L_Confirm
+    ) );
+    
+    exit();
+
+
+ case 'L_EDIT_FIELDS_X':
+    echo json_encode( array(
+        'Cancel' => $L_Cancel,
+        'Modify' => $L_Modify
+    ) );
+    
+    exit();
 }
 
 if ( $Action != 'SCR_V' ) {

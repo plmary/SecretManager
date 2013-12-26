@@ -86,11 +86,28 @@ function viewPassword( scr_id ){
 
 // ============================================
 // Modification des Groupes de secrets en ligne.
-function editFields(Id,CancelButton,ModifyButton) {
+function editFields(Id) {
     hideAllEditFields();
 
     var GroupLabel = $('#label-'+Id).text();
     var GroupAlert = $('#image-'+Id).attr('alt');
+    
+    var CancelButton, ModifyButton;
+    
+    $.ajax({
+        async: false,
+        url: '../../SM-secrets.php?action=L_EDIT_FIELDS_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            CancelButton = reponse['Cancel'];
+            ModifyButton = reponse['Modify'];
+        },
+        error: function(reponse) {
+            alert('Erreur serveur : ' + reponse['responseText']);
+        }
+    });
+
 
     $('#sgr_id-'+Id).hide();
     
@@ -188,7 +205,23 @@ function saveEditFields( Id ){
 
 // ============================================
 // Gestion des créations de Profil à la volée et dans une "modale".
-function putAddGroup(Title,Label,Alert,Cancel,ButtonName){
+function putAddGroup() {
+    var Title, Label, Alert, Cancel, ButtonName;
+    $.ajax({
+        async: false,
+        url: '../../SM-secrets.php?action=L_ADD_GROUP_X',
+        type: 'POST',
+        //data: $.param({'sgr_id': Id, 'Alert': Alert, 'Label': Label}),
+        dataType: 'json',
+        success: function(reponse) {
+            Title = reponse['Title'];
+            Label = reponse['Label'];
+            Alert = reponse['Alert'];
+            Cancel = reponse['Cancel'];
+            ButtonName = reponse['ButtonName'];
+        }
+    });
+
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
      '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
@@ -280,8 +313,7 @@ function addGroup(){
                      '<td class="align-middle">'+Label+'</td>'+
                      '<td class="align-middle">'+Image+'</td>'+
                      '<td>'+
-                     '<a id="modify_'+Id+'" class="simple" href="javascript:editFields(\''+Id+'\', \''+Label+'\', \''+Secret_Alert+
-                     '\', \''+L_Cancel+'\', \''+L_Modify+'\');">'+
+                     '<a id="modify_'+Id+'" class="simple" href="javascript:editFields(\''+Id+'\');">'+
                      '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+'" /></a>\n'+
                      '<a class="simple" href="'+Script+'?action=D&sgr_id='+Id+'">'+
                      '<img class="no-border" src="'+URL_PICTURES+'/b_drop.png" alt="'+L_Delete+'" title="'+L_Delete+'" /></a>\n'+
@@ -312,8 +344,26 @@ function addGroup(){
 }
 
 
-function confirmDeleteGroup( Id, Message, Warning, Cancel, Confirm) {
+function confirmDeleteGroup( Id ) {
     var Label = $('#label-'+Id).text();
+    
+    var Message, Warning, Cancel, Confirm;
+
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=L_DELETE_GROUP_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            Message = reponse['Message'];
+            Warning = reponse['Warning'];
+            Cancel = reponse['Cancel'];
+            Confirm = reponse['Confirm'];
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur : ' + reponse['responseText']);
+        }
+    });
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +

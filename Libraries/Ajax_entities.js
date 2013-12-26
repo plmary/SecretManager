@@ -270,28 +270,3 @@ function endAllModifyEntity() {
 function hideConfirmMessage() {
     $('#confirm_message').remove();
 }
-
-
-function confirmDeleteProfile( Id, Message, Warning, Cancel, Confirm) {
-    var Label = $('#label_'+Id).text();
-    
-    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
-     '<div class="modal-header">' +
-     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" onClick="javascript:hideConfirmMessage();">×</button>' +
-     '<h3 id="myModalLabel">'+Warning+'</h3>' +
-     '</div>' +
-     '<div class="modal-body">' +
-     '<div class="row-fluid"style="width:82%; margin-top:8px;">' +
-     '<p>' + Message + '<b>' + Label + '</b></p>' +
-     '</div>' +
-     '</div>' +
-     '<div class="modal-footer">' +
-     '<a class="button" id="iCancel" href="javascript:hideConfirmMessage();">'+Cancel+
-     '</a>&nbsp;<a class="button" href="javascript:deleteProfile('+Id+');">'+
-     Confirm+'</a>' +
-     '</div>' +
-     '</div>\n' ).prependTo( 'body' );
-    
-    document.getElementById('iCancel').focus();
-
-}

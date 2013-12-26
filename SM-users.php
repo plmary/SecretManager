@@ -2174,10 +2174,9 @@ switch( $Action ) {
 			 $Security->XSS_Protection( $Profile->prf_label ) . "</td>\n" .
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"javascript:modifyProfile('" .
-			 $Profile->prf_id . "','" . $L_Cancel . "','" . $L_Modify . "');\">" .
+			 $Profile->prf_id . "');\">" .
 			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>\n" .
-			 "         <a class=\"simple\" href=\"javascript:confirmDeleteProfile( '" . $Profile->prf_id . "', '" .
-			 addslashes($L_Delete_Profile_Confirmation) . "', '" . $L_Warning . "', '" . $L_Cancel . "', '" . $L_Confirm . "');\">" .
+			 "         <a class=\"simple\" href=\"javascript:confirmDeleteProfile( '" . $Profile->prf_id . "');\">" .
 			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
 			 "?action=PRF_G&prf_id=" . $Profile->prf_id .
@@ -2758,8 +2757,27 @@ switch( $Action ) {
 		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
-}
 
+
+ case 'L_MODIF_PROFILE_X':
+    echo json_encode( array(
+        'Cancel' => $L_Cancel,
+        'Modify' => $L_Modify
+    ) ) ;
+    
+    exit();
+
+
+ case 'L_DELETE_PROFILE_X':
+    echo json_encode( array(
+        'Message' => $L_Delete_Profile_Confirmation,
+        'Warning' => $L_Warning,
+        'Cancel' => $L_Cancel,
+        'Confirm' => $L_Confirm
+    ) );
+    
+    exit();
+}
 
 print(  "   </div> <!-- fin : zoneMilieuComplet -->\n" .
  $PageHTML->construireFooter( 1 ) .
