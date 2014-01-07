@@ -18,15 +18,15 @@ USE `secret_manager`;
 -- Contenu de la table `cvl_civilities`
 --
 
-INSERT INTO `cvl_civilities` (`cvl_id`, `cvl_last_name`, `cvl_first_name`, `cvl_sex`, `cvl_birth_date`, `cvl_born_town`, `cvl_logical_delete`) VALUES
-(1, 'de l\\''Outil', 'Administrateur', 0, '0000-00-00', '', 0);
+INSERT INTO `cvl_civilities` (`cvl_id`, `cvl_last_name`, `cvl_first_name`, `cvl_sex`, `cvl_birth_date`, `cvl_born_town`) VALUES
+(1, 'de l\\''Outil', 'Administrateur', 0, '0000-00-00', '');
 
 --
 -- Contenu de la table `ent_entities`
 --
 
-INSERT INTO `ent_entities` (`ent_id`, `ent_code`, `ent_label`, `ent_logical_delete`) VALUES
-(1, 'ORA', 'Orasys', 0);
+INSERT INTO `ent_entities` (`ent_id`, `ent_code`, `ent_label`) VALUES
+(1, 'ORA', 'Orasys');
 
 --
 -- Contenu de la table `env_environments`
@@ -42,8 +42,8 @@ INSERT INTO `env_environments` (`env_id`, `env_name`) VALUES
 -- Contenu de la table `idn_identities`
 --
 
-INSERT INTO `idn_identities` (`idn_id`, `ent_id`, `cvl_id`, `idn_login`, `idn_authenticator`, `idn_salt`, `idn_change_authenticator`, `idn_super_admin`, `idn_auditor`, `idn_attempt`, `idn_disable`, `idn_logical_delete`, `idn_last_connection`, `idn_expiration_date`, `idn_updated_authentication`) VALUES
-(1, 1, 1, 'root', '658be8288e1156eccbcf7c62a8d731d55fe81e7d', '0.X-n:A/9', 0, 1, 0, 0, 0, 0, '0000-00-00 00:00:00', '2099-01-01 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `idn_identities` (`idn_id`, `ent_id`, `cvl_id`, `idn_login`, `idn_authenticator`, `idn_salt`, `idn_change_authenticator`, `idn_super_admin`, `idn_auditor`, `idn_attempt`, `idn_disable`, `idn_last_connection`, `idn_expiration_date`, `idn_updated_authentication`) VALUES
+(1, 1, 1, 'root', '658be8288e1156eccbcf7c62a8d731d55fe81e7d', '0.X-n:A/9', 0, 1, 0, 0, 0, '0000-00-00 00:00:00', '2099-01-01 00:00:00', '0000-00-00 00:00:00');
 
 
 --
