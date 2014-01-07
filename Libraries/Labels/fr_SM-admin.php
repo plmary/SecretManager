@@ -45,6 +45,4 @@
 	$L_Warning_Change_Mother_Key = 'Cette opération va changer la clé Mère et transchiffrer tous les secrets dans la base de données. ' . $L_Confirm_Operation;
 	$L_Warning_Create_Mother_Key = 'Cette opération va créer une nouvelle cle Mère sans lancer le transchiffrement des secrets dans la base de données. ' . $L_Confirm_Operation;
 
-    $L_Backup_Secrets_Successful = 'Sauvegarde des Secrets réussie';
-    $L_Backup_Total_Successful = 'Sauvegarde Totale réussie';
 ?>

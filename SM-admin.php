@@ -162,6 +162,50 @@ if ( ! preg_match("/X$/i", $Action ) ) {
      "\n" );
 }
 
+
+// Cette fonction récupère toutes les dates des fichiers de sauvegarde.
+function getDateRestoreFiles() {
+    $t_Secrets = array();
+    $t_Full = array();
+
+    $Files = scandir( DIR_BACKUP );
+    foreach( $Files as $File ) {
+        if ( $File == '.' or $File == '..' ) continue;
+        
+        $File = str_replace( '.xml', '', $File );
+        
+        $t_Filename = split( '_', $File );
+
+        if ( $t_Filename[0] == 'secrets' or $t_Filename[0] == 'total' ) {
+            $Day = $t_Filename[1];
+            $Hour = str_replace( '.', ':', $t_Filename[2] );
+
+            if ( $t_Filename[0] == 'secrets' ) {
+                $t_Secrets[] = $Day . ' ' . $Hour;
+            }
+
+            if ( $t_Filename[0] == 'total' ) {
+                $t_Full[] = $Day . ' ' . $Hour;
+            }
+        }
+    }
+
+    
+    $Restore_Secrets_Points_Options = '';
+    rsort( $t_Secrets );
+    foreach( $t_Secrets as $Element ) {
+        $Restore_Secrets_Points_Options .= '<option>' . $Element . '</option>';
+    }
+    
+    $Restore_Full_Points_Options = '';
+    rsort( $t_Full );
+    foreach( $t_Full as $Element ) {
+        $Restore_Full_Points_Options .= '<option>' . $Element . '</option>';
+    }
+
+    return array( $Restore_Secrets_Points_Options, $Restore_Full_Points_Options );
+}
+
 switch( $Action ) {
  default:
 	print(
@@ -1095,6 +1139,8 @@ switch( $Action ) {
 
 
 case 'STOR':
+    list( $Restore_Secrets_Points_Options, $Restore_Full_Points_Options ) = getDateRestoreFiles();
+
     print(
      "      <table class=\"table-bordered\" style=\"margin:10px auto;width:70%\">\n" .
      "       <thead>\n" .
@@ -1102,7 +1148,6 @@ case 'STOR':
      "        <th colspan=\"2\">" . $L_Backup_Management . "</th>\n" .
      "       </tr>\n" .
      "       </thead>\n" .
-     
      "       <tbody>\n" .
      "       <tr>\n" .
      "        <td class=\"pair align-right\"><a class=\"button\" href=\"javascript:backupSecrets();\">" . $L_Secrets_Backup . "</a></td>\n" .
@@ -1114,6 +1159,24 @@ case 'STOR':
      "        <td class=\"impair\">" . $L_Last_Total_Backup . "</td>\n" .
      "        <td class=\"impair bold\" id=\"iTotalDateBackup\">" . $PageHTML->getParameter( 'Backup_Total_Date' ) . "</td>\n" .
      "       </tr>\n" .
+     "       <tr>\n" .
+     "        <td class=\"pair align-right\"><a class=\"button\" href=\"javascript:confirmDeleteBackupSecrets();\">" . $L_Delete_Secrets_Backup . "</a></td>\n" .
+     "        <td class=\"pair\">" . $L_Before_Date . "</td>\n" .
+     "        <td class=\"pair bold\">" . 
+     "<select id=\"i_deleteSecretsDateRestore\">" .
+     $Restore_Secrets_Points_Options .
+     "</select>" . 
+     "</td>\n" .
+     "       </tr>\n" .
+     "       <tr>\n" .
+     "        <td class=\"impair align-right\"><a class=\"button\" href=\"javascript:confirmDeleteBackupTotal();\">" . $L_Delete_Total_Backup . "</a></td>\n" .
+     "        <td class=\"impair\">" . $L_Before_Date . "</td>\n" .
+     "        <td class=\"impair bold\">" . 
+     "<select id=\"i_deleteFullDateRestore\">" .
+     $Restore_Full_Points_Options .
+     "</select>" .
+     "</td>\n" .
+     "       </tr>\n" .
      "       </tbody>\n" .
      "       <tfoot>\n" .
      "       <tr>\n" .
@@ -1121,7 +1184,42 @@ case 'STOR':
      $L_Return . "</a></th>\n" .
      "       </tr>\n" .
      "       </tfoot>\n" .
-     "      </table\n"
+     "      </table>\n".
+     
+     "      <table class=\"table-bordered\" style=\"margin:10px auto;width:70%\">\n" .
+     "       <thead>\n" .
+     "       <tr>\n" .
+     "        <th colspan=\"2\">" . $L_Restore_Management . "</th>\n" .
+     "       </tr>\n" .
+     "       </thead>\n" .
+     "       <tbody>\n" .
+     "       <tr>\n" .
+     "        <td class=\"pair align-right\"><a class=\"button\" href=\"javascript:confirmRestoreSecrets();\">" . $L_Secrets_Restore . "</a></td>\n" .
+     "        <td class=\"pair\">" . $L_Restauration_Points . "</td>\n" .
+     "        <td class=\"pair bold\">" .
+     "<select id=\"i_secretsDateRestore\">" .
+     $Restore_Secrets_Points_Options .
+     "</select>" . 
+     "</td>\n" .
+     "       </tr>\n" .
+     "       <tr>\n" .
+     
+     "        <td class=\"impair align-right\"><a class=\"button\" href=\"javascript:confirmRestoreFull();\">" . $L_Full_Restore . "</a></td>\n" .
+     "        <td class=\"impair\">" . $L_Restauration_Points . "</td>\n" .
+     "        <td class=\"pair bold\">" .
+     "<select id=\"i_fullDateRestore\">" .
+     $Restore_Full_Points_Options .
+     "</select>" . 
+     "</td>\n" .
+     "       </tr>\n" .
+     "       </tbody>\n" .
+     "       <tfoot>\n" .
+     "       <tr>\n" .
+     "        <th colspan=\"2\" class=\"align-center\"><a class=\"button\" href=\"" . $Script . "\">" . 
+     $L_Return . "</a></th>\n" .
+     "       </tr>\n" .
+     "       </tfoot>\n" .
+     "      </table>\n"
      );
      
      break;
@@ -1176,6 +1274,41 @@ case 'STOR_TX':
     echo json_encode( array( 'Status' => $Status, 'Message' => $Result,
         'Date' => $Date_Backup ) );
 
+    exit();
+
+
+ case 'L_RESTORE_SX':
+    echo json_encode( array (
+        'Message' => $L_Do_You_Confirm_Secrets_Restore,
+        'Message_2' => $L_Do_You_Confirm_Full_Restore,
+        'L_Warning' => $L_Warning,
+        'L_Cancel' => $L_Cancel,
+        'L_Confirm' => $L_Confirm
+    ) );
+    
+    exit();
+
+
+ case 'L_LIST_DATE_RESTORE_X':    
+    list( $Restore_Secrets_Points_Options, $Restore_Full_Points_Options ) = getDateRestoreFiles();
+    
+    echo json_encode( array(
+        'Restore_Secrets_Points_Options' => $Restore_Secrets_Points_Options,
+        'Restore_Full_Points_Options' => $Restore_Full_Points_Options
+    ) );
+    
+    exit();
+
+
+ case 'L_DELE_RESTORE_SX':
+    echo json_encode( array (
+        'Message' => $L_Do_You_Confirm_Delete_Secrets_Restore,
+        'Message_2' => $L_Do_You_Confirm_Delete_Full_Restore,
+        'L_Warning' => $L_Warning,
+        'L_Cancel' => $L_Cancel,
+        'L_Confirm' => $L_Confirm
+    ) );
+    
     exit();
 }
 

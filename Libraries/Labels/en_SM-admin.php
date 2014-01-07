@@ -46,6 +46,4 @@
 	$L_Warning_Change_Mother_Key = 'This operation will chnage Mother Key and transcrypt all secrets in the database. ' . $L_Confirm_Operation;
 	$L_Warning_Create_Mother_Key = 'This operation will create a new mother key without transcrypt secrets in the database. ' . $L_Confirm_Operation;
 
-    $L_Backup_Secrets_Successful = 'Secrets backup successful';
-    $L_Backup_Total_Successful = 'Full backup successful';
 ?>

@@ -509,3 +509,129 @@ function resetEmptyField( Field_Name, Image_Name ) {
 function noEnterKey( evt ) {
     if ( evt.which == 13 ) return false;
 }
+
+
+function confirmRestoreSecrets() {
+    var Message, Confirm, Cancel, Warning;
+
+    var Restore_Date = $('#i_secretsDateRestore option:selected').text();
+
+    $.ajax({
+        async: false,
+        url: '../SM-admin.php?action=L_RESTORE_SX',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse){
+            Warning = reponse['L_Warning'];
+            Message = reponse['Message'];
+            Cancel = reponse['L_Cancel'];
+            Confirm = reponse['L_Confirm'];
+        },
+        error: function(reponse) {
+            document.write(reponse['responseText']);
+        }
+    }); 
+    
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h3 id="myModalLabel">' + Warning + '</h3>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
+     '<p>' + Message + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
+     '<a class="button" href="javascript:transcryptMotherKey();">' + Confirm + '</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    $('#i_cancel_m').focus();
+}
+
+
+function confirmRestoreFull() {
+    var Message, Confirm, Cancel, Warning;
+
+    var Restore_Date = $('#i_fullDateRestore option:selected').text();
+
+    $.ajax({
+        async: false,
+        url: '../SM-admin.php?action=L_RESTORE_SX',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse){
+            Message = reponse['Message_2'];
+            Warning = reponse['L_Warning'];
+            Cancel = reponse['L_Cancel'];
+            Confirm = reponse['L_Confirm'];
+        },
+        error: function(reponse) {
+            document.write(reponse['responseText']);
+        }
+    }); 
+    
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h3 id="myModalLabel">' + Warning + '</h3>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
+     '<p>' + Message + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
+     '<a class="button" href="javascript:transcryptMotherKey();">' + Confirm + '</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    $('#i_cancel_m').focus();
+}
+
+
+function confirmDeleteBackupSecrets() {
+    var Message, Confirm, Cancel, Warning;
+
+    var Restore_Date = $('#i_deleteSecretsDateRestore option:selected').text();
+
+    $.ajax({
+        async: false,
+        url: '../SM-admin.php?action=L_DELE_RESTORE_SX',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse){
+            Warning = reponse['L_Warning'];
+            Message = reponse['Message'];
+            Cancel = reponse['L_Cancel'];
+            Confirm = reponse['L_Confirm'];
+        },
+        error: function(reponse) {
+            document.write(reponse['responseText']);
+        }
+    }); 
+    
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h3 id="myModalLabel">' + Warning + '</h3>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
+     '<p>' + Message + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
+     '<a class="button" href="javascript:transcryptMotherKey();">' + Confirm + '</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    $('#i_cancel_m').focus();
+}
