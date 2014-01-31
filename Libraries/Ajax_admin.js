@@ -407,19 +407,28 @@ function LoadMotherKey() {
 
                 $('#iOperator_Key').val('');
 
-                $('#iSecretServerStatus').html( "         <table>\n" +
-                 "          <tr>\n" +
-                 "           <td class=\"bold green\" colspan=\"2\">" + reponse['Message'] + "</td>\n" +
-                 "          </tr>\n" +
-                 "          <tr>\n" +
-                 "           <td class=\"pair\">" + L_Operator + "</td>\n" +
-                 "           <td class=\"pair bold\">" + reponse['Operator'] + "</td>\n" +
-                 "          </tr>\n" +
-                 "          <tr>\n" +
-                 "           <td class=\"pair\">" + L_Creation_Date + "</td>\n" +
-                 "           <td class=\"pair bold\">" + reponse['Date'] + "</td>\n" +
-                 "          </tr>\n" +
-                 "         </table>\n" );
+                var Message;
+                
+                if ( reponse['Status'] == 'success' ) {
+                    Message = "         <table>\n" +
+                     "          <tr>\n" +
+                     "           <td class=\"bold green\" colspan=\"2\">" + reponse['Message'] + "</td>\n" +
+                     "          </tr>\n" +
+                     "          <tr>\n" +
+                     "           <td class=\"pair\">" + L_Operator + "</td>\n" +
+                     "           <td class=\"pair bold\">" + reponse['Operator'] + "</td>\n" +
+                     "          </tr>\n" +
+                     "          <tr>\n" +
+                     "           <td class=\"pair\">" + L_Creation_Date + "</td>\n" +
+                     "           <td class=\"pair bold\">" + reponse['Date'] + "</td>\n" +
+                     "          </tr>\n" +
+                     "         </table>\n";
+                } else {
+                    Message = "         <span class=\"bold bg-orange\">&nbsp;" +
+                        reponse['Message'] + "&nbsp;</span>\n";
+                }
+
+                $('#iSecretServerStatus').html( Message );
 
             } else {
                 alert('Erreur sur serveur : ' + reponse);
@@ -512,7 +521,7 @@ function noEnterKey( evt ) {
 
 
 function confirmRestoreSecrets() {
-    var Message, Confirm, Cancel, Warning;
+    var Message, Message_1, Confirm, Cancel, Warning;
 
     var Restore_Date = $('#i_secretsDateRestore option:selected').text();
 
@@ -524,6 +533,7 @@ function confirmRestoreSecrets() {
         success: function(reponse){
             Warning = reponse['L_Warning'];
             Message = reponse['Message'];
+            Message_1 = reponse['Message_3'];
             Cancel = reponse['L_Cancel'];
             Confirm = reponse['L_Confirm'];
         },
@@ -531,6 +541,9 @@ function confirmRestoreSecrets() {
             document.write(reponse['responseText']);
         }
     }); 
+    
+    putModalMessage( Warning, Message_1, Cancel );
+    return;
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
@@ -554,7 +567,7 @@ function confirmRestoreSecrets() {
 
 
 function confirmRestoreFull() {
-    var Message, Confirm, Cancel, Warning;
+    var Message, Message_1, Confirm, Cancel, Warning;
 
     var Restore_Date = $('#i_fullDateRestore option:selected').text();
 
@@ -565,6 +578,7 @@ function confirmRestoreFull() {
         dataType: 'json',
         success: function(reponse){
             Message = reponse['Message_2'];
+            Message_1 = reponse['Message_3'];
             Warning = reponse['L_Warning'];
             Cancel = reponse['L_Cancel'];
             Confirm = reponse['L_Confirm'];
@@ -573,6 +587,9 @@ function confirmRestoreFull() {
             document.write(reponse['responseText']);
         }
     }); 
+    
+    putModalMessage( Warning, Message_1, Cancel );
+    return;
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
@@ -599,6 +616,8 @@ function confirmDeleteBackupSecrets() {
     var Message, Confirm, Cancel, Warning;
 
     var Restore_Date = $('#i_deleteSecretsDateRestore option:selected').text();
+
+    var i_Restore_Date = $('#i_deleteSecretsDateRestore').val();
 
     $.ajax({
         async: false,
@@ -629,9 +648,144 @@ function confirmDeleteBackupSecrets() {
      '</div>' +
      '<div class="modal-footer">' +
      '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
-     '<a class="button" href="javascript:transcryptMotherKey();">' + Confirm + '</a>' +
+     '<a class="button" href="javascript:deleteBackupSecrets(\'' + i_Restore_Date + '\');">' + Confirm +
+     '</a>' +
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
 
     $('#i_cancel_m').focus();
+}
+
+function deleteBackupSecrets( Restore_Date ) {
+    $.ajax({
+        url: '../SM-admin.php?action=DELE_RESTORE_SX',
+        type: 'POST',
+        data: $.param({
+            'Restore_Date' : Restore_Date,
+            'Type': 'S'
+            }),
+        dataType: 'json',
+        success: function(response){
+            hideConfirmMessage();
+            
+            showInfoMessage( response['status'], response['message'] ); // SecretManager.js
+            
+            if ( response['status'] == 'success' ) {
+                $.each( response['list'].split(','), function( index, value ) {
+                    $("#i_deleteSecretsDateRestore option[value='" + value + "']").remove();
+                    $("#i_secretsDateRestore option[value='" + value + "']").remove();
+                } );
+            }
+        },
+        error: function(response) {
+            document.write(response['responseText']);
+        }
+    }); 
+}
+
+
+function confirmDeleteBackupTotal() {
+    var Message, Confirm, Cancel, Warning;
+
+    var Restore_Date = $('#i_deleteFullDateRestore option:selected').text();
+
+    var i_Restore_Date = $('#i_deleteFullDateRestore').val();
+
+    $.ajax({
+        async: false,
+        url: '../SM-admin.php?action=L_DELE_RESTORE_SX',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse){
+            Warning = reponse['L_Warning'];
+            Message = reponse['Message_2'];
+            Cancel = reponse['L_Cancel'];
+            Confirm = reponse['L_Confirm'];
+        },
+        error: function(reponse) {
+            document.write(reponse['responseText']);
+        }
+    }); 
+    
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h3 id="myModalLabel">' + Warning + '</h3>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
+     '<p>' + Message + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
+     '<a class="button" href="javascript:deleteBackupTotal(\'' + i_Restore_Date + '\');">' + Confirm +
+     '</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    $('#i_cancel_m').focus();
+}
+
+function deleteBackupTotal( Restore_Date ) {
+    $.ajax({
+        url: '../SM-admin.php?action=DELE_RESTORE_SX',
+        type: 'POST',
+        data: $.param({
+            'Restore_Date' : Restore_Date,
+            'Type': 'T'
+            }),
+        dataType: 'json',
+        success: function(response){
+            hideConfirmMessage();
+            
+            showInfoMessage( response['status'], response['message'] ); // SecretManager.js
+            
+            if ( response['status'] == 'success' ) {
+                $.each( response['list'].split(','), function( index, value ) {
+                    $("#i_deleteFullDateRestore option[value='" + value + "']").remove();
+                    $("#i_fullDateRestore option[value='" + value + "']").remove();
+                } );
+            }
+        },
+        error: function(response) {
+            document.write(response['responseText']);
+        }
+    });
+}
+
+
+function confirmLoadSecretsBackup() {
+    var Restore_Date = $('#i_secretsDateRestore option:selected').text();
+    var i_Restore_Date = $('#i_secretsDateRestore').val();
+    
+    notYetImplemented();
+}
+
+
+function confirmLoadTotalBackup() {
+    var Restore_Date = $('#i_fullDateRestore option:selected').text();
+    var i_Restore_Date = $('#i_fullDateRestore').val();
+    
+    notYetImplemented();
+}
+
+
+function putModalMessage( Warning, Message, Cancel ) {
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h3 id="myModalLabel">' + Warning + '</h3>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
+     '<p class="bg-green align-center">' + Message + '</p>' +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
 }

@@ -1212,7 +1212,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 				$Error = $e->getMessage();
 				if ( isset( ${$Error} ) ) $Error = ${$Error};
 				
-				throw new Exception( $Error );
+				throw new Exception( $Error, 0 );
 			}
 		} else {
 			$Occurrence->scr_password = $Security->mc_decrypt( $Occurrence->scr_password );

@@ -413,7 +413,7 @@ function deleteGroup( Id ) {
 
 // ============================================
 // Gestion des créations de Profil à la volée et dans une "modale".
-function getCreateSecret(){
+function getCreateSecret( sgr_id ){
     var L_Secret_Create,
         L_Group,
         L_Type,
@@ -466,6 +466,9 @@ function getCreateSecret(){
     $.ajax({
         async: false,
         url: 'SM-secrets.php?action=LIST_GRP_X',
+        data: $.param({
+            'sgr_id': sgr_id
+            }),
         type: 'POST',
         success: function(reponse) {
             List_Groups = reponse;
@@ -554,7 +557,7 @@ function getCreateSecret(){
      '<div class="modal-footer">' +
      '<a class="button" id="iCancel" href="javascript:hideConfirmMessage();">' +
      L_Cancel + '</a>&nbsp;' +
-     '<a class="button" href="javascript:CreateSecret();">' +
+     '<a class="button" href="javascript:CreateSecret(' + sgr_id + ');">' +
      L_Create+'</a>' +
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
@@ -584,15 +587,33 @@ function getCreateSecret(){
 
 // ============================================
 // Gestion des créations de Profil à la volée et dans une "modale".
-function CreateSecret(){
+function CreateSecret( sgr_id ){
     var ID_Group = $('#i_sgr_id').val();
     var L_Group = $('#i_sgr_id option:selected').text();
+    
+    if ( ID_Group == '-' ) {
+        $('#i_sgr_id').focus();
+        $('#i_sgr_id').addClass( 'mandatory' );
+        return;
+    }
     
     var ID_Type = $('#i_stp_id').val();
     var L_Type = $('#i_stp_id option:selected').text();
     
+    if ( ID_Type == '-' ) {
+        $('#i_stp_id').focus();
+        $('#i_stp_id').addClass( 'mandatory' );
+        return;
+    }
+    
     var ID_Environment = $('#i_env_id').val();
     var L_Environment = $('#i_env_id option:selected').text();
+    
+    if ( ID_Environment == '-' ) {
+        $('#i_env_id').focus();
+        $('#i_env_id').addClass( 'mandatory' );
+        return;
+    }
     
     var Application = $('#i_Application').val();
     var Host = $('#i_Host').val();
@@ -601,9 +622,28 @@ function CreateSecret(){
     var Expiration_Date = $('#i_Expiration_Date').val();
     var Comment = $('#i_Comment').val();
     var Alert = $('#i_Alert').is(':checked');
+    
+    if ( User == '' ) {
+        $('#i_User').focus();
+        $('#i_User').addClass( 'mandatory' );
+        return;
+    }
+    
+    if ( Password == '' ) {
+        $('#i_Password').focus();
+        $('#i_Password').addClass( 'mandatory' );
+        return;
+    }
      
-    if ( Alert == true ) Alert = 1;
-    else Alert = 0;
+    if ( Alert == true ) {
+        Alert = 1;
+        Img_Alert = '<img class="no-border" alt="Oui" title="Oui" src="' +
+            Parameters["URL_PICTURES"] + '/bouton_coche.gif">';
+    } else {
+        Alert = 0;
+        Img_Alert = '<img class="no-border" alt="Non" title="Non" src="' + 
+            Parameters["URL_PICTURES"] + '/bouton_non_coche.gif">';
+    }
 
     $.ajax({
         url: 'SM-secrets.php?action=SCR_AX',
@@ -630,38 +670,59 @@ function CreateSecret(){
                 var Total = $('#total').text();
                 Total = Number(Total) + 1;
 
-                $('#listeSecrets').prepend(
-                    '<tr id="'+reponse['scr_id']+'" class="surline" data-delete="'+reponse['L_Delete']+
-                     '" data-modify="'+reponse['L_Modify']+'" data-cancel="'+reponse['L_Cancel']+
-                     '" data-total="'+Total+'" style="cursor: pointer;">\n' +
-                     '<td class="align-middle" data-id="'+ID_Group+'" onclick="viewPassword('+
-                     reponse['scr_id']+');" style="max-width:210px; width:210px;">'+L_Group+'</td>\n' +
-                     '<td class="align-middle" data-id="'+ID_Type+'" onclick="viewPassword('+
-                     reponse['scr_id']+');" style="max-width:90px; width:90px;">'+L_Type+'</td>\n' +
-                     '<td class="align-middle" data-id="'+ID_Environment+'" onclick="viewPassword('+
-                     reponse['scr_id']+');" style="max-width:100px; width:100px;">'+L_Environment+'</td>\n' +
-                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
-                     ');" style="max-width:100px; width:100px;">'+Application+'</td>\n' +
-                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
-                     ');" style="max-width:70px; width:70px;">'+Host+'</td>\n' +
-                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
-                     ');" style="max-width:70px; width:70px;">'+User+'</td>\n' +
-                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
-                     ');" style="max-width:80px; width:80px;">'+Expiration_Date+'</td>\n'+
-                     '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
-                     ');" style="max-width:110px; width:110px;">'+Comment+'</td>\n' +
-                     '<td data-right="'+reponse['Rights']+'" style="max-width:80px; width:80px;">\n' +
-                     '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+')">\n' +
-                     '<img class="no-border" title="'+reponse['L_Modify']+'" alt="'+reponse['L_Modify']+
-                     '" src="'+Parameters['URL_PICTURES']+'/b_edit.png"></a>' +
-                     '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+',\'D\')">\n' +
-                     '<img class="no-border" title="'+reponse['L_Delete']+'" alt="'+reponse['L_Delete']+
-                     '" src="'+Parameters['URL_PICTURES']+'/b_drop.png"></a>\n' +
-                     '<a class="simple" href="javascript:viewPassword( '+reponse['scr_id']+' );">' +
-                     '<img class="no-border" title="'+reponse['L_Password_View']+'" alt="'+
-                     reponse['L_Password_View']+'" src="'+Parameters['URL_PICTURES']+'/b_eye.png"></a>\n' +
-                     '</td>'
-                );
+                if ( sgr_id == 0 ) {
+                    $('#listeSecrets').prepend(
+                        '<tr id="'+reponse['scr_id']+'" class="surline" data-delete="'+reponse['L_Delete']+
+                         '" data-modify="'+reponse['L_Modify']+'" data-cancel="'+reponse['L_Cancel']+
+                         '" data-total="'+Total+'" style="cursor: pointer;">\n' +
+                         '<td class="align-middle" data-id="'+ID_Group+'" onclick="viewPassword('+
+                         reponse['scr_id']+');" style="max-width:210px; width:210px;">'+L_Group+'</td>\n' +
+                         '<td class="align-middle" data-id="'+ID_Type+'" onclick="viewPassword('+
+                         reponse['scr_id']+');" style="max-width:90px; width:90px;">'+L_Type+'</td>\n' +
+                         '<td class="align-middle" data-id="'+ID_Environment+'" onclick="viewPassword('+
+                         reponse['scr_id']+');" style="max-width:100px; width:100px;">'+L_Environment+'</td>\n' +
+                         '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                         ');" style="max-width:100px; width:100px;">'+Application+'</td>\n' +
+                         '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                         ');" style="max-width:70px; width:70px;">'+Host+'</td>\n' +
+                         '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                         ');" style="max-width:70px; width:70px;">'+User+'</td>\n' +
+                         '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                         ');" style="max-width:80px; width:80px;">'+Expiration_Date+'</td>\n'+
+                         '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
+                         ');" style="max-width:110px; width:110px;">'+Comment+'</td>\n' +
+                         '<td data-right="'+reponse['Rights']+'" style="max-width:80px; width:80px;">\n' +
+                         '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+')">\n' +
+                         '<img class="no-border" title="'+reponse['L_Modify']+'" alt="'+reponse['L_Modify']+
+                         '" src="'+Parameters['URL_PICTURES']+'/b_edit.png"></a>' +
+                         '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+',\'D\')">\n' +
+                         '<img class="no-border" title="'+reponse['L_Delete']+'" alt="'+reponse['L_Delete']+
+                         '" src="'+Parameters['URL_PICTURES']+'/b_drop.png"></a>\n' +
+                         '<a class="simple" href="javascript:viewPassword( '+reponse['scr_id']+' );">' +
+                         '<img class="no-border" title="'+reponse['L_Password_View']+'" alt="'+
+                         reponse['L_Password_View']+'" src="'+Parameters['URL_PICTURES']+'/b_eye.png"></a>\n' +
+                         '</td>'
+                    );
+                } else {
+                    $('#listeSecrets').prepend(
+                        '<tr class="surline">\n' +
+                         '<td class="align-middle">'+L_Type+'</td>\n' +
+                         '<td class="align-middle">'+L_Environment+'</td>\n' +
+                         '<td class="align-middle">'+Application+'</td>\n' +
+                         '<td class="align-middle">'+Host+'</td>\n' +
+                         '<td class="align-middle">'+User+'</td>\n' +
+                         '<td class="align-middle">'+Img_Alert+'</td>\n'+
+                         '<td class="align-middle">'+Comment+'</td>\n' +
+                         '<td data-right="'+reponse['Rights']+'" style="max-width:80px; width:80px;">\n' +
+                          '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+')">\n' +
+                          '<img class="no-border" title="'+reponse['L_Modify']+'" alt="'+reponse['L_Modify']+
+                          '" src="'+Parameters['URL_PICTURES']+'/b_edit.png"></a>' +
+                          '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+',\'D\')">\n' +
+                          '<img class="no-border" title="'+reponse['L_Delete']+'" alt="'+reponse['L_Delete']+
+                          '" src="'+Parameters['URL_PICTURES']+'/b_drop.png"></a>\n' +
+                         '</td>'
+                    );
+                }
                 
                 hideConfirmMessage();
             }

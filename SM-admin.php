@@ -181,26 +181,26 @@ function getDateRestoreFiles() {
             $Hour = str_replace( '.', ':', $t_Filename[2] );
 
             if ( $t_Filename[0] == 'secrets' ) {
-                $t_Secrets[] = $Day . ' ' . $Hour;
+                $t_Secrets[$t_Filename[1].'_'.$t_Filename[2]] = $Day . ' ' . $Hour;
             }
 
             if ( $t_Filename[0] == 'total' ) {
-                $t_Full[] = $Day . ' ' . $Hour;
+                $t_Full[$t_Filename[1].'_'.$t_Filename[2]] = $Day . ' ' . $Hour;
             }
         }
     }
 
     
     $Restore_Secrets_Points_Options = '';
-    rsort( $t_Secrets );
-    foreach( $t_Secrets as $Element ) {
-        $Restore_Secrets_Points_Options .= '<option>' . $Element . '</option>';
+    arsort( $t_Secrets );
+    foreach( $t_Secrets as $Key => $Element ) {
+        $Restore_Secrets_Points_Options .= '<option value="'. $Key . '">' . $Element . '</option>';
     }
     
     $Restore_Full_Points_Options = '';
-    rsort( $t_Full );
-    foreach( $t_Full as $Element ) {
-        $Restore_Full_Points_Options .= '<option>' . $Element . '</option>';
+    arsort( $t_Full );
+    foreach( $t_Full as $Key => $Element ) {
+        $Restore_Full_Points_Options .= '<option value="'. $Key . '">' . $Element . '</option>';
     }
 
     return array( $Restore_Secrets_Points_Options, $Restore_Full_Points_Options );
@@ -973,8 +973,10 @@ switch( $Action ) {
         
         $Status = 'success';
     } catch( Exception $e ) {
-        $Result = ${$e->getMessage()};
+        $Result = $Message = ${$e->getMessage()};
         $Status = 'error';
+        $Operator = '';
+        $Date = '';
     }
 
     $alert_message = $Secrets->formatHistoryMessage( $Result[0] );
@@ -1281,6 +1283,7 @@ case 'STOR_TX':
     echo json_encode( array (
         'Message' => $L_Do_You_Confirm_Secrets_Restore,
         'Message_2' => $L_Do_You_Confirm_Full_Restore,
+        'Message_3' => $L_Not_Yet_Implemented,
         'L_Warning' => $L_Warning,
         'L_Cancel' => $L_Cancel,
         'L_Confirm' => $L_Confirm
@@ -1309,6 +1312,59 @@ case 'STOR_TX':
         'L_Confirm' => $L_Confirm
     ) );
     
+    exit();
+
+
+ case 'DELE_RESTORE_SX':
+    $Files = scandir( DIR_BACKUP );
+
+    $List = '';
+    
+    
+    if ( isset( $_POST['Type'] ) ) {
+        if ( $_POST['Type'] == 'S' ) $Prefix = 'secrets';
+        else $Prefix = 'total';
+    } else {
+        $Prefix = 'total';
+    }
+
+    foreach( $Files as $File ) {
+        if ( $File == '.' or $File == '..' ) continue;
+
+        $File = str_replace( '.xml', '', $File );
+        
+        $t_Filename = split( '_', $File );
+        if ( $t_Filename[0] != $Prefix ) continue;
+
+        if ( $t_Filename[1] . '_' . $t_Filename[2] < $_POST['Restore_Date'] ) {
+            $Filename = DIR_BACKUP . '/' . $Prefix . '_' . $t_Filename[1] . '_' . $t_Filename[2] . '.xml';
+            
+            if ( ! unlink( $Filename ) ) {
+                echo json_encode( array(
+                    'status' => 'error',
+                    'message' => $L_Restore_File_Not_Deleted . ' "' . $Filename .'"'
+                ) );
+                
+                exit();
+            }
+            
+            if ( $List != '' ) $List .= ',';
+            
+            $List .= $t_Filename[1] . '_' . $t_Filename[2];
+        }
+    }
+
+    echo json_encode( array(
+        'status' => 'success',
+        'message' => $L_Selected_Restore_Files_Deleted,
+        'list' => $List
+    ) );
+    
+    exit();
+
+
+ case 'LOAD_XML_SECRETS_BACKUP_X':
+    $xml = new DOMDocument("1.0", "UTF-8");
     exit();
 }
 

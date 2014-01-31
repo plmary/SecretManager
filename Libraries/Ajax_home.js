@@ -50,156 +50,159 @@ function setSecret( secret_id, action ) {
         dataType: 'json', // le résultat est transmit dans un objet JSON
         success: function(reponse){
             if ( $('#' + secret_id + ' td p').length == 0 ) {
-                var group, group_id, type, type_id, environment, environment_id, application,
-                    host, user, expiration, comment, right, dirname, L_Edit, L_Delete, L_View;
-                $('tr#' + secret_id + ' td').each( function( index ) {
-                    if ( index == 0 ) {                        
-                        group_id = $(this).attr('data-id');
+                if ( reponse['statut'] == 'success' ) {
+                    var group, group_id, type, type_id, environment, environment_id, application,
+                        host, user, expiration, comment, right, dirname, L_Edit, L_Delete, L_View;
+                    $('tr#' + secret_id + ' td').each( function( index ) {
+                        if ( index == 0 ) {                        
+                            group_id = $(this).attr('data-id');
 
-                        $.each(reponse['listGroups'], function(attribut, valeur) {
-                            if ( group_id == valeur['sgr_id'] ) {
-                                var Selected = ' selected';
-                            } else {
-                                var Selected = '';
-                            }
+                            $.each(reponse['listGroups'], function(attribut, valeur) {
+                                if ( group_id == valeur['sgr_id'] ) {
+                                    var Selected = ' selected';
+                                } else {
+                                    var Selected = '';
+                                }
                             
-                            group = group + '<option value=' + valeur['sgr_id'] + Selected +
-                                '>' + valeur['sgr_label'] + '</option>';
-                        });
+                                group = group + '<option value=' + valeur['sgr_id'] + Selected +
+                                    '>' + valeur['sgr_label'] + '</option>';
+                            });
                 
-                        group_o = $(this).text();                
-                    } else if ( index == 1 ) {
-                        type_id = $(this).attr('data-id');
+                            group_o = $(this).text();                
+                        } else if ( index == 1 ) {
+                            type_id = $(this).attr('data-id');
                             
-                        $.each(reponse['listTypes'], function(attribut, valeur) {
-                            if ( type_id == valeur['stp_id'] ) {
-                                var Selected = ' selected';
-                            } else {
-                                var Selected = '';
-                            }
+                            $.each(reponse['listTypes'], function(attribut, valeur) {
+                                if ( type_id == valeur['stp_id'] ) {
+                                    var Selected = ' selected';
+                                } else {
+                                    var Selected = '';
+                                }
 
-                            type = type + '<option value=' + valeur['stp_id'] + Selected +
-                                '>' + valeur['stp_name'] + '</option>';
-                        });
+                                type = type + '<option value=' + valeur['stp_id'] + Selected +
+                                    '>' + valeur['stp_name'] + '</option>';
+                            });
 
-                        type_o = $(this).text();
-                    } else if ( index == 2 ) {
-                        environment_id = $(this).attr('data-id');
+                            type_o = $(this).text();
+                        } else if ( index == 2 ) {
+                            environment_id = $(this).attr('data-id');
 
-                        $.each(reponse['listEnvironments'], function(attribut, valeur) {
-                            if ( environment_id == valeur['env_id'] ) {
-                                var Selected = ' selected';
-                            } else {
-                                var Selected = '';
-                            }
+                            $.each(reponse['listEnvironments'], function(attribut, valeur) {
+                                if ( environment_id == valeur['env_id'] ) {
+                                    var Selected = ' selected';
+                                } else {
+                                    var Selected = '';
+                                }
 
-                            environment = environment + '<option value=' + valeur['env_id'] +
-                                Selected + '>' + valeur['env_name'] + '</option>';
-                        });
+                                environment = environment + '<option value=' + valeur['env_id'] +
+                                    Selected + '>' + valeur['env_name'] + '</option>';
+                            });
 
-                        environment_o = $(this).text();
-                    } else if ( index == 3 ) {
-                        application = $(this).text();
-                    } else if ( index == 4 ) {
-                        host = $(this).text();
-                    } else if ( index == 5 ) {
-                        user = $(this).text();
-                    } else if ( index == 6 ) {
-                        expiration = $(this).text();
-                        expiration_color = $(this).attr('class');
-                    } else if ( index == 7 ) {
-                        comment = $(this).text();
-                    }
-                } );
+                            environment_o = $(this).text();
+                        } else if ( index == 3 ) {
+                            application = $(this).text();
+                        } else if ( index == 4 ) {
+                            host = $(this).text();
+                        } else if ( index == 5 ) {
+                            user = $(this).text();
+                        } else if ( index == 6 ) {
+                            expiration = $(this).text();
+                            expiration_color = $(this).attr('class');
+                        } else if ( index == 7 ) {
+                            comment = $(this).text();
+                        }
+                    } );
 
-                var currentClass = $('tr#' + secret_id).attr('class');
-                currentClass = currentClass.replace("surline", "");
+                    var currentClass = $('tr#' + secret_id).attr('class');
+                    currentClass = currentClass.replace("surline", "");
         
-                var L_Cancel = $('tr#' + secret_id).attr('data-cancel');
-                var L_Modify = $('tr#' + secret_id).attr('data-modify');
-                var L_Delete = $('tr#' + secret_id).attr('data-delete');
+                    var L_Cancel = $('tr#' + secret_id).attr('data-cancel');
+                    var L_Modify = $('tr#' + secret_id).attr('data-modify');
+                    var L_Delete = $('tr#' + secret_id).attr('data-delete');
                 
-                if ( reponse['Password'] == null ) {
-                    var password = '*********';
-                } else {
-                    var password = reponse['Password'];
-                }
+                    if ( reponse['Password'] == null ) {
+                        var password = '*********';
+                    } else {
+                        var password = reponse['Password'];
+                    }
                 
-                if ( reponse['alert'] == true ) {
-                    var alert = 'checked';
+                    if ( reponse['alert'] == true ) {
+                        var alert = 'checked';
+                    } else {
+                        var alert = '';
+                    }
+
+                    var newOcc = '<tr id="MOD_' + secret_id + '" class="' + currentClass +
+                        '" style="cursor: pointer;">' +
+                        '<td colspan="9" style="margin:0;padding:0;border:2px solid #568EB6;">' +
+                        '<div id="modification-zone">' +
+                        '<table>' +
+                        '<tr>' +
+                        '<td><label for="'+'group_'+secret_id+'">' + reponse['L_Group'] + '</label></td>' +
+                        '<td colspan="3"><select id="'+'group_'+secret_id+'" class="input-xlarge"' +
+                        Delete_Mode + '>' + group + '</select></td>' +
+                        '<td><label for="'+'type_'+secret_id+'">' + reponse['L_Type'] + '</label></td>' +
+                        '<td><select id="'+'type_'+secret_id+'" class="input-medium"' + Delete_Mode + '>' +
+                        type +
+                        '</select></td>' +
+                        '<td><label for="'+'environment_'+secret_id+'">' + reponse['L_Environment'] + '</label></td>' +
+                        '<td><select id="'+'environment_'+secret_id+'"' + ' class="input-medium"' + Delete_Mode + '>' +
+                        environment +
+                        '</select></td>' +
+                        '</tr>' +
+                        '<tr>' +
+                        '<td><label for="'+'application_'+secret_id+'">' + reponse['L_Application'] + '</label></td>' +
+                        '<td><input id="'+'application_'+secret_id+'" type="text" value="' + application +
+                        '" class="input-medium"' + Delete_Mode + '></td>' +
+                        '<td><label for="'+'host_'+secret_id+'">' + reponse['L_Host'] + '</label></td>' +
+                        '<td><input id="'+'host_'+secret_id+'" type="text" value="' + host + '" class="input-medium"' + 
+                        Delete_Mode + '></td>' +
+                        '<td><label for="'+'user_'+secret_id+'">' + reponse['L_User'] + '</label></td>' +
+                        '<td><input id="'+'user_'+secret_id+'" type="text" value="' + user + '" class="input-medium"' + 
+                        Delete_Mode + '></td>' +
+                        '<td><label for="'+'secret_'+secret_id+'">' + reponse['L_Password'] + '</label></td>';
+
+                    if ( action == 'D' ) {
+                        password = '************';
+                    }
+                    
+                    newOcc = newOcc + '<td><input id="'+'secret_'+secret_id+'" type="text" value="' + password + 
+                        '" class="input-medium"' + Delete_Mode + '></td>' +
+                        '</tr>' +
+                        '<tr>' +
+                        '<td><label for="'+'alert_'+secret_id+'">' + reponse['L_Alert'] + '</label></td>' +
+                        '<td><input id="'+'alert_'+secret_id+'" type="checkbox" ' + alert + Delete_Mode + '></td>' +
+                        '<td><label for="'+'expiration_'+secret_id+'">' + reponse['L_Expiration_Date'] + '</label></td>' +
+                        '<td><input id="'+'expiration_'+secret_id+'" type="text" value="' + expiration + '" class="input-medium"' +
+                        Delete_Mode + '></td>' +
+                        '<td><label for="'+'comment_'+secret_id+'">' + reponse['L_Comment'] + '</label></td>' +
+                        '<td colspan="3"><input id="'+'comment_'+secret_id+'" type="text" value="' + comment + '" class="input-xlarge"' + 
+                        Delete_Mode + '></td>' +
+                        '</tr>' +
+                        '</table>' +
+                        '</div>' +
+                        '<p style="margin-top: 6px;margin-bottom: 6px;padding:0">' +
+                        '<span class="div-left tbrl_padding_6"><a class="button" href="javascript:cancel();">' + L_Cancel + '</a></span>';
+                    
+                    if ( action == 'D' ) {
+                        newOcc = newOcc + '<span class="div-right tbrl_padding_6"><a class="button" href="javascript:remove('+secret_id+')">' +
+                            L_Delete + '</a></span>';
+                    } else {
+                        newOcc = newOcc + '<span class="div-right tbrl_padding_6"><a class="button" href="javascript:save('+secret_id+')">' +
+                            L_Modify + '</a></span>';
+                    }
+                    
+                    newOcc = newOcc + '</p>' +
+                        '<p>&nbsp;</p>' +
+                        '</td>' +
+                        '</tr>';
+
+                    $('tr#' + secret_id).hide();
+                    $(newOcc).insertAfter('tr#' + secret_id);
                 } else {
-                    var alert = '';
+                    showInfoMessage( reponse['statut'], reponse['message'] );
                 }
-
-                var newOcc = '<tr id="MOD_' + secret_id + '" class="' + currentClass + '" style="cursor: pointer;">' +
-                    '<td colspan="9" style="margin:0;padding:0;border:2px solid #568EB6;">' +
-                    '<div id="modification-zone">' +
-                    '<table>' +
-                    '<tr>' +
-                    '<td><label for="'+'group_'+secret_id+'">' + reponse['L_Group'] + '</label></td>' +
-                    '<td colspan="3"><select id="'+'group_'+secret_id+'" class="input-xlarge"' + Delete_Mode + '>' +
-                    group +
-                    '</select></td>' +
-                    '<td><label for="'+'type_'+secret_id+'">' + reponse['L_Type'] + '</label></td>' +
-                    '<td><select id="'+'type_'+secret_id+'" class="input-medium"' + Delete_Mode + '>' +
-                    type +
-                    '</select></td>' +
-                    '<td><label for="'+'environment_'+secret_id+'">' + reponse['L_Environment'] + '</label></td>' +
-                    '<td><select id="'+'environment_'+secret_id+'"' + ' class="input-medium"' + Delete_Mode + '>' +
-                    environment +
-                    '</select></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td><label for="'+'application_'+secret_id+'">' + reponse['L_Application'] + '</label></td>' +
-                    '<td><input id="'+'application_'+secret_id+'" type="text" value="' + application +
-                    '" class="input-medium"' + Delete_Mode + '></td>' +
-                    '<td><label for="'+'host_'+secret_id+'">' + reponse['L_Host'] + '</label></td>' +
-                    '<td><input id="'+'host_'+secret_id+'" type="text" value="' + host + '" class="input-medium"' + 
-                    Delete_Mode + '></td>' +
-                    '<td><label for="'+'user_'+secret_id+'">' + reponse['L_User'] + '</label></td>' +
-                    '<td><input id="'+'user_'+secret_id+'" type="text" value="' + user + '" class="input-medium"' + 
-                    Delete_Mode + '></td>' +
-                    '<td><label for="'+'secret_'+secret_id+'">' + reponse['L_Password'] + '</label></td>';
-
-                if ( action == 'D' ) {
-                    password = '************';
-                }
-                    
-                newOcc = newOcc + '<td><input id="'+'secret_'+secret_id+'" type="text" value="' + password + 
-                    '" class="input-medium"' + Delete_Mode + '></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td><label for="'+'alert_'+secret_id+'">' + reponse['L_Alert'] + '</label></td>' +
-                    '<td><input id="'+'alert_'+secret_id+'" type="checkbox" ' + alert + Delete_Mode + '></td>' +
-                    '<td><label for="'+'expiration_'+secret_id+'">' + reponse['L_Expiration_Date'] + '</label></td>' +
-                    '<td><input id="'+'expiration_'+secret_id+'" type="text" value="' + expiration + '" class="input-medium"' +
-                    Delete_Mode + '></td>' +
-                    '<td><label for="'+'comment_'+secret_id+'">' + reponse['L_Comment'] + '</label></td>' +
-                    '<td colspan="3"><input id="'+'comment_'+secret_id+'" type="text" value="' + comment + '" class="input-xlarge"' + 
-                    Delete_Mode + '></td>' +
-                    '</tr>' +
-                    '</table>' +
-                    '</div>' +
-                    '<p style="margin-top: 6px;margin-bottom: 6px;padding:0">' +
-                    '<span class="div-left tbrl_padding_6"><a class="button" href="javascript:cancel();">' + L_Cancel + '</a></span>';
-                    
-                if ( action == 'D' ) {
-                    newOcc = newOcc + '<span class="div-right tbrl_padding_6"><a class="button" href="javascript:remove('+secret_id+')">' +
-                        L_Delete + '</a></span>';
-                } else {
-                    newOcc = newOcc + '<span class="div-right tbrl_padding_6"><a class="button" href="javascript:save('+secret_id+')">' +
-                        L_Modify + '</a></span>';
-                }
-                    
-                newOcc = newOcc + '</p>' +
-                    '<p>&nbsp;</p>' +
-                    '</td>' +
-                    '</tr>';
-
-                $('tr#' + secret_id).hide();
-                $(newOcc).insertAfter('tr#' + secret_id);
             }
-
         },
         error: function(reponse) {
             alert('Erreur sur serveur : ' + reponse['responseText']);

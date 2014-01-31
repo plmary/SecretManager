@@ -91,6 +91,8 @@
 
     $L_Save = 'Speichern';
     $L_Confirm = 'Confirm';
+	
+	$L_Not_Yet_Implemented = 'Noch nicht implementiert';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

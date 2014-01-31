@@ -92,6 +92,8 @@
 
     $L_Save = 'Save';
 	$L_Confirm = 'Confirm';
+	
+	$L_Not_Yet_Implemented = 'Not yet implemented';
 
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;

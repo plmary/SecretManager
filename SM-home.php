@@ -315,7 +315,7 @@ switch( $Action ) {
 
 	if ( $PageHTML->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
 //    	$addButton = '<a class="btn btn-small" href="' . URL_BASE . '/SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
-    	$addButton = '<a class="btn btn-small" href="javascript:getCreateSecret();" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
+    	$addButton = '<a class="btn btn-small" href="javascript:getCreateSecret( 0 );" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
     } else {
     	$addButton = '';
     }
@@ -493,31 +493,38 @@ switch( $Action ) {
         }
     }
 
-    $Secret = $Secrets->get( $_POST[ 'scr_id' ] );
+    try {
+        $Secret = $Secrets->get( $_POST[ 'scr_id' ] );
 
-    $Resultat = array( 'statut' => 'success',
-        'listGroups' => $List_Groups,
-        'listTypes' => $List_Types_2,
-        'listEnvironments' => $List_Environments_2,
-        'L_Group' => $L_Group,
-        'L_Type' => $L_Type,
-        'L_Environment' => $L_Environment,
-        'L_Application' => $L_Application,
-        'L_Host' => $L_Host,
-        'L_User' => $L_User,
-        'L_Expiration_Date' => $L_Expiration_Date,
-        'L_Comment' => $L_Comment,
-        'L_Secret' => $L_Secret,
-        'L_Alert' => $L_Alert,
-        'alert' => $Secret->scr_alert,
-        'L_Password' => $L_Password,
-        'Password' => $Secret->scr_password
-        );
+        $Resultat = array(
+            'statut' => 'success',
+            'listGroups' => $List_Groups,
+            'listTypes' => $List_Types_2,
+            'listEnvironments' => $List_Environments_2,
+            'L_Group' => $L_Group,
+            'L_Type' => $L_Type,
+            'L_Environment' => $L_Environment,
+            'L_Application' => $L_Application,
+            'L_Host' => $L_Host,
+            'L_User' => $L_User,
+            'L_Expiration_Date' => $L_Expiration_Date,
+            'L_Comment' => $L_Comment,
+            'L_Secret' => $L_Secret,
+            'L_Alert' => $L_Alert,
+            'alert' => $Secret->scr_alert,
+            'L_Password' => $L_Password,
+            'Password' => $Secret->scr_password
+            );
+    } catch( Exception $e ) {
+        $Resultat = array(
+            'statut' => 'error',
+            'message' => $e->getMessage()
+            );
+        
+    }
 
     echo json_encode( $Resultat );
     exit();
-
-	break;
 
 
  case 'AJAX_S':

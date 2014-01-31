@@ -84,7 +84,7 @@ function addCivility(){
             success: function(reponse) {
                 showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
-                if (statut == 'success') {
+                if (reponse['Status'] == 'success') {
                     var Id = reponse['IdCivility'];
                     var Script = reponse['Script'];
                     var URL_PICTURES = reponse['URL_PICTURES'];
@@ -126,11 +126,11 @@ function addCivility(){
                          '</tr>'
                         );
                     }
-
                     var Total = $('#total').text();
                     Total = Number(Total) + 1;
                     $('#total').text( Total );
                 }
+
             },
             error: function(reponse) {
                 alert('Erreur serveur : ' + reponse['responseText']);

@@ -96,13 +96,12 @@ $Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 if ( $Action != 'SCR_V' ) {
 	$innerJS = '';
 
-	 // Cas de l'import des fonctions JS gérant les mots de passe.
-	if ( $Action == 'SCR_A' or $Action == 'SCR_M' )	include( DIR_LIBRARIES . '/password_js.php' );
+	$JS_Scripts = array( 'Ajax_secrets.js', 'SecretManager.js' );
 
-	if ( $Action == '' ) {
-		$JS_Scripts = array( 'Ajax_secrets.js', 'SecretManager.js' );
-	} else {
-		$JS_Scripts = '';
+	 // Cas de l'import des fonctions JS gérant les mots de passe.
+	if ( preg_match("/^SCR/i", $Action ) ) {
+	    include( DIR_LIBRARIES . '/password_js.php' );
+	    $JS_Scripts[] = 'Ajax_home.js';
 	}
 	
 	if ( ! preg_match("/X$/i", $Action ) ) {
@@ -703,7 +702,10 @@ switch( $Action ) {
 		$listButtons = '<div id="view-switch-list-current" class="view-switch" style="float: right" title="' . $L_Group_List . '"></div>' .
 		'<div id="view-switch-excerpt-current" class="view-switch" style="float: right" title="' . $L_Detail_List . '"></div>';
 		
-		$addButton = '<span style="float: right"><a class="button" href="' . $Script . '?action=SCR_A&sgr_id=' . $sgr_id . '">' . $L_Create . '</a></span>';
+//		$addButton = '<span style="float: right"><a class="button" href="' . $Script . '?action=SCR_A&sgr_id=' . $sgr_id . '">' . $L_Create . '</a></span>';
+		
+		$addButton = '<span style="float: right"><a class="button" href="javascript:getCreateSecret(' . $sgr_id . ');">' . $L_Create . '</a></span>';
+		
 		$returnButton = '<span style="float: right"><a class="button" href="' . $Script . '">' . $L_Return . '</a></span>' ;
 		
 		$Buttons = $addButton . $returnButton; // . $listButtons ;
@@ -720,9 +722,7 @@ switch( $Action ) {
 		 "        <td colspan=\"8\">\n" .
 		 $L_Group . " : " . "<span class=\"green bold\">" . stripslashes( $Group->sgr_label ) . "</span>" . $Buttons . "\n" .
 		 "        </td>\n" .
-		 "       </tr>\n" .
-		 "      </thead>\n" .
-		 "      <tbody>\n" );
+		 "       </tr>\n" );
 		 
 		$List_Secrets = $Secrets->listSecrets( $sgr_id, '', '', '', '', '', '', '',
 		 false, $orderBy );
@@ -739,9 +739,9 @@ switch( $Action ) {
 		
 			$tmpSort = 'type';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
 		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" .
-		 $tmpClass . "\">" . $L_Type . "</th>\n" );
+		 $tmpClass . "\">" . $L_Type . "</td>\n" );
 	 
 		if ( $orderBy == 'environment' ) {
 			$tmpClass = 'order-select';
@@ -753,9 +753,9 @@ switch( $Action ) {
 		
 			$tmpSort = 'environment';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
 		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Environment .
-		 "</th>\n" );
+		 "</td>\n" );
 	 
 		if ( $orderBy == 'application' ) {
 			$tmpClass = 'order-select';
@@ -767,9 +767,9 @@ switch( $Action ) {
 		
 			$tmpSort = 'application';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
 		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Application .
-		 "</th>\n" );
+		 "</td>\n" );
 	 
 		if ( $orderBy == 'host' ) {
 			$tmpClass = 'order-select';
@@ -781,8 +781,8 @@ switch( $Action ) {
 		
 			$tmpSort = 'host';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
-		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Host . "</th>\n"
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
+		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Host . "</td>\n"
 		 );
 	 
 		if ( $orderBy == 'user' ) {
@@ -795,8 +795,8 @@ switch( $Action ) {
 		
 			$tmpSort = 'user';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
-		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</th>\n"
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
+		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_User . "</td>\n"
 		 );
 	 
 		if ( $orderBy == 'alert' ) {
@@ -809,9 +809,9 @@ switch( $Action ) {
 		
 			$tmpSort = 'alert';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
 		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Alert .
-		 "</th>\n" );
+		 "</td>\n" );
 	 
 		if ( $orderBy == 'comment' ) {
 			$tmpClass = 'order-select';
@@ -823,20 +823,23 @@ switch( $Action ) {
 		
 			$tmpSort = 'comment';
 		}
-		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		print( "        <td onclick=\"javascript:document.location='" . $Script . 
 		 "?action=SCR&sgr_id=" . $sgr_id . "&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Comment .
-		 "</th>\n" );
+		 "</td>\n" );
 
-		print( "        <th>" . $L_Actions . "</th>\n" .
-		 "       </tr>\n" );
+		print( "        <td>" . $L_Actions . "</td>\n" .
+		 "       </tr>\n" .
+		 "      </thead>\n" .
+		 "      <tbody id=\"listeSecrets\">\n" );
 		
 		$BackGround = "pair";
 		
 		foreach( $List_Secrets as $Secret ) {
-			if ( $BackGround == "pair" )
+/*			if ( $BackGround == "pair" )
 				$BackGround = "impair";
 			else
 				$BackGround = "pair";
+*/
 
 			if ( $Secret->scr_alert == 0 ) {
 				$Img_Src = URL_PICTURES . '/bouton_non_coche.gif';
@@ -848,7 +851,8 @@ switch( $Action ) {
 			$Alert_Image = '<img class="no-border" src="' . $Img_Src . '" title="' . $Img_Title .
 			 '" alt="' . $Img_Title . '" />';
 
-			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
+//			print( "       <tr class=\"" . $BackGround . " surline\">\n" .
+			print( "       <tr class=\"surline\">\n" .
 			 "        <td class=\"align-middle\">" . ${$Secret->stp_name} . "</td>\n" .
 			 "        <td class=\"align-middle\">" . ${$Secret->env_name} . "</td>\n" .
 			 "        <td class=\"align-middle\">" . $Secret->scr_application . "</td>\n" .
@@ -923,7 +927,9 @@ switch( $Action ) {
 
 		foreach( $List_Groups as $Group ) {
 			$Status = '';
-			if ( array_key_exists( 'sgr_id', $_SESSION ) ) {
+			if ( array_key_exists( 'sgr_id', $_POST ) ) {
+				if ( $Group->sgr_id == $_POST[ 'sgr_id' ] ) $Status = ' selected ';
+			} elseif ( array_key_exists( 'sgr_id', $_SESSION ) ) {
 				if ( $Group->sgr_id == $_SESSION[ 'sgr_id' ] ) $Status = ' selected ';
 			}
 		
@@ -953,139 +959,6 @@ switch( $Action ) {
     ) );
 
     exit();
-
- case 'SCR_A':
-	if ( $Authentication->is_administrator() or $groupsRights[ 'W' ] ) {
-		$Referentials = new IICA_Referentials();
-
-		$List_Rights = $Referentials->listRights();
-		$List_Types = $Referentials->listSecretTypes();
-		$List_Environments = $Referentials->listEnvironments();
-	
-		if ( $Authentication->is_administrator() ) {
-			$List_Groups = $Groups->listGroups();
-		} else {
-			$List_Groups = $Groups->listGroups( $_SESSION[ 'idn_id' ], '', 2 );
-		}
-	
-
-		if ( array_key_exists( 'rp', $_GET ) ) {
-			switch( $_GET[ 'rp' ] ) {
-			 default:
-				$Prev_Page = 'SM-home.php';
-				$Continuous = '&rp=home';
-				break;
-			}
-			
-			$cancelButton = '<a class="button" href="' . URL_BASE . '/' . $Prev_Page .'">' . $L_Cancel . '</a>';
-		} else {
-			$cancelButton = '<a class="button" href="' . $Script .
-			 '?action=SCR">' . $L_Cancel . '</a>';
-			$Continuous = '';
-		}
-	
-		print( "     <form name=\"a_group\" method=\"post\" action=\"" . $Script . "?action=SCR_AX". $Continuous . "\">\n" .
-		 "      <table style=\"margin:10px auto;width:60%\">\n" .
-		 "       <thead>\n" .
-		 "       <tr>\n" .
-		 "        <th colspan=\"2\">" . $L_Secret_Create . "</th>\n" .
-		 "       </tr>\n" .
-		 "       </thead>\n" .
-		 "       <tbody>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Group . "</td>\n" .
-		 "        <td>\n" .
-		 "         <select name=\"sgr_id\">\n" );
-
-		foreach( $List_Groups as $Group ) {
-			$Status = '';
-			if ( array_key_exists( 'sgr_id', $_SESSION ) ) {
-				if ( $Group->sgr_id == $_SESSION[ 'sgr_id' ] ) $Status = ' selected ';
-			}
-		
-			print( "          <option value=\"" . $Group->sgr_id . "\"" . $Status . ">" .
-			 $Security->XSS_Protection( $Group->sgr_label ) . "</option>\n" );
-		}
-			
-		print( "         </select>\n" .
-		 "        </td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Type . "</td>\n" .
-		 "        <td>\n" .
-		 "         <select name=\"stp_id\">\n" );
-			
-		foreach( $List_Types as $Type ) {
-			print( "          <option value=\"" . $Type->stp_id . "\">" .
-			 ${$Type->stp_name} . "</option>\n" );
-		}
-			
-		print( "         </select>\n" .
-		 "        </td>\n" .
-	 	 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Environment . "</td>\n" .
-		 "        <td>\n" .
-		 "         <select name=\"env_id\">\n" );
-		
-		foreach( $List_Environments as $Environment ) {
-			print( "          <option value=\"" . $Environment->env_id . "\">" .
-			 ${$Environment->env_name} . "</option>\n" );
-		}
-			
-		print( "         </select>\n" .
-		 "        </td>\n" .
- 		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Application . "</td>\n" .
-		 "        <td><input name=\"Application\" type=\"text\" size=\"60\" maxlength=\"60\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Host . "</td>\n" .
-		 "        <td><input name=\"Host\" type=\"text\" size=\"100\" maxlength=\"255\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_User . "</td>\n" .
-		 "        <td><input name=\"User\" type=\"text\" size=\"100\" maxlength=\"100\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Password . "</td>\n" .
-		 "        <td><input name=\"Password\" id=\"iPassword\" type=\"text\" size=\"64\" maxlength=\"64\" onkeyup=\"checkPassword('iPassword', 'Result', 3, 8);\" onfocus=\"checkPassword('iPassword', 'Result', 3, 8);\"/><a class=\"button\" onclick=\"generatePassword( 'iPassword', 3, 8 )\">" . $L_Generate . "</a><img id=\"Result\" class=\"no-border\" width=\"16\" height=\"16\" alt=\"Ok\" src=\"" . URL_PICTURES . "/blank.gif\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Expiration_Date . "</td>\n" .
-		 "        <td><input name=\"Expiration_Date\" type=\"text\" size=\"19\" maxlength=\"19\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Comment . "</td>\n" .
-		 "        <td><input name=\"Comment\" type=\"text\" size=\"100\" maxlength=\"100\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td class=\"align-right\">" . $L_Alert . "</td>\n" .
-		 "        <td><input name=\"Alert\" type=\"checkbox\" /></td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td colspan=\"2\">&nbsp;</td>\n" .
-		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td>&nbsp;</td>\n" .
-		 "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Create . "\" />" .
-		 $cancelButton . "</td>\n" .
-		 "       </tr>\n" .
-		 "       </tbody>\n" .
-		 "      </table>\n" .
-		 "     </form>\n" .
-		 "     <script>\n" .
-		 "document.a_group.sgr_id.focus();\n" .
-		 "     </script>\n"
-		);
-	} else {
-		$Return_Page = URL_BASE . '/SM-home.php';
- 
-		print( $PageHTML->infoBox( $L_No_Authorize, $Return_Page, 1 ) );
-	}
-
-	break;
 
 
  case 'SCR_AX':

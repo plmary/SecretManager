@@ -1623,48 +1623,43 @@ switch( $Action ) {
 	}
 
 
-	if ( $Civilities->deleted( $First_Name, $Last_Name ) ) {
-		$Message = $L_Reactivated_Civility;
-	} else {
-		try {
-			$Civilities->set( '', $Last_Name, $First_Name, $Sex, '', '' );
+	try {
+		$Civilities->set( '', $Last_Name, $First_Name, $Sex, '', '' );
+		$Resultat = array(
+			'Status' => 'success',
+			'Title' => $L_Success,
+			'IdCivility' => $Civilities->LastInsertId,
+			'Message' => $L_Civility_Created,
+            'Script' => $Script,
+            'URL_PICTURES' => URL_PICTURES,
+            'L_Modify' => $L_Modify,
+            'L_Delete' => $L_Delete,
+            'L_Warning' => $L_Warning,
+            'L_Cancel' => $L_Cancel,
+            'L_Confirm_Delete_Civility' => $L_Confirm_Delete_Civility,
+            'L_Confirm' => $L_Confirm,
+            'L_Man' => $L_Man,
+            'L_Woman' => $L_Woman
+			);
+	} catch( PDOException $e ) {
+		$Resultat = array(
+			'Status' => 'error',
+			'Title' => $L_Error,
+			'Message' => $L_ERR_CREA_Civility
+			);
+	} catch( Exception $e ) {
+		if ( $e->getCode() == 1062 ) {
 			$Resultat = array(
-				'Status' => 'success',
-				'Title' => $L_Success,
-				'IdCivility' => $Civilities->LastInsertId,
-				'Message' => $L_Civility_Created,
-                'Script' => $Script,
-                'URL_PICTURES' => URL_PICTURES,
-                'L_Modify' => $L_Modify,
-                'L_Delete' => $L_Delete,
-                'L_Warning' => $L_Warning,
-                'L_Cancel' => $L_Cancel,
-                'L_Confirm_Delete_Civility' => $L_Confirm_Delete_Civility,
-                'L_Confirm' => $L_Confirm,
-                'L_Man' => $L_Man,
-                'L_Woman' => $L_Woman
+				'Status' => 'error',
+				'Title' => $L_Error,
+				'Message' => $L_ERR_DUPL_Civility
 				);
-
-		} catch( PDOException $e ) {
+		} else {
 			$Resultat = array(
 				'Status' => 'error',
 				'Title' => $L_Error,
 				'Message' => $L_ERR_CREA_Civility
 				);
-		} catch( Exception $e ) {
-			if ( $e->getCode() == 1062 ) {
-				$Resultat = array(
-					'Status' => 'error',
-					'Title' => $L_Error,
-					'Message' => $L_ERR_DUPL_Civility
-					);
-			} else {
-				$Resultat = array(
-					'Status' => 'error',
-					'Title' => $L_Error,
-					'Message' => $L_ERR_CREA_Civility
-					);
-			}
 		}
 	}
 

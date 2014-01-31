@@ -27,4 +27,6 @@ $L_Delete_Total_Backup = 'Supprime les sauvegardes Totales';
 $L_Do_You_Confirm_Delete_Secrets_Restore = 'Confirmez vous la <span class="green bold">suppression</span> des sauvegardes de <span class="blue1 bold">Secrets</span> avant la date du';
 $L_Do_You_Confirm_Delete_Full_Restore = 'Confirmez vous la <span class="green bold">suppression</span> des sauvegardes <span class="blue1 bold">Complètes</span> avant la date du';
 
+$L_Restore_File_Not_Deleted = 'Le fichier de sauvegarde n\'a pas été détruit';
+$L_Selected_Restore_Files_Deleted = 'Les fichiers de sauvegarde sélectionnés sont détruits';
 ?>
