@@ -46,4 +46,7 @@
 	$L_Warning_Change_Mother_Key = 'This operation will chnage Mother Key and transcrypt all secrets in the database. ' . $L_Confirm_Operation;
 	$L_Warning_Create_Mother_Key = 'This operation will create a new mother key without transcrypt secrets in the database. ' . $L_Confirm_Operation;
 
+    $L_SecretManager_Control = 'SecretManager installation control';
+    $L_Run_Control = 'Run control';
+
 ?>

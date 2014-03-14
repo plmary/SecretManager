@@ -94,6 +94,7 @@ $List_Environments = $Referentials->listEnvironments();
 // Récupère les Droits que cet utilisateur a sur les différents Groupes de Secrets.
 $groupsRights = $PageHTML->getGroups( $_SESSION[ 'idn_id' ] );
 
+
 // Contrôle si la session n'a pas expirée.
 if ( ! $PageHTML->validTimeSession() ) {
 	header( 'Location: ' . URL_BASE . '/SM-login.php?action=DCNX&expired' );
@@ -183,12 +184,14 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 			$Secret->scr_expiration_date = '';
 			$myClass = '';
 		} else {
-			if ($Interval->format('%R%a') < '+2' && $Interval->format('%R%a') != '+0') {
-				$myClass = 'btn-danger ';
-			} elseif ($Interval->format('%R%a') >= '+2' && $Interval->format('%R%a') <= '+7') {
+			$myClass = '';
+
+			if ($Interval->format('%R%a') <= '+7') {
 				$myClass = 'btn-warning ';
-			} else {
-				$myClass = '';
+			}
+
+			if ($Interval->format('%R%a') < '+2') {
+				$myClass = 'btn-danger ';
 			}
 		}
 

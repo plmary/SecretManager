@@ -32,7 +32,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.8-1'; // Version de l'outil
+	$this->Version = '0.8-2'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	
@@ -126,8 +126,12 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 
 	
 	if ( isset( $_SESSION[ 'cvl_last_name' ] ) ) {
+		include_once( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+
 		$Header .= "    <h2 id=\"login\">" .
-		 $_SESSION[ 'cvl_first_name' ] . " " . $_SESSION[ 'cvl_last_name' ] . "</h2>\n" ;
+		 $_SESSION[ 'cvl_first_name' ] . " " . $_SESSION[ 'cvl_last_name' ] .
+		 	"&nbsp;<a id=\"session_timer\" class=\"button\" style=\"margin-right:0;padding-top:3px;padding-bottom:3px;\" href=\"" .
+		 	"javascript:initSession();\">" . sprintf( $L_Expires, $this->getParameter( 'expiration_time' ) ) . "</a></h2>\n" ;
 	}
 	
 	$Header .= "    <h2 id=\"date\">" . $Date . "</h2>\n" ;

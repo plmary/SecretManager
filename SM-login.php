@@ -66,6 +66,36 @@ if ( array_key_exists( 'action', $_GET ) ) {
 
 // Exécute l'action spécifique à réaliser.
 switch( $Action ) {
+ case 'CTRL_SESSION':
+	// Contrôle si la session n'a pas expirée.
+	if ( ! $PageHTML->validTimeSession() ) {
+	    $Resultat = array(
+    	    'status' => 'KO'
+        );
+	} else {
+		//$PageHTML->saveTimeSession();
+
+	    $Resultat = array(
+    	    'status' => 'OK',
+        	'session_timer' => sprintf( $L_Expires, $PageHTML->showTimeSession() )
+        );
+	}
+
+    echo json_encode( $Resultat );
+    exit();
+
+
+ case 'INIT_SESSION':
+ 	$PageHTML->initTimeSession();
+
+	echo json_encode( array( 
+		'status' => 'OK',
+		'session_timer' => sprintf( $L_Expires, (($PageHTML->showTimeSession()) - 1) )
+	) );
+
+	exit();
+
+
  // Traite la déconnexion d'un utilisateur.
  case 'DCNX':
 	if ( array_key_exists( 'expired', $_GET ) ) {

@@ -34,3 +34,44 @@ function showInfoMessage( Type, Message ) {
 	 '     </div>\n' ).prependTo( 'body' );
 }
 
+
+var myVar=setInterval(function(){controlValiditeSession()},1000 * 60); // Déclenche la fonction toutes les 60 secondes.
+
+function controlValiditeSession() {
+    $.ajax({
+        url: '../../SM-Login.php?action=CTRL_SESSION',
+        type: 'POST',
+        //data: $.param({'libelle': $('#inputlibelle').val()}), // les paramètres sont protégés avant envoi
+        dataType: 'json', // le résultat est transmit dans un objet JSON
+        success: function(reponse) { // Le serveur n'a pas rencontré de problème lors de l'échange ou de l'exécution.
+            if ( reponse['status'] == 'OK' ) { // La session n'a pas expiré.
+                $('#session_timer').text( reponse['session_timer'] );
+                return;
+            } else { // La session a expiré.
+                window.location = '../../SM-Login.php?action=DCNX&expired';
+            }
+        },
+        error: function(reponse) {
+            alert(reponse['responseText']);
+        }
+    });
+}
+
+
+function initSession() {
+    $.ajax({
+        url: '../../SM-Login.php?action=INIT_SESSION',
+        type: 'POST',
+        //data: $.param({'libelle': $('#inputlibelle').val()}), // les paramètres sont protégés avant envoi
+        dataType: 'json', // le résultat est transmit dans un objet JSON
+        success: function(reponse) { // Le serveur n'a pas rencontré de problème lors de l'échange ou de l'exécution.
+            if ( reponse['status'] == 'OK' ) { // La session n'a pas expiré.
+                $('#session_timer').text( reponse['session_timer'] );
+                return;
+            }
+        },
+        error: function(reponse) {
+            alert(reponse['responseText']);
+        }
+    });
+}

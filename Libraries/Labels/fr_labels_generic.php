@@ -91,6 +91,7 @@
 	$L_Warning = 'Attention';
 	$L_Shutdown = 'Eteindre';
 	$L_Print = 'Imprimer';
+	$L_Expires = 'Expire dans %s mn';
 
 	$L_Save = 'Sauvegarder';
 	$L_Confirm = 'Confirmer';

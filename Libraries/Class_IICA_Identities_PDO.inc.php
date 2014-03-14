@@ -317,7 +317,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	/* -------------------
 	** Lister les Identités de façon détaillées.
 	*/
-	public function detailedListIdentities( $orderBy = '', $SpecificIdentities = '' ) {
+	public function detailedListIdentities( $orderBy = '', $SpecificIdentities = '', $Admin = false ) {
 	/**
 	* Lister les Identités.
 	*
@@ -352,6 +352,14 @@ class IICA_Identities extends IICA_DB_Connector {
     	 'LEFT JOIN cvl_civilities as T2 ON T1.cvl_id = T2.cvl_id ' .
     	 'LEFT JOIN ent_entities as T3 ON T1.ent_id = T3.ent_id ';
 
+
+    	// Flag pour déterminer si on doit limiter l'affichage des Identités aux seuls administrateurs.
+    	if ( $Admin == true ) {
+    		$Request .= 'WHERE t1.idn_auditor = true ';
+    	}
+
+
+		// Traite la recherche d'une Identité particulière.
 		if ( $SpecificIdentities != '' ) {
 			if ( ! preg_match("/WHERE/i", $Request ) ) {
 				$Request .= 'WHERE ' ;

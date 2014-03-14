@@ -2190,7 +2190,7 @@ switch( $Action ) {
 	}
 
 	print( 
-	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\" style=\"top:50%;left:40%;\">\n".
+	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\" style=\"top:35%;left:40%;\">\n".
 	 "      <button type=\"button\" class=\"close\">×</button>\n".
 	 "      <p class=\"titre\">".$L_Profile_Create."</p>\n".
 	 "      <div id=\"detailProfile\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .

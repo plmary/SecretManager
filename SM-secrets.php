@@ -1084,7 +1084,7 @@ switch( $Action ) {
 		}
 
 
-		$alert_message = $Secrets->formatHistoryMessage( $L_Secret_Created, '', $stp_id, $env_id,
+		$alert_message = $Secrets->formatHistoryMessage( $L_Secret_Created, $scr_id, $stp_id, $env_id,
 		 $_POST[ 'Application' ], $_POST[ 'Host' ], $_POST[ 'User' ] );
 		
 		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );

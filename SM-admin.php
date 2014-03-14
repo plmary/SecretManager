@@ -423,10 +423,19 @@ switch( $Action ) {
 		 "      <p class=\"align-center\"><a class=\"button\" href=\"" . $Script . "?action=STOR\">" .
 		 $L_Manage_Backup . "</a></p>\n" .
 		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la sauvegarde du SecretManager -->\n\n" .
+		 "     <!-- Fin : affichage de la sauvegarde du SecretManager -->\n\n" );
+
+	print( "     <!-- Début : affichage du contrôle du SecretManager -->\n\n" .
+		 "     <div class=\"tableau_synthese\">\n" .
+		 "      <p class=\"titre\" id=\"storage\">" . $L_SecretManager_Control . "</p>\n" .
+		 "      <div class=\"corps\" id=\"c_control\">\n" .
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"" . URL_BASE . "/SM-control.php\">" .
+		 $L_Run_Control . "</a></p>\n" .
+		 "      </div>\n" .
+		 "     </div>\n" .
+		 "     <!-- Fin : affichage du contrôle du SecretManager -->\n\n" .
 
 		 "     <div style=\"clear: both;\"></div>\n" );
-
 	break;
 
 
@@ -851,7 +860,7 @@ switch( $Action ) {
      ", " . $Operator_Key_Size . ");\">" . $L_Generate . "</button>\n" .
      "            </div>\n" .
      "<img id=\"Result_1\" class=\"no-border align-middle\" width=\"16\" height=\"16\" " .
-     "src=\"https://secretmanager.localhost/Pictures/blank.gif\" alt=\"Ok\">\n" .
+     "src=\"" . URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
      "           </td>\n" .
      "          </tr>\n" .
      "          <tr>\n" .
@@ -890,7 +899,7 @@ switch( $Action ) {
      $L_Generate . "</button>\n" .
      "             </div>\n" .
      "<img id=\"Result_2\" class=\"no-border\" width=\"16\" height=\"16\" " .
-     "src=\"https://secretmanager.localhost/Pictures/blank.gif\" alt=\"Ok\">\n" .
+     "src=\"" . URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
      "            </td>\n" .
      "           </tr>\n" .
      "           <tr>\n" .
@@ -910,7 +919,7 @@ switch( $Action ) {
      ", " . $Mother_Key_Size . ");\">" . $L_Generate . "</button>\n" .
      "             </div>\n" .
      "<img id=\"Result_3\" class=\"no-border\" width=\"16\" height=\"16\" " .
-     "src=\"https://secretmanager.localhost/Pictures/blank.gif\" alt=\"Ok\">\n" .
+     "src=\"". URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
      "            </td>\n" .
      "           </tr>\n" .
      "           <tr>\n" .

@@ -768,6 +768,43 @@ class IICA_Authentications extends IICA_Parameters {
 		
 		return TRUE;
 	}
+   	
+
+	public function showTimeSession() {
+	/** -----------------------------
+	* Affiche le nombre de minutes avant expiration de la session.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-03-10
+	*
+	* @return Retourne vrai si la session n'a pas expirée, sinon retourne faux.
+	*/
+		$expired_date = new DateTime( date( 'Y-m-d H:i:s', $_SESSION[ 'Expired' ] ) );
+		$since_date = new DateTime( date( 'Y-m-d H:i:s' ) );
+		$session_date = $since_date->diff( $expired_date );
+
+		$minutes = (($session_date->d * (24 * 60)) + ($session_date->h*(60)) + $session_date->i) + 1 ;
+
+		return $minutes;
+	}
+   	
+
+	public function initTimeSession() {
+	/** -----------------------------
+	* Initialise le nombre de minutes avant expiration de la session.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-03-13
+	*
+	* @return Retourne vrai si la session n'a pas expirée, sinon retourne faux.
+	*/
+		$expiration_date = $this->getParameter( 'expiration_time' );
+		$_SESSION[ 'Expired' ] = time() + ( $expiration_date * 60 );
+
+		return $expiration_date;
+	}
 
 
 

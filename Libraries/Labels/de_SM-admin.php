@@ -47,4 +47,6 @@
 	    $L_Confirm_Operation;
 	$L_Warning_Create_Mother_Key = 'This operation will create a new mother key without transcrypt secrets in the database. ' . $L_Confirm_Operation;
 
+    $L_SecretManager_Control = 'Prüfen Sie die Installation SecretManager';
+    $L_Run_Control = 'Führen Steuer';
 ?>

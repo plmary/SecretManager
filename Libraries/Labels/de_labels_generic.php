@@ -88,6 +88,7 @@
 	$L_Warning = 'Achtung';
 	$L_Shutdown = 'Shutdown';
 	$L_Print = 'Drucken';
+	$L_Expires = 'Läuft in %s mn';
 
     $L_Save = 'Speichern';
     $L_Confirm = 'Confirm';
