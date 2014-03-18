@@ -79,8 +79,8 @@ INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES
 ('Operator_Key_Complexity', '2'),
 ('Mother_Key_Size', '20'),
 ('Mother_Key_Complexity', '3'),
-('Backup_Secrets_Date', ''),
-('Backup_Total_Date', '');
+('Backup_Secrets_Date', '0000-00-00 00:00'),
+('Backup_Total_Date', '0000-00-00 00:00');
 
 --
 -- Contenu de la table `stp_secret_types`
