@@ -105,7 +105,7 @@ include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 
 
 // Création du gestionnaire de pages sans accès à la base.
-$DB_Access = 0;
+$DB_Access = 1;
 $PageHTML = new HTML( $DB_Access );
 
 

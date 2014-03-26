@@ -39,7 +39,7 @@ var myVar=setInterval(function(){controlValiditeSession()},1000 * 60); // Déclen
 
 function controlValiditeSession() {
     $.ajax({
-        url: '../../SM-Login.php?action=CTRL_SESSION',
+        url: Parameters["URL_BASE"] + '/SM-login.php?action=CTRL_SESSION',
         type: 'POST',
         //data: $.param({'libelle': $('#inputlibelle').val()}), // les paramètres sont protégés avant envoi
         dataType: 'json', // le résultat est transmit dans un objet JSON
@@ -48,7 +48,7 @@ function controlValiditeSession() {
                 $('#session_timer').text( reponse['session_timer'] );
                 return;
             } else { // La session a expiré.
-                window.location = '../../SM-Login.php?action=DCNX&expired';
+                window.location = Parameters["URL_BASE"] + '/SM-login.php?action=DCNX&expired';
             }
         },
         error: function(reponse) {
@@ -60,7 +60,7 @@ function controlValiditeSession() {
 
 function initSession() {
     $.ajax({
-        url: '../../SM-Login.php?action=INIT_SESSION',
+        url: Parameters["URL_BASE"] + '/SM-login.php?action=INIT_SESSION',
         type: 'POST',
         //data: $.param({'libelle': $('#inputlibelle').val()}), // les paramètres sont protégés avant envoi
         dataType: 'json', // le résultat est transmit dans un objet JSON

@@ -105,7 +105,7 @@ foreach( $Files as $File ) {
         unlink( $Filename );
     } else {
         if ( $FLAG_DEBUG ) {
-        	print( $PREFIX_DEBUG . '"' . $Filename . '" not writable (stange)' . "\n" );
+        	print( $PREFIX_DEBUG . '"' . $Filename . '" not writable (strange)' . "\n" );
         }
     }
 }
