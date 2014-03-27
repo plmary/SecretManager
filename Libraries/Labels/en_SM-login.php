@@ -16,7 +16,6 @@
 	$L_Username = 'Username';
 	$L_New_Password = 'New password';
 	$L_Conf_Password = 'Confirm Password';
-	$L_Connection = 'Login';
 	$L_Password_Modified = 'Password changed';
 	$L_Disconnect = 'Disconnect';
 	$L_Connect = 'Connect';

@@ -401,6 +401,8 @@ switch( $Action ) {
 
  // Contrôle les éléments d'authentification.
  case 'CNX':
+	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-preferences.php' );
+
 	if ( $_POST[ 'User' ] == '' and $_POST[ 'Password' ] == '' ) {
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_Mandatories_Fields, $Script ) );
 		exit();;

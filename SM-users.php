@@ -2205,7 +2205,7 @@ switch( $Action ) {
 
  case 'PRF_AX':
 	include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
-	include( DIR_LABELS . '/' . $_SESSION['Language'] . '_SM-Secrets.php');
+	include( DIR_LABELS . '/' . $_SESSION['Language'] . '_SM-secrets.php');
 	
 	$Profiles = new IICA_Profiles();
 
