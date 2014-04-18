@@ -41,8 +41,8 @@
 	$L_Operator = 'Opérateur';
 	$L_Load_Mother_Key = 'Charger la clé mère';
 	$L_Creation_Mother_Key = 'Création de la clé mère';
-	$L_Operator_Key = 'Clé de l\'Opérateur';
-	$L_Mother_Key = 'Clé mère';
+	$L_Operator_Key = 'Clé Opérateur';
+	$L_Mother_Key = 'Clé Mère';
 	$L_Insert_Operator_Key = 'Insérer la valeur de la clé Opérateur';
 	$L_Insert_Mother_Key = 'Insérer la valeur de la clé Mère';
 	$L_Use_SecretServer = 'Utiliser le SecretServer';

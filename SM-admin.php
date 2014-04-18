@@ -302,6 +302,23 @@ switch( $Action ) {
 		 "     <!-- Fin : affichage de la synthèse des civilités -->\n\n" );
 
 	// ===========================================
+	// Tableau d'affichage des Applications.
+/*	print( "     <!-- Début : affichage de la synthèse des Applications -->\n\n" .
+		 "     <div class=\"tableau_synthese\">\n" .
+		 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Applications . "</p>\n" .
+		 "      <div class=\"corps\" id=\"c_civilities\">\n" .
+		 "       <p>\n" .
+		 "        <span>" . $L_Total_Applications_Base . " : </span>\n" .
+		 "        <span class=\"bg-green bold\">&nbsp;" . $MyApplications->total() . "&nbsp;</span>\n" .
+		 "       </p>\n" .
+		 "      </div>\n" .
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=CVL_V&rp=admin\">" . 
+		 $L_Manage_Applications . "</a></p>\n" .
+		 "     </div>\n" .
+		 "     <!-- Fin : affichage de la synthèse des Applications -->\n\n" );
+*/
+
+	// ===========================================
 	// Tableau de synthèse de l'Historique.
 	print( "     <!-- Début : affichage de la synthèse de l'historique -->\n\n" .
 		 "     <div class=\"tableau_synthese\">\n" .

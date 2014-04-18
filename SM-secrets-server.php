@@ -8,7 +8,7 @@
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @date 2013-12-16
+* @date 2014-04-17
 *
 * Commandes gérées par le SecretServer :
 *  set_path = prend en compte le répertoire contenant les sessions
@@ -23,7 +23,7 @@
 
 include( 'Constants.inc.php' );
 
-$VERSION = '0.6-0';
+$VERSION = '0.7-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -505,7 +505,6 @@ do {
 			}
 			
             $old_Secret_Key = $Secret_Key;
-print( ">> Secret_Key actuelle : '" . $Secret_Key . "'\n" );
 
 			// Teste le paramètre reçu.
             $Mother_Key = '';
@@ -520,15 +519,11 @@ print( ">> Secret_Key actuelle : '" . $Secret_Key . "'\n" );
 				if ( $FLAG_DEBUG ) {
 					print( $PREFIX_DEBUG . "Decrypt given parameter\n" );
 				}
-print( ">> Parameter (avant déchiffrement) : " . $Parameter . "\n" );
 
 				$Parameter = $Security->mc_decrypt( $Parameter, $Transport_Key );
-print( ">> Parameter (après déchiffrement) : " . $Parameter . "\n" );
 
 				// Sépare la clé opérateur de la clé mère.
 				@list( $Operator_Key, $Mother_Key ) = explode( '===', $Parameter );
-print( ">> Operator_Key (reçu dans Parameter) : " . $Operator_Key . "\n" .
-">> Mother_Key (reçu dans Parameter) : " . $Mother_Key . "\n" );
 				
 				if ( $Operator_Key == '' ) {
     				sendMessageToClient( $MsgSock, FLAG_ERROR .
@@ -552,7 +547,6 @@ print( ">> Operator_Key (reçu dans Parameter) : " . $Operator_Key . "\n" .
             if ( $Secret_Key != '' ) {
                 $old_Mother_Key = explode('###', $Secret_Key );
                 $old_Mother_Key = $old_Mother_Key[ 3 ];
-print( ">> Ancienne Mother_Key : " . $old_Mother_Key . "\n" );
 
                 if ( $old_Mother_Key != $Mother_Key ) {
                     if ( $old_Mother_Key  == '' ) {
@@ -567,8 +561,6 @@ print( ">> Ancienne Mother_Key : " . $old_Mother_Key . "\n" );
                     }
 
                     try {
-print( ">> Secrets->transcrypt( '" . $old_Mother_Key . "','" . $Mother_Key . "' )\n" );
-
                         $Secrets->transcrypt( $old_Mother_Key, $Mother_Key );
                     } catch( Exception $e ) {
                         print( $PREFIX_ERROR . $e->getCode() . ' -  ' . $e->getMessage() );
@@ -598,7 +590,6 @@ print( ">> Secrets->transcrypt( '" . $old_Mother_Key . "','" . $Mother_Key . "' 
             
             $Secret_Key = "OK###" . $user_session[ 'idn_login' ] . "###" .
              $_Create_Date . "###" . $Mother_Key;
-print( ">> New Secret_Key : " . $Secret_Key . "\n" );
             
             $Record = $Security->mc_encrypt( $Secret_Key, $Operator_Key );
 

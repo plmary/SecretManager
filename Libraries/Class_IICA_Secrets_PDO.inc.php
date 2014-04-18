@@ -700,19 +700,23 @@ class IICA_Secrets extends IICA_DB_Connector {
 	*/
 	public function transcrypt( $old_Mother_Key, $new_Mother_Key ) {
 		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
-		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+		//include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+
+		include_once( DIR_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
 
 		if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'en';
 
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 
-		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+		//include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 		
 
 		$Security = new Security();
 
+		$DB_Connect = new IICA_DB_Connector();
+
 		
-		if ( ! $Result = $this->prepare( 'SELECT scr_id, scr_password FROM scr_secrets ' ) ) {
+		if ( ! $Result = $DB_Connect->prepare( 'SELECT scr_id, scr_password FROM scr_secrets ' ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -725,7 +729,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		/*
 		** Démarre la transaction.
 		*/
-		$this->beginTransaction();
+		$DB_Connect->beginTransaction();
 		
 		while ( $Occurrence = $Result->fetchObject() ) {
 			$Decrypted = $Security->mc_decrypt( $Occurrence->scr_password, $old_Mother_Key );
@@ -736,7 +740,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 				'WHERE scr_id = :scr_id ' ) ) {
 				$Error = $Updater->errorInfo();
 
-				$this->rollBack();
+				$DB_Connect->rollBack();
 
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
@@ -744,7 +748,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			if ( ! $Updater->bindParam( ':scr_id', $Occurrence->scr_id, PDO::PARAM_INT ) ) {
 				$Error = $Updater->errorInfo();
 
-				$this->rollBack();
+				$DB_Connect->rollBack();
 
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
@@ -752,7 +756,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			if ( ! $Updater->bindParam( ':scr_password', $Encrypted, PDO::PARAM_LOB ) ) {
 				$Error = $Updater->errorInfo();
 
-				$this->rollBack();
+				$DB_Connect->rollBack();
 
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
@@ -760,13 +764,13 @@ class IICA_Secrets extends IICA_DB_Connector {
 			if ( ! $Updater->execute() ) {
 				$Error = $Updater->errorInfo();
 
-				$this->rollBack();
+				$DB_Connect->rollBack();
 
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
 		}
 
-        $this->commit();
+        $DB_Connect->commit();
 		
 		return true;
 	}
