@@ -14,8 +14,16 @@
 function testURL( $URL ) {
  	$URL_Test = parse_url( $URL );
 
+ 	if ( $URL_Test['scheme'] == 'https' ){
+ 		$Secure_Protocol = 'ssl://';
+ 		$Port = 443;
+ 	} else {
+ 		$Secure_Protocol = '';
+ 		$Port = 80;
+ 	}
+
  	// Ouvre une connexion vers le serveur.
-	$fp = @fsockopen( $URL_Test['host'], 80, $errno, $errstr, 30);
+	$fp = @fsockopen( $Secure_Protocol . $URL_Test['host'], $Port, $errno, $errstr, 30);
 	if (!$fp) {
  		$tStatus = array( 'Status' => 'KO (' . $errstr . ')', 'Color' => 'orange' );
 	} else {

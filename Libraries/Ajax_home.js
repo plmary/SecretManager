@@ -34,12 +34,27 @@ $(document).ready( function() {
 
 function setSecret( secret_id, action ) {
     var action = action || '';
+    var ListeApplications;
     
     if ( action == 'D' ) {
         var Delete_Mode = ' disabled';
     } else {
         var Delete_Mode = '';
     }
+    
+    $.ajax({
+        async: false,
+        url: '../SM-secrets.php?action=AJAX_L_APP_X',
+        type: 'POST',
+        data: $.param({'scr_id': secret_id}),
+        dataType: 'json', // le résultat est transmit dans un objet JSON
+        success: function(reponse){
+            ListeApplications = reponse[ 'applications' ];
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur : ' + reponse['responseText']);
+        }
+    });
     
     cancel();
 
@@ -152,8 +167,7 @@ function setSecret( secret_id, action ) {
                         '</tr>' +
                         '<tr>' +
                         '<td><label for="'+'application_'+secret_id+'">' + reponse['L_Application'] + '</label></td>' +
-                        '<td><input id="'+'application_'+secret_id+'" type="text" value="' + application +
-                        '" class="input-medium"' + Delete_Mode + '></td>' +
+                        '<td><select id="'+'application_'+secret_id+'" class="input-medium"' + Delete_Mode + '>' + ListeApplications + '</select></td>' +
                         '<td><label for="'+'host_'+secret_id+'">' + reponse['L_Host'] + '</label></td>' +
                         '<td><input id="'+'host_'+secret_id+'" type="text" value="' + host + '" class="input-medium"' + 
                         Delete_Mode + '></td>' +

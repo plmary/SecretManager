@@ -49,4 +49,18 @@
 
     $L_SecretManager_Control = 'Prüfen Sie die Installation SecretManager';
     $L_Run_Control = 'Führen Steuer';
+
+    $L_List_Applications = 'Software-Liste';
+    $L_Total_Applications_Base = 'Software Benutzeraccounts';
+    $L_Manage_Applications = 'Software verwalten';
+    $L_Application_Create = 'Erstellen Software';
+    $L_Application_Created = 'Erstellt Software';
+    $L_ERR_CREA_Application = 'Fehler beim Erstellen der Anwendung';
+    $L_ERR_DUPL_Application = 'Anwendungsfehler bestehenden';
+    $L_Application_Delete = 'Delete Software';
+    $L_Confirm_Delete_Application = 'Do you confirm the deletion of this Software';
+    $L_Application_Deleted = 'Software deleted';
+    $L_ERR_DELE_Application = 'Error while deleting the Software';
+    $L_Application_Modified = 'Sofware modified';
+	$L_ERR_MODI_Application = 'Erreur while modifying the Software';
 ?>

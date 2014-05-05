@@ -462,6 +462,17 @@ function getCreateSecret( sgr_id ){
         }
     });
 
+    var List_Applications;
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=AJAX_L_APP_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            List_Applications = reponse['applications'];
+        }
+    });
+
     var List_Groups;
     $.ajax({
         async: false,
@@ -524,7 +535,12 @@ function getCreateSecret( sgr_id ){
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Application + '</td>' +
-     '<td><input id="i_Application" type="text" size="60" maxlength="60" /></td>' +
+     '<td>' +
+     '<select id="i_app_id">' +
+     '  <option value="-">---</option>'+
+     List_Applications +
+     '</select>' +
+     '</td>' +
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Host + '</td>' +
@@ -615,7 +631,9 @@ function CreateSecret( sgr_id ){
         return;
     }
     
-    var Application = $('#i_Application').val();
+    var ID_Application = $('#i_app_id').val();
+    var L_Application = $('#i_app_id option:selected').text();
+
     var Host = $('#i_Host').val();
     var User = $('#i_User').val();
     var Password = $('#i_Password').val();
@@ -659,7 +677,7 @@ function CreateSecret( sgr_id ){
 			'Expiration_Date': Expiration_Date,
 			'Comment': Comment,
 			'Alert': Alert,
-			'Application': Application
+			'Application': ID_Application
         }),
         dataType: 'json',
         success: function(reponse) {
@@ -681,8 +699,8 @@ function CreateSecret( sgr_id ){
                          reponse['scr_id']+');" style="max-width:90px; width:90px;">'+L_Type+'</td>\n' +
                          '<td class="align-middle" data-id="'+ID_Environment+'" onclick="viewPassword('+
                          reponse['scr_id']+');" style="max-width:100px; width:100px;">'+L_Environment+'</td>\n' +
-                         '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
-                         ');" style="max-width:100px; width:100px;">'+Application+'</td>\n' +
+                         '<td class="align-middle" data-id="'+ID_Application+'" onclick="viewPassword('+reponse['scr_id']+
+                         ');" style="max-width:100px; width:100px;">'+L_Application+'</td>\n' +
                          '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+
                          ');" style="max-width:70px; width:70px;">'+Host+'</td>\n' +
                          '<td class="align-middle" onclick="viewPassword('+reponse['scr_id']+

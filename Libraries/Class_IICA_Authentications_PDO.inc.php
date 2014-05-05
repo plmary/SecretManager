@@ -745,10 +745,14 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Retourne vrai si la session n'a pas expirée, sinon retourne faux.
 	*/
-		if ( $_SESSION[ 'Expired' ] < time() ) {
-			return FALSE;
+		if ( ! isset( $_SESSION[ 'Expired' ] ) ) {
+			if ( $_SESSION[ 'Expired' ] < time() ) {
+				return FALSE;
+			} else {
+				return TRUE;
+			}
 		} else {
-			return TRUE;
+			return FALSE;
 		}
 	}
    	

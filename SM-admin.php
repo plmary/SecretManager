@@ -83,6 +83,7 @@ include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Profiles_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Entities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Civilities_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_MyApplications_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 
 
@@ -103,11 +104,14 @@ $Entities = new IICA_Entities();
 
 $Civilities = new IICA_Civilities();
 
+$MyApplications = new MyApplications();
 
-// Récupère la liste des Droits, des Types et des Environnements.
+
+// Récupère la liste des Droits, des Types, des Environnements et des Applications.
 $List_Rights = $Referentials->listRights();
 $List_Types = $Referentials->listSecretTypes();
 $List_Environments = $Referentials->listEnvironments();
+$List_Applications = $MyApplications->listApplications();
 
 
 // Récupère les Droits que cet utilisateur a sur les différents Groupes de Secrets.
@@ -303,7 +307,7 @@ switch( $Action ) {
 
 	// ===========================================
 	// Tableau d'affichage des Applications.
-/*	print( "     <!-- Début : affichage de la synthèse des Applications -->\n\n" .
+	print( "     <!-- Début : affichage de la synthèse des Applications -->\n\n" .
 		 "     <div class=\"tableau_synthese\">\n" .
 		 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Applications . "</p>\n" .
 		 "      <div class=\"corps\" id=\"c_civilities\">\n" .
@@ -312,11 +316,10 @@ switch( $Action ) {
 		 "        <span class=\"bg-green bold\">&nbsp;" . $MyApplications->total() . "&nbsp;</span>\n" .
 		 "       </p>\n" .
 		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=CVL_V&rp=admin\">" . 
+		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-secrets.php?action=APP_V&rp=admin\">" . 
 		 $L_Manage_Applications . "</a></p>\n" .
 		 "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse des Applications -->\n\n" );
-*/
 
 	// ===========================================
 	// Tableau de synthèse de l'Historique.

@@ -1,270 +1,316 @@
--- phpMyAdmin SQL Dump
--- version 4.0.4
--- http://www.phpmyadmin.net
---
--- Client: localhost
--- Généré le: Mer 18 Décembre 2013 à 07:46
--- Version du serveur: 5.5.31
--- Version de PHP: 5.4.16
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
-SET time_zone = "+00:00";
+-- Auteur  : Pierre-Luc MARY
+-- Le      : 04/05/2014
+-- Base    : SecretManager
+-- Version : 1.2-0
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+DROP DATABASE IF EXISTS secret_manager;
+CREATE DATABASE secret_manager DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE secret_manager;
 
---
--- Base de données: `secret_manager`
---
-DROP DATABASE IF EXISTS `secret_manager`;
-CREATE DATABASE IF NOT EXISTS `secret_manager` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `secret_manager`;
 
--- --------------------------------------------------------
+CREATE TABLE app_applications (
+        app_id BIGINT AUTO_INCREMENT NOT NULL,
+        app_name VARCHAR(100) NOT NULL,
+        PRIMARY KEY (app_id)
+);
 
---
--- Structure de la table `ach_access_history`
---
 
-DROP TABLE IF EXISTS `ach_access_history`;
-CREATE TABLE IF NOT EXISTS `ach_access_history` (
-  `ach_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `scr_id` bigint(20) DEFAULT NULL,
-  `idn_id` bigint(20) NOT NULL,
-  `ach_date` datetime NOT NULL,
-  `ach_access` varchar(300) CHARACTER SET latin1 NOT NULL,
-  `ach_ip` varchar(40) DEFAULT NULL,
-  `aht_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`ach_id`),
-  KEY `idn_identities_ach_access_history_fk` (`idn_id`),
-  KEY `scr_secrets_ach_access_history_fk` (`scr_id`),
-  KEY `ach_type` (`aht_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2592 ;
+CREATE UNIQUE INDEX app_idx_1
+ ON app_applications
+ ( app_name );
 
--- --------------------------------------------------------
 
---
--- Structure de la table `aht_access_history_type`
---
+CREATE TABLE aht_access_history_type (
+                aht_id BIGINT AUTO_INCREMENT NOT NULL,
+                aht_label VARCHAR(60) NOT NULL,
+                PRIMARY KEY (aht_id)
+);
 
-DROP TABLE IF EXISTS `aht_access_history_type`;
-CREATE TABLE IF NOT EXISTS `aht_access_history_type` (
-  `aht_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `aht_name` varchar(60) NOT NULL,
-  PRIMARY KEY (`aht_id`),
-  UNIQUE KEY `aht_name` (`aht_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
--- --------------------------------------------------------
+CREATE UNIQUE INDEX aht_idx
+ ON aht_access_history_type
+ ( aht_label );
 
---
--- Structure de la table `cvl_civilities`
---
 
-DROP TABLE IF EXISTS `cvl_civilities`;
-CREATE TABLE IF NOT EXISTS `cvl_civilities` (
-  `cvl_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `cvl_last_name` varchar(35) CHARACTER SET latin1 NOT NULL,
-  `cvl_first_name` varchar(25) CHARACTER SET latin1 NOT NULL,
-  `cvl_sex` tinyint(1) NOT NULL DEFAULT '0',
-  `cvl_birth_date` date DEFAULT NULL,
-  `cvl_born_town` varchar(60) CHARACTER SET latin1 DEFAULT NULL,
-  PRIMARY KEY (`cvl_id`),
-  UNIQUE KEY `cvl_civilities_idx` (`cvl_last_name`,`cvl_first_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 ;
+CREATE TABLE spr_system_parameters (
+                spr_id BIGINT AUTO_INCREMENT NOT NULL,
+                spr_name VARCHAR(30) NOT NULL,
+                spr_value VARCHAR(60) NOT NULL,
+                PRIMARY KEY (spr_id)
+);
 
--- --------------------------------------------------------
 
---
--- Structure de la table `ent_entities`
---
+CREATE UNIQUE INDEX spr_idx
+ ON spr_system_parameters
+ ( spr_name );
 
-DROP TABLE IF EXISTS `ent_entities`;
-CREATE TABLE IF NOT EXISTS `ent_entities` (
-  `ent_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `ent_code` varchar(10) CHARACTER SET latin1 NOT NULL,
-  `ent_label` varchar(60) CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`ent_id`),
-  UNIQUE KEY `ent_entites_idx` (`ent_code`),
-  UNIQUE KEY `ent_entites_idx1` (`ent_label`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=57 ;
 
--- --------------------------------------------------------
+CREATE TABLE env_environments (
+                env_id BIGINT AUTO_INCREMENT NOT NULL,
+                env_name VARCHAR(30) NOT NULL,
+                PRIMARY KEY (env_id)
+);
 
---
--- Structure de la table `env_environments`
---
 
-DROP TABLE IF EXISTS `env_environments`;
-CREATE TABLE IF NOT EXISTS `env_environments` (
-  `env_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `env_name` varchar(30) CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`env_id`),
-  UNIQUE KEY `env_environments_idx` (`env_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+CREATE UNIQUE INDEX env_idx
+ ON env_environments
+ ( env_name );
 
--- --------------------------------------------------------
 
---
--- Structure de la table `idn_identities`
---
+CREATE TABLE ent_entities (
+                ent_id BIGINT AUTO_INCREMENT NOT NULL,
+                ent_code VARCHAR(10) NOT NULL,
+                ent_label VARCHAR(60) NOT NULL,
+                ent_logical_delete BOOLEAN DEFAULT 0 NOT NULL,
+                PRIMARY KEY (ent_id)
+);
 
-DROP TABLE IF EXISTS `idn_identities`;
-CREATE TABLE IF NOT EXISTS `idn_identities` (
-  `idn_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `ent_id` bigint(20) NOT NULL,
-  `cvl_id` bigint(20) NOT NULL,
-  `idn_login` varchar(20) CHARACTER SET latin1 NOT NULL,
-  `idn_authenticator` char(64) CHARACTER SET latin1 NOT NULL,
-  `idn_salt` varchar(32) CHARACTER SET latin1 NOT NULL,
-  `idn_change_authenticator` tinyint(1) NOT NULL DEFAULT '1',
-  `idn_super_admin` tinyint(1) NOT NULL DEFAULT '0',
-  `idn_auditor` tinyint(1) NOT NULL DEFAULT '0',
-  `idn_attempt` smallint(6) NOT NULL DEFAULT '0',
-  `idn_disable` tinyint(1) NOT NULL DEFAULT '0',
-  `idn_last_connection` datetime NOT NULL,
-  `idn_expiration_date` datetime NOT NULL,
-  `idn_updated_authentication` datetime NOT NULL,
-  PRIMARY KEY (`idn_id`),
-  UNIQUE KEY `idn_identities_idx` (`idn_login`),
-  KEY `ent_entities_idn_identities_fk` (`ent_id`),
-  KEY `civilités_idn_identities_fk` (`cvl_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
 
--- --------------------------------------------------------
+CREATE UNIQUE INDEX ent_idx
+ ON ent_entities
+ ( ent_code );
 
---
--- Structure de la table `idpr_identities_profiles`
---
+CREATE UNIQUE INDEX ent_idx1
+ ON ent_entities
+ ( ent_label );
 
-DROP TABLE IF EXISTS `idpr_identities_profiles`;
-CREATE TABLE IF NOT EXISTS `idpr_identities_profiles` (
-  `idn_id` bigint(20) NOT NULL,
-  `prf_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`idn_id`,`prf_id`),
-  KEY `profils_identité_rattaché_à_profils_fk` (`prf_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+CREATE TABLE cvl_civilities (
+                cvl_id BIGINT AUTO_INCREMENT NOT NULL,
+                cvl_last_name VARCHAR(35) NOT NULL,
+                cvl_first_name VARCHAR(25) NOT NULL,
+                cvl_sex BOOLEAN DEFAULT false NOT NULL,
+                cvl_birth_date DATE,
+                cvl_born_town VARCHAR(60),
+                cvl_logical_delete BOOLEAN DEFAULT 0 NOT NULL,
+                PRIMARY KEY (cvl_id)
+);
 
---
--- Structure de la table `prf_profiles`
---
 
-DROP TABLE IF EXISTS `prf_profiles`;
-CREATE TABLE IF NOT EXISTS `prf_profiles` (
-  `prf_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `prf_label` varchar(60) CHARACTER SET latin1 DEFAULT NULL,
-  PRIMARY KEY (`prf_id`),
-  UNIQUE KEY `prf_profiles_idx` (`prf_label`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=55 ;
+CREATE UNIQUE INDEX cvl_idx
+ ON cvl_civilities
+ ( cvl_last_name, cvl_first_name );
 
--- --------------------------------------------------------
 
---
--- Structure de la table `prsg_profiles_secrets_groups`
---
+CREATE TABLE rgh_rights (
+                rgh_id BIGINT NOT NULL,
+                rgh_name VARCHAR(30) NOT NULL,
+                PRIMARY KEY (rgh_id)
+);
 
-DROP TABLE IF EXISTS `prsg_profiles_secrets_groups`;
-CREATE TABLE IF NOT EXISTS `prsg_profiles_secrets_groups` (
-  `prf_id` bigint(20) NOT NULL,
-  `sgr_id` bigint(20) NOT NULL,
-  `rgh_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`prf_id`,`sgr_id`,`rgh_id`),
-  KEY `rgh_rights_prpg_profiles_passwords_groups_fk` (`rgh_id`),
-  KEY `sgr_secrets_groups_prpg_profiles_passwords_groups_fk` (`sgr_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+CREATE UNIQUE INDEX rgh_idx
+ ON rgh_rights
+ ( rgh_name );
 
---
--- Structure de la table `rgh_rights`
---
 
-DROP TABLE IF EXISTS `rgh_rights`;
-CREATE TABLE IF NOT EXISTS `rgh_rights` (
-  `rgh_id` bigint(20) NOT NULL,
-  `rgh_name` varchar(30) CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`rgh_id`),
-  UNIQUE KEY `rgh_rights_idx` (`rgh_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE stp_secret_types (
+                stp_id BIGINT AUTO_INCREMENT NOT NULL,
+                stp_name VARCHAR(30) NOT NULL,
+                PRIMARY KEY (stp_id)
+);
 
--- --------------------------------------------------------
 
---
--- Structure de la table `scr_secrets`
---
+CREATE UNIQUE INDEX stp_idx
+ ON stp_secret_types
+ ( stp_name );
 
-DROP TABLE IF EXISTS `scr_secrets`;
-CREATE TABLE IF NOT EXISTS `scr_secrets` (
-  `scr_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `sgr_id` bigint(20) NOT NULL,
-  `stp_id` bigint(20) NOT NULL,
-  `env_id` bigint(20) NOT NULL,
-  `scr_host` varchar(255) CHARACTER SET latin1 NOT NULL,
-  `scr_user` varchar(100) CHARACTER SET latin1 NOT NULL,
-  `scr_password` longblob NOT NULL,
-  `scr_application` varchar(60) CHARACTER SET latin1 DEFAULT NULL,
-  `scr_comment` varchar(100) CHARACTER SET latin1 DEFAULT NULL,
-  `scr_alert` int(11) NOT NULL DEFAULT '0',
-  `scr_creation_date` datetime NOT NULL,
-  `scr_modification_date` datetime NOT NULL,
-  `scr_expiration_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`scr_id`),
-  UNIQUE KEY `scr_secrets_idx` (`scr_host`,`scr_user`),
-  KEY `env_environment_scr_secrets_fk` (`env_id`),
-  KEY `stp_secret_type_scr_secrets_fk` (`stp_id`),
-  KEY `sgr_secrets_groups_scr_secrets_fk` (`sgr_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
 
--- --------------------------------------------------------
+CREATE TABLE prf_profiles (
+                prf_id BIGINT AUTO_INCREMENT NOT NULL,
+                prf_label VARCHAR(60),
+                PRIMARY KEY (prf_id)
+);
 
---
--- Structure de la table `sgr_secrets_groups`
---
 
-DROP TABLE IF EXISTS `sgr_secrets_groups`;
-CREATE TABLE IF NOT EXISTS `sgr_secrets_groups` (
-  `sgr_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `sgr_label` varchar(60) DEFAULT NULL,
-  `sgr_alert` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`sgr_id`),
-  UNIQUE KEY `sgr_label` (`sgr_label`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=48 ;
+CREATE UNIQUE INDEX profils_idx
+ ON prf_profiles
+ ( prf_label );
 
--- --------------------------------------------------------
 
---
--- Structure de la table `spr_system_parameters`
---
+CREATE TABLE idn_identities (
+                idn_id BIGINT AUTO_INCREMENT NOT NULL,
+                ent_id BIGINT NOT NULL,
+                cvl_id BIGINT NOT NULL,
+                idn_login VARCHAR(20) NOT NULL,
+                idn_authenticator CHAR(64) NOT NULL,
+                idn_salt VARCHAR(32) NOT NULL,
+                idn_change_authenticator BOOLEAN DEFAULT true NOT NULL,
+                idn_super_admin BOOLEAN DEFAULT false NOT NULL,
+                idn_auditor BOOLEAN DEFAULT false NOT NULL,
+                idn_attempt SMALLINT DEFAULT 0 NOT NULL,
+                idn_disable BOOLEAN DEFAULT false NOT NULL,
+                idn_logical_delete BOOLEAN DEFAULT 0 NOT NULL,
+                idn_last_connection DATETIME NOT NULL,
+                idn_expiration_date DATETIME NOT NULL,
+                idn_updated_authentication DATETIME NOT NULL,
+                PRIMARY KEY (idn_id)
+);
 
-DROP TABLE IF EXISTS `spr_system_parameters`;
-CREATE TABLE IF NOT EXISTS `spr_system_parameters` (
-  `spr_name` varchar(30) CHARACTER SET latin1 NOT NULL,
-  `spr_value` varchar(60) CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`spr_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+CREATE UNIQUE INDEX idn_idx
+ ON idn_identities
+ ( idn_login );
 
---
--- Structure de la table `stp_secret_types`
---
 
-DROP TABLE IF EXISTS `stp_secret_types`;
-CREATE TABLE IF NOT EXISTS `stp_secret_types` (
-  `stp_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `stp_name` varchar(30) CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`stp_id`),
-  UNIQUE KEY `stp_secret_types_idx` (`stp_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-COMMIT;
+CREATE TABLE idpr_identities_profiles (
+                idn_id BIGINT NOT NULL,
+                prf_id BIGINT NOT NULL,
+                idpr_logical_delete BOOLEAN DEFAULT 0 NOT NULL,
+                PRIMARY KEY (idn_id, prf_id)
+);
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+CREATE TABLE sgr_secrets_groups (
+                sgr_id BIGINT AUTO_INCREMENT NOT NULL,
+                sgr_label VARCHAR(60),
+                sgr_alert INT DEFAULT 0 NOT NULL,
+                PRIMARY KEY (sgr_id)
+);
+
+
+CREATE UNIQUE INDEX secrets_groups_idx
+ ON sgr_secrets_groups
+ ( sgr_label );
+
+
+CREATE TABLE prsg_profiles_secrets_groups (
+                prf_id BIGINT NOT NULL,
+                sgr_id BIGINT NOT NULL,
+                rgh_id BIGINT NOT NULL,
+                PRIMARY KEY (prf_id, sgr_id, rgh_id)
+);
+
+
+CREATE TABLE scr_secrets (
+                scr_id BIGINT AUTO_INCREMENT NOT NULL,
+                sgr_id BIGINT NOT NULL,
+                stp_id BIGINT NOT NULL,
+                env_id BIGINT NOT NULL,
+                app_id BIGINT,
+                scr_host VARCHAR(255) NOT NULL,
+                scr_user VARCHAR(100) NOT NULL,
+                scr_password LONGBLOB NOT NULL,
+                scr_comment VARCHAR(100),
+                scr_alert INT DEFAULT 0 NOT NULL,
+                scr_creation_date DATETIME NOT NULL,
+                scr_modification_date DATETIME NOT NULL,
+                scr_expiration_date DATETIME,
+                PRIMARY KEY (scr_id)
+);
+
+
+CREATE UNIQUE INDEX scr_idx
+ ON scr_secrets
+ ( scr_host, scr_user );
+
+
+CREATE TABLE ach_access_history (
+                ach_id BIGINT AUTO_INCREMENT NOT NULL,
+                scr_id BIGINT NOT NULL,
+                idn_id BIGINT NOT NULL,
+                aht_id BIGINT NOT NULL,
+                ach_date DATETIME NOT NULL,
+                ach_access VARCHAR(300) NOT NULL,
+                ach_ip VARCHAR(40),
+                PRIMARY KEY (ach_id)
+);
+
+
+ALTER TABLE scr_secrets ADD CONSTRAINT app_scr_fk
+FOREIGN KEY (app_id)
+REFERENCES app_applications (app_id)
+ON DELETE SET NULL
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE ach_access_history ADD CONSTRAINT aht_ach_fk
+FOREIGN KEY (aht_id)
+REFERENCES aht_access_history_type (aht_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE scr_secrets ADD CONSTRAINT env_scr_fk
+FOREIGN KEY (env_id)
+REFERENCES env_environments (env_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE idn_identities ADD CONSTRAINT ent_idn_fk
+FOREIGN KEY (ent_id)
+REFERENCES ent_entities (ent_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE idn_identities ADD CONSTRAINT cvl_idn_fk
+FOREIGN KEY (cvl_id)
+REFERENCES cvl_civilities (cvl_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT rgh_prpg_fk
+FOREIGN KEY (rgh_id)
+REFERENCES rgh_rights (rgh_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE scr_secrets ADD CONSTRAINT stp_scr_fk
+FOREIGN KEY (stp_id)
+REFERENCES stp_secret_types (stp_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE idpr_identities_profiles ADD CONSTRAINT prf_idpr_fk
+FOREIGN KEY (prf_id)
+REFERENCES prf_profiles (prf_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT prf_prpg_fk
+FOREIGN KEY (prf_id)
+REFERENCES prf_profiles (prf_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE idpr_identities_profiles ADD CONSTRAINT idn_idpr_fk
+FOREIGN KEY (idn_id)
+REFERENCES idn_identities (idn_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE ach_access_history ADD CONSTRAINT idn_ach_fk
+FOREIGN KEY (idn_id)
+REFERENCES idn_identities (idn_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE scr_secrets ADD CONSTRAINT sgr_scr_fk
+FOREIGN KEY (sgr_id)
+REFERENCES sgr_secrets_groups (sgr_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT sgr_prpg_fk
+FOREIGN KEY (sgr_id)
+REFERENCES sgr_secrets_groups (sgr_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+
+ALTER TABLE ach_access_history ADD CONSTRAINT scr_secrets_ach_access_history_fk
+FOREIGN KEY (scr_id)
+REFERENCES scr_secrets (scr_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;

@@ -51,6 +51,7 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-admin.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
 
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
@@ -96,7 +97,7 @@ $Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 if ( $Action != 'SCR_V' ) {
 	$innerJS = '';
 
-	$JS_Scripts = array( 'Ajax_secrets.js', 'SecretManager.js' );
+	$JS_Scripts = array( 'Ajax_secrets.js', 'Ajax_admin.js', 'SecretManager.js' );
 
 	 // Cas de l'import des fonctions JS gérant les mots de passe.
 	if ( preg_match("/^SCR/i", $Action ) ) {
@@ -241,9 +242,9 @@ switch( $Action ) {
 				    "\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"No\" />";
 
 			print( "       <tr id=\"sgr_id-" . $Group->sgr_id . "\" class=\"surline\">\n" .
-			 "        <td  id=\"label-" . $Group->sgr_id . "\"class=\"align-middle\">" . 
+			 "        <td  id=\"label-" . $Group->sgr_id . "\" class=\"align-middle\">" . 
 			 stripslashes($Group->sgr_label) . "</td>\n" .
-			 "        <td  id=\"alert-" . $Group->sgr_id . "\"class=\"align-middle\">" . $Flag_Alert . "</td>\n" .
+			 "        <td  id=\"alert-" . $Group->sgr_id . "\" class=\"align-middle\">" . $Flag_Alert . "</td>\n" .
 			 "        <td>\n" .
 			 "         <a id=\"modify_" . $Group->sgr_id . "\" class=\"simple\" href=\"javascript:editFields('" . $Group->sgr_id . "')\">" .
 			 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" .
@@ -1711,7 +1712,75 @@ switch( $Action ) {
 	break;
 
  case 'APP_V':
- 	print('tst app');
+ 	include( DIR_LIBRARIES . '/Class_MyApplications_PDO.inc.php' );
+
+	if ( ! isset( $_GET['orderby'] ) ) $orderBy = 'name';
+	else $orderBy = $_GET['orderby'];
+
+ 	$MyApplications = new MyApplications();
+
+ 	$List_Applications = $MyApplications->listApplications( $orderBy );
+
+	$addButton = '<span style="float: right"><a class="button" href="javascript:putCreateApplication();">' . $L_Create . '</a></span>';
+	
+	$returnButton = '<span style="float: right"><a class="button" href="' . URL_BASE . '/SM-admin.php">' . $L_Return . '</a></span>' ;
+	
+	$Buttons = $addButton . $returnButton; // . $listButtons ;
+
+	print( "    <div id=\"dashboard\">\n" .
+		 "     <table class=\"table-bordered\">\n" .
+		 "      <thead>\n" .
+		 "       <tr>\n" .
+		 "        <th colspan=\"8\">" . $L_List_Applications . $Buttons . "</th>\n" .
+		 "       </tr>\n" );
+
+	print( "       <tr class=\"pair\">\n" );
+ 
+	if ( $orderBy == 'name' ) {
+		$tmpClass = 'order-select';
+	
+		$tmpSort = 'name-desc';
+	} else {
+		if ( $orderBy == 'name-desc' ) $tmpClass = 'order-select';
+		else $tmpClass = 'order';
+	
+		$tmpSort = 'name';
+	}
+	print( "        <td onclick=\"javascript:document.location='" . $Script . 
+	 "?action=APP_V&orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Name .
+	 "</td>\n" );
+ 
+
+	print( "        <td style=\"width:40%;\">" . $L_Actions . "</td>\n" .
+	 "       </tr>\n" .
+	 "      </thead>\n" .
+	 "      <tbody id=\"liste\">\n" );
+	
+	
+	foreach( $List_Applications as $Application ) {
+		print(
+			 "       <tr class=\"surline\" id=\"occ_app_" . $Application->app_id . "\">\n" .
+			 "        <td id=\"app_" . $Application->app_id . "\">" . $Application->app_name . "</td>\n" .
+			 "        <td>" .
+         	 "<a class=\"simple\" href=\"javascript:editApplication('". $Application->app_id . "');\">" .
+         	 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" . $L_Modify . "\" title=\"" . $L_Modify . "\" /></a>&nbsp;" .
+         	 "<a class=\"simple\" href=\"javascript:confirmDeleteApplication('". $Application->app_id . "');\">" .
+         	 "<img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" . $L_Delete . "\" title=\"" . $L_Delete . "\" /></a>" .
+        	 "</td>\n" .
+	 		 "       </tr>\n"
+			);
+	}
+
+	print(
+		"      </tbody>\n" .
+		"      <tfoot>\n" .
+		"       <tr>\n" .
+		"        <th colspan=\"2\">" . $L_Total . " : <span id=\"total\" class=\"green\">" . $MyApplications->total() . "</span>" . $Buttons . "</th>" .
+		"       </tr>\n" .
+		"      </tfoot>\n" .
+     	"     </table>\n" .
+		"    </div> <!-- Fin : dashboard -->\n"
+		);
 
  	break;
 
@@ -1749,6 +1818,242 @@ switch( $Action ) {
     ) );
     
     exit();
+
+
+ case 'L_ADD_APP_X':
+    echo json_encode( array(
+        'Title' => $L_Application_Create,
+        'Label' => $L_Label,
+        'Cancel' => $L_Cancel,
+        'ButtonName' => $L_Create
+    ) );
+    
+    exit();
+
+
+ case 'L_DEL_APP_X':
+    echo json_encode( array(
+        'Title' => $L_Application_Delete,
+        'Label' => $L_Confirm_Delete_Application,
+        'Cancel' => $L_Cancel,
+        'ButtonName' => $L_Delete
+    ) );
+    
+    exit();
+
+
+ case 'AJAX_L_APP_X':
+ 	include( DIR_LIBRARIES . '/Class_MyApplications_PDO.inc.php' );
+
+ 	$MyApplications = new MyApplications();
+
+ 	if ( isset( $_POST['scr_id'] ) ) {
+	 	if ( $_POST['scr_id'] != '' or $_POST['scr_id'] != 0 ) {
+	 		$Secret = $Secrets->get($_POST['scr_id']);
+	 		$app_id_s = $Secret->app_id;
+	 	} else {
+	 		$app_id_s = '';
+	 	}
+ 	} else {
+ 		$app_id_s = '';
+ 	}
+
+ 	$tmpApplications = $MyApplications->listApplications();
+ 	$Liste_Applications = '<option value="">---</option>';
+
+ 	foreach ( $tmpApplications as $Application ) {
+ 		if ( $Application->app_id == $app_id_s ) $Selected = ' selected';
+ 		else $Selected ='';
+
+ 		$Liste_Applications .= '<option value="' . $Application->app_id . '"' . $Selected . '>' . $Application->app_name . '</option>';
+ 	}
+
+    echo json_encode( array(
+        'applications' => $Liste_Applications
+    ) );
+    
+    exit();
+
+
+ case 'ADD_APPX':
+ 	include( DIR_LIBRARIES . '/Class_MyApplications_PDO.inc.php' );
+
+ 	$MyApplications = new MyApplications();
+
+	try {
+		if ( $Verbosity_Alert == 2 ) {
+			$alert_message = $Secrets->formatHistoryMessage( 'MyApplications->set( \'\', Label=\'' . $_POST[ 'Label' ] );
+		
+			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		}
+		
+		$MyApplications->set( '', $Security->valueControl( $_POST[ 'Label' ] ) );
+
+        $alert_message = $Secrets->formatHistoryMessage( '[' . addslashes( $_POST[ 'Label' ] ) . '] ' . $L_Application_Created );
+        
+        $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+
+        $Resultat = array(
+            'Status' => 'success',
+            'Message' => $L_Application_Created,
+            'URL_PICTURES' => URL_PICTURES,
+            'IdApplication' => $MyApplications->LastInsertId,
+            'Script' => $Script,
+            'L_Modify' => $L_Modify,
+            'L_Delete' => $L_Delete,
+            'L_Cancel' => $L_Cancel
+        );
+
+        echo json_encode( $Resultat );
+
+        exit();        
+	} catch( PDOException $e ) {
+		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_CREA_Application );
+		
+		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $L_ERR_CREA_Application
+        );
+
+    	echo json_encode( $Resultat );
+
+	    exit();
+	} catch( Exception $e ) {
+		if ( $e->getCode() == 1062 ) {
+			$Message = $L_ERR_DUPL_Application;
+		} else {
+			$Message = $L_ERR_CREA_Application;
+		}
+		
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $Message
+        );
+
+    	echo json_encode( $Resultat );
+
+	    exit();
+	}
+
+    break;
+
+
+ case 'DEL_APPX':
+ 	include( DIR_LIBRARIES . '/Class_MyApplications_PDO.inc.php' );
+
+ 	$MyApplications = new MyApplications();
+
+	try {
+		if ( $Verbosity_Alert == 2 ) {
+			$alert_message = $Secrets->formatHistoryMessage( 'MyApplications->delete( Id=\'' . $_POST[ 'Id' ] . '\' )' );
+		
+			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		}
+		
+		$MyApplications->delete( $Security->valueControl( $_POST[ 'Id' ] ) );
+
+        $alert_message = $Secrets->formatHistoryMessage( '[' . $_POST[ 'Id' ] . '] ' . $L_Application_Deleted );
+        
+        $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+
+        $Resultat = array(
+            'Status' => 'success',
+            'Message' => $L_Application_Deleted,
+            'L_Modify' => $L_Modify,
+            'L_Delete' => $L_Delete,
+            'L_Cancel' => $L_Cancel
+        );
+
+        echo json_encode( $Resultat );
+
+        exit();        
+	} catch( PDOException $e ) {
+		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_DELE_Application );
+		
+		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $L_ERR_DELE_Application
+        );
+
+    	echo json_encode( $Resultat );
+
+	    exit();
+	} catch( Exception $e ) {
+		$Message = $L_ERR_DELE_Application;
+		
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $Message
+        );
+
+    	echo json_encode( $Resultat );
+
+	    exit();
+	}
+
+ 	break;
+
+
+ case 'MOD_APPX':
+ 	include( DIR_LIBRARIES . '/Class_MyApplications_PDO.inc.php' );
+
+ 	$MyApplications = new MyApplications();
+
+	try {
+		if ( $Verbosity_Alert == 2 ) {
+			$alert_message = $Secrets->formatHistoryMessage( 'MyApplications->set( Id=\'' . $_POST[ 'app_id' ] . '\', Name=\'' . $_POST[ 'app_name' ] . '\' )' );
+		
+			$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		}
+		
+		$MyApplications->set( $Security->valueControl( $_POST[ 'app_id' ], 'NUMERIC' ), $Security->valueControl( $_POST[ 'app_name' ] ) );
+
+        $alert_message = $Secrets->formatHistoryMessage( '[' . $_POST[ 'app_id' ] . '] ' . $L_Application_Modified );
+        
+        $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+
+        $Resultat = array(
+            'Status' => 'success',
+            'Message' => $L_Application_Modified,
+            'L_Modify' => $L_Modify,
+            'L_Delete' => $L_Delete,
+            'L_Cancel' => $L_Cancel
+        );
+
+        echo json_encode( $Resultat );
+
+        exit();        
+	} catch( PDOException $e ) {
+		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_MODI_Application );
+		
+		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $L_ERR_MODI_Application
+        );
+
+    	echo json_encode( $Resultat );
+
+	    exit();
+	} catch( Exception $e ) {
+		$Message = $L_ERR_MODI_Application;
+		
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $Message
+        );
+
+    	echo json_encode( $Resultat );
+
+	    exit();
+	}
+
+ 	break;
 }
 
 if ( $Action != 'SCR_V' ) {

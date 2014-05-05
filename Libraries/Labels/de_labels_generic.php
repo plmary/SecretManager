@@ -95,6 +95,8 @@
 	
 	$L_Not_Yet_Implemented = 'Noch nicht implementiert';
 
+	$L_Total = 'Gesamt';
+
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;
 ?>

@@ -557,7 +557,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 	** Crée ou modifie un Secret.
 	*/
 	public function set( $scr_id, $sgr_id, $stp_id, $scr_host, $scr_user, $scr_password,
-	 $scr_comment, $scr_alert, $env_id, $scr_application, $scr_expiration_date = NULL ) {
+	 $scr_comment, $scr_alert, $env_id, $app_id, $scr_expiration_date = NULL ) {
 		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
@@ -578,9 +578,9 @@ class IICA_Secrets extends IICA_DB_Connector {
 		if ( $scr_id == '' ) {
 			$Request = 'INSERT INTO scr_secrets ' .
 				'( sgr_id, stp_id, scr_host, scr_user, scr_password, scr_comment, ' .
-				'scr_alert, scr_creation_date, env_id, scr_application, scr_expiration_date ) ' .
+				'scr_alert, scr_creation_date, env_id, app_id, scr_expiration_date ) ' .
 				'VALUES ( :sgr_id, :stp_id, :scr_host, :scr_user, :scr_password, ' .
-				':scr_comment, :scr_alert, "' . date( 'Y-m-d H:n:s' ) . '", :env_id, :scr_application, ' .
+				':scr_comment, :scr_alert, "' . date( 'Y-m-d H:n:s' ) . '", :env_id, :app_id, ' .
 				':scr_expiration_date ) ';
 
 			if ( ! $Result = $this->prepare( $Request ) ) {
@@ -592,7 +592,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 				'scr_id = :scr_id, sgr_id = :sgr_id, stp_id = :stp_id, scr_host = :scr_host, ' .
 				'scr_user = :scr_user, scr_password = :scr_password, scr_comment = :scr_comment, ' .
 				'scr_alert = :scr_alert, scr_modification_date = "' . date( 'Y-m-d H:n:s' ) . '", ' .
-				'env_id = :env_id, scr_application = :scr_application, scr_expiration_date = :scr_expiration_date ' .
+				'env_id = :env_id, app_id = :app_id, scr_expiration_date = :scr_expiration_date ' .
 				'WHERE scr_id = :scr_id';
 
 			if ( ! $Result = $this->prepare( $Request ) ) {
@@ -631,7 +631,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
 
-		if ( ! $Result->bindParam( ':scr_application', $scr_application, PDO::PARAM_STR, 60 ) ) {
+		if ( ! $Result->bindParam( ':app_id', $app_id, PDO::PARAM_INT ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -780,7 +780,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 	** Lister les Secrets.
 	*/
 	public function listSecrets( $sgr_id = '', $idn_id = '', $stp_id = '', $env_id = '',
-	 $scr_application = '', $scr_host = '', $scr_user = '', $scr_comment = '',
+	 $app_id = '', $scr_host = '', $scr_user = '', $scr_comment = '',
 	 $Administrator = false, $orderBy = '' ) {
 		$Data = false;
 		
@@ -808,11 +808,11 @@ class IICA_Secrets extends IICA_DB_Connector {
 			
 		}
 
-		if ( $scr_application != '' ) {
+		if ( $app_id != '' ) {
 			if ( $Where == '' )
-				$Where = 'WHERE T1.scr_application like :scr_application ';
+				$Where = 'WHERE T1.app_id like :app_id ';
 			else
-				$Where .= 'AND T1.scr_application like :scr_application ';
+				$Where .= 'AND T1.app_id like :app_id ';
 			
 		}
 
@@ -835,14 +835,15 @@ class IICA_Secrets extends IICA_DB_Connector {
 		}
 
 		$Request = 'SELECT DISTINCT ' .
-		 'scr_id, scr_application, scr_host, scr_user, scr_comment, scr_alert, ' .
+		 'scr_id, T1.app_id, app_name, scr_host, scr_user, scr_comment, scr_alert, ' .
 		 'T1.sgr_id, sgr_label, sgr_alert, scr_expiration_date, ' .
 		 'T1.stp_id, stp_name, ' .
 		 'T1.env_id, env_name ' .
 		 'FROM scr_secrets AS T1 ' .
 		 'LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' .
 		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
-		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ';
+		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ' .
+		 'LEFT JOIN app_applications AS T7 ON T1.app_id = T7.app_id ';
 		
 		if ( $Administrator == false ) {
 			$Request .=
@@ -879,11 +880,11 @@ class IICA_Secrets extends IICA_DB_Connector {
 			break;
 
 		 case 'application':
-			$Request .= 'ORDER BY scr_application ';
+			$Request .= 'ORDER BY app_name ';
 			break;
 
 		 case 'application-desc':
-			$Request .= 'ORDER BY scr_application DESC ';
+			$Request .= 'ORDER BY app_name DESC ';
 			break;
 
 		 case 'host':
@@ -953,10 +954,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 			}
 		}
 
-		if ( $scr_application != '' ) {
-			$scr_application = '%' . $scr_application . '%';
-			if ( ! $Result->bindParam( ':scr_application', $scr_application,
-			 PDO::PARAM_STR, 60 ) ) {
+		if ( $app_id != '' ) {
+			if ( ! $Result->bindParam( ':app_id', $app_id, PDO::PARAM_INT ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
@@ -1030,14 +1029,15 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 
 		$Request = 'SELECT DISTINCT ' .
-		 'scr_id, scr_application, scr_host, scr_user, scr_comment, scr_alert, ' .
+		 'scr_id, T1.app_id, app_name, scr_host, scr_user, scr_comment, scr_alert, ' .
 		 'T1.sgr_id, sgr_label, sgr_alert, scr_expiration_date, ' .
 		 'T1.stp_id, stp_name, ' .
 		 'T1.env_id, env_name ' .
 		 'FROM scr_secrets AS T1 ' .
 		 'LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' .
 		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
-		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ';
+		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ' .
+		 'LEFT JOIN app_applications AS T7 ON T1.app_id = T7.app_id ';
 		
 		if ( $Administrator === false ) {
 			$Request .=
@@ -1074,11 +1074,11 @@ class IICA_Secrets extends IICA_DB_Connector {
 			break;
 
 		 case 'application':
-			$Request .= 'ORDER BY scr_application ';
+			$Request .= 'ORDER BY app_name ';
 			break;
 
 		 case 'application-desc':
-			$Request .= 'ORDER BY scr_application DESC ';
+			$Request .= 'ORDER BY app_name DESC ';
 			break;
 
 		 case 'host':
@@ -1178,7 +1178,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		
 		$Request = 'SELECT ' .
 		 'scr_id, scr_host, scr_user, scr_password, scr_comment, scr_alert, ' .
-		 'scr_creation_date, scr_modification_date, scr_application, scr_expiration_date, ' .
+		 'scr_creation_date, scr_modification_date, T1.app_id, app_name, scr_expiration_date, ' .
 		 'T1.sgr_id, sgr_label, sgr_alert, ' .
 		 'T1.stp_id, stp_name, ' .
 		 'T1.env_id, env_name ' .
@@ -1186,6 +1186,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		 'LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' .
 		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
 		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ' .
+		 'LEFT JOIN app_applications AS T5 ON T1.app_id = T5.app_id ' .
 		 'WHERE scr_id = :scr_id ' ;
 
 		if ( ! $Result = $this->prepare( $Request ) ) {

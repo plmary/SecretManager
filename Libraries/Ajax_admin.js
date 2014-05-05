@@ -789,3 +789,280 @@ function putModalMessage( Warning, Message, Cancel ) {
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
 }
+
+
+// =========================
+// Gestion des Applications
+function putCreateApplication() {
+    var Title, Label, Cancel, ButtonName;
+    $.ajax({
+        async: false,
+        url: '../../SM-secrets.php?action=L_ADD_APP_X',
+        type: 'POST',
+        //data: $.param({'sgr_id': Id, 'Alert': Alert, 'Label': Label}),
+        dataType: 'json',
+        success: function(reponse) {
+            Title = reponse['Title'];
+            Label = reponse['Label'];
+            Cancel = reponse['Cancel'];
+            ButtonName = reponse['ButtonName'];
+        }
+    });
+
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h4 id="myModalLabel">'+Title+'</h4>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:82%; margin-top:8px;">' +
+     "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" + Label + "</span>"+
+     "<span  class=\"td-aere\">"+
+     "<input id=\"iApplicationLabel\" type=\"text\" class=\"obligatoire input-xlarge\" name=\"Label\" " +
+     "size=\"60\" maxlength=\"60\" /></span></p>\n" +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="iCancel" href="javascript:hideConfirmMessage();">'+Cancel+
+     '</a>&nbsp;<a class="button" href="javascript:addApplication();">'+
+     ButtonName+'</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    // Met le focus sur le 1er champ du calque.
+    $('#iApplicationLabel').focus();
+
+    $('#iApplicationLabel').keyup(function(e){
+        if (e.which == 13) {
+            if ( $('#iApplicationLabel').val() != '' ) addApplication();
+        }
+    });
+}
+
+
+function addApplication(){
+    // Créé une nouvelle Application.
+    if ( $('#iApplicationLabel').val() != '' ) {
+        var Label = $('#iApplicationLabel').val()
+
+        $.ajax({
+            url: 'SM-secrets.php?action=ADD_APPX',
+            type: 'POST',
+            data: $.param({'Label': Label}),
+            dataType: 'json',
+            success: function(reponse) {
+                // Récupère le statut de l'appel Ajax
+                $('#confirm_message').hide();
+
+                $('#iApplicationLabel').val('');
+
+                var statut = reponse['Status'];
+
+                if (statut == 'success') {
+                    var Id = reponse['IdApplication'];
+                    var Script = reponse['Script'];
+                    var URL_PICTURES = reponse['URL_PICTURES'];
+                    var L_Modify = reponse['L_Modify'];
+                    var L_Delete = reponse['L_Delete'];
+                    var L_Cancel = reponse['L_Cancel'];
+                    
+                    $('#liste').prepend(
+                     '<tr id="app_id-'+Id+'" class="surline">'+
+                     '<td class="align-middle">'+Label+'</td>'+
+                     '<td style="width:40%;">'+
+                     '<a id="app_mod_'+Id+'" class="simple" href="javascript:editApplication(\''+Id+'\');">'+
+                     '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+'" /></a>\n'+
+                     '<a class="simple" href="javascript:confirmDeleteApplication(\''+Id+'\');">'+
+                     '<img class="no-border" src="'+URL_PICTURES+'/b_drop.png" alt="'+L_Delete+'" title="'+L_Delete+'" /></a>\n'+
+                     '</td>'+
+                     '</tr>'
+                    );
+                    
+                    var Total = $('#total').text();
+                    Total = Number(Total) + 1;
+                    $('#total').text( Total );
+                    
+                    hideConfirmMessage();
+                }
+                
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            },
+            error: function(reponse) {
+                alert('Erreur sur serveur : ' + reponse['responseText']);
+            }
+        });
+    }
+}
+
+
+// ============================================
+// Modification des Groupes de secrets en ligne.
+function editApplication( Id ){
+    hideAllEditApplication();
+
+    var ApplicationName = $('#app_'+Id).text();
+    
+    var CancelButton, ModifyButton;
+    
+    $.ajax({
+        async: false,
+        url: '../../SM-secrets.php?action=L_EDIT_FIELDS_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            CancelButton = reponse['Cancel'];
+            ModifyButton = reponse['Modify'];
+        },
+        error: function(reponse) {
+            alert('Erreur serveur : ' + reponse['responseText']);
+        }
+    });
+
+
+    $('#occ_app_'+Id).hide();
+    
+    $( "       <tr id=\"MOD_" + Id + "\" class=\"pair\" data-line-open=\"1\">\n" +
+        "        <td class=\"align-middle blue-border-line\"><input id=\"iApplicationName\" class=\"input-xxlarge\" value=\"" + ApplicationName + "\" /></td>\n" +
+        "        <td class=\"align-middle blue-border-line\"><a class=\"button tbrl_margin_6\" href=\"javascript:hideEditApplication('" + Id + "');\">" + CancelButton + "</a>" +
+        "&nbsp;<a class=\"button tbrl_margin_6\" href=\"javascript:saveEditApplication('" + Id + "');\">" + ModifyButton + "</a></td>\n" +
+        "       </tr>\n"
+    ).insertAfter('#occ_app_'+Id);
+    
+    // Met le focus sur le champ.
+    document.getElementById('iApplicationName').focus();
+
+    // Place le curseur après la dernière lettre
+    document.getElementById('iApplicationName').selectionStart = ApplicationName.length;
+
+    $('#iApplicationName').keyup(function(e){
+        if (e.which == 13) {
+            if ( $('#iApplicationName').val() != '' ) saveEditApplication( Id );
+        }
+        if (e.which == 27) {
+            hideEditApplication( Id );
+        }
+    });
+}
+
+
+function hideEditApplication( Id ) {
+    $('#MOD_'+Id).remove();
+    $('#occ_app_'+Id).show();
+}
+
+function hideAllEditApplication() {
+    $('tr[data-line-open="1"]').each( function(index) {
+        var L_Id = $(this).attr("id");
+        var T_Id = L_Id.split('_');
+        hideEditApplication( T_Id[1] );
+    } );
+}
+
+
+// Traite l'affichage d'un secret.
+function saveEditApplication( Id ){
+    var Name = $('#iApplicationName').val();
+    
+    if (Name != '') {
+        $.ajax({
+            url: '../../SM-secrets.php?action=MOD_APPX',
+            type: 'POST',
+            data: $.param({'app_id': Id, 'app_name': Name}),
+            dataType: 'json',
+            success: function(reponse) {
+                var statut = reponse['Status'];
+
+                if (statut == 'success') {
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+                    $('#MOD_'+Id).remove();
+                                        
+                    $('#app_'+Id).text( Name );
+
+                    $('#occ_app_'+Id).show();                    
+                }
+                else if (statut == 'erreur') {
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+                }
+
+            },
+            error: function(reponse) {
+                alert('Erreur serveur : ' + reponse['responseText']);
+            }
+        });
+    }
+}
+
+
+function confirmDeleteApplication( Id ){
+    // Demande la confirmation de suppression d'une Application.
+    var Title, Label, Cancel, ButtonName;
+    $.ajax({
+        async: false,
+        url: '../../SM-secrets.php?action=L_DEL_APP_X',
+        type: 'POST',
+        //data: $.param({'sgr_id': Id, 'Alert': Alert, 'Label': Label}),
+        dataType: 'json',
+        success: function(reponse) {
+            Title = reponse['Title'];
+            Label = reponse['Label'];
+            Cancel = reponse['Cancel'];
+            ButtonName = reponse['ButtonName'];
+        }
+    });
+
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h4 id="myModalLabel">'+Title+'</h4>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:82%; margin-top:8px;">' +
+     "       <p>" + Label + "&nbsp;<b>" + $("#app_"+Id).text()+"</b></p>\n" +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="iCancel" href="javascript:hideConfirmMessage();">'+Cancel+
+     '</a>&nbsp;<a class="button" href="javascript:deleteApplication('+Id+');">'+
+     ButtonName+'</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    // Met le focus sur le bouton Cancel.
+    $('#iCancel').focus();
+
+    $('#iApplicationLabel').keyup(function(e){
+        if (e.which == 13) {
+            if ( $('#iApplicationLabel').val() != '' ) addApplication();
+        }
+    });
+}
+
+
+function deleteApplication( Id ){
+    // Supprime une Application.
+    $.ajax({
+        url: 'SM-secrets.php?action=DEL_APPX',
+        type: 'POST',
+        data: $.param({'Id': Id}),
+        dataType: 'json',
+        success: function(reponse) {
+            // Récupère le statut de l'appel Ajax
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+
+            if (reponse['Status'] == 'success') {
+                $('#occ_app_'+Id).remove();
+                
+                hideConfirmMessage();
+            }
+                    
+            var Total = $('#total').text();
+            Total = Number(Total) - 1;
+            $('#total').text( Total );
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur : ' + reponse['responseText']);
+        }
+    });
+}

@@ -168,7 +168,7 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 		 $Secret->scr_id . ");\" data-id=\"" . $Secret->env_id . "\">" . ${$Secret->env_name} . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Application'] ."px; " .
 		 "width:". $GLOBALS['S_Application'] ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_application ) . "</td>\n" .
+		 $Secret->scr_id . ");\" data-id=\"" . $Secret->app_id . "\">" . $Security->XSS_Protection( $Secret->app_name ) . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Host'] ."px; " .
 		 "width:". $GLOBALS['S_Host'] ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .

@@ -47,4 +47,18 @@
 
     $L_SecretManager_Control = 'Contrôler l\'installation du SecretManager';
     $L_Run_Control = 'Exécuter le contrôle';
+
+    $L_List_Applications = 'Liste des Applications';
+    $L_Total_Applications_Base = 'Nombre total d\'Applications en base';
+    $L_Manage_Applications = 'Gérer les Applications';
+    $L_Application_Create = 'Création d\'une Application';
+    $L_Application_Created = 'Application créée';
+    $L_ERR_CREA_Application = 'Erreur durant la création de l\'Application';
+    $L_ERR_DUPL_Application = 'Erreur Application déjà existante';
+    $L_Application_Delete = 'Suppression d\'une Application';
+    $L_Confirm_Delete_Application = 'Confirmez-vous la suppresion de cette Application :';
+    $L_Application_Deleted = 'Application supprimée';
+    $L_ERR_DELE_Application = 'Erreur durant la suppression de l\'Application';
+    $L_Application_Modified = 'Application modifiée';
+	$L_ERR_MODI_Application = 'Erreur durant la modification de l\'Application';
 ?>

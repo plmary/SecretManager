@@ -32,7 +32,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.8-2'; // Version de l'outil
+	$this->Version = '0.8-4'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	
@@ -70,11 +70,11 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 	}
 	
 
-	$Header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" " .
-	 " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n\n" .
-	 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\" lang=\"fr\">\n" .
-//	$Header = "<!DOCTYPE html>\n\n" .
-//	 "<html lang=\"fr\">\n" .
+//	$Header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" " .
+//	 " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n\n" .
+//	 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\" lang=\"fr\">\n" .
+	$Header = "<!DOCTYPE html>\n\n" .
+	 "<html lang=\"fr\">\n" .
 	 " <head>\n" .
 	 "  <meta name=\"Description\" content=\"Secret Management\" />\n" .
 	 "  <meta http-equiv=\"Content-Type\" content=\"text/html; " .

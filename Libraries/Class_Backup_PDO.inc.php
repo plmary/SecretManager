@@ -696,7 +696,7 @@ class Backup extends IICA_Parameters {
 	** Gestion des Restaurations
 	*/
 	
-	public function restore_secrets() {
+	public function restore_secrets( $FileName ) {
 	/**
 	* Reastaure les Secrets (scr_secrets, sgr_secrets_groups, stp_secret_types, env_environments).
 	*
@@ -704,170 +704,49 @@ class Backup extends IICA_Parameters {
 	* @author Pierre-Luc MARY
 	* @date 2013-02-05
 	*
-	* @return Renvoi la date du fichier qui vient d'être restauré, sinon "FALSE".
+	* @return Renvoi la date du fichier qui vient d'être restauré, sinon "FALSE" ou lève une exception en cas d'erreur.
 	*/
-		$Save_Date = date( 'Y-m-d_H.i.s' );
-		$Save_Date_1 = str_replace( '_', ' ', $Save_Date );
-		$Save_Date_1 = str_replace( '.', ':', $Save_Date_1 );
-
-		$Save_Filename = DIR_BACKUP . '/secrets_' . $Save_Date . '.xml';
-		
-		// Création du fichier cible.
-		if ( ! $Save_File = @fopen( $Save_Filename, 'w' ) ) {
-		    throw new Exception( '% L_ERROR_OPEN, create file error "' . $Save_Filename . '"', -10 );
+		if ( ! file_exists( $FileName ) ) {
+			throw new Exception("File '" . $FileName . "' not exists", -1);
 		}
 		
-        // Ecriture de l'entête.
-		fwrite( $Save_File, '<?xml version="1.0" encoding="utf-8"?>' . "\n" .
-		    '<secrets date="' . $Save_Date_1 . '">' . "\n" ); 
-		    
+		$xml = new DOMDocument();
 
-        // ============================================
-        // Traitement de la table "Goupes de Secrets".		    
-        if ( ! $Result = $this->prepare( 'SELECT sgr_id, sgr_label, sgr_alert ' .
-            'FROM sgr_secrets_groups' ) ) {
-            $Error = $Result->errorInfo();
-            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-        }
+		$xml->preserveWhiteSpace = true;
+		$xml->formatOutput = true;
 
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		$xml->load( $FileName );
+
+		$Racine = $xml->getElementsByTagName( 'secrets' );
+		$FileDate = $Racine->item(0)->getAttribute( 'date' );
+
+		$Tables = $Racine->item(0)->getElementsByTagName( 'table' );
+
+		for( $tables_i = 0; $tables_i < $Tables->length; $tables_i++ ) {
+			$Table_Name = $Tables->item( $tables_i )->getAttribute( 'name' );
+
+			$Occurrences = $Tables->item( $tables_i )->getElementsByTagName( 'row' );
+			for( $occurrences_i = 0; $occurrences_i < $Occurrences->length; $occurrences_i++ ) {
+				$Columns = $Occurrences->item( $occurrences_i )->getElementsByTagName( 'column' );
+				$Columns_Name = '';
+				$Values = '';
+				
+				for( $columns_i = 0; $columns_i < $Columns->length; $columns_i++ ) {
+					if ( $Columns_Name != '' ) $Columns_Name .= ',';
+					$Columns_Name .= $Columns->item( $columns_i )->getAttribute( 'name' );
+
+					if ( $Values != '' ) $Values .= ',';
+					if ( is_numeric( $Columns->item( $columns_i )->nodeValue ) ) $Protected = '';
+					else $Protected = '"';
+					$Values .= $Protected . $Columns->item( $columns_i )->nodeValue . $Protected;
+				}
+				
+				$Query = 'INSERT INTO ' . $Table_Name . ' (' . $Columns_Name . ') VALUES (' . $Values . ');';
+				print( $Query . "<br>" );
+			}
 		}
 		
-		fwrite( $Save_File, ' <table id="sgr" name="sgr_secrets_groups">' . "\n" );
-		        
-        $Row_Count = 0;
-        
-		while ( $Occurrence = $Result->fetchObject() ) {
-		    $Row_Count += 1;
-		    
-		    $Out_Occurrence = '  <row id="sgr-' . $Row_Count . '">' . "\n" .
-		        '   <column name="sgr_id">' . $Occurrence->sgr_id . '</column>' . "\n" .
-		        '   <column name="sgr_label">' . $Occurrence->sgr_label . '</column>' . "\n" .
-		        '   <column name="sgr_alert">' . $Occurrence->sgr_alert . '</column>' . "\n" .
-                '  </row>' . "\n" ;
-
-            fwrite( $Save_File, $Out_Occurrence );
-		}
-
-        fwrite( $Save_File, ' </table>' . "\n" );
-
-
-        // ============================================
-        // Traitement de la table "Types de Secrets".		    
-        if ( ! $Result = $this->prepare( 'SELECT stp_id, stp_name ' .
-            'FROM stp_secret_types' ) ) {
-            $Error = $Result->errorInfo();
-            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-        }
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		fwrite( $Save_File, "\n" . ' <table id="stp" name="stp_secret_types">' . "\n" );
-		        
-        $Row_Count = 0;
-        
-		while ( $Occurrence = $Result->fetchObject() ) {
-		    $Row_Count += 1;
-		    
-		    $Out_Occurrence = '  <row id="stp-' . $Row_Count . '">' . "\n" .
-		        '   <column name="stp_id">' . $Occurrence->stp_id . '</column>' . "\n" .
-		        '   <column name="stp_name">' . $Occurrence->stp_name . '</column>' . "\n" .
-                '  </row>' . "\n" ;
-
-            fwrite( $Save_File, $Out_Occurrence );
-		}
-
-        fwrite( $Save_File, ' </table>' . "\n" );
-
-
-        // ============================================
-        // Traitement de la table "Environnements d'un Secret".		    
-        if ( ! $Result = $this->prepare( 'SELECT env_id, env_name ' .
-            'FROM env_environments' ) ) {
-            $Error = $Result->errorInfo();
-            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-        }
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		fwrite( $Save_File, "\n" . ' <table id="env" name="env_environments">' . "\n" );
-		        
-        $Row_Count = 0;
-        
-		while ( $Occurrence = $Result->fetchObject() ) {
-		    $Row_Count += 1;
-		    
-		    $Out_Occurrence = '  <row id="env-' . $Row_Count . '">' . "\n" .
-		        '   <column name="env_id">' . $Occurrence->env_id . '</column>' . "\n" .
-		        '   <column name="env_name">' . $Occurrence->env_name . '</column>' . "\n" .
-                '  </row>' . "\n" ;
-
-            fwrite( $Save_File, $Out_Occurrence );
-		}
-
-        fwrite( $Save_File, ' </table>' . "\n" );
-
-
-        // ============================================
-        // Traitement de la table des "Secrets".		    
-        if ( ! $Result = $this->prepare( 'SELECT ' . 
-            'scr_id, sgr_id, stp_id, env_id, ' .
-            'scr_host, scr_user, scr_password, scr_application, scr_comment, scr_alert, ' .
-            'scr_creation_date, scr_modification_date, scr_expiration_date ' .
-            'FROM scr_secrets' ) ) {
-            $Error = $Result->errorInfo();
-            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-        }
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		fwrite( $Save_File, "\n" . ' <table id="scr" name="scr_secrets">' . "\n" .
-		    '  <key id="mother_key">' . file_get_contents( DIR_LIBRARIES . '/secret.dat' ) . '</key>' . "\n" );
-		        
-        $Row_Count = 0;
-        
-		while ( $Occurrence = $Result->fetchObject() ) {
-		    $Row_Count += 1;
-		    
-		    $Out_Occurrence = '  <row id="scr-' . $Row_Count . '">' . "\n" .
-		        '   <column name="scr_id">' . $Occurrence->scr_id . '</column>' . "\n" .
-		        '   <column name="stp_id">' . $Occurrence->stp_id . '</column>' . "\n" .
-		        '   <column name="env_id">' . $Occurrence->env_id . '</column>' . "\n" .
-		        '   <column name="scr_host">' . $Occurrence->scr_host . '</column>' . "\n" .
-		        '   <column name="scr_user">' . $Occurrence->scr_user . '</column>' . "\n" .
-		        '   <column name="scr_password">' . $Occurrence->scr_password . '</column>' . "\n" .
-		        '   <column name="scr_application">' . $Occurrence->scr_application . '</column>' . "\n" .
-		        '   <column name="scr_comment">' . $Occurrence->scr_comment . '</column>' . "\n" .
-		        '   <column name="scr_alert">' . $Occurrence->scr_alert . '</column>' . "\n" .
-		        '   <column name="scr_creation_date">' . $Occurrence->scr_creation_date . '</column>' . "\n" .
-		        '   <column name="scr_modification_date">' . $Occurrence->scr_modification_date . '</column>' . "\n" .
-		        '   <column name="scr_expiration_date">' . $Occurrence->scr_expiration_date . '</column>' . "\n" .
-                '  </row>' . "\n" ;
-
-            fwrite( $Save_File, $Out_Occurrence );
-		}
-
-        fwrite( $Save_File, ' </table>' . "\n" );
-
-
-        // =======================================
-        // Pied de page du fichier de sauvegarde.
-        fwrite( $Save_File, '</secrets>' . "\n" );
-
-        fclose( $Save_File );
-		
-		return $Save_Date_1;
+		return $FileDate;
 	}
 
 } // Fin class Backup
