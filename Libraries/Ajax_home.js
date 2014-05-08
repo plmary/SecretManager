@@ -29,6 +29,12 @@ $(document).ready( function() {
             }
         }); 
     });
+
+    resizeSecretsWindow();  // SecretManager.js
+
+    $(window).resize( function() {
+        resizeSecretsWindow();  // SecretManager.js
+    });
 });
 
 

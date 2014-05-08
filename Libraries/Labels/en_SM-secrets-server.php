@@ -32,6 +32,7 @@
 	$L_ERR_SECRET_FILE_READ = 'Secret file read error';
 	$L_ERR_SECRET_FILE_CREATION = 'Error on creation Secret file';
 	$L_ERR_TRANSCRYPT = 'Error during database transcrypt';
+	$L_ERR_INVALID_OPERATOR_KEY_BACKUP = 'The Operator Key does not open the File Restore Mother Key';
 	
 	$L_MOTHER_KEY_LOADED = 'Mother key loaded';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mother key automatically created';

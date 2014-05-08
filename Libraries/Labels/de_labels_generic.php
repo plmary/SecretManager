@@ -89,11 +89,13 @@
 	$L_Shutdown = 'Shutdown';
 	$L_Print = 'Drucken';
 	$L_Expires = 'Läuft in %s mn';
+	$L_Mandatory_Field = 'Mandatory field';
 
     $L_Save = 'Speichern';
     $L_Confirm = 'Confirm';
 	
 	$L_Not_Yet_Implemented = 'Noch nicht implementiert';
+	$L_File_Not_exists = 'File not exists or you haven\'t the good rights';
 
 	$L_Total = 'Gesamt';
 

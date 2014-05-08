@@ -332,12 +332,12 @@ switch( $Action ) {
 	 $addButton .
 	 '</form>';
 
-	$myButtons = '<div style="float: right; display: inline;">' . $addButton . "</div>";
+	$myButtons = '<div style="float: right; display: inline; margin-right: 3px;">' . $addButton . "</div>";
 
 	print( "     <table class=\"table-bordered principal\">\n" .
 	 "      <thead class=\"fixedHeader\">\n" .
 	 "       <tr>\n" .
-	 "        <th colspan=\"8\"><span style=\"height: 100%;vertical-align:middle;\">" . $L_List_Secrets ."</span>". $myButtons . "</th>\n" .
+	 "        <th colspan=\"9\"><span style=\"height: 100%;vertical-align:middle;\">" . $L_List_Secrets ."</span>". $myButtons . "</th>\n" .
 	 "       </tr>\n" );
 	
 	print( "       <tr class=\"pair\">\n" );
@@ -455,7 +455,7 @@ switch( $Action ) {
 	 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . $L_Comment . "</td>\n" );
 
 
-	print( "        <td style=\"width:". $S_Action ."px;\">" . $L_Actions . "</td>\n" .
+	print( "        <td style=\"width:". $S_Action ."px; max-width:". $S_Action . "px;\">" . $L_Actions . "</td>\n" .
 	 "       </tr>\n" .
 	 "      </thead>\n" .
 	 "      <tbody id=\"listeSecrets\" class=\"scrollContent\">\n" );
@@ -463,7 +463,7 @@ switch( $Action ) {
 	$Total = construireListe( $Search_Secrets, $orderBy );
 		
 	print( "      </tbody>\n" .
-	 "      <tfoot><tr><th colspan=\"8\">Total : <span id=\"total\" class=\"green\">" . 
+	 "      <tfoot><tr><th colspan=\"9\">Total : <span id=\"total\" class=\"green\">" . 
 	 $Total . "</span>" . $myButtons . "</th></tr></tfoot>\n" .
 	 "     </table>\n" .
 	 "\n" .

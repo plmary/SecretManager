@@ -956,7 +956,8 @@ switch( $Action ) {
         'L_Create' => $L_Create,
         'L_Alert' => $L_Alert,
         'L_Comment' => $L_Comment,
-        'L_Expiration_Date' => $L_Expiration_Date
+        'L_Expiration_Date' => $L_Expiration_Date,
+        'L_Mandatory_Field' => $L_Mandatory_Field
     ) );
 
     exit();
@@ -1150,7 +1151,7 @@ switch( $Action ) {
 
 	if ( $Secret->scr_alert == 1 or $Group->sgr_alert == 1 ) {
 		$alert_message = $Secrets->formatHistoryMessage( $L_Secret_View, $_POST[ 'scr_id' ], ${$Secret->stp_name},
-		 ${$Secret->env_name}, $Secret->scr_application, $Secret->scr_host, $Secret->scr_user );
+		 ${$Secret->env_name}, $Secret->app_name, $Secret->scr_host, $Secret->scr_user );
 
 		$Secrets->updateHistory( $_POST[ 'scr_id' ], $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
@@ -1179,7 +1180,7 @@ switch( $Action ) {
 		 'l_type' => $L_Type,
 		 'environment' => ${$Secret->env_name},
 		 'l_environment' => $L_Environment,
-		 'application' => $Secret->scr_application,
+		 'application' => $Secret->app_name,
 		 'l_application' => $L_Application,
 		 'host' => $Secret->scr_host,
 		 'l_host' => $L_Host,

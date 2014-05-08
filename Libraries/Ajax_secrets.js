@@ -427,7 +427,8 @@ function getCreateSecret( sgr_id ){
         L_Create,
         L_Alert,
         L_Comment,
-        L_Expiration_Date;
+        L_Expiration_Date,
+        L_Mandatory_Field;
 
     $.ajax({
         async: false,
@@ -449,6 +450,7 @@ function getCreateSecret( sgr_id ){
             L_Alert = reponse['L_Alert'];
             L_Comment = reponse['L_Comment'];
             L_Expiration_Date = reponse['L_Expiration_Date'];
+            L_Mandatory_Field = reponse['L_Mandatory_Field'];
         }
     });
 
@@ -594,7 +596,15 @@ function getCreateSecret( sgr_id ){
              && $('#i_Password').val() != '' ) {
                 CreateSecret();
             } else {
-                showInfoMessage( 'error', 'pouet' ); // SecretManager.js
+                if ( $('#i_sgr_id').val() != '-' ) $('#i_sgr_id').focus();
+                if ( $('#i_stp_id').val() != '-' ) $('#i_stp_id').focus();
+                if ( $('#i_env_id').val() != '-' ) $('#i_env_id').focus();
+                if ( $('#i_Application').val() != '' ) $('#i_Application').focus();
+                if ( $('#i_Host').val() != '' ) $('#i_Host').focus();
+                if ( $('#i_User').val() != '' ) $('#i_User').focus();
+                if ( $('#i_Password').val() != '' ) $('#i_Password').focus();
+
+                showInfoMessage( 'error', L_Mandatory_Field ); // SecretManager.js
             }
        }
     });

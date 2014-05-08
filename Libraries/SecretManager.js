@@ -75,3 +75,13 @@ function initSession() {
         }
     });
 }
+
+
+function resizeSecretsWindow() {
+    var MyHeight = window.innerHeight; //document.body.clientWidth;
+//    var MyWidth = window.innerWidth; //document.body.clientHeight;
+
+    MyHeight = MyHeight - (140+49+181);
+
+    $("#listeSecrets").css("height", MyHeight);
+}

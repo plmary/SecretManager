@@ -17,9 +17,12 @@ $L_Full_Restore = 'Restauration de toutes les données';
 $L_Restore_Secrets_Successful = 'Restauration des Secrets réussie';
 $L_Restore_Total_Successful = 'Restauration Totale réussie';
 $L_Restauration_Points = 'Points de restauration';
+$L_Retore_File = 'Restauration du fichier';
+$L_Retore_File_Success = 'Restauration du fichier réalisé avec succès';
 
 $L_Do_You_Confirm_Secrets_Restore = 'Confirmez vous la <span class="green bold">restauration</span> des <span class="blue1 bold">Secrets</span> en date du';
 $L_Do_You_Confirm_Full_Restore = 'Confirmez vous la <span class="green bold">restauration</span> <span class="blue1 bold">Complète</span> en date du';
+$L_Warning_Restore = '<span class="bg-orange bold tbrl_padding_6">Une restauration supprime les données précédentes.</span>';
 
 $L_Before_Date = 'Avant cette date';
 $L_Delete_Secrets_Backup = 'Supprime les sauvegardes de Secrets';

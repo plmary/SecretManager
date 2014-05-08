@@ -527,6 +527,8 @@ class IICA_Groups extends IICA_DB_Connector {
 
 // ===========================================================================
 // ===========================================================================
+
+
 class IICA_Secrets extends IICA_DB_Connector {
 /**
 * Cette classe gère les secrets.
@@ -1017,7 +1019,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		$Where .= 'T2.sgr_label like :secret ' .
 			'OR T3.stp_name like :secret ' .
 			'OR T4.env_name like :secret ' .
-			'OR T1.scr_application like :secret ' .
+			'OR T7.app_name like :secret ' .
 			'OR T1.scr_host like :secret ' .
 			'OR T1.scr_user like :secret ' .
 			'OR T1.scr_comment like :secret ' .

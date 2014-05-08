@@ -1276,8 +1276,11 @@ case 'STOR_SX':
 
     $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
+	$Save_Date_1 = str_replace( ' ', '_', $Date_Backup );
+	$Save_Date_1 = str_replace( ':', '.', $Save_Date_1 );
+
     echo json_encode( array( 'Status' => $Status, 'Message' => $Result,
-        'Date' => $Date_Backup ) );
+        'Date' => $Date_Backup, 'Date1' => $Save_Date_1 ) );
 
     exit();
 
@@ -1302,17 +1305,24 @@ case 'STOR_TX':
 
     $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
 
+	$Save_Date_1 = str_replace( ' ', '_', $Date_Backup );
+	$Save_Date_1 = str_replace( ':', '.', $Save_Date_1 );
+
     echo json_encode( array( 'Status' => $Status, 'Message' => $Result,
-        'Date' => $Date_Backup ) );
+        'Date' => $Date_Backup, 'Date1' => $Save_Date_1 ) );
 
     exit();
 
 
  case 'L_RESTORE_SX':
+	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+
     echo json_encode( array (
-        'Message' => $L_Do_You_Confirm_Secrets_Restore,
+        'Message_1' => $L_Do_You_Confirm_Secrets_Restore,
         'Message_2' => $L_Do_You_Confirm_Full_Restore,
-        'Message_3' => $L_Not_Yet_Implemented,
+        'Message_3' => $L_Warning_Restore,
+        'Message_4' => $L_Insert_Operator_Key,
+        'Message_5' => $L_Retore_File,
         'L_Warning' => $L_Warning,
         'L_Cancel' => $L_Cancel,
         'L_Confirm' => $L_Confirm
@@ -1392,8 +1402,39 @@ case 'STOR_TX':
     exit();
 
 
- case 'LOAD_XML_SECRETS_BACKUP_X':
-    $xml = new DOMDocument("1.0", "UTF-8");
+ case 'LOAD_BACKUP_X':
+ 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+    include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
+    
+    $Backup = new Backup();
+    
+ 	$FileName = 'Backup/' . $_POST[ 'File_Name' ];
+
+ 	if ( ! file_exists( $FileName ) ) {
+        echo json_encode( array(
+            'status' => 'error',
+            'message' => $L_File_Not_exists . ' "' . $FileName .'"'
+        ) );
+        
+        exit();
+ 	}
+
+    try {
+        $Date_Backup = $Backup->restore_backup( $FileName, $_POST['Operator_Key'] );
+
+        $Result = $L_Retore_File_Success;
+        $Status = 'success';
+    } catch( Exception $e ) {
+        $Result = $e->getMessage();
+        $Status = 'error';
+    }
+ 	
+
+    echo json_encode( array(
+        'status' => $Status,
+        'message' => $Result
+    ) );
+
     exit();
 }
 

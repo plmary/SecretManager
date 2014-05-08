@@ -476,6 +476,8 @@ function backupSecrets() {
                 showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
                 $('#iDateBackup').text( reponse['Date'] );
+                $('#i_deleteSecretsDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
+                $('#i_secretsDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
             } else {
                 alert('Erreur sur serveur : ' + reponse);
             }
@@ -497,6 +499,8 @@ function backupTotal() {
                 showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
 
                 $('#iTotalDateBackup').text( reponse['Date'] );
+                $('#i_deleteFullDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
+                $('#i_fullDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
             } else {
                 alert('Erreur sur serveur : ' + reponse);
             }
@@ -524,6 +528,7 @@ function confirmRestoreSecrets() {
     var Message, Message_1, Confirm, Cancel, Warning;
 
     var Restore_Date = $('#i_secretsDateRestore option:selected').text();
+    var Restore_Date_ID = $('#i_secretsDateRestore option:selected').val();
 
     $.ajax({
         async: false,
@@ -532,8 +537,8 @@ function confirmRestoreSecrets() {
         dataType: 'json',
         success: function(reponse){
             Warning = reponse['L_Warning'];
-            Message = reponse['Message'];
-            Message_1 = reponse['Message_3'];
+            Message_1 = reponse['Message_1'];
+            Message_2 = reponse['Message_3'];
             Cancel = reponse['L_Cancel'];
             Confirm = reponse['L_Confirm'];
         },
@@ -541,9 +546,6 @@ function confirmRestoreSecrets() {
             document.write(reponse['responseText']);
         }
     }); 
-    
-    putModalMessage( Warning, Message_1, Cancel );
-    return;
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
@@ -553,12 +555,13 @@ function confirmRestoreSecrets() {
      '</div>' +
      '<div class="modal-body">' +
      '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
-     '<p>' + Message + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
+     '<p>' + Message_2 + '</p>' +
+     '<p>' + Message_1 + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
      '</div>' +
      '</div>' +
      '<div class="modal-footer">' +
      '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
-     '<a class="button" href="javascript:transcryptMotherKey();">' + Confirm + '</a>' +
+     '<a class="button" href="javascript:prepareRestoreBackup( 1, \'' + Restore_Date_ID + '\' );">' + Confirm + '</a>' +
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
 
@@ -570,6 +573,7 @@ function confirmRestoreFull() {
     var Message, Message_1, Confirm, Cancel, Warning;
 
     var Restore_Date = $('#i_fullDateRestore option:selected').text();
+    var Restore_Date_ID = $('#i_fullDateRestore option:selected').val();
 
     $.ajax({
         async: false,
@@ -577,9 +581,9 @@ function confirmRestoreFull() {
         type: 'POST',
         dataType: 'json',
         success: function(reponse){
-            Message = reponse['Message_2'];
-            Message_1 = reponse['Message_3'];
             Warning = reponse['L_Warning'];
+            Message_1 = reponse['Message_2'];
+            Message_2 = reponse['Message_3'];
             Cancel = reponse['L_Cancel'];
             Confirm = reponse['L_Confirm'];
         },
@@ -587,9 +591,6 @@ function confirmRestoreFull() {
             document.write(reponse['responseText']);
         }
     }); 
-    
-    putModalMessage( Warning, Message_1, Cancel );
-    return;
     
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
@@ -599,16 +600,103 @@ function confirmRestoreFull() {
      '</div>' +
      '<div class="modal-body">' +
      '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
-     '<p>' + Message + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
+     '<p>' + Message_2 + '</p>' +
+     '<p>' + Message_1 + ' <span class="green bold">' + Restore_Date + '</span> ?</p>' +
      '</div>' +
      '</div>' +
      '<div class="modal-footer">' +
      '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
-     '<a class="button" href="javascript:transcryptMotherKey();">' + Confirm + '</a>' +
+     '<a class="button" href="javascript:prepareRestoreBackup( 2, \'' + Restore_Date_ID + '\' );">' + Confirm + '</a>' +
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
 
     $('#i_cancel_m').focus();
+
+    return;
+}
+
+
+function prepareRestoreBackup( Type_Backup, Restore_Date_ID ) {
+    var Message, Confirm, Cancel, Warning, FileName;
+
+    $("#confirm_message").remove();
+
+    $.ajax({
+        async: false,
+        url: '../SM-admin.php?action=L_RESTORE_SX',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse){
+            Warning = reponse['L_Warning'];
+            Message_1 = reponse['Message_4'];
+            Message_2 = reponse['Message_5'];
+            Cancel = reponse['L_Cancel'];
+            Confirm = reponse['L_Confirm'];
+        },
+        error: function(reponse) {
+            document.write(reponse['responseText']);
+        }
+    });
+
+    if ( Type_Backup == 1 ) FileName = 'secrets_' + Restore_Date_ID + '.xml';
+    else FileName = 'total_' + Restore_Date_ID + '.xml';
+
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h3 id="myModalLabel">' + Warning + '</h3>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
+     '<p>' + Message_2 + ' : <span class="bg-green bold rl_padding">' + FileName + '<span></p>' +
+     '<p>' + Message_1 + '&nbsp;<input id="op_key"></p>' +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="i_cancel_m" href="javascript:hideConfirmMessage();">' + Cancel + '</a>&nbsp;' +
+     '<a class="button" href="javascript:restoreBackup( \'' + FileName + '\' );">' + Confirm + '</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
+
+    $("#op_key").keyup(function(e){
+        if(e.which == 13){
+            if ( $("#op_key").val() != '' ) {
+                restoreBackup( FileName );
+            }
+        }
+    });
+
+    $('#op_key').focus();
+}
+
+
+function restoreBackup( FileName ) {
+    var Operator_Key = $("#op_key").val();
+
+    if ( Operator_Key == '' ) {
+        $('#op_key').focus();
+        return;
+    }
+
+    $("#confirm_message").remove();
+
+    $.ajax({
+        url: '../SM-admin.php?action=LOAD_BACKUP_X',
+        type: 'POST',
+        dataType: 'json',
+        data: $.param({'File_Name': FileName,'Operator_Key': Operator_Key}),
+        success: function(response){
+            showInfoMessage( response['status'], response['message'] ); // SecretManager.js
+
+            if ( response['status'] == 'success' ) {
+                hideConfirmMessage();
+            }            
+        },
+        error: function(response) {
+            document.write(response['responseText']);
+        }
+    }); 
 }
 
 

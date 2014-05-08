@@ -92,11 +92,13 @@
 	$L_Shutdown = 'Eteindre';
 	$L_Print = 'Imprimer';
 	$L_Expires = 'Expire dans %s mn';
+	$L_Mandatory_Field = 'Champ obligatoire';
 
 	$L_Save = 'Sauvegarder';
 	$L_Confirm = 'Confirmer';
 	
 	$L_Not_Yet_Implemented = 'Pas encore implémenté';
+	$L_File_Not_exists = 'Le fichier n\'existe pas ou vous n\'avez pas les droits';
 
 	$L_Total = 'Total';
 
