@@ -6,6 +6,12 @@ $(document).ready( function() {
         }
     });
 
+    $('#iOperator_Key').keyup(function(e){
+        if(e.which == 13){
+            LoadMotherKey();
+        }
+    });
+
     $("#iSearchSecret").on('click', function(){
         var recherche = $(this).val();
         
@@ -84,6 +90,21 @@ $(document).ready( function() {
             }
         }); 
     });    
+
+
+    // Gère l'affichage d'une image d'attente durant un traitement
+    $(document).ajaxStart(function(){
+        $('<div id="wait_message" class="modal" role="dialog" tabindex="-1">' +
+         '<div class="modal-body">' +
+         '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
+         '<p><img src="' + Parameters["URL_PICTURES"] + '/wpspin_light.gif" /> Working...</p>' +
+         '</div>' +
+         '</div>' +
+         '</div>\n' ).prependTo( 'body' );
+
+    }).ajaxStop(function(){
+        $('#wait_message').remove();
+    });
 });
 
 

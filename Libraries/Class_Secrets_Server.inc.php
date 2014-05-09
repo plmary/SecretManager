@@ -430,8 +430,15 @@ public function SS_decryptValue( $Decrypt_Value ) {
 
 
 public function SS_startServer( $Operator_Key ) {
-	$this->setSessionPath();
-	$this->loadMotherKey( $Operator_Key );
+	$this->SS_setSessionPath();
+	$this->SS_loadMotherKey( $Operator_Key );
+}
+
+
+public function SS_saveExternalMotherKey( $Operator_Key, $Mother_Key ) {
+	$this->__sendServerSocket( session_id() . "###save###" . $Mother_Key . "\n" );
+
+	$this->SS_loadMotherKey( $Operator_Key );
 }
 
 } // Fin Class.

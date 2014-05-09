@@ -23,7 +23,7 @@
 
 include( 'Constants.inc.php' );
 
-$VERSION = '0.7-0';
+$VERSION = '0.8-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -479,6 +479,54 @@ do {
              $Transport_Key ) ;
             
             sendMessageToClient( $MsgSock, FLAG_SUCCESS . '###' . $Secret . "###" .
+             $_Create_Date . "\n" );
+
+            break; // Déconnecte le client
+		}
+
+
+		// ========================================
+		// Sauvegarde une clé mère.
+		if ( $Command == 'save' ) {
+			if ( ! validAdminUser( $user_session ) ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+				 "###L_ERR_USER_NOT_ADMIN\n" );
+				break; // Déconnecte le client.
+			}
+			
+			// Teste le paramètre reçu.
+			if ( $Parameter == '' ) {
+				sendMessageToClient( $MsgSock, FLAG_ERROR .
+    			 "###L_ERR_MOTHER_KEY_EMPTY\n" );
+				break; // Déconnecte le client.
+			}
+			
+			
+            $_Create_Date = time();
+
+            // Sauvegarde le chiffré de la clé mère.
+            if ( $FLAG_DEBUG ) {
+                print( $PREFIX_DEBUG . "Create new Secret file (for Mother Key)\n" );
+            }
+            
+            if ( file_exists( $SecretFile ) ) {
+                $Path_Parts = pathinfo( $SecretFile );
+                
+                rename( $SecretFile, $Path_Parts['dirname'] .'/'. date( 'Y_m_d-H_i_s',
+                 $_Create_Date ) . '-' . $Path_Parts['basename'] );
+            }
+            
+            $PF_Data = fopen( $SecretFile, 'w' );
+            if ( $PF_Data === FALSE ) {
+                sendMessageToClient( $MsgSock, FLAG_ERROR .
+                 "###L_ERR_SECRET_FILE_CREATION\n" );
+                break; // Déconnecte le client
+            }
+            
+            fwrite( $PF_Data, $Parameter ); // . "\n" );
+            fclose( $PF_Data );
+            
+            sendMessageToClient( $MsgSock, FLAG_SUCCESS . '###L_MOTHER_KEY_SAVED###' .
              $_Create_Date . "\n" );
 
             break; // Déconnecte le client

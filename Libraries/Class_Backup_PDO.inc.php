@@ -613,6 +613,7 @@ class Backup extends IICA_Parameters {
 	* @return Renvoi la date du fichier qui vient d'être restauré, sinon lève une exception en cas d'erreur.
 	*/
 		include_once( IICA_LIBRARIES . '/Class_Security.inc.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 
 		$Security = new Security();
 
@@ -675,7 +676,7 @@ class Backup extends IICA_Parameters {
 					if ( $Values != '' ) $Values .= ',';
 					if ( is_numeric( $Columns->item( $columns_i )->nodeValue ) ) $Protected = '';
 					else $Protected = '"';
-					$Values .= $Protected . $Columns->item( $columns_i )->nodeValue . $Protected;
+					$Values .= $Protected . addslashes( $Columns->item( $columns_i )->nodeValue ) . $Protected;
 				}
 				
 				$Query = 'INSERT INTO ' . $Table_Name . ' (' . $Columns_Name . ') VALUES (' . $Values . ');';
@@ -692,14 +693,14 @@ class Backup extends IICA_Parameters {
 				if ( ! $Result->execute() ) {
 					$Error = $Result->errorInfo();
 
-			        throw new Exception( $Error[ 2 ] . ' (' . $Error[ 1 ] . ')' );
+			        throw new Exception( $Error[ 2 ] . ' (' . $Error[ 1 ] . ')[' . $Query . ']' );
 			        
 			        exit();
 			    }
 			}
 		}
 
-		return $Store_Date;
+		return $Mother_Key_Encrypted;
 	}
 
 } // Fin class Backup

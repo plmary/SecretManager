@@ -1405,7 +1405,13 @@ case 'STOR_TX':
  case 'LOAD_BACKUP_X':
  	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
     include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
-    
+//    include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+	include( DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php' );
+	
+
+    // Arrêt du SecretServer.
+    $Secret_Server = new Secret_Server();
+
     $Backup = new Backup();
     
  	$FileName = 'Backup/' . $_POST[ 'File_Name' ];
@@ -1420,7 +1426,10 @@ case 'STOR_TX':
  	}
 
     try {
-        $Date_Backup = $Backup->restore_backup( $FileName, $_POST['Operator_Key'] );
+    	// Lance la restauration et récupère la clé mère contenue dans ce fichier.
+        $Mother_Key = $Backup->restore_backup( $FileName, $_POST['Operator_Key'] );
+
+		$Secret_Server->SS_saveExternalMotherKey( $_POST['Operator_Key'], $Mother_Key );
 
         $Result = $L_Retore_File_Success;
         $Status = 'success';
