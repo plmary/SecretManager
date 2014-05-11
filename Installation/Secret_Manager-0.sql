@@ -1,7 +1,6 @@
 -- Auteur  : Pierre-Luc MARY
--- Le      : 04/05/2014
+-- Le      : 11/05/2014
 -- Base    : SecretManager
--- Version : 1.2-0
 
 
 DROP DATABASE IF EXISTS secret_manager;
@@ -9,10 +8,11 @@ CREATE DATABASE secret_manager DEFAULT CHARACTER SET utf8 COLLATE utf8_general_c
 USE secret_manager;
 
 
+
 CREATE TABLE app_applications (
-        app_id BIGINT AUTO_INCREMENT NOT NULL,
-        app_name VARCHAR(100) NOT NULL,
-        PRIMARY KEY (app_id)
+                app_id BIGINT AUTO_INCREMENT NOT NULL,
+                app_name VARCHAR(100) NOT NULL,
+                PRIMARY KEY (app_id)
 );
 
 
@@ -20,18 +20,16 @@ CREATE UNIQUE INDEX app_idx_1
  ON app_applications
  ( app_name );
 
-
-CREATE TABLE aht_access_history_type (
-                aht_id BIGINT AUTO_INCREMENT NOT NULL,
-                aht_label VARCHAR(60) NOT NULL,
-                PRIMARY KEY (aht_id)
+CREATE TABLE hot_history_object_type (
+                hot_id BIGINT AUTO_INCREMENT NOT NULL,
+                hot_name VARCHAR(30) NOT NULL,
+                PRIMARY KEY (hot_id)
 );
 
 
-CREATE UNIQUE INDEX aht_idx
- ON aht_access_history_type
- ( aht_label );
-
+CREATE UNIQUE INDEX hot_idx_1
+ ON hot_history_object_type
+ ( hot_name );
 
 CREATE TABLE spr_system_parameters (
                 spr_id BIGINT AUTO_INCREMENT NOT NULL,
@@ -45,7 +43,6 @@ CREATE UNIQUE INDEX spr_idx
  ON spr_system_parameters
  ( spr_name );
 
-
 CREATE TABLE env_environments (
                 env_id BIGINT AUTO_INCREMENT NOT NULL,
                 env_name VARCHAR(30) NOT NULL,
@@ -56,7 +53,6 @@ CREATE TABLE env_environments (
 CREATE UNIQUE INDEX env_idx
  ON env_environments
  ( env_name );
-
 
 CREATE TABLE ent_entities (
                 ent_id BIGINT AUTO_INCREMENT NOT NULL,
@@ -75,7 +71,6 @@ CREATE UNIQUE INDEX ent_idx1
  ON ent_entities
  ( ent_label );
 
-
 CREATE TABLE cvl_civilities (
                 cvl_id BIGINT AUTO_INCREMENT NOT NULL,
                 cvl_last_name VARCHAR(35) NOT NULL,
@@ -92,7 +87,6 @@ CREATE UNIQUE INDEX cvl_idx
  ON cvl_civilities
  ( cvl_last_name, cvl_first_name );
 
-
 CREATE TABLE rgh_rights (
                 rgh_id BIGINT NOT NULL,
                 rgh_name VARCHAR(30) NOT NULL,
@@ -103,7 +97,6 @@ CREATE TABLE rgh_rights (
 CREATE UNIQUE INDEX rgh_idx
  ON rgh_rights
  ( rgh_name );
-
 
 CREATE TABLE stp_secret_types (
                 stp_id BIGINT AUTO_INCREMENT NOT NULL,
@@ -116,7 +109,6 @@ CREATE UNIQUE INDEX stp_idx
  ON stp_secret_types
  ( stp_name );
 
-
 CREATE TABLE prf_profiles (
                 prf_id BIGINT AUTO_INCREMENT NOT NULL,
                 prf_label VARCHAR(60),
@@ -127,7 +119,6 @@ CREATE TABLE prf_profiles (
 CREATE UNIQUE INDEX profils_idx
  ON prf_profiles
  ( prf_label );
-
 
 CREATE TABLE idn_identities (
                 idn_id BIGINT AUTO_INCREMENT NOT NULL,
@@ -153,7 +144,6 @@ CREATE UNIQUE INDEX idn_idx
  ON idn_identities
  ( idn_login );
 
-
 CREATE TABLE idpr_identities_profiles (
                 idn_id BIGINT NOT NULL,
                 prf_id BIGINT NOT NULL,
@@ -173,7 +163,6 @@ CREATE TABLE sgr_secrets_groups (
 CREATE UNIQUE INDEX secrets_groups_idx
  ON sgr_secrets_groups
  ( sgr_label );
-
 
 CREATE TABLE prsg_profiles_secrets_groups (
                 prf_id BIGINT NOT NULL,
@@ -205,14 +194,14 @@ CREATE UNIQUE INDEX scr_idx
  ON scr_secrets
  ( scr_host, scr_user );
 
-
 CREATE TABLE ach_access_history (
                 ach_id BIGINT AUTO_INCREMENT NOT NULL,
                 scr_id BIGINT NOT NULL,
                 idn_id BIGINT NOT NULL,
-                aht_id BIGINT NOT NULL,
+                rgh_id BIGINT,
+                hot_id BIGINT NOT NULL,
                 ach_date DATETIME NOT NULL,
-                ach_access VARCHAR(300) NOT NULL,
+                ach_access VARCHAR(100) NOT NULL,
                 ach_ip VARCHAR(40),
                 PRIMARY KEY (ach_id)
 );
@@ -224,13 +213,11 @@ REFERENCES app_applications (app_id)
 ON DELETE SET NULL
 ON UPDATE NO ACTION;
 
-
-ALTER TABLE ach_access_history ADD CONSTRAINT aht_ach_fk
-FOREIGN KEY (aht_id)
-REFERENCES aht_access_history_type (aht_id)
-ON DELETE NO ACTION
+ALTER TABLE ach_access_history ADD CONSTRAINT hot_ach_fk
+FOREIGN KEY (hot_id)
+REFERENCES hot_history_object_type (hot_id)
+ON DELETE RESTRICT
 ON UPDATE NO ACTION;
-
 
 ALTER TABLE scr_secrets ADD CONSTRAINT env_scr_fk
 FOREIGN KEY (env_id)
@@ -238,13 +225,11 @@ REFERENCES env_environments (env_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-
 ALTER TABLE idn_identities ADD CONSTRAINT ent_idn_fk
 FOREIGN KEY (ent_id)
 REFERENCES ent_entities (ent_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
-
 
 ALTER TABLE idn_identities ADD CONSTRAINT cvl_idn_fk
 FOREIGN KEY (cvl_id)
@@ -252,13 +237,17 @@ REFERENCES cvl_civilities (cvl_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-
 ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT rgh_prpg_fk
 FOREIGN KEY (rgh_id)
 REFERENCES rgh_rights (rgh_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
+ALTER TABLE ach_access_history ADD CONSTRAINT rgh_ach_fk
+FOREIGN KEY (rgh_id)
+REFERENCES rgh_rights (rgh_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE scr_secrets ADD CONSTRAINT stp_scr_fk
 FOREIGN KEY (stp_id)
@@ -266,13 +255,11 @@ REFERENCES stp_secret_types (stp_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-
-ALTER TABLE idpr_identities_profiles ADD CONSTRAINT prf_idpr_fk
+ALTER TABLE idpr_identities_profiles ADD CONSTRAINT idpr_prf_fk
 FOREIGN KEY (prf_id)
 REFERENCES prf_profiles (prf_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
-
 
 ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT prf_prpg_fk
 FOREIGN KEY (prf_id)
@@ -280,13 +267,11 @@ REFERENCES prf_profiles (prf_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-
 ALTER TABLE idpr_identities_profiles ADD CONSTRAINT idn_idpr_fk
 FOREIGN KEY (idn_id)
 REFERENCES idn_identities (idn_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
-
 
 ALTER TABLE ach_access_history ADD CONSTRAINT idn_ach_fk
 FOREIGN KEY (idn_id)
@@ -294,13 +279,11 @@ REFERENCES idn_identities (idn_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-
 ALTER TABLE scr_secrets ADD CONSTRAINT sgr_scr_fk
 FOREIGN KEY (sgr_id)
 REFERENCES sgr_secrets_groups (sgr_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
-
 
 ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT sgr_prpg_fk
 FOREIGN KEY (sgr_id)
@@ -308,8 +291,7 @@ REFERENCES sgr_secrets_groups (sgr_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-
-ALTER TABLE ach_access_history ADD CONSTRAINT scr_secrets_ach_access_history_fk
+ALTER TABLE ach_access_history ADD CONSTRAINT scr_ach_fk
 FOREIGN KEY (scr_id)
 REFERENCES scr_secrets (scr_id)
 ON DELETE NO ACTION
