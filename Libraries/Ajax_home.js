@@ -245,8 +245,11 @@ function cancel() {
 
 function save( secret_id ) {
     var sgr_id = $('#group_'+secret_id).val();
+    var sgr_name = $('#group_'+secret_id+' option:selected').text();
     var stp_id = $('#type_'+secret_id).val();
+    var stp_name = $('#type_'+secret_id+' option:selected').text();
     var env_id = $('#environment_'+secret_id).val();
+    var env_name = $('#environment_'+secret_id+' option:selected').text();
     var scr_host = $('#host_'+secret_id).val();
     var scr_user = $('#user_'+secret_id).val();
     var scr_password = $('#secret_'+secret_id).val();
@@ -267,13 +270,16 @@ function save( secret_id ) {
         data: $.param({
             'scr_id': secret_id, 
             'sgr_id' : sgr_id,
+            'sgr_name' : sgr_name,
             'stp_id' : stp_id,
+            'stp_name' : stp_name,
             'scr_host' : scr_host,
             'scr_user' : scr_user,
             'scr_password' : scr_password,
 	        'scr_comment' : scr_comment,
 	        'scr_alert' : scr_alert,
 	        'env_id' : env_id,
+            'env_name' : env_name,
 	        'scr_application' : scr_application,
 	        'scr_expiration_date' : scr_expiration_date
 	        }),
@@ -305,11 +311,30 @@ function save( secret_id ) {
 
 
 function remove( secret_id ) {
+    var stp_name = $('#type_'+secret_id+' option:selected').text();
+    var env_name = $('#environment_'+secret_id+' option:selected').text();
+    var scr_host = $('#host_'+secret_id).val();
+    var scr_user = $('#user_'+secret_id).val();
+    var scr_password = $('#secret_'+secret_id).val();
+    var scr_comment = $('#comment_'+secret_id).val();
+    var scr_alert = $('#alert_'+secret_id).is(':checked');
+    var scr_application = $('#application_'+secret_id).val();
+    var scr_expiration_date = $('#expiration_'+secret_id).val();
+
     $.ajax({
         url: '../SM-home.php?action=AJAX_D',
         type: 'POST',
         data: $.param({
-            'scr_id': secret_id
+            'scr_id': secret_id, 
+            'stp_name' : stp_name,
+            'scr_host' : scr_host,
+            'scr_user' : scr_user,
+            'scr_password' : scr_password,
+            'scr_comment' : scr_comment,
+            'scr_alert' : scr_alert,
+            'env_name' : env_name,
+            'scr_application' : scr_application,
+            'scr_expiration_date' : scr_expiration_date
 	        }),
         dataType: 'json', // le résultat est transmit dans un objet JSON
         success: function(reponse) {

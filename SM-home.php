@@ -73,6 +73,7 @@ include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 
 include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
+include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 
 // Charge les différents objets utiles à cet écran.
@@ -83,6 +84,8 @@ $Groups = new IICA_Groups();
 $Secrets = new IICA_Secrets();
 
 $Referentials = new IICA_Referentials();
+
+$Security = new Security();
 
 
 // Récupère la liste des Droits, des Types et des Environnements.
@@ -122,6 +125,8 @@ $scr_application = '';
 $scr_host = '';
 $scr_user = '';
 $scr_comment = '';
+
+$Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 
 
 if ( array_key_exists( 'orderby', $_GET ) ) {
@@ -540,10 +545,14 @@ switch( $Action ) {
 
     if ( $Secret === true ) {
         $Status = 'success';
+        $Level = LOG_INFO;
         $Message = $L_Secret_Modified;
+        $L_Message = 'L_Secret_Modified';
     } else {
         $Status = 'error';
+        $Level = LOG_ERR;
         $Message = $L_ERR_MODI_Secret;
+        $L_Message = 'L_ERR_MODI_Secret';
     }
 
     $Resultat = array(
@@ -552,9 +561,16 @@ switch( $Action ) {
         );
 
     echo json_encode( $Resultat );
-    exit();
 
-	break;
+    $L_Message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') );
+
+    if ( $Verbosity_Alert == 2 ) {
+    	$L_Message .= ' ' . $Secrets->getMessageForHistory( $_POST['scr_id'] );
+    }
+
+	$Security->updateHistory( 'L_ALERT_SCR', $L_Message, 3, $Level, $Secrets->get( $_POST['scr_id'] ) );
+
+    exit();
 
 
  case 'AJAX_R':
@@ -568,15 +584,24 @@ switch( $Action ) {
 
  case 'AJAX_D':
     // Cet appel sauvegarde les informations modifiées d'un secret.
+ 	$pSecret = $Secrets->get( $_POST['scr_id'] );
+
+    if ( $Verbosity_Alert == 2 ) {
+    	$D_Message = ' ' . $Secrets->getMessageForHistory( $_POST['scr_id'] );
+    }
 
     $Secret = $Secrets->delete( $_POST['scr_id'] );
 
     if ( $Secret === true ) {
         $Status = 'success';
+        $Level = LOG_INFO;
         $Message = $L_Secret_Deleted;
+        $L_Message = 'L_Secret_Deleted';
     } else {
         $Status = 'error';
+        $Level = LOG_ERR;
         $Message = $L_ERR_DELE_Secret;
+        $L_Message = 'L_ERR_DELE_Secret';
     }
 
     $Resultat = array(
@@ -585,10 +610,18 @@ switch( $Action ) {
         );
 
     echo json_encode( $Resultat );
-    exit();
 
-	break;
+    $L_Message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') );
+
+    if ( $Verbosity_Alert == 2 ) {
+    	$L_Message .= $D_Message;
+    }
+	
+	$Security->updateHistory( 'L_ALERT_SCR', $L_Message, 4, $Level, $pSecret );
+
+	exit();
 }
+
 
 print( "   </div> <!-- Fin : zoneMilieuComplet -->\n" .
  "   <!-- Début : afficherSecret -->\n" .

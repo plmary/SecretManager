@@ -32,7 +32,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.8-4'; // Version de l'outil
+	$this->Version = '0.8-5'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	
@@ -415,17 +415,20 @@ public function returnPage( $Title, $Message, $Script, $Alert = 1 ) {
 	}
 	
 	return $this->enteteHTML( $Title, 0 ) .
-	 "    <div id=\"icon-users\" class=\"icon36\" style=\"float: left; margin: 3px 9px 3px 3px;\"></div>\n" .
-	 "    <h1 style=\"padding-top: 12px;\">" . $Title . "</h1>\n" .
-//	 "    <div id=\"zoneGauche\" >&nbsp;</div>\n" .
-//	 "    <!-- debut : zoneMilieuComplet -->\n" .
+	 "    <div id=\"zoneTitre\">\n" .
+	 "     <div id=\"icon-users\" class=\"icon36\" style=\"float: left; margin: 3px 9px 3px 3px;\"></div>\n" .
+	 "     <span id=\"titre\">" . $Title . "</span>\n" .
+	 "    </div> <!-- fin : zoneTitre -->\n" .
+	 "    <!-- debut : zoneMilieuComplet -->\n" .
 	 "    <div id=\"zoneMilieuComplet\">\n" .
-	 "     <div id=\"" . $Type_Message . "\"><img class=\"no-border\" src=\"Pictures/" .
+//	 "     <div id=\"dashboard\">\n" .
+	 "      <div id=\"" . $Type_Message . "\" style=\"margin-top: 20px;\"><img class=\"no-border\" src=\"Pictures/" .
 	 $Icon_Name . ".png\" alt=\"KO\" />\n" .
 	 $Message .
 	 "<br/><br/><a id=\"b_return\" href=\"" . $Script . "\" class=\"button\">" . 
 	 $L_Return . "</a>" .
-	 "     </div>\n" .
+	 "</div>\n" .
+//	 "     </div> <!-- fin : dashboard -->\n" .
 	 "    </div> <!-- fin : zoneMilieuComplet -->\n" .
 	 "    <script>\n" .
 	 "document.getElementById( 'b_return' ).focus();" .
@@ -475,6 +478,49 @@ public function page( $Title, $Message, $Language_Zone = 1, $Buttons = 1 ) {
 	 "   </div> <!-- debut : zoneMilieuComplet -->\n" .
 	 $this->construireFooter( $Buttons ) .
 	 $this->piedPageHTML();
+}
+
+
+public function getTextCode( $Codes, $Language = '' ) {
+/**
+* Retourne les textes associés aux Codes et à la Langue spécifiés.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-05-14
+*
+* @param[in] $Codes Code(s) à rechercher
+* @param[in] $Language Langue de recherche
+*
+* @return Retourne une chaîne matérialisant le texte associé au Code et à la Langue spécifiés
+*/
+	if ( $Language == '' ) {
+		$Language = $this->getParameter('language_alert');
+
+		if ( $Language == '' ) $Language = 'en';
+	}
+
+	$labelsDir = dir( DIR_LABELS );
+
+	while ( false !== ( $labelsFile = $labelsDir->read() ) ) {
+		if ( preg_match("/^" . $Language . "_*/i", $labelsFile ) ) {
+		   include( DIR_LABELS . '/' . $labelsFile );
+		}
+	}
+	
+	$labelsDir->close();
+
+	if ( is_array( $Codes ) ) {
+		foreach( $Codes as $Code ) {
+			if ( isset( ${$Code} ) ) $Labels[$Code] = ${$Code};
+			else $Labels[$Code] = $Code;
+		}
+	} else {
+		if ( isset( ${$Codes} ) ) $Labels = ${$Codes};
+		else $Labels = $Codes;
+	}
+
+	return $Labels;
 }
 
 } // Fin class HTML.

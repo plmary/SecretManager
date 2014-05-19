@@ -275,6 +275,10 @@ switch( $Action ) {
 
 		try {
 			$Profiles->set( '', $Label );
+
+			$alert_message = $Secrets->formatHistoryMessage( $L_Profile_Created . ' (' . $Profiles->LastInsertId . ')' );
+		
+			$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 2 );
 		} catch( PDOException $e ) {
 			$Resultat = array(
 				'Status' => 'error',
@@ -284,23 +288,35 @@ switch( $Action ) {
 
 			print( json_encode( $Resultat ) );
 
+			$alert_message = $Secrets->formatHistoryMessage( $L_ERR_CREA_Profile );
+		
+			$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 2 );
+
 			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
+				$Message = $L_ERR_DUPL_Profile;
+
 				$Resultat = array(
 					'Status' => 'error',
 					'Title' => $L_Error,
-					'Message' => $L_ERR_DUPL_Profile
+					'Message' => $Message
 					);
 			} else {
+				$Message = $L_ERR_CREA_Profile;
+
 				$Resultat = array(
 					'Status' => 'error',
 					'Title' => $L_Error,
-					'Message' => $L_ERR_CREA_Profile
+					'Message' => $Message
 					);
 			}
 
 			print( json_encode( $Resultat ) );
+
+			$alert_message = $Secrets->formatHistoryMessage( $Message );
+		
+			$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 2 );
 
 			exit();
 		}
@@ -429,6 +445,10 @@ switch( $Action ) {
 
 		try {
 			$Profiles->set( $prf_id, $Label );
+
+			$alert_message = $Secrets->formatHistoryMessage( $L_Profile_Modified . ' (' . $prf_id . ')' );
+		
+			$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 3 );
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
 				$Message = $L_ERR_DUPL_Profile;
@@ -443,6 +463,10 @@ switch( $Action ) {
 				);
 
 			print( json_encode( $Resultat ) );
+
+			$alert_message = $Secrets->formatHistoryMessage( $Message . ' (' . $prf_id . ')' );
+		
+			$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 3 );
 
 			exit();
 		}
@@ -545,6 +569,10 @@ switch( $Action ) {
 
 		try {
 			$Profiles->delete( $prf_id );
+
+			$alert_message = $Secrets->formatHistoryMessage( $L_Profile_Deleted . ' (' . $prf_id . ')' );
+		
+			$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 4 );
 		} catch( PDOException $e ) {
 			$Resultat = array(
 				'Status' => 'error',
@@ -553,6 +581,10 @@ switch( $Action ) {
 				);
 
 			print( json_encode( $Resultat ) );
+
+			$alert_message = $Secrets->formatHistoryMessage( $L_ERR_DELE_Profile . ' (' . $prf_id . ')' );
+		
+			$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 4 );
 
 			exit();
 		}
@@ -746,14 +778,10 @@ switch( $Action ) {
 	$Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 
 	try {
-		if ( $Verbosity_Alert == 2 ) {
-			$alert_message = 'Groups->deleteProfiles( \'' . $prf_id . '\' )' ;
-		} else {
-			$alert_message = '[' . $prf_id . '] ' . $L_Profiles_Clean ;
-		}
-		
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
+		$alert_message = $Secrets->formatHistoryMessage( '[' . $prf_id . '] ' . $L_Profiles_Clean );
 
+		$Secrets->updateHistory( 'L_ALERT_PRF', $alert_message, 4 );
+		
 		$Groups->deleteProfiles( '', $prf_id );
 		
 		$Store = '';
@@ -764,16 +792,11 @@ switch( $Action ) {
 				$Store_Key = $Store_Key[ 1 ];
 
 				foreach( $Values as $Value ) {
-					if ( $Verbosity_Alert == 2 ) {
-						$alert_message = 'Groups->addProfile( \'' . $Store_Key . '\', \'' .
-						 $prf_id . '\', \'' . $Value . '\' )' ;
-					} else {
-						$alert_message = $L_Profiles_Associate . ' [' . $prf_id . ']' .
+					$alert_message = $Secrets->formatHistoryMessage( $L_Profiles_Associate . ' [' . $prf_id . ']' .
 						 '[' . $Store_Key . ']' .
-						 '[' . $Value . ']' ;
-					}
+						 '[' . $Value . ']' );
 		
-					$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
+					$Secrets->updateHistory( 'L_ALERT_PRSG', $alert_message, 2 );
 
 					$Groups->addProfile( $Store_Key, $prf_id, $Value );
 				}
@@ -781,17 +804,17 @@ switch( $Action ) {
 			}
 		}
 	} catch( PDOException $e ) {
-		$alert_message = $L_ERR_ASSO_Identity;
+		$alert_message = $Secrets->formatHistoryMessage( $L_ERR_ASSO_Identity );
 		
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
+		$Secrets->updateHistory( 'L_ALERT_PRSG', $alert_message, 2 );
 
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
 		break;
 	}
 
-	$alert_message = $L_Association_Complited;
+	$alert_message = $Secrets->formatHistoryMessage( $L_Association_Complited );
 		
-	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
+	$Secrets->updateHistory( 'L_ALERT_PRSG', $alert_message, 2 );
 
 	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
 		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Association_Complited . "\" />\n" .

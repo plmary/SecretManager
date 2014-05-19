@@ -29,7 +29,23 @@
 	$_Password_Complexity_3 = 'Mindestens ein Großbuchstabe, ein Kleinbuchstabe, eine Ziffer und ein Satzzeichen';
 	$_Password_Complexity_4 = 'Mindestens ein Großbuchstabe, ein Kleinbuchstabe, eine Ziffer, ein Satzzeichen und ein Sonderzeichen';
 
-	$L_Access_History_1 = 'Verbinden';
-	$L_Access_History_2 = 'Verbindung trennen';
+	$L_ALERT_CNX = 'Verbinden';
+	$L_ALERT_DCNX = 'Verbindung trennen';
+
+	$L_ALERT_APP = 'Software';
+	$L_ALERT_CVL = 'Civility';
+	$L_ALERT_ENT = 'Entity';
+	$L_ALERT_IDN = 'Identity';
+	$L_ALERT_IDPR = 'Relashion beetwen Identity and Profile';
+	$L_ALERT_PRF = 'Profile';
+	$L_ALERT_PRSG = 'Relashion beetwen Profile and Secrets Group';
+	$L_ALERT_SCR = 'Secret';
+	$L_ALERT_SGR = 'Secrets Group';
+	$L_ALERT_SPR = 'System Parameter';
+	$L_ALERT_HST = 'History';
+	$L_ALERT_MK = 'Mother Key';
+	$L_ALERT_SS = 'SecretServer';
+	$L_ALERT_BCK = 'Save';
+	$L_ALERT_RSTR = 'Restore';
 
 ?>

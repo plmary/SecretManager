@@ -16,7 +16,8 @@
 	$L_ERR_DUPL_Profile = '"Label" bereits in Verwendung';
 	
 	$L_ERR_ASSO_Identity = 'Fehler bei der Zuordnung der Profile zur Identität';
-
+	$L_ERR_ASSO_Profile = 'Error while association groups of secrets to the profile';
+	
 	$L_Users_Profiles = 'Profile zu Identität zuordnen';
 	$L_Profiles_Management = "Profilmanagement";
 	$L_Associate = "Zuordnen";

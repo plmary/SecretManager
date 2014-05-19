@@ -283,8 +283,8 @@ class Backup extends IICA_Parameters {
 
         // ============================================
         // Traitement de la table de "l'Historique des accès aux Secrets".		    
-        if ( ! $Result = $this->prepare( 'SELECT ach_id, scr_id, idn_id, ach_date, '.
-            'ach_access, ach_ip, aht_id ' .
+        if ( ! $Result = $this->prepare( 'SELECT ach_id, scr_id, idn_id, rgh_id, hac_id, ach_gravity_level, ach_date, '.
+            'ach_access, ach_ip ' .
             'FROM ach_access_history' ) ) {
             $Error = $Result->errorInfo();
             throw new Exception( $Error[ 2 ], $Error[ 1 ] );
@@ -306,10 +306,12 @@ class Backup extends IICA_Parameters {
 		        '   <column name="ach_id">' . $Occurrence->ach_id . '</column>' . "\n" .
 		        '   <column name="scr_id">' . $Occurrence->scr_id . '</column>' . "\n" .
 		        '   <column name="idn_id">' . $Occurrence->idn_id . '</column>' . "\n" .
+		        '   <column name="rgh_id">' . $Occurrence->rgh_id . '</column>' . "\n" .
+		        '   <column name="hac_id">' . $Occurrence->hac_id . '</column>' . "\n" .
+		        '   <column name="ach_gravity_level">' . $Occurrence->ach_gravity_level . '</column>' . "\n" .
 		        '   <column name="ach_date">' . $Occurrence->ach_date . '</column>' . "\n" .
 		        '   <column name="ach_access">' . htmlspecialchars($Occurrence->ach_access) . '</column>' . "\n" .
 		        '   <column name="ach_ip">' . $Occurrence->ach_ip . '</column>' . "\n" .
-		        '   <column name="aht_id">' . $Occurrence->aht_id . '</column>' . "\n" .
                 '  </row>' . "\n" ;
 
             fwrite( $Save_File, $Out_Occurrence );
@@ -387,6 +389,37 @@ class Backup extends IICA_Parameters {
 		    
 
         // ============================================
+        // Traitement de la table des "Codes Actions de l'Historique".
+        if ( ! $Result = $this->prepare( 'SELECT hac_id, hac_name ' .
+            'FROM hac_history_actions_codes ' ) ) {
+            $Error = $Result->errorInfo();
+            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+        }
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		fwrite( $Save_File, ' <table id="hac" name="hac_history_actions_codes">' . "\n" );
+		        
+        $Row_Count = 0;
+        
+		while ( $Occurrence = $Result->fetchObject() ) {
+		    $Row_Count += 1;
+		    
+		    $Out_Occurrence = '  <row id="hac-' . $Row_Count . '">' . "\n" .
+		        '   <column name="hac_id">' . $Occurrence->hac_id . '</column>' . "\n" .
+		        '   <column name="hac_name">' . $Occurrence->hac_name . '</column>' . "\n" .
+                '  </row>' . "\n" ;
+
+            fwrite( $Save_File, $Out_Occurrence );
+		}
+
+        fwrite( $Save_File, ' </table>' . "\n" );
+		    
+
+        // ============================================
         // Traitement de la table des "Identités".
         if ( ! $Result = $this->prepare( 'SELECT idn_id, ent_id, cvl_id, idn_login, ' .
             'idn_authenticator, idn_salt, idn_change_authenticator, idn_super_admin, ' .
@@ -432,7 +465,7 @@ class Backup extends IICA_Parameters {
 
 
         // ============================================
-        // Traitement de la table des "Identités associées des Profils".
+        // Traitement de la table des "Identités associées à des Profils".
         if ( ! $Result = $this->prepare( 'SELECT idn_id, prf_id ' .
             'FROM idpr_identities_profiles ' ) ) {
             $Error = $Result->errorInfo();
@@ -494,7 +527,7 @@ class Backup extends IICA_Parameters {
 
 
         // ============================================
-        // Traitement de la table des "Profils associées des Groupes de Secrets".
+        // Traitement de la table des "Profils associées à des Groupes de Secrets".
         if ( ! $Result = $this->prepare( 'SELECT prf_id, sgr_id, rgh_id ' .
             'FROM prsg_profiles_secrets_groups ' ) ) {
             $Error = $Result->errorInfo();
@@ -700,7 +733,7 @@ class Backup extends IICA_Parameters {
 			}
 		}
 
-		return $Mother_Key_Encrypted;
+		return array( $Mother_Key_Encrypted, $Store_Date );
 	}
 
 } // Fin class Backup

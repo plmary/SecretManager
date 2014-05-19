@@ -100,6 +100,22 @@
 
 	$L_Total = 'Overall';
 
+	$L_Object = 'Object';
+	$L_Level = 'Level';
+	$L_Gravity_Level = 'Gravity level';
+
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;
+
+	$LOG_0 = 'Unusable system';
+	$LOG_1 = 'A decision must be made immediately';
+	$LOG_2 = 'Critical condition';
+	$LOG_3 = 'Error condition';
+	$LOG_4 = 'Warning condition';
+	$LOG_5 = 'Normal condition, but significant';
+	$LOG_6 = 'Information message';
+	$LOG_7 = 'Debug message';
+
+	$L_Since = 'Since';
+	$L_Before = 'Before';
 ?>

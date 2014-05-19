@@ -1,12 +1,22 @@
--- Auteur  : Pierre-Luc MARY
--- Le      : 11/05/2014
+-- Author  : Pierre-Luc MARY
+-- Date    : 12/05/2014
 -- Base    : SecretManager
-
+-- Model   : 1.3-0
 
 DROP DATABASE IF EXISTS secret_manager;
 CREATE DATABASE secret_manager DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE secret_manager;
 
+
+CREATE TABLE hac_history_actions_codes (
+                hac_id BIGINT AUTO_INCREMENT NOT NULL,
+                hac_name VARCHAR(30) NOT NULL,
+                PRIMARY KEY (hac_id)
+);
+
+CREATE UNIQUE INDEX hac_idx_1
+ ON hac_history_actions_codes
+ ( hac_name );
 
 
 CREATE TABLE app_applications (
@@ -19,17 +29,6 @@ CREATE TABLE app_applications (
 CREATE UNIQUE INDEX app_idx_1
  ON app_applications
  ( app_name );
-
-CREATE TABLE hot_history_object_type (
-                hot_id BIGINT AUTO_INCREMENT NOT NULL,
-                hot_name VARCHAR(30) NOT NULL,
-                PRIMARY KEY (hot_id)
-);
-
-
-CREATE UNIQUE INDEX hot_idx_1
- ON hot_history_object_type
- ( hot_name );
 
 CREATE TABLE spr_system_parameters (
                 spr_id BIGINT AUTO_INCREMENT NOT NULL,
@@ -196,27 +195,28 @@ CREATE UNIQUE INDEX scr_idx
 
 CREATE TABLE ach_access_history (
                 ach_id BIGINT AUTO_INCREMENT NOT NULL,
-                scr_id BIGINT NOT NULL,
-                idn_id BIGINT NOT NULL,
+                scr_id BIGINT,
+                idn_id BIGINT,
                 rgh_id BIGINT,
-                hot_id BIGINT NOT NULL,
-                ach_date DATETIME NOT NULL,
-                ach_access VARCHAR(100) NOT NULL,
+                hac_id BIGINT,
+                ach_gravity_level INT,
+                ach_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
                 ach_ip VARCHAR(40),
+                ach_access VARCHAR(300) NOT NULL,
                 PRIMARY KEY (ach_id)
 );
 
+
+ALTER TABLE ach_access_history ADD CONSTRAINT hac_ach_fk
+FOREIGN KEY (hac_id)
+REFERENCES hac_history_actions_codes (hac_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE scr_secrets ADD CONSTRAINT app_scr_fk
 FOREIGN KEY (app_id)
 REFERENCES app_applications (app_id)
 ON DELETE SET NULL
-ON UPDATE NO ACTION;
-
-ALTER TABLE ach_access_history ADD CONSTRAINT hot_ach_fk
-FOREIGN KEY (hot_id)
-REFERENCES hot_history_object_type (hot_id)
-ON DELETE RESTRICT
 ON UPDATE NO ACTION;
 
 ALTER TABLE scr_secrets ADD CONSTRAINT env_scr_fk

@@ -23,6 +23,7 @@
 	$L_Detailed_Verbosity = 'Detailed'; // Verbosité détaillée remontée
 	$L_Technical_Verbosity = 'Technical'; // Verbosité technique remontée
 	$L_Normal_Verbosity = 'Normal'; // Verbosité normale remontée
+	$L_Language_Alerts = 'Language alerts';	
 
 	$L_Save = 'Save';
 	
@@ -31,9 +32,15 @@
 
 	$L_Mail_From = "Issuer Name";
 	$L_Mail_To = "Recipient names must be separated by commas";
+	$L_Title_1 = 'Title';
+	$L_Mail_Title = 'Mail title';
+	$L_Mail_Body = 'Mail body';
+	$L_Body = 'Body';
+	$L_Mail_Body_Type = 'Mail body type';
+	$L_Body_Type = 'Body type';
 
 	$L_Connection_Management = 'Connection process Management';
-	$L_Use_Password = 'Password Authentication mode';
+	$L_Use_Password = 'Password Authentication';
 	$L_Use_Radius = 'RADIUS Authentication';
 	$L_Use_LDAP = 'LDAP Authentification';
 

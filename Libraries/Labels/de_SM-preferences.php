@@ -24,6 +24,7 @@
 	$L_Detailed_Verbosity = 'Detailiert'; // Verbosité détaillée remontée
 	$L_Technical_Verbosity = 'Technisch'; // Verbosité technique remontée
 	$L_Normal_Verbosity = 'Normal'; // Verbosité normale remontée
+	$L_Language_Alerts = 'Language alerts';	
 
 	$L_Save = 'Speichern';
 	$L_Parameter_Updated = 'Aktualisiert Parameter';
@@ -31,6 +32,12 @@
 
 	$L_Mail_From = "Ersteller";
 	$L_Mail_To = "Empfänger müssen durch Kommata getrennt werden";
+	$L_Title_1 = 'Title';
+	$L_Mail_Title = 'Mail title';
+	$L_Mail_Body = 'Mail body';
+	$L_Body = 'Body';
+	$L_Mail_Body_Type = 'Mail body type';
+	$L_Body_Type = 'Body type';
 
 	$L_Connection_Management = 'Verbindungseinstellungen bearbeiten';
 	$L_Use_Password = 'Passwort Authentifizierung';

@@ -24,6 +24,7 @@
 	$L_Detailed_Verbosity = 'Détaillée'; // Verbosité détaillée remontée
 	$L_Technical_Verbosity = 'Technique'; // Verbosité technique remontée
 	$L_Normal_Verbosity = 'Normale'; // Verbosité intelligible remontée
+	$L_Language_Alerts = 'Langue des alertes';	
 
 	$L_Parameter_Updated = 'Paramètre mis à jour';
 	$L_Parameters_Updated = 'Paramètres mis à jour';
@@ -36,6 +37,12 @@
 
 	$L_Mail_From = "Nom de l'émetteur";
 	$L_Mail_To = "Les noms des destinataires doivent être séparés par des virgules";
+	$L_Title_1 = 'Titre';
+	$L_Mail_Title = 'Titre du message';
+	$L_Mail_Body = "Corps du message";
+	$L_Body = 'Corps';
+	$L_Mail_Body_Type = 'Type du corps du message';
+	$L_Body_Type = 'Type du corps';
 
 	$L_Connection_Management = 'Gestion du processus de connexion';
 	$L_Use_Password = 'Utilisation de l\'authentification par mots de passe';

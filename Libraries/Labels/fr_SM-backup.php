@@ -32,4 +32,6 @@ $L_Do_You_Confirm_Delete_Full_Restore = 'Confirmez vous la <span class="green bo
 
 $L_Restore_File_Not_Deleted = 'Le fichier de sauvegarde n\'a pas été détruit';
 $L_Selected_Restore_Files_Deleted = 'Les fichiers de sauvegarde sélectionnés sont détruits';
+$L_File_Deleted = 'Fichier détruit';
+
 ?>

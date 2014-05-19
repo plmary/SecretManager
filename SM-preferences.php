@@ -57,11 +57,17 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) 
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
-
+include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
+		
 
 $PageHTML = new HTML();
 
 $Security = new Security();
+
+$Secrets = new IICA_Secrets();
+
+
+$F_Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 
 
 if ( array_key_exists( 'action', $_GET ) ) {
@@ -187,6 +193,40 @@ if ( $Authentication->is_administrator() ) {
 		 "       </thead>\n" .
 		 "       <tbody>\n" .
 		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" . $L_Language_Alerts .
+		 "</td>\n" .
+		 "        <td class=\"pair\">\n" .
+		 "         <select name=\"language_alert\">\n" );
+
+		$FR_Selected = '' ;
+		$EN_Selected = '';
+		$DE_Selected = '';
+
+		switch ( $PageHTML->getParameter( 'language_alert' ) ) {
+		 default:
+		 case 'fr':
+			$FR_Selected = ' selected ';
+			break;
+
+		 case 'en':
+			$EN_Selected = ' selected ' ;
+			break;
+			
+		 case 'de':
+			$DE_Selected = ' selected ' ;
+			break;
+		}
+			
+		print( "          <option value=\"fr\"" . $FR_Selected . ">" . 
+		 $L_Langue_fr . "</option>\n" .
+		 "          <option value=\"en\"" . $EN_Selected . ">" . 
+		 $L_Langue_en . "</option>\n" .
+		 "          <option value=\"de\"" . $DE_Selected . ">" . 
+		 $L_Langue_de . "</option>\n" .
+		 "         </select>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
 		 "        <td class=\"impair align-right\" width=\"50%\">" . $L_Verbosity_Alert .
 		 "</td>\n" .
 		 "        <td class=\"pair\">\n" .
@@ -257,6 +297,32 @@ if ( $Authentication->is_administrator() ) {
 		 "           <td><textarea name=\"mail_to\" title=\"" . $L_Mail_To . "\">".
 		  $PageHTML->getParameter( 'mail_to' ) . "</textarea></td>\n" .
 		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <td>" . $L_Title_1 . "</td>\n" .
+		 "           <td><input name=\"mail_title\" title=\"" . $L_Mail_Title . "\" " .
+		 "value=\"" . $PageHTML->getParameter( 'mail_title' ) . "\" /></td>\n" .
+		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <td>" . $L_Body_Type . "</td>\n" .
+		 "           <td><select name=\"mail_body_type\">\n" );
+
+		$TXT_Selected = '';
+		$HTML_Selected = '';
+
+		if ( $PageHTML->getParameter( 'mail_body_type' ) == 'TXT' 
+			or $PageHTML->getParameter( 'mail_body_type' ) == '') $TXT_Selected = ' selected ' ;
+		else $HTML_Selected = ' selected ' ;
+			
+		print( "          <option value=\"TXT\"" . $TXT_Selected . ">TXT</option>\n" .
+		 "          <option value=\"HTML\"" . $HTML_Selected . ">HTML</option>\n" );
+
+		print( "         </select></td>\n" .
+		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <td>" . $L_Body . "</td>\n" .
+		 "           <td><textarea name=\"mail_body\" title=\"" . $L_Mail_Body . "\">".
+		  file_get_contents ( MAIL_BODY ) . "</textarea></td>\n" .
+		 "          </tr>\n" .
 		 "         </table>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
@@ -273,9 +339,15 @@ if ( $Authentication->is_administrator() ) {
 		 " if ( document.alert_form.alert_mail.value != 1 ) {\n" .
 		 "  document.alert_form.mail_from.disabled = 1;\n" .
 		 "  document.alert_form.mail_to.disabled = 1;\n" .
+		 "  document.alert_form.mail_title.disabled = 1;\n" .
+		 "  document.alert_form.mail_body_type.disabled = 1;\n" .
+		 "  document.alert_form.mail_body.disabled = 1;\n" .
 		 " } else {\n" .
 		 "  document.alert_form.mail_from.disabled = 0;\n" .
 		 "  document.alert_form.mail_to.disabled = 0;\n" .
+		 "  document.alert_form.mail_title.disabled = 0;\n" .
+		 "  document.alert_form.mail_body_type.disabled = 0;\n" .
+		 "  document.alert_form.mail_body.disabled = 0;\n" .
 		 " }\n" .
 		 "}\n" .
 		 "activeMailFields();\n" .
@@ -284,6 +356,11 @@ if ( $Authentication->is_administrator() ) {
 		break;
 
 	 case 'AX':
+		if ( ($Language_Alert = $Security->valueControl( $_POST[ 'language_alert' ] )) == -1 ) {
+			print( "     <h1>" . $L_Invalid_Value . " (language_alert)</h1>" );
+			break;
+		}
+
 		if ( ($Alert_Syslog = $Security->valueControl( $_POST[ 'alert_syslog' ],
 		 'NUMERIC' )) == -1 ) {
 			print( "     <h1>" . $L_Invalid_Value . " (alert_syslog)</h1>" );
@@ -312,21 +389,58 @@ if ( $Authentication->is_administrator() ) {
 				print( "     <h1>" . $L_Invalid_Value . " (mail_to)</h1>" );
 				break;
 			}
+
+			if ( ($Mail_Title = $Security->valueControl( $_POST[ 'mail_title' ] )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (mail_title)</h1>" );
+				break;
+			}
+
+			if ( ($Mail_Body = $Security->valueControl( $_POST[ 'mail_body' ] )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (mail_body)</h1>" );
+				break;
+			}
+
+			if ( ($Mail_Body_Type = $Security->valueControl( $_POST[ 'mail_body_type' ] )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (mail_body_type)</h1>" );
+				break;
+			}
 		}
 
 		try {
+			$PageHTML->setParameter( 'language_alert', $Language_Alert );
 			$PageHTML->setParameter( 'verbosity_alert', $Verbosity_Alert );
 			$PageHTML->setParameter( 'alert_syslog', $Alert_Syslog );
 			$PageHTML->setParameter( 'alert_mail', $Alert_Mail );
 			if ( $Alert_Mail ) {
 				$PageHTML->setParameter( 'mail_from', $Mail_From );
 				$PageHTML->setParameter( 'mail_to', $Mail_To );
+				$PageHTML->setParameter( 'mail_title', $Mail_Title );
+				$PageHTML->setParameter( 'mail_body_type', strtoupper( $Mail_Body_Type ) );
+				file_put_contents( MAIL_BODY, $Mail_Body );
 			}
 		} catch( PDOException $e ) {
 			print( $PageHTML->returnPage( $L_Title, $L_ERR_MAJ_Alert, $Script .
 			 "?action=P&id=" . $scr_id, 1 ) );
 			exit();
 		}
+
+		$alert_message = $PageHTML->getTextCode( 'L_Parameters_Updated', $PageHTML->getParameter( 'language_alert' ) );
+
+		if ( $F_Verbosity_Alert == 1 ) {
+			$alert_message .= ' (language_alert, verbosity_alert, alert_syslog, alert_mail, mail_from, mail_to, mail_title, mail_body, mail_body_type)';
+		} else {
+			$alert_message .= ' (language_alert="' . $Language_Alert . '", verbosity_alert="' . $Verbosity_Alert . '", alert_syslog="' . $Alert_Syslog .
+			'", alert_mail="' . $Alert_Mail . '"';
+
+			if ( $Alert_Mail ) {
+				$alert_message .= ', mail_from="' . $Mail_From . '", mail_to="' . $Mail_To . '", mail_title="' . $Mail_Title . 
+					'", mail_body="...", mail_body_type="' . $Mail_Body_Type . '"';
+			}
+
+			$alert_message .= ')';
+		}
+
+		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
 
 		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=A\">\n" .
 			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Parameters_Updated . "\" />\n" .
@@ -751,6 +865,16 @@ if ( $Authentication->is_administrator() ) {
 		try {
 			$PageHTML->setParameter( 'authentication_type', $authentication_type );
 			$PageHTML->setParameter( 'expiration_time', $_POST[ 'Expiration_Time' ] );
+
+			$alert_message = $PageHTML->getTextCode( 'L_Parameters_Updated', $PageHTML->getParameter( 'language_alert' ) );
+
+			if ( $F_Verbosity_Alert == 1 ) {
+				$alert_message .= ' (authentication_type, expiration_time)';
+			} else {
+				$alert_message .= ' (authentication_type="' . $authentication_type . '", expiration_time="' . $_POST[ 'Expiration_Time' ] . '")';
+			}
+
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
 		} catch( PDOException $e ) {
 			print( "   <div id=\"alert\">\n" .
 			 $L_ERR_MAJ_Connection .
@@ -795,6 +919,19 @@ if ( $Authentication->is_administrator() ) {
 		
 			fclose( $Output );
 			
+			$Labels = $PageHTML->getTextCode( array( 'L_Parameters_Updated', 'L_Use_Password' ), $PageHTML->getParameter( 'language_alert' ) );
+			$alert_message = $Labels['L_Parameters_Updated'] . ' [' . $Labels['L_Use_Password'] . ']';
+
+			if ( $F_Verbosity_Alert == 1 ) {
+				$alert_message .= ' (Min_Size_Password, Password_Complexity, Default_User_Lifetime, Max_Attempt, Default_Password)';
+			} else {
+				$alert_message .= ' (Min_Size_Password="' . $Min_Size_Password . '", Password_Complexity="' . $Password_Complexity . 
+					'", Default_User_Lifetime="' . $Default_User_Lifetime . '", Max_Attempt="' . $Max_Attempt . 
+					'", Default_Password="' . $Default_Password . '")';
+			}
+
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+
 			break;
 			
 		 case 'R':
@@ -829,6 +966,18 @@ if ( $Authentication->is_administrator() ) {
 		
 			fclose( $Output );
 			
+			$Labels = $PageHTML->getTextCode( array( 'L_Parameters_Updated', 'L_Use_Radius' ), $PageHTML->getParameter( 'language_alert' ) );
+			$alert_message = $Labels['L_Parameters_Updated'] . ' [' . $Labels['L_Use_Radius'] . ']';
+
+			if ( $F_Verbosity_Alert == 1 ) {
+				$alert_message .= ' (Radius_Server, Radius_Authentication_Port, Default_User_Lifetime, Max_Attempt, Default_Password)';
+			} else {
+				$alert_message .= ' (Radius_Server="' . $Radius_Server . '", Radius_Authentication_Port="' . $Radius_Authentication_Port . 
+					'", Radius_Accounting_Port="' . $Radius_Accounting_Port . '", Radius_Secret_Common="' . $Radius_Secret . '")';
+			}
+
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+
 			break;
 
 		 case 'L':
@@ -861,7 +1010,19 @@ if ( $Authentication->is_administrator() ) {
 				 "   </div>\n" );
 				break 2;
 			}
+
+			$Labels = $PageHTML->getTextCode( array( 'L_Parameters_Updated', 'L_Use_LDAP' ), $PageHTML->getParameter( 'language_alert' ) );
+			$alert_message = $Labels['L_Parameters_Updated'] . ' [' . $Labels['L_Use_LDAP'] . ']';
+
+			if ( $F_Verbosity_Alert == 1 ) {
+				$alert_message .= ' (LDAP_Server, LDAP_Port, LDAP_Protocol_Version, Max_Attempt, Default_Password)';
+			} else {
+				$alert_message .= ' (LDAP_Server="' . $LDAP_Server . '", LDAP_Port="' . $LDAP_Port . '", LDAP_Protocol_Version="' . $LDAP_Protocol_Version .
+					'", LDAP_Organization="' . $LDAP_Organization . '", LDAP_RDN_Prefix="' . $LDAP_RDN_Prefix . '")';
+			}
 		
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+
 			fclose( $Output );
 			
 			break;
@@ -1033,9 +1194,6 @@ if ( $Authentication->is_administrator() ) {
 
 	 case 'SUX':
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-		
-		$Secrets = new IICA_Secrets();
 
 		try {
 		    $PageHTML->setParameter( 'use_SecretServer', $_POST[ 'UseSecretServer' ] );
@@ -1052,15 +1210,22 @@ if ( $Authentication->is_administrator() ) {
 		if ( $_POST[ 'UseSecretServer' ] == 0 ) $Value = $L_No;
 		else $Value = $L_Yes;
 		
-		$Result = $L_Parameter_Updated;
 
-		$alert_message = $Secrets->formatHistoryMessage( $Result );
+		$Labels = $PageHTML->getTextCode( 'L_Parameters_Updated', $PageHTML->getParameter( 'language_alert' ) );
+		$alert_message = $Labels;
 
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		if ( $F_Verbosity_Alert == 1 ) {
+			$alert_message .= ' (UseSecretServer)';
+		} else {
+			$alert_message .= ' (UseSecretServer="' . $_POST[ 'UseSecretServer' ] . '")';
+		}
+	
+		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+
 			
         $Ajax_Result = array(
             'Status' => 'success',
-            'Message' => $Result
+            'Message' => $L_Parameters_Updated
         );
         
         echo json_encode( $Ajax_Result );
@@ -1071,9 +1236,6 @@ if ( $Authentication->is_administrator() ) {
 
 	 case 'SKX':
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
-		
-		$Secrets = new IICA_Secrets();
 
 		try {
 		    $PageHTML->setParameter( 'Operator_Key_Size', $_POST[ 'Operator_Key_Size' ] );
@@ -1092,9 +1254,18 @@ if ( $Authentication->is_administrator() ) {
 
 		$Result = $L_Parameters_Updated;
 
-		$alert_message = $Secrets->formatHistoryMessage( $Result );
+		$Labels = $PageHTML->getTextCode( 'L_Parameters_Updated', $PageHTML->getParameter( 'language_alert' ) );
+		$alert_message = $Labels;
 
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		if ( $F_Verbosity_Alert == 1 ) {
+			$alert_message .= ' (Operator_Key_Size, Operator_Key_Complexity, Mother_Key_Size, Mother_Key_Complexity)';
+		} else {
+			$alert_message .= ' (Operator_Key_Size="' . $_POST[ 'Operator_Key_Size' ] . '", Operator_Key_Complexity="' . $_POST[ 'Operator_Key_Complexity' ] .
+				'", Mother_Key_Size="' . $_POST[ 'Mother_Key_Size' ] . '", Mother_Key_Complexity="' . $_POST[ 'Mother_Key_Complexity' ] . '")';
+		}
+	
+		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+
 			
         $Ajax_Result = array(
             'Status' => 'success',

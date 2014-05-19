@@ -17,6 +17,8 @@
 	$L_ERR_DUPL_Profile = '"Libellé" déjà utilisé';
 	
 	$L_ERR_ASSO_Identity = 'Erreur durant l\'association des profils à l\'identité';
+	$L_ERR_ASSO_Profile = 'Erreur durant l\'association des groupes de secrets au profil';
+	
 	$L_Users_Profiles = 'Association des Profils à une Identité';
 	$L_Profiles_Management = "Gestion des Profils";
 	$L_Associated_Profiles = "Profils à associer";

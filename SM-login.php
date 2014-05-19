@@ -105,14 +105,15 @@ switch( $Action ) {
 			$Signal = '&expired';
 		}
 	} else $Signal = '';
+
 	
 	// Formate le message en événement standard
-	$alert_message = $Secrets->formatHistoryMessage( $L_Disconnect . ' ' .
-	 $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .
-	 '(' . $_SESSION[ 'idn_login' ] . ')' );
+	$alert_message = $PageHTML->getTextCode( 'L_Disconnect', $PageHTML->getParameter( 'language_alert' ) ) . ' ' .
+		'[' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] . ')';
 
 	// Stocke le message dans l'historique de SecretManager.
-	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+	$Security->updateHistory( 'L_ALERT_DCNX', $alert_message );
+
 
 	$PageHTML->disconnect();
    
@@ -322,11 +323,12 @@ switch( $Action ) {
 		exit();
 	}
 
-	$alert_message = $Secrets->formatHistoryMessage( $_SESSION[ 'cvl_first_name' ] . ' ' .
-	 $_SESSION[ 'cvl_last_name' ] . '(' . $_SESSION[ 'idn_login' ] . ') - ' .
-	 $L_Password_Modified );
+	// Formate le message en événement standard
+	$alert_message = $PageHTML->getTextCode( 'L_Password_Modified', $PageHTML->getParameter( 'language_alert' ) ) . ' ' .
+		'[' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .	')';
 
-	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+	// Stocke le message dans l'historique de SecretManager.
+	$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3 );
 
 	$PageHTML->disconnect();
 
@@ -425,10 +427,10 @@ switch( $Action ) {
 	try {
 		// Récupère le "salt" spécifique de l'utilisateur.
 		if ( ! ($Salt = $PageHTML->getSalt( $_POST[ 'User' ] )) ) {
-			$alert_message = $Secrets->formatHistoryMessage( $L_Err_Auth . ' (' .
-			 $_POST[ 'User' ] . ') [' . $Authentication_Type . ']' );
+			$alert_message = $PageHTML->getTextCode( 'L_Err_Auth', $PageHTML->getParameter( 'language_alert' ) ) . ' (' .
+			 $_POST[ 'User' ] . ') [' . $Authentication_Type . ']';
 
-			$Secrets->updateHistory( '', 0, $alert_message, $IP_Source );
+			$Security->updateHistory( 'L_ALERT_CNX', $alert_message, LOG_ERR );
 			
 			print( $PageHTML->returnPage( $L_Title, $L_Err_Auth, $Script ) );
 
@@ -441,10 +443,9 @@ switch( $Action ) {
 		// Si problème d'authentification et que l'utilisateur existe alors incrémentation du nombre de tentative de connexion.
 		$PageHTML->addAttempt( $_POST[ 'User' ] );
 			
-		$alert_message = $Secrets->formatHistoryMessage( $e->getMessage() . ' (' .
-		 $_POST[ 'User' ] . ')' );
+		$alert_message = $e->getMessage() . ' (' . $_POST[ 'User' ] . ')';
 
-		$Secrets->updateHistory( '', 0, $alert_message, $IP_Source );
+		$Security->updateHistory( 'L_ALERT_CNX', $alert_message, LOG_ERR );
 			
 		print( $PageHTML->returnPage( $L_Title, $e->getMessage(), $Script ) );
 
@@ -453,11 +454,10 @@ switch( $Action ) {
 
 	// Si l'indicateur de changement de mot de passe est à "vrai". L'utilisateur doit changer son mot de passe.
 	if ( $_SESSION[ 'idn_change_authenticator' ] == 1 ) {
-		$alert_message = $Secrets->formatHistoryMessage( $L_Change_Password . ' ' .
-		 $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .
-		 ' (' . $_SESSION[ 'idn_login' ] . ')' );
+		$alert_message = $PageHTML->getTextCode( 'L_Change_Password', $PageHTML->getParameter( 'language_alert' ) ) . ' ' .
+			'[' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] . ')';
 
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+		$Security->updateHistory( 'L_ALERT_CNX', $alert_message );
 			
 		header( 'Location: ' . $Script . '?action=CMDP&mandatory' );
 		
@@ -465,11 +465,10 @@ switch( $Action ) {
 	}
 
 	// Tout est normal, l'utilisateur arrive sur son tableau de bord.
-	$alert_message = $Secrets->formatHistoryMessage( $L_Connection . ' ' .
-	 $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .
-	 ' (' . $_SESSION[ 'idn_login' ] . ')' );
+	$alert_message = $PageHTML->getTextCode( 'L_Connection', $PageHTML->getParameter( 'language_alert' ) ) . ' ' .
+		' [' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] . ')';
 
-	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+	$Security->updateHistory( 'L_ALERT_CNX', $alert_message );
 			
 	header( 'Location: ' . URL_BASE . '/SM-home.php?last_login' );
    

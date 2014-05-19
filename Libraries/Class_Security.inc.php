@@ -1,5 +1,9 @@
 <?php
 
+include_once( 'Constants.inc.php' );
+
+include_once( IICA_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+
 /**
 * Cette classe gère les problématiques de sécurité. Tel que le contrôle des variables en
 * entrées, en sortie (notamment pour l'affichage à l'écran) ou calcule des grains de sel,
@@ -13,8 +17,10 @@
 *
 */
 
-class Security {
+class Security extends IICA_Parameters {
 	public function __construct() {
+		parent::__construct();
+
 		return;
 	}
 
@@ -430,92 +436,6 @@ class Security {
  		
 		return $Status;
 	}
- 	
- 	
-	public function writeLog( $message, $priority = LOG_WARNING ) {
-	/**
-	* Envoi le message dans le flux "Syslog"
-	*
-	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-08
-	*
-	* @param[in] $message Message à envoyer dans le flux.
-	* @param[in] $priority Type de priorité dans le "Syslog" (par défaut LOG_WARNING)
-	* Les autres valeurs sont :
-	* LOG_EMERG	système inutilisable
-	* LOG_ALERT	une décision doit être prise immédiatement
-	* LOG_CRIT	condition critique
-	* LOG_ERR	condition d'erreur
-	* LOG_WARNING	condition d'alerte
-	* LOG_NOTICE	condition normale, mais significative
-	* LOG_INFO	message d'information
-	* LOG_DEBUG	message de déboguage
-	*
-	* @return Retourne vrai si le message a été envoyé dans Syslog, sinon retrouve faux
-	*/
-		// Ouverture de syslog, ajout du PID.
-		if ( ! openlog( "SecretManager", LOG_PID, LOG_USER ) ) {
-			return false;
-		}
-
-		$access = date( "Y-m-d H:i:s" );
-		if ( ! syslog( $priority, $access . ' : ' . $message ) ) {
-			return false;
-		}
-
-		if ( ! closelog() ) {
-			return false;
-		}
-		
-		return true;
-	}
-	
-	
-	public function writeMail( $message, $from, $to ) {
-	/**
-	* Envoi le message par courriel
-	*
-	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-08
-	*
-	* @param[in] $message Message à envoyer dans le courriel.
-	* @param[in] $from Emetteur du courriel
-	* @param[in] $to Destinataires du courriel
-	*
-	* @return Retourne vrai si le message a été envoyé au serveur de messagerie, sinon retrouve faux (attention, envoyé au serveur de messagerie, ne signifie pas bien arrivé auprès des destinataires)
-	*/
-		// Sujet
-		$subject = 'Alert SecretManager';
-
-		// message
-		$body = '
-		<html>
-		 <head>
-		  <title>' . $subject . '</title>
-		 </head>
-		 <body>
-		  <p>' . $message . '</p>
-		 </body>
-		</html>
-		';
-
-		// Pour envoyer un mail HTML, l'en-tête Content-type doit être défini
-		$headers  = 'MIME-Version: 1.0' . "\r\n";
-		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-
-		// En-têtes additionnels
-		$headers .= 'To: ' . $to . "\r\n";
-		$headers .= 'From: ' .$from . "\r\n";
-//		$headers .= 'Cc: anniversaire_archive@example.com' . "\r\n";
-//		$headers .= 'Bcc: anniversaire_verif@example.com' . "\r\n";
-
-		// Envoi
-		return mail($to, $subject, $body ); //, $headers);
-	}
 
 
 	/* ===============================================================================
@@ -705,6 +625,300 @@ class Security {
 		fclose( $P_File );
 
 		return array( TRUE, $Key );
+	}
+
+	
+	/* -----------------------------
+	** Met à jour l'historique des actions sur les objets du SecretManager.
+	*/
+	public function updateHistory( $hac_name, $ach_access = '', $rgh_id = '', $level = LOG_INFO, $pSecret = '' ) {
+		/**
+		* Crée ou modifie un Groupe.
+		*
+		* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+		* @author Pierre-Luc MARY
+		* @date 2014-05-11
+		*
+		* @param[in] $hot_name (string) Nom du type d'objet du SecretManager
+		* @param[in] $rgh_id (int) Type d'accès réalisé sur l'objet
+		* @param[in] $pSecret (object) Pointeur du Secret qui a été accédé
+		* @param[in] $ach_access (string) Texte de description de l'accès (complément d'information)
+		*
+		* @return Renvoi vrai sur le succès de la mise à jour du Groupe, sinon lève une Exception
+		*/
+
+		// Récupère l'ID associé au code action.
+		if ( ! $Result = $this->prepare( 'SELECT hac_id FROM hac_history_actions_codes ' .
+			'WHERE hac_name = :hac_name ;' ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+				
+		if ( ! $Result->bindParam( ':hac_name', $hac_name, PDO::PARAM_STR, 30 ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		$Tmp = $Result->fetchObject();
+
+		if ( $Tmp->hac_id != 0 ) {
+			$hac_id = $Tmp->hac_id;
+		} else {
+			$hac_id = '';
+		}
+
+		if ( $pSecret != '' ) {
+			$scr_id = $pSecret->scr_id;
+		} else {
+			$scr_id = '';
+		}
+
+		if ( array_key_exists( 'idn_id', $_SESSION ) ) {
+			$idn_id = $_SESSION[ 'idn_id' ];
+		} else {
+			$idn_id = '';
+		}
+
+		if ( array_key_exists( 'user_ip', $_SESSION ) ) {
+			$user_ip = $_SESSION[ 'user_ip' ];
+		} else {
+			$user_ip = '';
+		}
+
+		if ( ! $Result = $this->prepare( 'INSERT INTO ach_access_history ' .
+			'( ' .
+			'scr_id, ' .
+			'idn_id, ' .
+			'rgh_id, ' .
+			'hac_id, ' .
+			'ach_gravity_level, ' .
+			'ach_date, ' .
+			'ach_access, ' .
+			'ach_ip ' .
+			') VALUES ( ' .
+			':scr_id, ' .
+			':idn_id, ' .
+			':rgh_id, ' . 
+			':hac_id, ' .
+			':ach_gravity_level, ' .
+			'CURRENT_TIMESTAMP, ' .
+			':ach_access, ' .
+			':ip_address ' .
+			'); ' 
+		) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+				
+		if ( ! $Result->bindParam( ':scr_id', $scr_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->bindParam( ':rgh_id', $rgh_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->bindParam( ':hac_id', $hac_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->bindParam( ':ach_gravity_level', $level, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->bindParam( ':ach_access', $ach_access, PDO::PARAM_STR, 300 ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->bindParam( ':ip_address', $user_ip, PDO::PARAM_STR, 40 ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+
+		// Enchaîne sur les autres notifications et transfert les informations du Secret à traiter.
+		if ( $pSecret != '' ) {
+			include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+
+			$Parameters = new IICA_Parameters();
+
+			if ( $pSecret->sgr_alert == 1 or $pSecret->scr_alert == 1 ) {
+				if ( $Parameters->getParameter('alert_syslog') == 1 ) {
+					$this->writeLog( $ach_access, $pSecret );
+				}
+
+				if ( $Parameters->getParameter('alert_mail') == 1 ) {
+					$this->writeMail( $ach_access, $pSecret );
+				}
+			}
+		}
+		
+		return true;
+	}
+
+	
+	public function formatSyslogMessage( $action, $pObject = '' ) {
+	/**
+	* Formate le message à remonter dans l'historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @version 1.0
+	* @date 2012-11-08
+	*
+	* @param[in] $action Action à tracer.
+	* @param[in] $pObject Pointeur sur le Secret manipulé
+	*
+	* @return Retourne la chaîne formatée ou FALSE en cas d'erreur.
+	*/
+		include( DIR_LABELS . '/' . $this->getParameter( 'language_alert' ) . '_labels_referentials.php' );
+
+		$Separator = '|';
+
+		if ( array_key_exists( 'idn_login', $_SESSION ) ) {
+			$idn_login = $_SESSION[ 'idn_login' ];
+		} else {
+			$idn_login = '';
+		}
+
+		if ( $pObject == '' ) return FALSE;
+
+		return $idn_login . $Separator . $_SERVER[ 'REMOTE_ADDR' ] . $Separator . $action .
+		 $Separator . $pObject->scr_id . $Separator . ${$pObject->stp_name} . $Separator . ${$pObject->env_name} .
+		 $Separator . $pObject->app_name . $Separator . $pObject->scr_host . $Separator . $pObject->scr_user;
+	}	
+ 	
+ 	
+	public function writeLog( $action, $pObject = '', $priority = LOG_INFO ) {
+	/**
+	* Envoi le message dans le flux "Syslog"
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @version 1.0
+	* @date 2012-11-08
+	*
+	* @param[in] $action Action à tracer.
+	* @param[in] $pObject Pointeur sur le Secret manipulé
+	* @param[in] $priority Type de priorité dans le "Syslog" (par défaut LOG_WARNING)
+	*
+	* Les autres valeurs sont :
+	*   LOG_EMERG	système inutilisable
+	*   LOG_ALERT	une décision doit être prise immédiatement
+	*   LOG_CRIT	condition critique
+	*   LOG_ERR 	condition d'erreur
+	*   LOG_WARNING	condition d'alerte
+	*   LOG_NOTICE	condition normale, mais significative
+	*   LOG_INFO	message d'information
+	*   LOG_DEBUG	message de déboguage
+	*
+	* @return Retourne vrai si le message a été envoyé dans Syslog, sinon retrouve faux
+	*/
+		$message = $this->formatSyslogMessage( $action, $pObject );
+
+		// Ouverture de syslog, ajout du PID.
+		if ( ! openlog( "SecretManager", LOG_PID, LOG_USER ) ) {
+			return false;
+		}
+
+		$access = date( "Y-m-d H:i:s" );
+
+		if ( ! syslog( $priority, $access . ' : ' . $message ) ) {
+			return false;
+		}
+
+		if ( ! closelog() ) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
+	public function writeMail( $Action, $pSecret ) {
+	/**
+	* Envoi le message par courriel
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @version 1.0
+	* @date 2012-11-08
+	*
+	* @param[in] $message Message à envoyer dans le courriel.
+	* @param[in] $from Emetteur du courriel
+	* @param[in] $to Destinataires du courriel
+	*
+	* @return Retourne vrai si le message a été envoyé au serveur de messagerie, sinon retrouve faux (attention, envoyé au serveur de messagerie, ne signifie pas bien arrivé auprès des destinataires)
+	*/
+		// Récupère les paramètres dans la Base de données
+		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
+
+		$Parameters = new IICA_Parameters();
+
+		include( DIR_LABELS . '/' . $Parameters->getParameter( 'language_alert' ) . '_labels_referentials.php' );
+
+		$from = $Parameters->getParameter('mail_from');
+		$to = $Parameters->getParameter('mail_to');
+		$subject = $Parameters->getParameter('mail_title');
+		$output = $Parameters->getParameter('mail_body_type');
+
+		// Reformate le corps du Courriel
+		$message = file_get_contents( MAIL_BODY );
+
+		$message = str_ireplace( '%User', $_SESSION['idn_login'], $message );
+		$message = str_ireplace( '%ActionDate', date('Y-m-d H:i:s'), $message );
+		$message = str_ireplace( '%Action', $Action, $message );
+		$message = str_ireplace( '%UserIP', $_SESSION['user_ip'], $message );
+		$message = str_ireplace( '%GroupSecrets', $pSecret->sgr_label, $message );
+		$message = str_ireplace( '%SecretType', ${$pSecret->stp_name}, $message );
+		$message = str_ireplace( '%SecretEnvironment', ${$pSecret->env_name}, $message );
+		$message = str_ireplace( '%SecretApplication', $pSecret->app_name, $message );
+		$message = str_ireplace( '%SecretHost', $pSecret->scr_host, $message );
+		$message = str_ireplace( '%SecretComment', $pSecret->scr_comment, $message );
+
+		if ( $output == 'HTML') {
+			$body = '
+		<html>
+		 <head>
+		  <title>' . $subject . '</title>
+		 </head>
+		 <body>
+		  <p>' . $message . '</p>
+		 </body>
+		</html>
+			';
+		} else {
+			$body= $message;
+		}
+
+		// Pour envoyer un mail HTML, l'en-tête Content-type doit être défini
+		$headers = 'From: ' .$from . "\r\n";
+		$headers .= 'MIME-Version: 1.0' . "\r\n";
+
+		if ( $output == 'HTML' ) $headers .= 'Content-type: text/html; charset="UTF-8"' . "\r\n";
+
+		// Envoi
+		return mail($to, $subject, $body, $headers);
 	}
 
 }

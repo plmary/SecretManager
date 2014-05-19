@@ -7,14 +7,14 @@
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
 * @version 1.0
-* @Modified 09/04/2013
+* @Modified 15/05/2014
 *
 */
 
 $_LDAP_Server = 'localhost'; // IP address server or server name
-$_LDAP_Port = 10389; // IP port server
-$_LDAP_Protocol_Version = 3;
-$_LDAP_Organization = 'dc=orasys,dc=fr';
-$_LDAP_RDN_Prefix = 'uid';
+$_LDAP_Port = '10389'; // IP port server
+$_LDAP_Protocol_Version = '3'; // Protocol version
+$_LDAP_Organization = 'dc=orasys,dc=fr'; // Organization tree
+$_LDAP_RDN_Prefix = 'uid'; // RDN prefix
 
 ?>

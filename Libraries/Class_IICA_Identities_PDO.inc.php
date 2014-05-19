@@ -12,6 +12,7 @@ class IICA_Identities extends IICA_DB_Connector {
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
 */
+    public $LastInsertId;
 
 	public function __construct() {
 	/**
@@ -194,6 +195,18 @@ class IICA_Identities extends IICA_DB_Connector {
 			throw new Exception( $Command . $Error[ 2 ], $Error[ 1 ] );
 		}
 		
+		if ( $idn_id == '' ) {
+			switch( $this->getAttribute(PDO::ATTR_DRIVER_NAME) ) {
+			 default;
+				$this->LastInsertId = $this->lastInsertId();
+				break;
+
+			 case 'pgsql';
+				$this->LastInsertId = $this->lastInsertId( 'idn_identities_idn_id_seq' );
+				break;
+			}
+		}
+
 		return true;
 	}
 
@@ -1333,7 +1346,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	* @date 2012-11-13
 	*
 	* @return Renvoi le nombre total d'Identités ayant atteint le maximum de tentative de
-connexion.
+	* connexion.
 	*/
 		include( 'Libraries/Config_Authentication.inc.php' );
 
@@ -1433,6 +1446,200 @@ connexion.
 		if ( $Valeur[ 0 ] == 0 ) return false ;
 		
 		return true ;
+	}
+
+
+	public function getUserForHistory( $idn_id, $oUser = '' ) {
+	/**
+	* Récupère le nombre total d'Identités ayant atteint le maximum de tentative de
+	* connexion.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-13
+	*
+	* @return Renvoi le nombre total d'Identités ayant atteint le maximum de tentative de
+	* connexion.
+	*/
+		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php' );
+
+		$pHTML = new HTML();
+
+		// Récupère l'objet Utilisateur si ce dernier n'a pas été fourni.
+		if ( $oUser == '' ) $oUser = $this->detailedGet( $idn_id );
+
+ 
+    	// Récupère les libellés pour le message
+    	$Labels = $pHTML->getTextCode( array( 'L_Username', 'L_Administrator', 'L_Civility', 'L_Entity' ), $pHTML->getParameter( 'language_alert' ) );
+
+ 		return ' (' . $Labels['L_Username'] . '="' . $oUser->idn_login . '", ' . $Labels['L_Administrator' ] . '="' . $oUser->idn_super_admin .
+ 			'", ' . $Labels['L_Civility'] . '="' . $oUser->cvl_first_name . ' ' .
+ 			$oUser->cvl_last_name . '", ' . $Labels['L_Entity'] . '="' . $oUser->ent_code . ' - ' . $oUser->ent_label . '")';
+	}
+
+
+	public function getCivility( $cvl_id, $idn_id = '' ) {
+	/**
+	* Récupère les champs utiles d'une Civilité.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-05-15
+	*
+	* @return Renvoi un objet Civlité ou lève une exception en cas d'erreur.
+	*/
+		$Request = 'SELECT ' .
+		 'cvl_last_name, cvl_first_name ' .
+		 'FROM cvl_civilities AS T1 ' ;
+
+		if ( $idn_id != '' ) $Request .= 'LEFT JOIN idn_identities AS T2 ON T1.cvl_id = T2.cvl_id WHERE T2.idn_id = :idn_id ';
+		else $Request .= 'WHERE cvl_id = :cvl_id ' ;
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( $idn_id != '' ) {
+			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}			
+		} else {
+			if ( ! $Result->bindParam( ':cvl_id', $cvl_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Valeur = $Result->fetchObject() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		return $Valeur;
+	}
+
+
+	public function getEntity( $ent_id ) {
+	/**
+	* Récupère les champs utiles d'une Civilité.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-05-15
+	*
+	* @return Renvoi un objet Civlité ou lève une exception en cas d'erreur.
+	*/
+		$Request = 'SELECT ' .
+		 'ent_code, ent_label ' .
+		 'FROM ent_entities ' .
+		 'WHERE ent_id = :ent_id ' ;
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->bindParam( ':ent_id', $ent_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Valeur = $Result->fetchObject() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		return $Valeur;
+	}
+
+
+	public function getProfile( $prf_id ) {
+	/**
+	* Récupère les champs utiles d'un Profil.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-05-15
+	*
+	* @return Renvoi un objet Civlité ou lève une exception en cas d'erreur.
+	*/
+		$Request = 'SELECT ' .
+		 'prf_label ' .
+		 'FROM prf_profiles ' .
+		 'WHERE prf_id = :prf_id ' ;
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->bindParam( ':prf_id', $prf_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Valeur = $Result->fetchObject() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		return $Valeur;
+	}
+
+
+	public function getGroups( $sgr_id ) {
+	/**
+	* Récupère les champs utiles d'un Profil.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-05-15
+	*
+	* @return Renvoi un objet Civlité ou lève une exception en cas d'erreur.
+	*/
+		$Request = 'SELECT ' .
+		 'sgr_label, sgr_alert ' .
+		 'FROM sgr_secrets_groups ' .
+		 'WHERE sgr_id = :sgr_id ' ;
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Valeur = $Result->fetchObject() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		return $Valeur;
 	}
 
 } // Fin class IICA_Identities

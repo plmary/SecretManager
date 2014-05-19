@@ -71,6 +71,9 @@ $Entities = new IICA_Entities();
 $Security = new Security();
 
 
+$verbosity_alert = $PageHTML->getParameter('verbosity_alert');
+
+
 if ( array_key_exists( 'Expired', $_SESSION ) ) {
 	// Contrôle si la session n'a pas expirée.
 	if ( ! $Authentication->validTimeSession() ) {
@@ -537,19 +540,62 @@ switch( $Action ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Id_Civility)', $Return_Page, 1 ) );
 		exit();
 	}
-	
+
+	if ( $verbosity_alert == 2 ) {
+		$tEntity = $Identities->getEntity( $ent_id );
+		$tCivility = $Identities->getCivility( $cvl_id );
+
+		$oUser = new stdClass();
+		$oUser->idn_login = $Username;
+		$oUser->idn_super_admin = $SuperAdmin;
+		$oUser->cvl_last_name = stripslashes( $tCivility->cvl_last_name );
+		$oUser->cvl_first_name = stripslashes( $tCivility->cvl_first_name );
+		$oUser->ent_code = stripslashes( $tEntity->ent_code );
+		$oUser->ent_label = stripslashes( $tEntity->ent_label );
+	}
+
+
 	try {
 		$Identities->set( '', $Username, $Authenticator, 1, 0,
-		 $SuperAdmin, 0, $ent_id, $cvl_id, $Salt );
+			$SuperAdmin, 0, $ent_id, $cvl_id, $Salt );
+
+		$alert_message = $PageHTML->getTextCode( 'L_User_Created' );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( $Identities->LastInsertId );
+		}
+		
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 2, LOG_INFO );
 	} catch( PDOException $e ) {
+		$alert_message = $PageHTML->getTextCode( 'L_ERR_CREA_Identity' );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( '', $oUser );
+		}
+
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 2, LOG_ERR );
+
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Identity, $Return_Page, 1 ) );
 		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Identity, $Return_Page, 1 ) );
+			$Message = 'L_ERR_DUPL_Identity';
+
+			print( $PageHTML->returnPage( $L_Title, ${$Message}, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_CREA_Identity, $Return_Page, 1 ) );
+			$Message = 'L_ERR_CREA_Identity';
+			
+			print( $PageHTML->returnPage( $L_Title, ${$Message}, $Return_Page, 1 ) );
 		}
+
+		$alert_message = $PageHTML->getTextCode( $Message );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( '', $oUser );
+		}
+
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 2, LOG_ERR );
+		
 		exit();
 	}
 
@@ -643,14 +689,31 @@ switch( $Action ) {
 	}
 
 	try {
-		$Identities->delete( $idn_id );
-	} catch( PDOException $e ) {
-		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Identity, $Return_Page, 1 ) );
-		exit();
-	}
+		$oUser = $Identities->detailedGet( $idn_id );
 
-	if ( ($cvl_id = $Security->valueControl( $_POST[ 'cvl_id' ], 'NUMERIC' )) == -1 ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (cvl_id)', $Return_Page, 1 ) );
+		$Identities->delete( $idn_id );
+
+		$alert_message = $PageHTML->getTextCode( 'L_User_Deleted' );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( '', $oUser );
+		} else {
+			$alert_message .= ' [' . $idn_id . ']';
+		}
+
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 4, LOG_INFO );
+	} catch( PDOException $e ) {
+		$alert_message = $PageHTML->getTextCode( 'L_ERR_DELE_Identity' );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( $idn_id );
+		} else {
+			$alert_message .= ' [' . $idn_id . ']';
+		}
+
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 4, LOG_ERR );
+
+		print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Identity, $Return_Page, 1 ) );
 		exit();
 	}
 	
@@ -876,15 +939,52 @@ switch( $Action ) {
 	try {
 		$Identities->set( $idn_id, $Username, '', 1, 0, $SuperAdmin, $Auditor, $ent_id,
 		 $cvl_id );
+
+		$alert_message = $PageHTML->getTextCode( 'L_User_Modified' );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( $idn_id );
+		} else {
+			$alert_message .= ' [' . $idn_id . ']';
+		}
+
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, LOG_INFO );
 	} catch( PDOException $e ) {
+		$alert_message = $PageHTML->getTextCode( 'L_ERR_MODI_Identity' );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( $idn_id );
+		} else {
+			$alert_message .= ' [' . $idn_id . ']';
+		}
+
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, LOG_ERR );
+
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Identity, $Return_Page, 1 ) );
 		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_DUPL_Identity, $Return_Page, 1 ) );
+			$Message = $L_ERR_DUPL_Identity;
+			$L_Message = 'L_ERR_DUPL_Identity';
+
+			print( $PageHTML->returnPage( $L_Title, $Message, $Return_Page, 1 ) );
 		} else {
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_MODI_Identity, $Return_Page, 1 ) );
+			$Message = $L_ERR_MODI_Identity;
+			$L_Message = 'L_ERR_MODI_Identity';
+			
+			print( $PageHTML->returnPage( $L_Title, $Message, $Return_Page, 1 ) );
 		}
+
+		$alert_message = $PageHTML->getTextCode( $L_Message );
+
+		if ( $verbosity_alert == 2 ) {
+			$alert_message .= $Identities->getUserForHistory( $idn_id );
+		} else {
+			$alert_message .= ' [' . $idn_id . ']';
+		}
+
+		$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, LOG_ERR );
+
 		exit();
 	}
 
@@ -1224,6 +1324,8 @@ switch( $Action ) {
             'L_Cancel' => $L_Cancel,
 			'L_Confirm' => $L_Confirm
 			);
+
+		$Message = '[' . $Entities->LastInsertId . '] ' . $L_Entity_Created;
 	} catch( PDOException $e ) {
 		$Resultat = array(
 			'Status' => 'error',
@@ -1245,6 +1347,8 @@ switch( $Action ) {
 	}
 
 	print( json_encode( $Resultat ) );
+
+	$Security->updateHistory( 'L_ALERT_ENT', $Message, 2 );
 
 	exit();
 
@@ -1334,14 +1438,14 @@ switch( $Action ) {
 			'Message' => $L_Entity_Modified
 			) );
 
-		exit();
+		$Message = '[' . $ent_id . '] ' . $L_Entity_Modified;
 	} catch( PDOException $e ) {
+		$Message = '[' . $L_ERR_MODI_Entity;
+
 		echo json_encode( array(
 			'Status' => 'error',
-			'Message' => $L_ERR_MODI_Entity
+			'Message' => $Message
 			) );
-
-		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
 			$Message = $L_ERR_DUPL_Entity;
@@ -1354,10 +1458,12 @@ switch( $Action ) {
 			'Message' => $Message
 			) );
 
-		exit();
+		$Message = '[' . $ent_id . '] ' . $Message;
 	}
 
-	break;
+	$Security->updateHistory( 'L_ALERT_ENT', $Message, 3 );
+
+	exit();
 
 
  case 'ENT_D':
@@ -1431,7 +1537,7 @@ switch( $Action ) {
 
 		print( json_encode( $Resultat ) );
 
-		exit();
+		$Message = '[' . $ent_id . '] ' . $L_Entity_Deleted;
 	} catch( PDOException $e ) {
 		$Resultat = array(
 			'Status' => 'error',
@@ -1441,10 +1547,12 @@ switch( $Action ) {
 
 		print( json_encode( $Resultat ) );
 
-		exit();
+		$Message = '[' . $ent_id . '] ' . $L_ERR_DELE_Entity;
 	}
 
-	break;
+	$Security->updateHistory( 'L_ALERT_ENT', $Message, 4 );
+
+	exit();
 
 
  case 'CVL_V':
@@ -1625,6 +1733,7 @@ switch( $Action ) {
 
 	try {
 		$Civilities->set( '', $Last_Name, $First_Name, $Sex, '', '' );
+
 		$Resultat = array(
 			'Status' => 'success',
 			'Title' => $L_Success,
@@ -1641,33 +1750,41 @@ switch( $Action ) {
             'L_Man' => $L_Man,
             'L_Woman' => $L_Woman
 			);
+
+		$Message = '[' . $Civilities->LastInsertId . '] ' . $L_Civility_Created;
 	} catch( PDOException $e ) {
 		$Resultat = array(
 			'Status' => 'error',
 			'Title' => $L_Error,
 			'Message' => $L_ERR_CREA_Civility
 			);
+
+		$Message = $L_ERR_CREA_Civility;
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
+			$Message = $L_ERR_DUPL_Civility;
+
 			$Resultat = array(
 				'Status' => 'error',
 				'Title' => $L_Error,
-				'Message' => $L_ERR_DUPL_Civility
+				'Message' => $Message
 				);
 		} else {
+			$Message = $L_ERR_CREA_Civility;
+
 			$Resultat = array(
 				'Status' => 'error',
 				'Title' => $L_Error,
-				'Message' => $L_ERR_CREA_Civility
+				'Message' => $Message
 				);
 		}
 	}
 
 	print( json_encode( $Resultat ) );
 
-	exit();
+	$Security->updateHistory( 'L_ALERT_CVL', $Message, 2 );
 
-	break;
+	exit();
 
 
  case 'CVL_MX':
@@ -1710,36 +1827,42 @@ switch( $Action ) {
 	try {
 		$Civilities->set( $cvl_id, $Last_Name, $First_Name, $Sex, '', '' );
 
+		$Message = $L_Civility_Modified;
+
 		echo json_encode( array(
 			'Status' => 'success',
-			'Message' => $L_Civility_Modified
+			'Message' => $Message
 		) );
-
-		exit();
 	} catch( PDOException $e ) {
+		$Message = $L_ERR_MODI_Civility;
+
 		echo json_encode( array(
 			'Status' => 'error',
-			'Message' => $L_ERR_MODI_Civility
+			'Message' => $Message
 		) );
-
-		exit();
 	} catch( Exception $e ) {
 		if ( $e->getCode() == 1062 ) {
+			$Message = $L_ERR_DUPL_Civility;
+
             echo json_encode( array(
                 'Status' => 'error',
-                'Message' => $L_ERR_DUPL_Civility
+                'Message' => $Message
             ) );
 		} else {
+			$Message = $L_ERR_MODI_Civility;
+
             echo json_encode( array(
                 'Status' => 'error',
-                'Message' => $L_ERR_MODI_Civility
+                'Message' => $Message
             ) );
 		}
-
-		exit();
 	}
 
-	break;
+	$Message = '[' . $cvl_id . '] ' . $Message;
+
+	$Security->updateHistory( 'L_ALERT_CVL', $Message, 3 );
+
+	exit();
 
 
  case 'CVL_DX':
@@ -1755,22 +1878,28 @@ switch( $Action ) {
 	try {
 		$Civilities->delete( $_POST[ 'cvl_id' ] );
 		
+		$Message = $L_Civility_Deleted;
+
         echo json_encode( array(
             'Status' => 'success',
-            'Message' => $L_Civility_Deleted
+            'Message' => $Message
             ) );
-
-        exit();
 	} catch( PDOException $e ) {
+		$Message = $L_ERR_DELE_Civility;
+
         echo json_encode( array(
             'Status' => 'error',
-            'Message' => $L_ERR_DELE_Civility
+            'Message' => $Message
             ) );
 
 		exit();
 	}
 
-	break;
+	$Message = '[' . $cvl_id . '] ' . $Message;
+
+	$Security->updateHistory( 'L_ALERT_CVL', $Message, 4 );
+
+	exit();
 
 
  case 'RST_PWDX':
@@ -1786,22 +1915,36 @@ switch( $Action ) {
 	try {
 		$Authentication->resetPassword( $idn_id );
 
+		$Message = $L_Password_Reseted;
+		$L_Message = 'L_Password_Reseted';
+		$L_Status = LOG_INFO;
+
         echo json_encode( array(
             'Status' => 'success',
-            'Message' => $L_Password_Reseted
+            'Message' => $Message
             ) );
-
-		exit();
 	} catch( PDOException $e ) {
+		$Message = $L_ERR_RST_Password;
+		$L_Message = 'L_ERR_RST_Password';
+		$L_Status = LOG_ERR;
+
         echo json_encode( array(
             'Status' => 'error',
-            'Message' => $L_ERR_RST_Password
+            'Message' => $Message
             ) );
-
-		exit();
 	}
 
-	break;
+	$alert_message = $PageHTML->getTextCode( $L_Message );
+
+	if ( $verbosity_alert == 2 ) {
+		$alert_message .= $Identities->getUserForHistory( $idn_id );
+	} else {
+		$alert_message .= ' [' . $idn_id . ']';
+	}
+
+	$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, $L_Status );
+
+	exit();
 
 
  case 'P':
@@ -1940,9 +2083,31 @@ switch( $Action ) {
 		$Identities->deleteProfiles( $idn_id );
 		
 		if ( $_POST != array() ) {
+			if ( $verbosity_alert == 2 ) {
+				$tmp = $Identities->getCivility( '', $idn_id );
+				$alert_message = $PageHTML->getTextCode( 'L_Association_Terminated' ) . ' [' . $tmp->cvl_first_name . ' ' . $tmp->cvl_last_name . ' => ';
+			} else {
+				$alert_message = $PageHTML->getTextCode( 'L_Association_Terminated' ) . ' [' . $idn_id . ' => ';
+			}
+
+			$Profils = '';
+
 			foreach( $_POST as $Key => $Value ) {
 				$Identities->addProfile( $idn_id, $Key );
+
+				if ( $Profils != '' ) $Profils .= ', ';
+
+				if ( $verbosity_alert == 2 ) {
+					$tmp = $Identities->getProfile( $Key );
+					$Profils .= $tmp->prf_label;
+				} else {
+					$Profils .= $Key;
+				}
 			}
+
+			$alert_message .= $Profils . ']';
+
+			$Security->updateHistory( 'L_ALERT_PRF', $alert_message, 2, LOG_INFO );
 		}
 	} catch( PDOException $e ) {
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
@@ -1970,22 +2135,36 @@ switch( $Action ) {
 	try {
 		$Authentication->resetAttempt( $idn_id );
 
+		$Message = $L_Attempt_Reseted;
+		$L_Message = 'L_Attempt_Reseted';
+		$L_Status = LOG_INFO;
+
         echo json_encode( array(
             'Status' => 'success',
-            'Message' => $L_Attempt_Reseted
+            'Message' => $Message
             ) );
-            
-        exit();
 	} catch( PDOException $e ) {
+		$Message = $L_ERR_RST_Attempt;
+		$L_Message = 'L_ERR_RST_Attempt';
+		$L_Status = LOG_ERR;
+
         echo json_encode( array(
             'Status' => 'error',
-            'Message' => $L_ERR_RST_Attempt
+            'Message' => $Message
             ) );
-
-		exit();
 	}
 
-	break;
+	$alert_message = $PageHTML->getTextCode( $L_Message );
+
+	if ( $verbosity_alert == 2 ) {
+		$alert_message .= $Identities->getUserForHistory( $idn_id );
+	} else {
+		$alert_message .= ' [' . $idn_id . ']';
+	}
+
+	$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, $L_Status );
+
+    exit();
 
 
  case 'RST_EXPX':
@@ -2001,23 +2180,37 @@ switch( $Action ) {
 	try {
 		$Expiration_Date = $Authentication->resetExpirationDate( $idn_id );
 
+		$Message = $L_Expiration_Date_Reseted;
+		$L_Message = 'L_Expiration_Date_Reseted';
+		$L_Status = LOG_INFO;
+
         echo json_encode( array(
             'Status' => 'success',
-            'Message' => $L_Expiration_Date_Reseted,
+            'Message' => $Message,
             'Expiration_Date' => $Expiration_Date
             ) );
-
-        exit();
 	} catch( PDOException $e ) {
+		$Message = $L_ERR_RST_Expiration;
+		$L_Message = 'L_ERR_RST_Expiration';
+		$L_Status = LOG_ERR;
+
         echo json_encode( array(
             'Status' => 'error',
-            'Message' => $L_ERR_RST_Expiration
+            'Message' => $Message
             ) );
-
-		exit();
 	}
 
-	break;
+	$alert_message = $PageHTML->getTextCode( $L_Message );
+
+	if ( $verbosity_alert == 2 ) {
+		$alert_message .= $Identities->getUserForHistory( $idn_id );
+	} else {
+		$alert_message .= ' [' . $idn_id . ']';
+	}
+
+	$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, $L_Status );
+
+	exit();
 
 
  case 'RST_DISX':
@@ -2049,13 +2242,17 @@ switch( $Action ) {
             $Disable_Action = $L_To_Activate_User;
             $Disable_Status = 0;
             $Message = $L_User_Disabled;
+			$L_Message = 'L_User_Disabled';
         } else {
             $Disable_Color = "bg-green";
             $Disable_Msg = $L_No;
             $Disable_Action = $L_To_Deactivate_User;
             $Disable_Status = 1;
             $Message = $L_User_Enabled;
+			$L_Message = 'L_User_Enabled';
         }
+
+		$L_Status = LOG_INFO;
 
         echo json_encode( array(
             'Status' => 'success',
@@ -2065,18 +2262,28 @@ switch( $Action ) {
             'Disable_Action' => $Disable_Action,
             'Disable_Status' => $Disable_Status
         ) );
-
-		exit();
 	} catch( PDOException $e ) {
+		$Message = $L_ERR_RST_Disable;
+		$L_Message = 'L_ERR_RST_Disable';
+		$L_Status = LOG_INFO;
+
         echo json_encode( array(
             'Status' => 'error',
-            'Message' => $L_ERR_RST_Disable
+            'Message' => $Message
         ) );
-
-		exit();
 	}
 
-	break;
+	$alert_message = $PageHTML->getTextCode( $L_Message );
+
+	if ( $verbosity_alert == 2 ) {
+		$alert_message .= $Identities->getUserForHistory( $idn_id );
+	} else {
+		$alert_message .= ' [' . $idn_id . ']';
+	}
+
+	$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, $L_Status );
+
+	exit();
 
 
  case 'PRF_V':
@@ -2232,28 +2439,38 @@ switch( $Action ) {
 				'Message' => $L_ERR_CREA_Profile
 				);
 
+			$Security->updateHistory( 'L_ALERT_PRF', $Message, 2 );
+
 			print( json_encode( $Resultat ) );
 
 			exit();
 		} catch( Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
+				$Message = $L_ERR_DUPL_Profile;
+
 				$Resultat = array(
 					'Status' => 'error',
 					'Title' => $L_Error,
-					'Message' => $L_ERR_DUPL_Profile
+					'Message' => $Message
 					);
 			} else {
+				$Message = $L_ERR_CREA_Profile;
+
 				$Resultat = array(
 					'Status' => 'error',
 					'Title' => $L_Error,
-					'Message' => $L_ERR_CREA_Profile
+					'Message' => $Message
 					);
 			}
+
+			$Security->updateHistory( 'L_ALERT_PRF', $Message, 2 );
 
 			print( json_encode( $Resultat ) );
 
 			exit();
 		}
+
+		$Message = '[' . $Last_ID . '] ' . $L_Profile_Created;
 
 		$Resultat = array(
 			'Status' => 'success',
@@ -2271,6 +2488,7 @@ switch( $Action ) {
 			'L_Delete_Profile_Confirmation' => $L_Delete_Profile_Confirmation
 			);
 
+		$Security->updateHistory( 'L_ALERT_PRF', $Message, 2 );
 	} else {
 		$Resultat = array(
 			'Status' => 'error',
@@ -2282,8 +2500,6 @@ switch( $Action ) {
 	print( json_encode( $Resultat ) );
 
 	exit();
-	
-	break;
 
 
  case 'PRF_M':
@@ -2395,6 +2611,8 @@ switch( $Action ) {
 				'Message' => $Message
 				);
 
+			$Security->updateHistory( 'L_ALERT_PRF', $Message, 3 );
+
 			print( json_encode( $Resultat ) );
 
 			exit();
@@ -2408,6 +2626,8 @@ switch( $Action ) {
 
 		print( json_encode( $Resultat ) );
 
+		$Security->updateHistory( 'L_ALERT_PRF', '[' . $prf_id . '] ' . $L_Profile_Modified, 3 );
+
 		exit();
 	} else {
 		$Resultat = array(
@@ -2417,6 +2637,8 @@ switch( $Action ) {
 			);
 
 		print( json_encode( $Resultat ) );
+
+		$Security->updateHistory( 'L_ALERT_PRF', '[' . $prf_id . '] ' . $L_No_Authorize, 3 );
 
 		exit();
 	}
@@ -2507,6 +2729,8 @@ switch( $Action ) {
 
 			print( json_encode( $Resultat ) );
 
+			$Security->updateHistory( 'L_ALERT_PRF', '[' . $prf_id . '] ' . $L_ERR_DELE_Profile, 4 );
+
 			exit();
 		}
 
@@ -2518,6 +2742,8 @@ switch( $Action ) {
 
 		print( json_encode( $Resultat ) );
 
+		$Security->updateHistory( 'L_ALERT_PRF', '[' . $prf_id . '] ' . $L_Profile_Deleted, 4 );
+
 		exit();
 	} else {
 		$Resultat = array(
@@ -2527,6 +2753,8 @@ switch( $Action ) {
 			);
 
 		print( json_encode( $Resultat ) );
+
+		$Security->updateHistory( 'L_ALERT_PRF', '[' . $prf_id . '] ' . $L_No_Authorize, 4 );
 
 		exit();
 	}
@@ -2696,55 +2924,56 @@ switch( $Action ) {
 		break;
 	}
 
-	$Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
-
 	try {
-		if ( $Verbosity_Alert == 2 ) {
-			$alert_message = 'Groups->deleteProfiles( \'' . $prf_id . '\' )' ;
-		} else {
-			$alert_message = '[' . $prf_id . '] ' . $L_Profiles_Clean ;
-		}
-		
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
-
 		$Groups->deleteProfiles( '', $prf_id );
 		
 		$Store = '';
 		
 		if ( $_POST != array() ) {
+			if ( $verbosity_alert == 2 ) {
+				$tmp = $Identities->getProfile( $prf_id );
+				$alert_message = $PageHTML->getTextCode( 'L_Association_Complited' ) . ' [' . $tmp->prf_label . ' => (';
+			} else {
+				$alert_message = $PageHTML->getTextCode( 'L_Association_Complited' ) . ' [' . $prf_id . ' => ';
+			}
+
 			foreach( $_POST as $Key => $Values ) {
 				$Store_Key = explode( '_', $Key );
 				$Store_Key = $Store_Key[ 1 ];
 
-				foreach( $Values as $Value ) {
-					if ( $Verbosity_Alert == 2 ) {
-						$alert_message = 'Groups->addProfile( \'' . $Store_Key . '\', \'' .
-						 $prf_id . '\', \'' . $Value . '\' )' ;
-					} else {
-						$alert_message = $L_Profiles_Associate . ' [' . $prf_id . ']' .
-						 '[' . $Store_Key . ']' .
-						 '[' . $Value . ']' ;
-					}
-		
-					$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
-
-					$Groups->addProfile( $Store_Key, $prf_id, $Value );
+				if ( $verbosity_alert == 2 ) {
+					$tmp = $Identities->getGroups( $Store_Key );
+					$alert_message .= '(' . $tmp->sgr_label;
+				} else {
+					$alert_message .= '(' . $Store_Key;
 				}
 
+				$alert_message .= ' => ';
+
+				$ListRights = '';
+
+				foreach( $Values as $Value ) {
+					$Groups->addProfile( $Store_Key, $prf_id, $Value );
+
+					if ( $ListRights != '' ) $ListRights .= ', ';
+
+					if ( $verbosity_alert == 2 ) $ListRights .= $PageHTML->getTextCode( 'L_Right_' . $Value );
+					else $ListRights .= $Value;
+				}
+
+				$alert_message .= $ListRights .')';
 			}
+
+			$Security->updateHistory( 'L_ALERT_PRSG', $alert_message . ']', 2, LOG_INFO );
 		}
 	} catch( PDOException $e ) {
-		$alert_message = $L_ERR_ASSO_Identity;
+		$alert_message = $L_ERR_ASSO_Profile;
 		
-		$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
+		$Security->updateHistory( 'L_ALERT_PRSG', $alert_message, 2, LOG_ERR );
 
 		print( $PageHTML->returnPage( $L_Title, $L_ERR_ASSO_Identity, $Return_Page, 1 ) );
 		break;
 	}
-
-	$alert_message = $L_Association_Complited;
-		
-	$Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message );
 
 	print( "<form method=\"post\" name=\"fInfoMessage\" action=\"" . $Return_Page . "\">\n" .
 		" <input type=\"hidden\" name=\"infoMessage\" value=\"". $L_Association_Complited . "\" />\n" .

@@ -103,8 +103,6 @@
 	$L_ERR_DELE_Profile = 'Erreur durant la suppression du profil';
 	$L_ERR_DUPL_Profile = '"Libellé" déjà utilisé';
 	
-	$L_ERR_ASSO_Identity = 'Erreur durant l\'association des profils à l\'identité';
-	
 	$L_Attempt_Exceeded = 'Nombre de tentatives de connexion excédé';
 	$L_User_Disabled = 'Utilisateur désactivé';
 	$L_User_Enabled = 'Utilisateur activé';

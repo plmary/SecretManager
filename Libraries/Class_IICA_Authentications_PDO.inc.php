@@ -54,13 +54,13 @@ class IICA_Authentications extends IICA_Parameters {
 	* @param[out] $_SESSION['idn_updated_authentication'] Date de mise à jour du mot de passe
 	* @param[out] $_SESSION['idn_last_connection'] Date de dernière connexion
 	* @param[out] $_SESSION['idn_super_admin'] Flag sur le droit Super Administrateur
-	* @param[out] $_SESSION['idn_auditor'] Flag sur le droit Auditeur
 	* @param[out] $_SESSION['cvl_last_name'] Nom usuel de l'utilisateur
 	* @param[out] $_SESSION['cvl_first_name'] Prénom de l'utilisateur
 	* @param[out] $_SESSION['cvl_sex'] Sexe de l'utilisateur
 	* @param[out] $_SESSION['ent_code'] Code de l'entité d'appartenance de l'utilisateur
 	* @param[out] $_SESSION['ent_label'] Libellé de l'entité d'appartenance de l'utilisateur
 	* @param[out] $_SESSION['Expired'] Temps d'expiration
+	* @param[out] $_SESSION['user_ip'] IP de l'utilisateur (client)
 	* @exception Exception Exception standard. Le message retourné étant applicatif dans la majorité des cas
 	*
 	* @return Renvoi vrai en cas de succès ou génère une exception en cas d'erreur.
@@ -285,6 +285,7 @@ class IICA_Authentications extends IICA_Parameters {
 
 		$_SESSION[ 'ent_code' ] = $Security->XSS_Protection( $Occurrence->ent_code );
 		$_SESSION[ 'ent_label' ] = $Security->XSS_Protection( $Occurrence->ent_label );
+		$_SESSION[ 'user_ip' ] = $_SERVER[ 'REMOTE_ADDR' ];
 
 		$this->saveTimeSession();
 

@@ -10,9 +10,11 @@
 * @version 1.2
 */
 	$L_Subtitle = "Outil de partage des mots de passe";
+
 	$L_Langue_en = "Anglais";
 	$L_Langue_fr = "Français";
 	$L_Langue_de = "Allemand";
+	
 	$L_No_Authorize = "Vous n'êtes pas habilité pour cet écran";
 	$L_Default = 'Défaut';
 	$L_Actions = "Actions";
@@ -102,6 +104,22 @@
 
 	$L_Total = 'Total';
 
+	$L_Object = 'Objet';
+	$L_Level = 'Niveau';
+	$L_Gravity_Level = 'Niveau de gravité';
+
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;
+
+	$LOG_0 = 'Système inutilisable';
+	$LOG_1 = 'Une décision doit être prise immédiatement';
+	$LOG_2 = 'Condition critique';
+	$LOG_3 = 'Condition d\'erreur';
+	$LOG_4 = 'Condition d\'alerte';
+	$LOG_5 = 'Condition normale, mais significative';
+	$LOG_6 = 'Message d\'information';
+	$LOG_7 = 'Message de déboguage';
+
+	$L_Since = 'Depuis';
+	$L_Before = 'Avant';
 ?>

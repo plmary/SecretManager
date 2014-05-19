@@ -71,7 +71,6 @@ if ( ! $PageHTML->is_administrator() ) {
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
-include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-backup.php' );
@@ -111,6 +110,7 @@ $MyApplications = new MyApplications();
 $List_Rights = $Referentials->listRights();
 $List_Types = $Referentials->listSecretTypes();
 $List_Environments = $Referentials->listEnvironments();
+$List_Actions = $Referentials->listActions();
 $List_Applications = $MyApplications->listApplications();
 
 
@@ -164,6 +164,19 @@ if ( ! preg_match("/X$/i", $Action ) ) {
      "   <div id=\"zoneMilieuComplet\"> <!-- debut : zoneMilieuComplet -->\n" .
      "   <div id=\"dashboard\"> <!-- debut : dashboard -->\n" .
      "\n" );
+
+	if ( isset( $_POST[ 'iMessage']) ) {
+		print( "<script>\n" .
+		 "     var myVar=setInterval(function(){cacherInfo()},3000);\n" .
+		 "     function cacherInfo() {\n" .
+		 "        document.getElementById(\"success\").style.display = \"none\";\n" .
+		 "        clearInterval(myVar);\n" .
+		 "     }\n" .
+		 "</script>\n" .
+		 "    <div id=\"success\">\n" .
+		 urldecode( $_POST[ 'iMessage' ] ) .
+		 "    </div>\n" );
+	}
 }
 
 
@@ -408,7 +421,7 @@ switch( $Action ) {
 	print( "     </div>\n" .
 		 "     <!-- Fin : affichage de la synthèse du SecretServer -->\n\n" );
 
-	// ===========================================
+	// =====================================================
 	// Tableau de gestion des sauvegardes du SecretManager.
     $Backup_Secrets_Date = $PageHTML->getParameter( 'Backup_Secrets_Date' );
     $Backup_Total_Date = $PageHTML->getParameter( 'Backup_Total_Date' );
@@ -463,7 +476,7 @@ switch( $Action ) {
  // Gestion de l'Historique
  case 'H':
     $List_Identities = $Identities->listIdentities();
-    
+
     if ( array_key_exists( 'scr_id', $_POST ) ) {
         $scr_id = $_POST[ 'scr_id' ];
     } else {
@@ -476,16 +489,40 @@ switch( $Action ) {
         $idn_id = '';
     }
     
-    if ( array_key_exists( 'h_date', $_POST ) ) {
-        $h_date = $_POST[ 'h_date' ];
+    if ( array_key_exists( 'since_date', $_POST ) ) {
+        $since_date = $_POST[ 'since_date' ];
     } else {
-        $h_date = '';
+        $since_date = '';
+    }
+    
+    if ( array_key_exists( 'before_date', $_POST ) ) {
+        $before_date = $_POST[ 'before_date' ];
+    } else {
+        $before_date = '';
     }
     
     if ( array_key_exists( 'ip_source', $_POST ) ) {
         $ip_source = $_POST[ 'ip_source' ];
     } else {
         $ip_source = '';
+    }
+    
+    if ( array_key_exists( 'hac_id', $_POST ) ) {
+        $hac_id = $_POST[ 'hac_id' ];
+    } else {
+        $hac_id = '';
+    }
+    
+    if ( array_key_exists( 'rgh_id', $_POST ) ) {
+        $rgh_id = $_POST[ 'rgh_id' ];
+    } else {
+        $rgh_id = '';
+    }
+
+    if ( array_key_exists( 'level', $_POST ) ) {
+        $level = $_POST[ 'level' ];
+    } else {
+        $level = '';
     }
 
     if ( array_key_exists( 'message', $_POST ) ) {
@@ -514,22 +551,25 @@ switch( $Action ) {
      "      <table class=\"table-bordered\" style=\"margin:10px auto;width:98%\">\n" .
      "       <thead>\n" .
      "       <tr>\n" .
-     "        <th colspan=\"6\">" . $L_Historical_Management . "</th>\n" .
+     "        <th colspan=\"8\">" . $L_Historical_Management . "</th>\n" .
      "       </tr>\n" .
      "       </thead>\n" .
 
      "       <tbody>\n" .
      "       <tr>\n" .
-     "        <th>" . $L_Secret . "</th>\n" .
+     "        <th>" . $L_IP_Source . "</th>\n" .
      "        <th>" . $L_Identity . "</th>\n" .
      "        <th>" . $L_Date . "</th>\n" .
-     "        <th>" . $L_IP_Source . "</th>\n" .
+     "        <th>" . $L_Object . "</th>\n" .
+     "        <th>" . $L_Rights . "</th>\n" .
+     "        <th>" . $L_Secret . "</th>\n" .
+     "        <th>" . $L_Level . "</th>\n" .
      "        <th>" . $L_Message . "</th>\n" .
      "        <th class=\"align-right\"><a id=\"search_icon\" class=\"simple-selected\" style=\"cursor: pointer;\" onclick=\"javascript:hiddeRow();\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_search.png\" alt=\"" . $L_Search . "\" title=\"" . $L_Search . "\"></a></th>\n" .
      "       </tr>\n" .
-     "       <tr style=\"display: none;\" id=\"r_search\" class=\"pair\">\n" .
-     "        <td><input type=\"text\" name=\"scr_id\" class=\"input-mini\" " .
-     "value=\"" .  $scr_id . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" );
+     "       <tr style=\"display: none;\" id=\"r_search\">\n" .
+     "        <td><input type=\"text\" name=\"ip_source\" class=\"input-small\" " .
+     "maxlength=\"40\" value=\"" . $ip_source . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" );
      
     print( "        <td>\n" .
      "         <select name=\"idn_id\" class=\"input-small\" onChange=\"document.getElementById( 'i_historical' ).submit();\">\n" .
@@ -547,19 +587,74 @@ switch( $Action ) {
     }
     
     print( "         </select>\n" .
-     "        </td>\n" );
+     "        </td>\n" .    
+     "        <td>" .
+     "<input type=\"text\" name=\"since_date\" class=\"input-small\" " .
+     "value=\"" . $since_date . "\" placeholder=\"" . $L_Since . "\" />" .
+     "<input type=\"text\" name=\"before_date\" class=\"input-small\" " .
+     "value=\"" . $before_date . "\" placeholder=\"" . $L_Before . "\" /></td>\n" .
+     "        <td>\n" .
+     "         <select name=\"hac_id\" class=\"input-small\" onChange=\"document.getElementById( 'i_historical' ).submit();\">\n" .
+     "          <option value=\"\">&nbsp;</option>\n" );
+
+    foreach( $List_Actions as $Occurrence ) {
+        if ( $Occurrence->hac_id == $hac_id ) {
+            $Selected = ' selected';
+        } else {
+            $Selected = '';
+        }
+        
+        print( "          <option value=\"" . $Occurrence->hac_id . "\"" . 
+         $Selected . ">" . ${$Occurrence->hac_name} . "</option>\n" );
+    }
     
-    print( "        <td><input type=\"text\" name=\"h_date\" class=\"input-small\" " .
-     "value=\"" . $h_date . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
-     "        <td><input type=\"text\" name=\"ip_source\" class=\"input-small\" " .
-     "maxlength=\"40\" value=\"" . $ip_source . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
-     "        <td class=\"align-middle\"><input type=\"text\" class=\"input-xlarge\" name=\"message\" " .
+    print( "         </select>\n" .
+     "        </td>\n" .
+     "        <td>\n" .
+     "         <select name=\"rgh_id\" class=\"input-small\" onChange=\"document.getElementById( 'i_historical' ).submit();\">\n" .
+     "          <option value=\"\">&nbsp;</option>\n" );
+
+    foreach( $List_Rights as $Occurrence ) {
+        if ( $Occurrence->rgh_id == $rgh_id ) {
+            $Selected = ' selected';
+        } else {
+            $Selected = '';
+        }
+        
+        print( "          <option value=\"" . $Occurrence->rgh_id . "\"" . 
+         $Selected . ">" . ${$Occurrence->rgh_name} . "</option>\n" );
+    }
+    
+    print( "         </select>\n" .
+     "        </td>\n" .
+     "        <td><input type=\"text\" name=\"scr_id\" class=\"input-mini\" " .
+     "value=\"" .  $scr_id . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
+     "        <td>\n" .
+     "         <select name=\"level\" class=\"input-small\" onChange=\"document.getElementById( 'i_historical' ).submit();\">\n" .
+     "          <option value=\"\">&nbsp;</option>\n" );
+
+    for( $i=0; $i <= 7; $i++) {
+	    if ( $i === $level ) {
+	        $Selected = ' selected';
+	    } else {
+	        $Selected = '';
+	    }
+
+		$Tmp = 'LOG_'.$i;
+
+	    print( "          <option value=\"" . $i . "\"" . 
+    		$Selected . ">" . ${$Tmp} . "</option>\n" );
+	}    
+    
+    print( "         </select>\n" .
+     "        </td>\n" .
+     "        <td><input type=\"text\" class=\"input-xlarge\" name=\"message\" " .
      "value=\"" . $message . "\" onChange=\"document.getElementById( 'i_historical' ).submit();\" /></td>\n" .
      "        <td><input type=\"submit\" class=\"button\" value=\"". $L_Search . "\" /></td>\n" .
      "       </tr>\n" );
 
-    $Tmp = $Secrets->totalHistoryEvents( $scr_id, $idn_id, $h_date, $message,
-     $ip_source );
+    $Tmp = $Secrets->totalHistoryEvents( $scr_id, $idn_id, $since_date, $before_date, $message,
+     $ip_source, $hac_id, $rgh_id, $level );
     
     $Total = $Tmp->total ;
     $First_Date = $Tmp->first_date;
@@ -585,8 +680,8 @@ switch( $Action ) {
         $next = 10;
     }
     
-    $Occurrences = $Secrets->listHistoryEvents( $scr_id, $idn_id, $h_date, $message,
-     $ip_source, $start, $size );
+    $Occurrences = $Secrets->listHistoryEvents( $scr_id, $idn_id, $since_date, $before_date, $message,
+     $ip_source, $hac_id, $rgh_id, $level, $start, $size );
             
     $BG_Color = 'pair';
      
@@ -596,12 +691,26 @@ switch( $Action ) {
         } else {
             $BG_Color = 'pair';
         }
+
+        if ( $Occurrence->scr_id == 0 ) $Occurrence->scr_id = '';
+
+        if ( $Occurrence->hac_name != '' ) $H_Action = ${$Occurrence->hac_name};
+        else $H_Action = '';
         
+        if ( $Occurrence->rgh_name != '' ) $H_Right = ${$Occurrence->rgh_name};
+        else $H_Right = '';
+
+        if ( $Occurrence->ach_gravity_level != '' ) $L_Level = $PageHTML->getTextCode( 'LOG_' . $Occurrence->ach_gravity_level, $_SESSION[ 'Language'] );
+        else $L_Level = '';
+
         print( "       <tr class=\"" . $BG_Color . "\">\n" .
-         "        <td>" . $Occurrence->scr_id . "</td>\n" .
+         "        <td>" . $Occurrence->ach_ip . "</td>\n" .
          "        <td>" . $Occurrence->idn_login . "</td>\n" .
          "        <td>" . $Occurrence->ach_date . "</td>\n" .
-         "        <td>" . $Occurrence->ach_ip . "</td>\n" .
+         "        <td>" . $H_Action . "</td>\n" .
+         "        <td>" . $H_Right . "</td>\n" .
+         "        <td>" . $Occurrence->scr_id . "</td>\n" .
+         "        <td>" . $L_Level . "</td>\n" .
          "        <td colspan=\"2\">" . $Occurrence->ach_access . "</td>\n" .
          "       </tr>\n" );
     }
@@ -614,7 +723,7 @@ switch( $Action ) {
      "       <tfoot>\n" .
      "       <tr>\n" .
      "        <th colspan=\"2\">Total : <span class=\"green\">" . $Total . "</span></th>\n" .
-     "        <th colspan=\"4\" class=\"align-center\">\n" .
+     "        <th colspan=\"6\" class=\"align-center\">\n" .
      "<a class=\"btn\" href=\"" . $Script . "?action=H&start=0&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_premier.gif\" alt=\"First\" /></a>" .
      "<a class=\"btn\" href=\"?action=H&start=" . $previous . "&size=" . $size . "\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_precedent.gif\" alt=\"Previous\" /></a>" .
      "&nbsp;" . ($start + 1) . "&nbsp;/&nbsp;" . ($start + $size) . "&nbsp;" .
@@ -738,11 +847,12 @@ switch( $Action ) {
      "       </tr>\n" .
      "       <tr>\n" .
      "        <td>&nbsp;</td>\n" .
-     "        <td><input type=\"submit\" class=\"button\" value=\"" . $L_Purge .
-     "\" /><a class=\"button\" href=\"" . $Script . "\">" . $L_Cancel .
+     "        <td><input type=\"submit\" class=\"button\" id=\"iPurgeButton\" value=\"" . $L_Purge .
+     "\" /><a class=\"button\" href=\"" . $Script . "?action=H\">" . $L_Cancel .
      "</a></td>\n" .
      "       </tr>\n" .
      "      </table>\n" .
+     "      <script>$('#iPurgeButton').focus();</script>" .
      "     </form>\n" );
     
     break;
@@ -760,24 +870,21 @@ switch( $Action ) {
     try {
         $Secrets->purgeHistoryEvents( $purge_date );
     } catch( Exception $e ) {
-        $alert_message = $Secrets->formatHistoryMessage( $e->getMessage() );
+        $alert_message = $e->getMessage();
 
-        $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message,
-         $IP_Source );
+        $Security->updateHistory( 'L_ALERT_HST', $alert_message, 4, LOG_ERR );
         
         print( $PageHTML->infoBox( $e->getMessage(), $Script . '?action=H', 1 ) );
 
         exit();
     }
 
-    $Message = sprintf( $L_Success_Purge, $purge_date );
-    
-    $alert_message = $Secrets->formatHistoryMessage( $Message );
+    $alert_message = sprintf( $PageHTML->getTextCode( 'L_Success_Purge', $PageHTML->getParameter( 'language_alert' ) ), $purge_date );
 
-    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    $Security->updateHistory( 'L_ALERT_HST', $alert_message, 4 );
 
     print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=H\">\n" .
-        " <input type=\"hidden\" name=\"iMessage\" value=\"" . htmlentities( $Message ) . "\" />\n" .
+        " <input type=\"hidden\" name=\"iMessage\" value=\"" . urlencode( $alert_message ) . "\" />\n" .
         "</form>\n" .
         "<script>document.fMessage.submit();</script>" );
     
@@ -992,25 +1099,31 @@ switch( $Action ) {
         
         if ( isset( ${$Result[0]} ) ) {
             $Message = ${$Result[0]};
+            $L_Message = $Result[0];
             $Operator = $Result[1];
             $Date = $Result[2];
+            $L_Level = LOG_INFO;
         } else {
             $Message = '';
             $Operator = '';
             $Date = '';
+            $L_Message = $Result[0];
+            $L_Level = LOG_ERR;
         }
         
         $Status = 'success';
     } catch( Exception $e ) {
         $Result = $Message = ${$e->getMessage()};
+        $L_Message = $e->getMessage();
         $Status = 'error';
         $Operator = '';
         $Date = '';
+        $L_Level = LOG_ERR;
     }
 
-    $alert_message = $Secrets->formatHistoryMessage( $Result[0] );
+    $alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter( 'language_alert' ) );
 
-    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    $Security->updateHistory( 'L_ALERT_MK', $alert_message, 1, $L_Level );
         
     echo json_encode( array( 'Message' => $Message, 'Status' => $Status,
         'Operator' => $Operator, 'Date' => $Date ) );
@@ -1027,11 +1140,19 @@ switch( $Action ) {
     try {
         $Status = $Secret_Server->SS_transcryptMotherKey( $_POST[ 'Operator_Key' ] );
         $Message = ${$Status[1]};
+        $L_Message = $Status[1];
+        $L_Level = LOG_INFO;
         
         echo json_encode( array( 'Status' => 'success', 'Message' => $Message ) );
     } catch( Exception $e ) {
-        echo json_encode( array( 'Status' => 'error', 'Message' => ${$e->getMessage()} ) );
+    	$Message = ${$e->getMessage()};
+    	$L_Message = $e->getMessage();
+    	$L_Level = LOG_ERR;
+
+        echo json_encode( array( 'Status' => 'error', 'Message' => $Message ) );
     }
+
+    $Security->updateHistory( 'L_ALERT_MK', $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter( 'language_alert' ) ), 3, $L_Level );
     
     exit();
 
@@ -1077,15 +1198,19 @@ switch( $Action ) {
         
         $Status = 'success';
         $Result = $L_New_Keys_Created;
+        $L_Message = 'L_New_Keys_Created';
+        $L_Level = LOG_INFO;
     } catch( Exception $e ) {
         $Status = 'error';
         $Result = ${$e->getMessage()};
         $Message = $Result;
+        $L_Message = $e->getMessage();
+        $L_Level = LOG_ERR;
     }
 
-    $alert_message = $Secrets->formatHistoryMessage( $Result );
+    $alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') );
 
-    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    $Security->updateHistory( 'L_ALERT_MK', $alert_message, 3, $L_Level );
     
     echo json_encode( array( 'Status' => $Status, 'Message' => $Message, 'L_Close' => $L_Close,
         'L_Print' => $L_Print ) );
@@ -1132,15 +1257,19 @@ switch( $Action ) {
         
         $Status = 'success';
         $Result = $L_New_Keys_Created;
+        $L_Message = 'L_New_Keys_Created';
+        $L_Level = LOG_INFO;
     } catch( Exception $e ) {
         $Status = 'error';
         $Result = ${$e->getMessage()};
         $Message = $Result;
+        $L_Message = $e->getMessage();
+        $L_Level = LOG_ERR;
     }
 
-    $alert_message = $Secrets->formatHistoryMessage( $Result );
+    $alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') );
 
-    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    $Security->updateHistory( 'L_ALERT_MK', $alert_message, 2, $L_Level );
     
     echo json_encode( array( 'Status' => $Status, 'Message' => $Message, 'L_Close' => $L_Close,
         'L_Print' => $L_Print ) );
@@ -1155,14 +1284,14 @@ switch( $Action ) {
         $Result = $Secret_Server->SS_Shutdown();
         $Result = 'SecretServer ' . $Result;
         $Status = 'success';
+        $L_Level = LOG_INFO;
     } catch( Exception $e ) {
         $Result = ${$e->getMessage()};
         $Status = 'error';
+        $L_Level = LOG_ERR;
     }
 
-    $alert_message = $Secrets->formatHistoryMessage( $Result );
-
-    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    $Security->updateHistory( 'L_ALERT_SS', $Result, '', $L_Level );
 
     echo json_encode( array( 'Status' => $Status, 'Message' => $Result ) );
 
@@ -1264,17 +1393,21 @@ case 'STOR_SX':
     try {
         $Date_Backup = $Backup->backup_secrets();
         $Result = $L_Backup_Secrets_Successful;
+        $L_Message = 'L_Backup_Secrets_Successful';
+        $L_Level = LOG_INFO;
         $Status = 'success';
     } catch( Exception $e ) {
         $Result = $e->getMessage();
+        $L_Message = $e->getMessage();
+        $L_Level = LOG_ERR;
         $Status = 'error';
     }
 
-    $PageHTML->setParameter( 'Backup_Secrets_Date', $Date_Backup );
+    if ( $Date_Backup != '' ) $PageHTML->setParameter( 'Backup_Secrets_Date', $Date_Backup );
 
-    $alert_message = $Secrets->formatHistoryMessage( $Result );
+    $alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') ) . ' [' . $Date_Backup . ']';
 
-    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    $Security->updateHistory( 'L_ALERT_BCK', $alert_message, 3, $L_Level );
 
 	$Save_Date_1 = str_replace( ' ', '_', $Date_Backup );
 	$Save_Date_1 = str_replace( ':', '.', $Save_Date_1 );
@@ -1293,17 +1426,22 @@ case 'STOR_TX':
     try {
         $Date_Backup = $Backup->backup_total();
         $Result = $L_Backup_Total_Successful;
+        $L_Message = 'L_Backup_Total_Successful';
+        $L_Level = LOG_INFO;
         $Status = 'success';
     } catch( Exception $e ) {
+    	$Date_Backup = '';
         $Result = $e->getMessage();
+        $L_Message = $e->getMessage();
+        $L_Level = LOG_ERR;
         $Status = 'error';
     }
 
-    $PageHTML->setParameter( 'Backup_Total_Date', $Date_Backup );
+    if ( $Date_Backup != '' ) $PageHTML->setParameter( 'Backup_Total_Date', $Date_Backup );
 
-    $alert_message = $Secrets->formatHistoryMessage( $Result );
+    $alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') ) . ' [' . $Date_Backup . ']';
 
-    $Secrets->updateHistory( '', $_SESSION[ 'idn_id' ], $alert_message, $IP_Source );
+    $Security->updateHistory( 'L_ALERT_BCK', $alert_message, 2, $L_Level );
 
 	$Save_Date_1 = str_replace( ' ', '_', $Date_Backup );
 	$Save_Date_1 = str_replace( ':', '.', $Save_Date_1 );
@@ -1358,6 +1496,8 @@ case 'STOR_TX':
     $Files = scandir( DIR_BACKUP );
 
     $List = '';
+
+ 	$Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
     
     
     if ( isset( $_POST['Type'] ) ) {
@@ -1375,21 +1515,33 @@ case 'STOR_TX':
         $t_Filename = split( '_', $File );
         if ( $t_Filename[0] != $Prefix ) continue;
 
-        if ( $t_Filename[1] . '_' . $t_Filename[2] < $_POST['Restore_Date'] ) {
+        if ( $t_Filename[1] . '_' . $t_Filename[2] <= $_POST['Restore_Date'] ) {
             $Filename = DIR_BACKUP . '/' . $Prefix . '_' . $t_Filename[1] . '_' . $t_Filename[2] . '.xml';
             
             if ( ! unlink( $Filename ) ) {
                 echo json_encode( array(
                     'status' => 'error',
-                    'message' => $L_Restore_File_Not_Deleted . ' "' . $Filename .'"'
+                    'message' => $alert_message
                 ) );
                 
+			    $alert_message = $PageHTML->getTextCode( 'L_Restore_File_Not_Deleted', $PageHTML->getParameter('language_alert') );
+
+			    if ( $Verbosity_Alert == 2 ) $alert_message .= ' : "' . $Filename .'"';
+
+			    $Security->updateHistory( 'L_ALERT_RSTR', $alert_message, 4, LOG_ERR );
+
                 exit();
             }
             
             if ( $List != '' ) $List .= ',';
             
             $List .= $t_Filename[1] . '_' . $t_Filename[2];
+
+			$alert_message = $PageHTML->getTextCode( 'L_File_Deleted', $PageHTML->getParameter('language_alert') );
+
+			if ( $Verbosity_Alert == 2 ) $alert_message .= ' : "' . $Filename . '"';
+
+		    $Security->updateHistory( 'L_ALERT_RSTR', $alert_message, 4, LOG_INFO );
         }
     }
 
@@ -1405,7 +1557,6 @@ case 'STOR_TX':
  case 'LOAD_BACKUP_X':
  	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
     include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
-//    include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 	include( DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php' );
 	
 
@@ -1414,7 +1565,9 @@ case 'STOR_TX':
 
     $Backup = new Backup();
     
- 	$FileName = 'Backup/' . $_POST[ 'File_Name' ];
+ 	$FileName = DIR_BACKUP . '/' . $_POST[ 'File_Name' ];
+
+ 	$Verbosity_Alert = $PageHTML->getParameter( 'verbosity_alert' );
 
  	if ( ! file_exists( $FileName ) ) {
         echo json_encode( array(
@@ -1422,22 +1575,36 @@ case 'STOR_TX':
             'message' => $L_File_Not_exists . ' "' . $FileName .'"'
         ) );
         
+		$alert_message = $PageHTML->getTextCode( 'L_File_Not_exists', $PageHTML->getParameter('language_alert') );
+
+		if ( $Verbosity_Alert == 2 ) $alert_message .= ' : "' . $FileName . '"';
+
+		$Security->updateHistory( 'L_ALERT_RSTR', $alert_message, 2, $L_Level );
+
         exit();
  	}
 
     try {
     	// Lance la restauration et récupère la clé mère contenue dans ce fichier.
-        $Mother_Key = $Backup->restore_backup( $FileName, $_POST['Operator_Key'] );
+        list( $Mother_Key, $Store_Date ) = $Backup->restore_backup( $FileName, $_POST['Operator_Key'] );
 
 		$Secret_Server->SS_saveExternalMotherKey( $_POST['Operator_Key'], $Mother_Key );
 
         $Result = $L_Retore_File_Success;
+        $L_Message = 'L_Retore_File_Success';
         $Status = 'success';
+        $L_Level = LOG_INFO;
     } catch( Exception $e ) {
         $Result = $e->getMessage();
+        $L_Message = $e->getMessage();
         $Status = 'error';
+        $L_Level = LOG_ERR;
     }
  	
+	$alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') );
+	if ( $Verbosity_Alert == 2 ) $alert_message .= ' "' . $FileName . '"';
+
+	$Security->updateHistory( 'L_ALERT_RSTR', $alert_message . ' : [' . $Store_Date . ']', 2, $L_Level );
 
     echo json_encode( array(
         'status' => $Status,

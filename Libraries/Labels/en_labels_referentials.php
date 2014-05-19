@@ -19,7 +19,23 @@
 	$_Password_Complexity_3 = 'Minimum one uppercase, one lowercase, one number and one punctuation character';
 	$_Password_Complexity_4 = 'Minimum one uppercase, one lowercase, one number, one punctuation character and one accented character';
 
-	$L_Access_History_1 = 'Connection';
-	$L_Access_History_2 = 'Disconnection';
+	$L_ALERT_CNX = 'Connection';
+	$L_ALERT_DCNX = 'Disconnection';
+
+	$L_ALERT_APP = 'Software';
+	$L_ALERT_CVL = 'Civility';
+	$L_ALERT_ENT = 'Entity';
+	$L_ALERT_IDN = 'Identity';
+	$L_ALERT_IDPR = 'Relashion beetwen Identity and Profile';
+	$L_ALERT_PRF = 'Profile';
+	$L_ALERT_PRSG = 'Relashion beetwen Profile and Secrets Group';
+	$L_ALERT_SCR = 'Secret';
+	$L_ALERT_SGR = 'Secrets Group';
+	$L_ALERT_SPR = 'System Parameter';
+	$L_ALERT_HST = 'History';
+	$L_ALERT_MK = 'Mother Key';
+	$L_ALERT_SS = 'SecretServer';
+	$L_ALERT_BCK = 'Save';
+	$L_ALERT_RSTR = 'Restore';
 
 ?>

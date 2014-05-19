@@ -45,6 +45,7 @@
 	$L_ERR_DELE_Group = 'Erreur durant la suppression du Groupe de Secrets';
 	$L_ERR_DUPL_Group = 'Le "libellé" du Groupe de Secrets est déjà utilisé';
 	
+	$L_Secret_Viewed = 'Secret visualisé' ;
 	$L_Secret_Created = 'Secret créé' ;
 	$L_Secret_Modified = 'Secret modifié' ;
 	$L_Secret_Deleted = 'Secret supprimé' ;

@@ -4,6 +4,8 @@ include_once( 'Constants.inc.php' );
 
 include_once( IICA_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
 
+include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
+      
 // =============================
 class IICA_Groups extends IICA_DB_Connector {
 /**
@@ -225,8 +227,6 @@ class IICA_Groups extends IICA_DB_Connector {
 	** Supprime un Groupe.
 	*/
 	public function delete( $sgr_id ) {
-      include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
-      
 		/*
 		** Démarre la transaction.
 		*/
@@ -522,6 +522,28 @@ class IICA_Groups extends IICA_DB_Connector {
 		return $Occurrence->total;
 	}
 
+
+
+	/* -------------------
+	** Formate une chaine descriptive du Groupe accédé pour le tracer dans l'historique.
+	*/
+	public function getGroupForHistory( $sgr_id, $oGroup = '' ) {
+		if ( $sgr_id == '' ) return '';
+
+		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');
+
+		$pHTML = new HTML();
+
+    	// Récupère les dernières informations du Secret qui vient d'être modifié.
+    	if ( $oGroup == '' ) $oGroup = $this->get( $sgr_id );
+
+    	// Récupère les libellés pour le message
+    	$Labels = $pHTML->getTextCode( array( 'L_Group', 'L_Alert' ) );
+
+    	return ' (' . $Labels['L_Group'] . ':"' . $oGroup->sgr_label . '", ' .
+    		$Labels['L_Alert'] . ':"' . $oGroup->sgr_alert . '")';
+	}
+
 } // Fin class IICA_Groups
 
 
@@ -564,15 +586,13 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
-		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
-
-		include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+		include_once( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 		
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+
 		$Security = new Security();
 
-		$Parameters = new IICA_Parameters( 
-		 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );
+		$Parameters = new IICA_Parameters();
 
 		$Secret_Server = new Secret_Server();
 
@@ -1165,13 +1185,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 	** Récupère les informations d'un Secret.
 	*/
 	public function get( $scr_id ) {
-		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
-
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-		include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
-
-		
-		$Security = new Security();
+		include_once( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 
 		$Parameters = new IICA_Parameters();
 
@@ -1222,7 +1237,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 				throw new Exception( $Error, 0 );
 			}
 		} else {
-			$Occurrence->scr_password = $Security->mc_decrypt( $Occurrence->scr_password );
+			$Occurrence->scr_password = $Secret_Server->mc_decrypt( $Occurrence->scr_password );
 		}
 		
 		return $Occurrence;
@@ -1293,82 +1308,18 @@ class IICA_Secrets extends IICA_DB_Connector {
 		return $Occurrence->total;
 	}
 
-	
-	/* -----------------------------
-	** Formate le message à remonter dans l'historique.
-	*/
-	public function formatHistoryMessage( $action, $id_object = '', $type = '',
-	 $environment = '', $application = '', $host = '', $user = '' ) {
-		$Separator = '|';
-		if ( array_key_exists( 'idn_login', $_SESSION ) ) {
-			$idn_login = $_SESSION[ 'idn_login' ];
-		} else {
-			$idn_login = '';
-		}
-		
-		return $idn_login . $Separator . $_SERVER[ 'REMOTE_ADDR' ] . $Separator . $action .
-		 $Separator . $id_object . $Separator . $type . $Separator . $environment .
-		 $Separator . $application . $Separator . $host . $Separator . $user;
-	}	
-
-	
-	/* -----------------------------
-	** Met à jour l'historique des actions sur les secrets.
-	*/
-	public function updateHistory( $scr_id, $idn_id, $ach_access = '',
-	 $ip_address = '' ) {
-		if ( ! $Result = $this->prepare( 'INSERT INTO ach_access_history ' .
-			'( scr_id, idn_id, ach_date, ach_access, ach_ip ) ' .
-			'VALUES ( :scr_id, :idn_id, :ach_date, :ach_access, :ip_address )' ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':scr_id', $scr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		
-		$ach_date = date( "Y-m-d H:i:s" );
-		if ( ! $Result->bindParam( ':ach_date', $ach_date, PDO::PARAM_STR, 19 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->bindParam( ':ach_access', $ach_access, PDO::PARAM_STR, 300 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->bindParam( ':ip_address', $ip_address, PDO::PARAM_STR, 40 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		return true;
-	}
-
 
 	/* -------------------
 	** Lister les événements de l'historique.
 	*/
-	public function listHistoryEvents( $scr_id = '', $idn_id = '', $ach_date = '',
-	 $ach_access = '', $ach_ip = '', $start = 0, $number = 10 ) {
+	public function listHistoryEvents( $scr_id = '', $idn_id = '', $since_date = '', $before_date = '',
+	 $ach_access = '', $ach_ip = '', $hac_id = '', $rgh_id = '', $ach_gravity_level = '', $start = 0, $number = 10 ) {
 		$Request = 'SELECT ' .
-		 'scr_id, idn_login, ach_date, ach_access, ach_ip ' .
+		 'scr_id, idn_login, ach_date, ach_access, ach_ip, hac_name, rgh_name, ach_gravity_level ' .
 		 'FROM ach_access_history as T1 ' .
-		 'LEFT JOIN idn_identities as T2 ON T1.idn_id = T2.idn_id ' ;
+		 'LEFT JOIN idn_identities as T2 ON T1.idn_id = T2.idn_id ' .
+		 'LEFT JOIN hac_history_actions_codes as T3 ON T1.hac_id = T3.hac_id ' .
+		 'LEFT JOIN rgh_rights as T4 ON T1.rgh_id = T4.rgh_id ' ;
 		
 		if ( $scr_id != '' ) {
 			$Where = 'WHERE scr_id = ' . $scr_id . ' ';
@@ -1383,11 +1334,19 @@ class IICA_Secrets extends IICA_DB_Connector {
 			$Where .= 'T1.idn_id = ' . $idn_id . ' ';
 		}
 		
-		if ( $ach_date != '' ) {
+		if ( $since_date != '' ) {
 			if ( $Where == '' ) $Where = 'WHERE ';
 			else $Where .= 'AND ';
 			
-			$Where .= 'ach_date like "' . $ach_date . '%" ';
+			$Where .= 'ach_date >= "' . $since_date . '%" ';
+		}
+
+		
+		if ( $before_date != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'ach_date <= "' . $before_date . '%" ';
 		}
 		
 		if ( $ach_access != '' ) {
@@ -1403,6 +1362,28 @@ class IICA_Secrets extends IICA_DB_Connector {
 			
 			$Where .= 'ach_ip like "%' . $ach_ip . '%" ';
 		}
+		
+		if ( $hac_id != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'T1.hac_id = ' . $hac_id . ' ';
+		}
+		
+		if ( $rgh_id != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'T1.rgh_id = ' . $rgh_id . ' ';
+		}
+
+		if ( $ach_gravity_level != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'T1.ach_gravity_level = ' . $ach_gravity_level . ' ';
+		}
+
 		
 		$Request .= $Where .
 		 'ORDER BY ach_date desc ' .
@@ -1432,8 +1413,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 	/* -------------------
 	** Total des événements dans l'historique.
 	*/
-	public function totalHistoryEvents( $scr_id = '', $idn_id = '', $ach_date = '',
-	 $ach_access = '', $ach_ip = '' ) {
+	public function totalHistoryEvents( $scr_id = '', $idn_id = '', $since_date = '', $before_date = '',
+	 $ach_access = '', $ach_ip = '', $hac_id = '', $rgh_id = '', $ach_gravity_level = '' ) {
 		$Request = 'SELECT ' .
 		 'min(ach_date) as first_date, count(*) as total ' .
 		 'FROM ach_access_history as T1 ' /*.
@@ -1452,11 +1433,19 @@ class IICA_Secrets extends IICA_DB_Connector {
 			$Where .= 'T1.idn_id = ' . $idn_id . ' ';
 		}
 		
-		if ( $ach_date != '' ) {
+		if ( $since_date != '' ) {
 			if ( $Where == '' ) $Where = 'WHERE ';
 			else $Where .= 'AND ';
 			
-			$Where .= 'ach_date like "' . $ach_date . '%" ';
+			$Where .= 'ach_date >= "' . $since_date . '%" ';
+		}
+
+		
+		if ( $before_date != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'ach_date <= "' . $before_date . '%" ';
 		}
 		
 		if ( $ach_access != '' ) {
@@ -1473,6 +1462,27 @@ class IICA_Secrets extends IICA_DB_Connector {
 			$Where .= 'ach_ip like "%' . $ach_ip . '%" ';
 		}
 		
+		if ( $hac_id != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'hac_id = ' . $hac_id . ' ';
+		}
+		
+		if ( $rgh_id != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'rgh_id = ' . $rgh_id . ' ';
+		}
+
+		if ( $ach_gravity_level != '' ) {
+			if ( $Where == '' ) $Where = 'WHERE ';
+			else $Where .= 'AND ';
+			
+			$Where .= 'ach_gravity_level = ' . $ach_gravity_level . ' ';
+		}
+		
 		$Request .= $Where;
 		
 
@@ -1487,7 +1497,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		}
 		
 		$Data = $Result->fetchObject();
-		
+
  		return $Data;
 	}
 
@@ -1512,6 +1522,33 @@ class IICA_Secrets extends IICA_DB_Connector {
 		
  		return true;
 	}
+
+
+	/* -------------------
+	** Construit le message détaillé à remonter dans l'Historique.
+	*/
+	public function getMessageForHistory( $scr_id, $Secret = '' ) {
+		if ( $scr_id == '' ) return '';
+
+		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');
+
+		$pHTML = new HTML();
+
+    	// Récupère les dernières informations du Secret qui vient d'être modifié.
+    	if ( $Secret == '' ) $Secret = $this->get( $scr_id );
+
+    	// Récupère les libellés pour le message
+    	$Labels = $pHTML->getTextCode( array( 'L_Group', 'L_Type', 'L_Environment', 'L_Application', 'L_Host', 'L_User', 'L_Comment',
+    		$Secret->stp_name, $Secret->env_name ), $pHTML->getParameter( 'language_alert' ) );
+
+    	return ' (' . $Labels['L_Group'] . ':"' . $Secret->sgr_label . '", ' .
+    		$Labels['L_Type'] . ':"' . $Labels[ $Secret->stp_name ] . '", ' .
+    		$Labels['L_Environment'] . ':"' . $Labels[ $Secret->env_name ] . '", ' .
+    		$Labels['L_Application'] . ':"' . $Secret->app_name . '", ' .
+    		$Labels['L_Host'] . ':"' . $Secret->scr_host . '", ' .
+    		$Labels['L_User'] . ':"' . $Secret->scr_user . '", ' .
+    		$Labels['L_Comment'] . ':"' . $Secret->scr_comment . '")';
+    }
 
 } // Fin class IICA_Secrets
 
@@ -1608,6 +1645,36 @@ class IICA_Referentials extends IICA_DB_Connector {
 		$Request = 'SELECT ' .
 		 'env_id, env_name ' .
 		 'FROM env_environments ' ;
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		$Data = array();
+		
+		while ( $Occurrence = $Result->fetchObject() ) {
+			$Data[] = $Occurrence;
+		}
+ 
+ 		return $Data;
+	}
+
+
+	/* -------------------
+	** Lister les Actions dans l'Historique.
+	*/
+	public function listActions() {
+		$Data = false;
+		
+		$Request = 'SELECT ' .
+		 'hac_id, hac_name ' .
+		 'FROM hac_history_actions_codes ' ;
 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();

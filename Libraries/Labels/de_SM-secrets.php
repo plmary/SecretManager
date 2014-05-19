@@ -47,6 +47,7 @@
 	$L_ERR_DELE_Group = 'Fehler beim Löschen einer Gruppe von Secrets';
 	$L_ERR_DUPL_Group = '"Label" einer Gruppe von Secrets existiert bereits';
 	
+	$L_Secret_Viewed = 'Secret viewed' ;
 	$L_Secret_Created = 'Secret erstellt' ;
 	$L_Secret_Modified = 'Secret geändert' ;
 	$L_Secret_Deleted = 'Secret gelöscht' ;

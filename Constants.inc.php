@@ -33,4 +33,6 @@ define( 'IICA_LIBRARIES', DIR_LIBRARIES );
 define( 'IICA_PICTURES', DIR_PICTURES );
 define( 'IICA_LABELS', DIR_LABELS );
 
+define( 'MAIL_BODY', DIR_LIBRARIES . "/Mail_Body.dat" );
+
 ?>

@@ -1,0 +1,14 @@
+<table>
+<tr><td>User</td><td><b>%User</b></td></tr>
+<tr><td>Date</td><td><b>%ActionDate</b></td></tr>
+<tr><td>Action Performed</td><td><b>%Action</b></td></tr>
+
+<tr><td>IP of the user</td><td><b>%UserIP</b></td></tr>
+<tr><td>Group of Secrets</td><td><b>%GroupSecrets</b></td></tr>
+<tr><td>Type</td><td><b>%SecretType</b></td></tr>
+<tr><td>Environment</td><td><b>%SecretEnvironment</b></td></tr>
+<tr><td>Application</td><td><b>%SecretApplication</b></td></tr>
+<tr><td>Host</td><td><b>%SecretHost</b></td></tr>
+<tr><td>User</td><td><b>%SecretUser</b></td></tr>
+<tr><td>Comment</td><td><b>%SecretComment</b></td></tr>
+</table>
