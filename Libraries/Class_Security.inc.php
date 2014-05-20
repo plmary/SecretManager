@@ -768,7 +768,8 @@ class Security extends IICA_Parameters {
 				}
 
 				if ( $Parameters->getParameter('alert_mail') == 1 ) {
-					$this->writeMail( $ach_access, $pSecret );
+					$ach_access = explode( ' (', $ach_access );
+					$this->writeMail( $ach_access[0], $pSecret );
 				}
 			}
 		}

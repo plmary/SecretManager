@@ -977,8 +977,10 @@ function addApplication(){
                     var L_Cancel = reponse['L_Cancel'];
                     
                     $('#liste').prepend(
-                     '<tr id="app_id-'+Id+'" class="surline">'+
-                     '<td class="align-middle">'+Label+'</td>'+
+                     '<tr id="occ_app_'+Id+'" class="surline" style="display: table-row;">' +
+                     //'<tr id="app_id-'+Id+'" class="surline">'+
+                     //'<td class="align-middle">'+Label+'</td>'+
+                     '<td id="app_'+Id+'" class="align-middle">'+Label+'</td>'+
                      '<td style="width:40%;">'+
                      '<a id="app_mod_'+Id+'" class="simple" href="javascript:editApplication(\''+Id+'\');">'+
                      '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+'" /></a>\n'+

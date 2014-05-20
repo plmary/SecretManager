@@ -242,6 +242,26 @@ class MyApplications extends IICA_DB_Connector {
 	}
 
 
+	/* -------------------
+	** Construit le message détaillé à remonter dans l'Historique.
+	*/
+	public function getMessageForHistory( $app_id, $Application = '' ) {
+		if ( $app_id == '' ) return '';
+
+		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');
+
+		$pHTML = new HTML();
+
+    	// Récupère les dernières informations du Secret qui vient d'être modifié.
+    	if ( $Application == '' ) $Application = $this->get( $app_id );
+
+    	// Récupère les libellés pour le message
+    	$Labels = $pHTML->getTextCode( 'L_Name' );
+
+    	return ' (' . $Labels . ':"' . $Application->app_name . '")';
+    }
+
+
 } // Fin class MyApplications
 
 ?>

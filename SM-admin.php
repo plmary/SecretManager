@@ -881,7 +881,7 @@ switch( $Action ) {
 
     $alert_message = sprintf( $PageHTML->getTextCode( 'L_Success_Purge', $PageHTML->getParameter( 'language_alert' ) ), $purge_date );
 
-    $Security->updateHistory( 'L_ALERT_HST', $alert_message, 4 );
+    $Security->updateHistory( 'L_ALERT_HST', $alert_message, 4, LOG_INFO );
 
     print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=H\">\n" .
         " <input type=\"hidden\" name=\"iMessage\" value=\"" . urlencode( $alert_message ) . "\" />\n" .
@@ -1518,13 +1518,15 @@ case 'STOR_TX':
         if ( $t_Filename[1] . '_' . $t_Filename[2] <= $_POST['Restore_Date'] ) {
             $Filename = DIR_BACKUP . '/' . $Prefix . '_' . $t_Filename[1] . '_' . $t_Filename[2] . '.xml';
             
+			$Date_Backup = $t_Filename[1] . ' ' . str_replace( '.', ':', $t_Filename[2] );
+
             if ( ! unlink( $Filename ) ) {
                 echo json_encode( array(
                     'status' => 'error',
                     'message' => $alert_message
                 ) );
                 
-			    $alert_message = $PageHTML->getTextCode( 'L_Restore_File_Not_Deleted', $PageHTML->getParameter('language_alert') );
+			    $alert_message = $PageHTML->getTextCode( 'L_Restore_File_Not_Deleted', $PageHTML->getParameter('language_alert') ) . ' [' . $Date_Backup . ']';
 
 			    if ( $Verbosity_Alert == 2 ) $alert_message .= ' : "' . $Filename .'"';
 
@@ -1537,7 +1539,7 @@ case 'STOR_TX':
             
             $List .= $t_Filename[1] . '_' . $t_Filename[2];
 
-			$alert_message = $PageHTML->getTextCode( 'L_File_Deleted', $PageHTML->getParameter('language_alert') );
+			$alert_message = $PageHTML->getTextCode( 'L_File_Deleted', $PageHTML->getParameter('language_alert') ) . ' [' . $Date_Backup . ']';
 
 			if ( $Verbosity_Alert == 2 ) $alert_message .= ' : "' . $Filename . '"';
 
@@ -1601,10 +1603,11 @@ case 'STOR_TX':
         $L_Level = LOG_ERR;
     }
  	
-	$alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') );
+	$alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') ) . ' [' . $Store_Date . ']';
+
 	if ( $Verbosity_Alert == 2 ) $alert_message .= ' "' . $FileName . '"';
 
-	$Security->updateHistory( 'L_ALERT_RSTR', $alert_message . ' : [' . $Store_Date . ']', 2, $L_Level );
+	$Security->updateHistory( 'L_ALERT_RSTR', $alert_message, 2, $L_Level );
 
     echo json_encode( array(
         'status' => $Status,

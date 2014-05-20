@@ -406,6 +406,26 @@ class IICA_Entities extends IICA_DB_Connector {
 	}
 
 
+	/* -------------------
+	** Construit le message détaillé à remonter dans l'Historique.
+	*/
+	public function getMessageForHistory( $ent_id, $Entity = '' ) {
+		if ( $ent_id == '' ) return '';
+
+		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');
+
+		$pHTML = new HTML();
+
+    	// Récupère les dernières informations du Secret qui vient d'être modifié.
+    	if ( $Entity == '' ) $Entity = $this->get( $ent_id );
+
+    	// Récupère les libellés pour le message
+    	$Labels = $pHTML->getTextCode( array('L_Label', 'L_Code') );
+
+    	return ' (' . $Labels['L_Code'] . ':"' . $Entity->ent_code . '", ' . $Labels['L_Label'] . ':"' . $Entity->ent_label . '")';
+    }
+
+
 } // Fin class IICA_Entities
 
 ?>

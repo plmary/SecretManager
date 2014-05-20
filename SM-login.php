@@ -112,7 +112,7 @@ switch( $Action ) {
 		'[' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] . ')';
 
 	// Stocke le message dans l'historique de SecretManager.
-	$Security->updateHistory( 'L_ALERT_DCNX', $alert_message );
+	$Security->updateHistory( 'L_ALERT_DCNX', $alert_message, '', LOG_INFO );
 
 
 	$PageHTML->disconnect();
@@ -328,7 +328,7 @@ switch( $Action ) {
 		'[' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] .	')';
 
 	// Stocke le message dans l'historique de SecretManager.
-	$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3 );
+	$Security->updateHistory( 'L_ALERT_IDN', $alert_message, 3, LOG_INFO );
 
 	$PageHTML->disconnect();
 
@@ -430,7 +430,7 @@ switch( $Action ) {
 			$alert_message = $PageHTML->getTextCode( 'L_Err_Auth', $PageHTML->getParameter( 'language_alert' ) ) . ' (' .
 			 $_POST[ 'User' ] . ') [' . $Authentication_Type . ']';
 
-			$Security->updateHistory( 'L_ALERT_CNX', $alert_message, LOG_ERR );
+			$Security->updateHistory( 'L_ALERT_CNX', $alert_message, '', LOG_ERR );
 			
 			print( $PageHTML->returnPage( $L_Title, $L_Err_Auth, $Script ) );
 
@@ -443,9 +443,9 @@ switch( $Action ) {
 		// Si problème d'authentification et que l'utilisateur existe alors incrémentation du nombre de tentative de connexion.
 		$PageHTML->addAttempt( $_POST[ 'User' ] );
 			
-		$alert_message = $e->getMessage() . ' (' . $_POST[ 'User' ] . ')';
+		$alert_message = $e->getMessage() . ' [' . $_POST[ 'User' ] . ']';
 
-		$Security->updateHistory( 'L_ALERT_CNX', $alert_message, LOG_ERR );
+		$Security->updateHistory( 'L_ALERT_CNX', $alert_message, '', LOG_ERR );
 			
 		print( $PageHTML->returnPage( $L_Title, $e->getMessage(), $Script ) );
 
@@ -457,7 +457,7 @@ switch( $Action ) {
 		$alert_message = $PageHTML->getTextCode( 'L_Change_Password', $PageHTML->getParameter( 'language_alert' ) ) . ' ' .
 			'[' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] . ')';
 
-		$Security->updateHistory( 'L_ALERT_CNX', $alert_message );
+		$Security->updateHistory( 'L_ALERT_CNX', $alert_message, '', LOG_ERR );
 			
 		header( 'Location: ' . $Script . '?action=CMDP&mandatory' );
 		
@@ -468,7 +468,7 @@ switch( $Action ) {
 	$alert_message = $PageHTML->getTextCode( 'L_Connection', $PageHTML->getParameter( 'language_alert' ) ) . ' ' .
 		' [' . $_SESSION[ 'idn_login' ] . '] (' . $_SESSION[ 'cvl_first_name' ] . ' ' . $_SESSION[ 'cvl_last_name' ] . ')';
 
-	$Security->updateHistory( 'L_ALERT_CNX', $alert_message );
+	$Security->updateHistory( 'L_ALERT_CNX', $alert_message, '', LOG_INFO );
 			
 	header( 'Location: ' . URL_BASE . '/SM-home.php?last_login' );
    

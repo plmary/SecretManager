@@ -609,6 +609,26 @@ class IICA_Profiles extends IICA_DB_Connector {
 		return $Occurrence->total;
 	}
 
+
+	/* -------------------
+	** Construit le message détaillé à remonter dans l'Historique.
+	*/
+	public function getMessageForHistory( $prf_id, $Profil = '' ) {
+		if ( $prf_id == '' ) return '';
+
+		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');
+
+		$pHTML = new HTML();
+
+    	// Récupère les dernières informations du Secret qui vient d'être modifié.
+    	if ( $Profil == '' ) $Profil = $this->get( $prf_id );
+
+    	// Récupère les libellés pour le message
+    	$Labels = $pHTML->getTextCode( 'L_Label' );
+
+    	return ' (' . $Labels . ':"' . $Profil->prf_label . '")';
+    }
+
 } // Fin class IICA_Profiles
 
 ?>

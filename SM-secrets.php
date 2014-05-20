@@ -283,9 +283,12 @@ switch( $Action ) {
 	$Return_Page = $Script;
  
 	$Alert = $_POST[ 'Alert' ];
+	$Last_ID = '';
 	
 	try {
 		$Groups->set( '', $Security->valueControl( $_POST[ 'Label' ] ), $Alert );
+
+		$Last_ID = $Groups->LastInsertId;
 
         $L_Message = 'L_Group_Created';
         $L_Status = LOG_INFO;
@@ -294,7 +297,7 @@ switch( $Action ) {
             'Status' => 'success',
             'Message' => $L_Group_Created,
             'URL_PICTURES' => URL_PICTURES,
-            'IdGroup' => $Groups->LastInsertId,
+            'IdGroup' => $Last_ID,
             'Script' => $Script,
             'L_Modify' => $L_Modify,
             'L_Delete' => $L_Delete,
@@ -333,15 +336,13 @@ switch( $Action ) {
     	echo json_encode( $Resultat );
 	}
         
-	$alert_message = $PageHTML->getTextCode( $L_Message );
+	$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $Last_ID . ']';
 
 	if ( $Verbosity_Alert == 2 ) {
-		$alert_message .= $Groups->getGroupForHistory( $Groups->LastInsertId );
-	} else {
-		$alert_message .= ' [' . $Groups->LastInsertId . ']';
+		$alert_message .= $Groups->getGroupForHistory( $Last_ID );
 	}
 
-	$Security->updateHistory( 'L_ALERT_SGR', $alert_message, 2 );
+	$Security->updateHistory( 'L_ALERT_SGR', $alert_message, 2, $L_Status );
 
     exit();
 
@@ -378,12 +379,10 @@ switch( $Action ) {
         ) );
 	}
 
-    $alert_message = $PageHTML->getTextCode( $L_Message );
+    $alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $sgr_id . ']';
 
     if ( $Verbosity_Alert == 2 ) {
 	    $alert_message .= $hGroup;
-    } else {
-    	$alert_message .= ' [' . $sgr_id . ']';
     }
 
 	$Security->updateHistory( 'L_ALERT_SGR', $alert_message, 4, $L_Status );
@@ -454,7 +453,7 @@ switch( $Action ) {
 		echo json_encode( $Resultat );
 	}
 
-    $alert_message = $PageHTML->getTextCode( $L_Message );
+    $alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $sgr_id . ']';
 
     if ( $Verbosity_Alert == 2 ) {
     	$oGroup = new stdClass();
@@ -462,8 +461,6 @@ switch( $Action ) {
     	$oGroup->sgr_alert = $Alert;
 
 	    $alert_message .= $Groups->getGroupForHistory( $sgr_id, $oGroup );
-    } else {
-    	$alert_message .= ' [' . $sgr_id . ']';
     }
 
 	$Security->updateHistory( 'L_ALERT_SGR', $alert_message, 3, $L_Status );
@@ -633,10 +630,10 @@ switch( $Action ) {
 
 				foreach( $Values as $rgh_id ) {
 					if ( $Verbosity_Alert == 2 ) {
-						$alert_message = $L_Association_Complited .' (IdGroup=\'' . $sgr_id . '\', IdProfile=\'' .
+						$alert_message = $PageHTML->getTextCode( 'L_Association_Complited' ) .' (IdGroup=\'' . $sgr_id . '\', IdProfile=\'' .
 							$prf_id . '\', IdRight=\'' . $rgh_id . '\' )';
 		
-						$Security->updateHistory( 'L_ALERT_PRSG', $alert_message, 2 );
+						$Security->updateHistory( 'L_ALERT_PRSG', $alert_message, 2, LOG_INFO );
 					}
 
 					$Groups->addProfile( $sgr_id, $prf_id, $rgh_id );
@@ -645,7 +642,7 @@ switch( $Action ) {
 			}
 		}
 	} catch( PDOException $e ) {
-		$alert_message = $L_ERR_ASSO_Identity .' (IdGroup=\'' . $sgr_id . '\', IdProfile=\'' .
+		$alert_message = $PageHTML->getTextCode( 'L_ERR_ASSO_Identity' ) .' (IdGroup=\'' . $sgr_id . '\', IdProfile=\'' .
 			$prf_id . '\', IdRight=\'' . $rgh_id . '\' )';
 		
 		$Security->updateHistory( 'L_ALERT_PRSG', $alert_message, 2, LOG_ERR );
@@ -654,10 +651,11 @@ switch( $Action ) {
 		break;
 	}
 
-	$alert_message = $L_Association_Complited .' (IdGroup=\'' . $sgr_id . '\', IdProfile=\'' .
-		$prf_id . '\', IdRight=\'' . $rgh_id . '\' )';
+	if ( $Verbosity_Alert == 1 ) {
+		$alert_message = $PageHTML->getTextCode( 'L_Association_Complited' );
 		
-	$Security->updateHistory( 'L_ALERT_PRSG', $alert_message, 2 );
+		$Security->updateHistory( 'L_ALERT_PRSG', $alert_message, 2, LOG_INFO );
+	}
 
 	print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
 		" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Association_Complited . "\" />\n" .
@@ -1066,7 +1064,7 @@ switch( $Action ) {
             $B_Rights .= 'D';
         }
  
-		
+		$scr_id = '';
 
 		try {
 			$Secrets->set( '', $sgr_id, $stp_id, 
@@ -1078,24 +1076,36 @@ switch( $Action ) {
 				$Security->valueControl( $_POST[ 'Expiration_Date' ] ) );
 			 
 			$scr_id = $Secrets->LastInsertId;
-		} catch( PDOException $e ) {
-			$alert_message = $L_ERR_CREA_Secret;
-		
-			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 2, LOG_ERR );
 
+			$L_Message = 'L_Secret_Created';
+			$L_Level = LOG_INFO;
+
+	        echo json_encode( array(
+	            'Status' => 'success',
+	            'Message' => ${$L_Message},
+	            'scr_id' => $scr_id,
+	            'L_Delete' => $L_Delete,
+	            'L_Cancel' => $L_Cancel,
+	            'L_Modify' => $L_Modify,
+	            'Rights' => $B_Rights,
+	            'L_Password_View' => $L_Password_View
+	        ) );
+		} catch( PDOException $e ) {
+			$L_Message = 'L_ERR_CREA_Secret';
+			$L_Level = LOG_ERR;
+		
 		    echo json_encode( array(
 		        'Status' => 'error',
 		        'Message' => $L_ERR_CREA_Secret
 		    ) );
-
-			exit();
 		} catch( Exception $e ) {
+			$L_Level = LOG_ERR;
+			$L_Message = 'L_ERR_CREA_Secret';		
+
 			if ( $PageHTML->getParameter( 'use_SecretServer' ) == '1' ) {
 				$Error = $e->getMessage();
 
-				$alert_message = $L_ERR_CREA_Secret; // . ' (' . $Error . ')' );
-			
-				$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 2, LOG_ERR );
+				$L_Message = 'L_ERR_CREA_Secret';
 				
 				if ( isset( ${$Error} ) ) $Error = ${$Error};
 				
@@ -1105,34 +1115,19 @@ switch( $Action ) {
                 ) );
 			} else {
 				if ( $e->getCode() == 1062 ) {
-					$Message = $L_ERR_DUPL_Secret;
 					$L_Message = 'L_ERR_DUPL_Secret';
 
                     echo json_encode( array(
                         'Status' => 'error',
-                        'Message' => $Message
-                    ) );
-				} else {
-					$Message = $L_ERR_CREA_Secret;
-					$L_Message = 'L_ERR_CREA_Secret';
-					
-                    echo json_encode( array(
-                        'Status' => 'error',
-                        'Message' => $Message
+                        'Message' => ${$L_Message}
                     ) );
 				}
-
-			    $alert_message = $PageHTML->getTextCode( $L_Message, $PageHTML->getParameter('language_alert') );
-			
-				$Security->updateHistory( 'L_ALERT_SCR', $Message, 2, LOG_ERR );
 			}
-			exit();
 		}
 
+		$Labels = $PageHTML->getTextCode( array( 'L_Secret_Type_' . $stp_id, 'L_Environment_' . $env_id, $L_Message ) );
 
-	    $alert_message = $PageHTML->getTextCode( 'L_Secret_Created', $PageHTML->getParameter('language_alert') );
-
-		$Labels = $PageHTML->getTextCode( array( 'L_Secret_Type_' . $stp_id, 'L_Environment_' . $env_id ), $PageHTML->getParameter('language_alert') );
+	    $alert_message = $Labels[ $L_Message ] . ' [' . $scr_id . ']';
 
 
 	    if ( $Verbosity_Alert == 2 ) {
@@ -1149,19 +1144,7 @@ switch( $Action ) {
 	    	$alert_message .= ' ' . $Secrets->getMessageForHistory( $scr_id, $oSecret );
 	    }
 		
-		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 2, LOG_INFO, $Secrets->get( $scr_id ) );
-		
-
-        echo json_encode( array(
-            'Status' => 'success',
-            'Message' => $L_Secret_Created,
-            'scr_id' => $scr_id,
-            'L_Delete' => $L_Delete,
-            'L_Cancel' => $L_Cancel,
-            'L_Modify' => $L_Modify,
-            'Rights' => $B_Rights,
-            'L_Password_View' => $L_Password_View
-        ) );
+		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 2, $L_Level, $Secrets->get( $scr_id ) );
 
         exit();
 	} else {
@@ -1178,12 +1161,22 @@ switch( $Action ) {
 
  case 'SCR_V': // Réponse à la requête AJAX
     include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+
+	if ( ($scr_id = $Security->valueControl( $_POST[ 'scr_id' ], 'NUMERIC' )) ==
+	 -1 ) {
+	    echo json_encode( array(
+	        'Status' => 'error',
+	        'Message' => $L_Invalid_Value . ' (scr_id)'
+	    ) );
+
+		exit();
+	}
     
 	$Secrets = new IICA_Secrets();
 	
 	try {
 		while ( 1 ) {
-			$Secret = $Secrets->get( $_POST[ 'scr_id' ] );
+			$Secret = $Secrets->get( $scr_id );
 			if ( $Secret->scr_password != '' ) break;
 			usleep(500000);
 		}
@@ -1199,13 +1192,13 @@ switch( $Action ) {
 	$Group = $Groups->get( $Secret->sgr_id );
 
 	if ( $Secret->scr_alert == 1 or $Group->sgr_alert == 1 ) {
-		$alert_message = $PageHTML->getTextCode( 'L_Secret_Viewed', $PageHTML->getParameter( 'language_alert' ) );
+		$alert_message = $PageHTML->getTextCode( 'L_Secret_Viewed' ) . ' [' . $scr_id . ']';
 
 	    if ( $Verbosity_Alert == 2 ) {
-	    	$alert_message .= ' ' . $Secrets->getMessageForHistory( $_POST['scr_id'] );
+	    	$alert_message .= ' ' . $Secrets->getMessageForHistory( $scr_id );
 	    }
 
-		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 1, LOG_INFO, $Secrets->get( $_POST[ 'scr_id' ] ) );
+		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 1, LOG_INFO, $Secrets->get( $scr_id ) );
 	}
 
 	if ( isset( $groupsRights[ $Secret->sgr_id ] ) ) {
@@ -1501,7 +1494,7 @@ switch( $Action ) {
 			$L_Message = 'L_ERR_MODI_Secret';
 			$Message = ${$L_Message};
 
-			$alert_message = $PageHTML->getTextCode( $L_Message );
+			$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $scr_id . ']';
 
 			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, $L_Status, $Secrets->get( $scr_id ) );
 
@@ -1518,7 +1511,7 @@ switch( $Action ) {
 				$Message = ${$L_Message};
 			}
 
-			$alert_message = $PageHTML->getTextCode( $L_Message );
+			$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $scr_id . ']';
 
 			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, $L_Status, $Secrets->get( $scr_id ) );
 
@@ -1528,10 +1521,9 @@ switch( $Action ) {
 		}
 
 
-		$alert_message = $PageHTML->getTextCode( $L_Message );
+		$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $scr_id . ']';
 
 		if ( $Verbosity_Alert == 2 ) $alert_message .= $Secrets->getMessageForHistory( $scr_id );
-		else $alert_message .= ' [' . $scr_id . ']';
 
 		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, LOG_INFO, $Secrets->get( $scr_id ) );
 
@@ -1695,26 +1687,38 @@ switch( $Action ) {
 			exit();
 		}
 
-		try {
-			$alert_message = $L_Secret_Deleted;
+		$pSecret = $Secrets->get( $scr_id );
 		
-			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 4, LOG_INFO, $Secrets->get( $scr_id ) );
-
+		try {
 			$Secrets->delete( $scr_id );
 		} catch( PDOException $e ) {
-			$alert_message = $L_ERR_DELE_Secret;
+			$L_Message = 'L_ERR_DELE_Secret';
+			$Message = ${$L_Message};
+
+			$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $scr_id . ']';
+
+			if ( $Verbosity_Alert == 2 ) $alert_message .= $Secrets->getMessageForHistory( $scr_id, $pSecret );
 		
-			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 4, LOG_ERR, $Secrets->get( $scr_id ) );
+			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 4, LOG_ERR, $pSecret );
 
 			$Return_Page = "https://" . $Server . $Script . "?action=P&id=" . $scr_id;
-			print( $PageHTML->returnPage( $L_Title, $L_ERR_DELE_Secret, $Return_Page, 1 ) );
+			print( $PageHTML->returnPage( $L_Title, $Message, $Return_Page, 1 ) );
 			exit();
 		}
 
-		$Group = $Groups->get( $_POST[ 'sgr_id' ] );
+//		$Group = $Groups->get( $_POST[ 'sgr_id' ] );
 			
+		$L_Message = 'L_Secret_Deleted';
+		$Message = ${$L_Message};
+
+		$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $scr_id . ']';
+
+		if ( $Verbosity_Alert == 2 ) $alert_message .= $Secrets->getMessageForHistory( $scr_id, $pSecret );
+	
+		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 4, LOG_INFO, $pSecret );
+
 		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Return_Page . "\">\n" .
-			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Secret_Deleted . "\" />\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $Message . "\" />\n" .
 			"</form>\n" .
 			"<script>document.fMessage.submit();</script>" );
 	} else {
@@ -1895,18 +1899,24 @@ switch( $Action ) {
 
  	$MyApplications = new MyApplications();
 
-	try {
-		$MyApplications->set( '', $Security->valueControl( $_POST[ 'Label' ] ) );
+	if ( ($app_name = $Security->valueControl( $_POST[ 'Label' ], 'ASCII' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (app_name)', $Return_Page, 1 )
+		 );
+		exit();
+	}
 
-        $alert_message = '[' . addslashes( $_POST[ 'Label' ] ) . '] ' . $L_Application_Created . ' (' . $MyApplications->LastInsertId . ')';
-        
-        $Security->updateHistory( 'L_ALERT_APP', $alert_message, 2 );
+	try {
+		$MyApplications->set( '', $app_name );
+		$Last_ID = $MyApplications->LastInsertId;
+
+        $L_Status = LOG_INFO;
+        $L_Message = 'L_Application_Created';
 
         $Resultat = array(
             'Status' => 'success',
-            'Message' => $L_Application_Created,
+            'Message' => ${$L_Message},
             'URL_PICTURES' => URL_PICTURES,
-            'IdApplication' => $MyApplications->LastInsertId,
+            'IdApplication' => $Last_ID,
             'Script' => $Script,
             'L_Modify' => $L_Modify,
             'L_Delete' => $L_Delete,
@@ -1914,39 +1924,39 @@ switch( $Action ) {
         );
 
         echo json_encode( $Resultat );
-
-        exit();        
 	} catch( PDOException $e ) {
-		$Security->updateHistory( 'L_ALERT_APP', $L_ERR_CREA_Application, 2 );
-		
+        $L_Status = LOG_ERR;
+        $L_Message = 'L_ERR_CREA_Application';
+
         $Resultat = array(
             'Status' => 'error',
-            'Message' => $L_ERR_CREA_Application
+            'Message' => ${$L_Message}
         );
 
     	echo json_encode( $Resultat );
-
-	    exit();
 	} catch( Exception $e ) {
+        $L_Status = LOG_ERR;
+        $L_Message = 'L_ERR_CREA_Application';
+
 		if ( $e->getCode() == 1062 ) {
-			$Message = $L_ERR_DUPL_Application;
-		} else {
-			$Message = $L_ERR_CREA_Application;
+        	$L_Message = 'L_ERR_DUPL_Application';
 		}
 		
         $Resultat = array(
             'Status' => 'error',
-            'Message' => $Message
+            'Message' => ${$L_Message}
         );
 
     	echo json_encode( $Resultat );
-
-		$Security->updateHistory( 'L_ALERT_APP', $Message, 2 );
-
-	    exit();
 	}
 
-    break;
+ 	$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $Last_ID . ']';
+
+ 	if ( $Verbosity_Alert == 2 ) $alert_message .= $MyApplications->getMessageForHistory( $Last_ID );
+
+	$Security->updateHistory( 'L_ALERT_APP', $alert_message, 2, $L_Status );
+
+ 	exit();
 
 
  case 'DEL_APPX':
@@ -1954,41 +1964,42 @@ switch( $Action ) {
 
  	$MyApplications = new MyApplications();
 
-	try {
-		$MyApplications->delete( $Security->valueControl( $_POST[ 'Id' ] ) );
+	if ( ($app_id = $Security->valueControl( $_POST[ 'Id' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (app_id)', $Return_Page, 1 )
+		 );
+		exit();
+	}
 
-        $alert_message = '[' . $_POST[ 'Id' ] . '] ' . $L_Application_Deleted;
-        
-        $Security->updateHistory( 'L_ALERT_APP', $alert_message, 4 );
+	try {
+		$Application = $MyApplications->get( $app_id );
+
+		$MyApplications->delete( $app_id );
+
+        $L_Status = LOG_INFO;
+        $L_Message = 'L_Application_Deleted';
 
         $Resultat = array(
             'Status' => 'success',
-            'Message' => $L_Application_Deleted,
+            'Message' => ${$L_Message},
             'L_Modify' => $L_Modify,
             'L_Delete' => $L_Delete,
             'L_Cancel' => $L_Cancel
         );
 
         echo json_encode( $Resultat );
-
-        exit();        
 	} catch( PDOException $e ) {
-		$alert_message = '[' . $_POST[ 'Id' ] . '] ' . $L_ERR_DELE_Application;
-		
-		$Security->updateHistory( 'L_ALERT_APP', $alert_message, 4 );
+		$L_Status = LOG_ERR;
+		$L_Message = 'L_ERR_DELE_Application';
 		
         $Resultat = array(
             'Status' => 'error',
-            'Message' => $L_ERR_DELE_Application
+            'Message' => ${$L_Message}
         );
 
     	echo json_encode( $Resultat );
-
-	    exit();
 	} catch( Exception $e ) {
-		$Message = '[' . $_POST[ 'Id' ] . '] ' . $L_ERR_DELE_Application;
-		
-		$Security->updateHistory( 'L_ALERT_APP', $Message, 4 );
+		$L_Status = LOG_ERR;
+		$L_Message = 'L_ERR_DELE_Application';
 		
         $Resultat = array(
             'Status' => 'error',
@@ -1996,11 +2007,15 @@ switch( $Action ) {
         );
 
     	echo json_encode( $Resultat );
-
-	    exit();
 	}
 
- 	break;
+ 	$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $app_id . ']';
+
+ 	if ( $Verbosity_Alert == 2 ) $alert_message .= $MyApplications->getMessageForHistory( $app_id, $Application );
+
+	$Security->updateHistory( 'L_ALERT_APP', $alert_message, 4, $L_Status );
+
+ 	exit();
 
 
  case 'MOD_APPX':
@@ -2008,53 +2023,62 @@ switch( $Action ) {
 
  	$MyApplications = new MyApplications();
 
+	if ( ($app_id = $Security->valueControl( $_POST[ 'app_id' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (app_id)', $Return_Page, 1 )
+		 );
+		exit();
+	}
+
+	if ( ($app_name = $Security->valueControl( $_POST[ 'app_name' ], 'ASCII' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (app_name)', $Return_Page, 1 )
+		 );
+		exit();
+	}
+
 	try {
-		$MyApplications->set( $Security->valueControl( $_POST[ 'app_id' ], 'NUMERIC' ), $Security->valueControl( $_POST[ 'app_name' ] ) );
+		$MyApplications->set( $app_id, $app_name );
 
-        $alert_message = '[' . $_POST[ 'app_id' ] . '] ' . $L_Application_Modified;
+        $L_Status = LOG_INFO;
+        $L_Message = 'L_Application_Modified';
         
-        $Security->updateHistory( 'L_ALERT_APP', $alert_message, 3 );
-
         $Resultat = array(
             'Status' => 'success',
-            'Message' => $L_Application_Modified,
+            'Message' => ${$L_Message},
             'L_Modify' => $L_Modify,
             'L_Delete' => $L_Delete,
             'L_Cancel' => $L_Cancel
         );
 
         echo json_encode( $Resultat );
-
-        exit();        
 	} catch( PDOException $e ) {
-		$alert_message = '[' . $_POST[ 'app_id' ] . '] ' . $L_ERR_MODI_Application;
-		
-		$Security->updateHistory( 'L_ALERT_APP', $alert_message, 3 );
+        $L_Status = LOG_ERR;
+        $L_Message = 'L_ERR_MODI_Application';
 		
         $Resultat = array(
             'Status' => 'error',
-            'Message' => $L_ERR_MODI_Application
+            'Message' => ${$L_Message}
         );
 
     	echo json_encode( $Resultat );
-
-	    exit();
 	} catch( Exception $e ) {
-		$Message = '[' . $_POST[ 'app_id' ] . '] ' . $L_ERR_MODI_Application;
-		
-		$Security->updateHistory( 'L_ALERT_APP', $Message, 3 );
+        $L_Status = LOG_ERR;
+        $L_Message = 'L_ERR_MODI_Application';
 
         $Resultat = array(
             'Status' => 'error',
-            'Message' => $Message
+            'Message' => ${$L_Message}
         );
 
     	echo json_encode( $Resultat );
-
-	    exit();
 	}
 
- 	break;
+ 	$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $app_id . ']';
+
+ 	if ( $Verbosity_Alert == 2 ) $alert_message .= $MyApplications->getMessageForHistory( $app_id );
+
+	$Security->updateHistory( 'L_ALERT_APP', $alert_message, 3, $L_Status );
+
+ 	exit();
 }
 
 if ( $Action != 'SCR_V' ) {

@@ -431,6 +431,27 @@ class IICA_Civilities extends IICA_DB_Connector {
 		return $Occurrence->total;
 	}
 
+
+	/* -------------------
+	** Construit le message détaillé à remonter dans l'Historique.
+	*/
+	public function getMessageForHistory( $cvl_id, $Civility = '' ) {
+		if ( $cvl_id == '' ) return '';
+
+		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');
+
+		$pHTML = new HTML();
+
+    	// Récupère les dernières informations du Secret qui vient d'être modifié.
+    	if ( $Civility == '' ) $Civility = $this->get( $cvl_id );
+
+    	// Récupère les libellés pour le message
+    	$Labels = $pHTML->getTextCode( array('L_First_Name', 'L_Last_Name', 'L_Sex') );
+
+    	return ' (' . $Labels['L_First_Name'] . ':"' . $Civility->cvl_first_name . '", ' . $Labels['L_Last_Name'] . ':"' . $Civility->cvl_last_name . 
+    		'", ' . $Labels['L_Sex'] . ':"' . $Civility->cvl_sex . '")';
+    }
+
 } // Fin class IICA_Civilities
 
 ?>

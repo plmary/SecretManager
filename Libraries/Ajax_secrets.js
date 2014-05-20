@@ -310,8 +310,8 @@ function addGroup(){
 
                     $('#listeSecrets').prepend(
                      '<tr id="sgr_id-'+Id+'" class="surline">'+
-                     '<td class="align-middle">'+Label+'</td>'+
-                     '<td class="align-middle">'+Image+'</td>'+
+                     '<td id="label-'+Id+'" class="align-middle">'+Label+'</td>'+
+                     '<td id="alert-'+Id+'" class="align-middle">'+Image+'</td>'+
                      '<td>'+
                      '<a id="modify_'+Id+'" class="simple" href="javascript:editFields(\''+Id+'\');">'+
                      '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+'" /></a>\n'+
@@ -734,18 +734,21 @@ function CreateSecret( sgr_id ){
                 } else {
                     $('#listeSecrets').prepend(
                         '<tr class="surline">\n' +
-                         '<td class="align-middle">'+L_Type+'</td>\n' +
-                         '<td class="align-middle">'+L_Environment+'</td>\n' +
-                         '<td class="align-middle">'+Application+'</td>\n' +
-                         '<td class="align-middle">'+Host+'</td>\n' +
-                         '<td class="align-middle">'+User+'</td>\n' +
-                         '<td class="align-middle">'+Img_Alert+'</td>\n'+
-                         '<td class="align-middle">'+Comment+'</td>\n' +
-                         '<td data-right="'+reponse['Rights']+'" style="max-width:80px; width:80px;">\n' +
-                          '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+')">\n' +
+                         '<td class="align-middle" style="max-width:110px; width:110px;">'+L_Type+'</td>\n' +
+                         '<td class="align-middle" style="max-width:110px; width:110px;">'+L_Environment+'</td>\n' +
+                         '<td class="align-middle" style="max-width:100px; width:100px;">'+L_Application+'</td>\n' +
+                         '<td class="align-middle" style="max-width:90px; width:90px;">'+Host+'</td>\n' +
+                         '<td class="align-middle" style="max-width:90px; width:90px;">'+User+'</td>\n' +
+                         '<td class="align-middle" style="max-width:50px; width:50px;">'+Img_Alert+'</td>\n'+
+                         '<td class="align-middle" style="max-width:80px; width:80px;">'+Expiration_Date+'</td>\n'+
+                         '<td class="align-middle" style="max-width:230px; width:230px;">'+Comment+'</td>\n' +
+                         '<td data-right="'+reponse['Rights']+'">\n' +
+                          //'<a class="simple" href="javascript:setSecret('+reponse['scr_id']+')">\n' +
+                          '<a class="simple" href="SM-secrets.php?action=SCR_M&scr_id='+reponse['scr_id']+'">\n' +
                           '<img class="no-border" title="'+reponse['L_Modify']+'" alt="'+reponse['L_Modify']+
                           '" src="'+Parameters['URL_PICTURES']+'/b_edit.png"></a>' +
-                          '<a class="simple" href="javascript:setSecret('+reponse['scr_id']+',\'D\')">\n' +
+                          //'<a class="simple" href="javascript:setSecret('+reponse['scr_id']+',\'D\')">\n' +
+                          '<a class="simple" href="SM-secrets.php?action=SCR_D&scr_id='+reponse['scr_id']+'">\n' +
                           '<img class="no-border" title="'+reponse['L_Delete']+'" alt="'+reponse['L_Delete']+
                           '" src="'+Parameters['URL_PICTURES']+'/b_drop.png"></a>\n' +
                          '</td>'

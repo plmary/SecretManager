@@ -440,7 +440,7 @@ if ( $Authentication->is_administrator() ) {
 			$alert_message .= ')';
 		}
 
-		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
 
 		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=A\">\n" .
 			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Parameters_Updated . "\" />\n" .
@@ -874,7 +874,7 @@ if ( $Authentication->is_administrator() ) {
 				$alert_message .= ' (authentication_type="' . $authentication_type . '", expiration_time="' . $_POST[ 'Expiration_Time' ] . '")';
 			}
 
-			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
 		} catch( PDOException $e ) {
 			print( "   <div id=\"alert\">\n" .
 			 $L_ERR_MAJ_Connection .
@@ -930,7 +930,7 @@ if ( $Authentication->is_administrator() ) {
 					'", Default_Password="' . $Default_Password . '")';
 			}
 
-			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
 
 			break;
 			
@@ -976,7 +976,7 @@ if ( $Authentication->is_administrator() ) {
 					'", Radius_Accounting_Port="' . $Radius_Accounting_Port . '", Radius_Secret_Common="' . $Radius_Secret . '")';
 			}
 
-			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
 
 			break;
 
@@ -1021,7 +1021,7 @@ if ( $Authentication->is_administrator() ) {
 					'", LDAP_Organization="' . $LDAP_Organization . '", LDAP_RDN_Prefix="' . $LDAP_RDN_Prefix . '")';
 			}
 		
-			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+			$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
 
 			fclose( $Output );
 			
@@ -1220,7 +1220,7 @@ if ( $Authentication->is_administrator() ) {
 			$alert_message .= ' (UseSecretServer="' . $_POST[ 'UseSecretServer' ] . '")';
 		}
 	
-		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
 
 			
         $Ajax_Result = array(
@@ -1264,7 +1264,7 @@ if ( $Authentication->is_administrator() ) {
 				'", Mother_Key_Size="' . $_POST[ 'Mother_Key_Size' ] . '", Mother_Key_Complexity="' . $_POST[ 'Mother_Key_Complexity' ] . '")';
 		}
 	
-		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3 );
+		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
 
 			
         $Ajax_Result = array(
