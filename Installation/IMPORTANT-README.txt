@@ -1,34 +1,45 @@
-Date : 2013-xx-xx
+Date : 2014-05-20
 Author : Pierre-Luc MARY
 
-Software Code : https://github.com/plmary/SecretManager
+Beta Software Code : https://github.com/plmary/SecretManager
+Contact me : mailto:pl.mary(at)orasys.fr
+Bug track ticket : https://sourceforge.net/p/secretmanager/tickets/?source=navbar
+
 
 [ FR ]
 Quelles nouvelles :
-Cette version continue son implémentation Ajax (voir l'écran de gestion des utilisateurs).
-Pour répondre à un besoin, j'ai implémenté une date d'expiration sur les secrets. Effectivement, cela peut servir.
+Cette version implémente une nouvelle gestion de l'historique :
+- Toutes les actions sur tous les objets sont désormais historisées ;
+- Le paramétrage des alertes est désormais facilité (notamment les remontés par courriel) ;
+- L'écran de suivi de l'historique a été modifié également.
 
 Première installation :
-Déziper "SecretManager_v0.7-0.zip" dans le "DocumentRoot" de votre Serveur Apache.
-Ensuite, lire le "Guide d'installation" dans le répertoire "Documentations" dans l'arborescence de SecretManager (par encore fini, j'y travaille).
+Déziper "SecretManager_v0.8-5.zip" dans le "DocumentRoot" de votre Serveur Apache.
+Ensuite, lire le "Guide d'installation" dans le répertoire "Documentations" dans l'arborescence de SecretManager.
 
-Mise à jour de v0.6-3 à v0.7-0 :
-Déziper "upd_SecretManager_v0.7-0.zip" dans le précédent répertoire d'installation de votre "SecretManager".
-Attention : il faut mettre à jour la base de données par l'exécution du script : "upgrade_scr_secrets.sql".
+Mise à jour de v0.8-4 à v0.8-5 :
+Déziper "upd_SecretManager_v0.8-5.zip" dans le précédent répertoire d'installation de votre "SecretManager".
+Attention : il faut mettre à jour la base de données par l'exécution des scripts suivants :
+- upd-1-v0.8-5-SecretManager.sql
+- upd-2-v0.8-5-SecretManager.sql
 
 
 [ EN ]
 What's news :
-This version fixe many little problems in SecretManager and SecretServer.
-A new design it's proposal (with jQuery and Ajax). Say me if it's plaisant.
+This version implements a new history management:
+- All actions on all objects are now historized;
+- The setting alerts is now easier (especially reassembled by email);
+- Screen history tracking has also been modified.
 
-First Installation :
-Unzip "SecretManager_v0.7-0.zip" in your Apache Server "DocumentRoot".
-Read the "intallation guide" in "Documentation" directory
+First installation:
+Unzip "SecretManager_v0.8-5.zip" in the "DocumentRoot" your Apache Server.
+Read the "Installation Guide" in the "Documentations" folder in the tree SecretManager.
 
-Upgrade v0.6-3 to v0.7-0:
-Unzip "SecretManager_upd_v0.7-0.zip" in your "SecretManager" directory (precedent install).
-Warning: you must execute an update on your database. Use the script "upgrade_scr_secrets.sql"
+Update v0.8 v0.8-4-5:
+Unzip "upd_SecretManager_v0.8-5.zip" in your previous installation "SecretManager" directory.
+Warning: you must update the database by executing the following scripts:
+- upd-1-v0.8-5-SecretManager.sql
+- upd-2-v0.8-5-SecretManager.sql
 
 
 * ==========================================================

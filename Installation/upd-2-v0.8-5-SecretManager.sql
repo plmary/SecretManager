@@ -21,4 +21,11 @@ INSERT INTO secret_manager.hac_history_actions_codes (hac_id, hac_name) VALUES
 	(NULL, 'L_ALERT_SS'), -- Alerte sur SecretServer
 	(NULL, 'L_ALERT_BCK'), -- Alerte sur Sauvegarde
 	(NULL, 'L_ALERT_RSTR'); -- Alerte sur Restauration
-	
+
+
+-- Nouveaux paramètres
+INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES
+('mail_title', 'Alerte SecretManager'),
+('language_alert', 'en'),
+('mail_body_type', 'HTML')
+;	
