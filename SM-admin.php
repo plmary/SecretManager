@@ -162,7 +162,7 @@ if ( ! preg_match("/X$/i", $Action ) ) {
      "    </div> <!-- Fin : zoneTitre -->\n" .
      "\n" .
      "   <div id=\"zoneMilieuComplet\"> <!-- debut : zoneMilieuComplet -->\n" .
-     "   <div id=\"dashboard\"> <!-- debut : dashboard -->\n" .
+     "   <div id=\"dashboard\" min-width=\"1090px;\"> <!-- debut : dashboard -->\n" .
      "\n" );
 
 	if ( isset( $_POST[ 'iMessage']) ) {

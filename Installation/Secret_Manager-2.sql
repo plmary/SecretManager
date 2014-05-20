@@ -68,7 +68,7 @@ INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES
 ('expiration_time', '10'),
 ('mail_from', 'secret_manager@society.com'),
 ('mail_to', 'admin@society.com'),
-('verbosity_alert', '1'),
+('verbosity_alert', '2'),
 ('use_SecretServer', '1'),
 ('Min_Size_Password', '8'),
 ('Password_Complexity', '3'),
@@ -82,7 +82,7 @@ INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES
 ('Backup_Secrets_Date', '0000-00-00 00:00'),
 ('Backup_Total_Date', '0000-00-00 00:00'),
 ('mail_title', 'Alerte SecretManager'),
-('language_alert', 'fr'),
+('language_alert', 'en'),
 ('mail_body_type', 'HTML')
 ;
 
