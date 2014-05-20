@@ -1,0 +1,12 @@
+User             : %User
+Date             : %ActionDate
+Action Performed : %Action
+
+IP of the user   : %UserIP
+Group of Secrets : %GroupSecrets
+Type             : %SecretType
+Environment      : %SecretEnvironment
+Application      : %SecretApplication
+Host             : %SecretHost
+User             : %SecretUser
+Comment          : %SecretComment

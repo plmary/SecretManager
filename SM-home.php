@@ -157,6 +157,11 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 
 	foreach( $List_Secrets as $Secret ) {
 
+		$Host = $Security->XSS_Protection( $Secret->scr_host );
+		if ( preg_match("/^http/i", $Host ) or preg_match("/^www/i", $Host ) ) {
+			$Host = '<a href="' . $Host . '" target="_blank">' . $Host . '</a>';
+		}
+
 		print( "       <tr class=\"surline\" id=\"" . $Secret->scr_id . "\" " .
 		 "style=\"cursor: pointer;\" data-total=\"" . $Total . "\" " .
 		 "data-cancel=\"" . $GLOBALS['L_Cancel'] . "\" data-modify=\"" . $GLOBALS['L_Modify'] . "\" " .
@@ -176,7 +181,7 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 		 $Secret->scr_id . ");\" data-id=\"" . $Secret->app_id . "\">" . $Security->XSS_Protection( $Secret->app_name ) . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Host'] ."px; " .
 		 "width:". $GLOBALS['S_Host'] ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_host ) . "</td>\n" .
+		 $Secret->scr_id . ");\">" . $Host . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_User'] ."px; " .
 		 "width:". $GLOBALS['S_User'] ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_user ) . "</td>\n" );
