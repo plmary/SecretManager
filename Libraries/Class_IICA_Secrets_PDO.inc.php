@@ -3,552 +3,10 @@
 include_once( 'Constants.inc.php' );
 
 include_once( IICA_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
+include_once( IICA_LIBRARIES . '/Class_IICA_Groups_PDO.inc.php' );
+include_once( IICA_LIBRARIES . '/Class_IICA_Referentials_PDO.inc.php' );
 
 include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
-      
-// =============================
-class IICA_Groups extends IICA_DB_Connector {
-/**
-* Cette classe gère les groupes de secrets.
-*
-* PHP version 5
-* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-* @author Pierre-Luc MARY
-* @version 1.1
-* @date 2012-11-19
-*/
-    public $LastInsertId;
-
-	public function __construct() {
-	/**
-	* Connexion à la base de données.
-	*
-	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-07
-	*
-	* @return Renvoi un booléen sur le succès de la connexion à la base de données
-	*/
-		parent::__construct();
-		
-		return true;
-	}
-
-
-	public function set( $sgr_id, $Label, $Alert = 0 ) {
-	/**
-	* Crée ou modifie un Groupe.
-	*
-	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-07
-	*
-	* @param[in] $sgr_id (int) Identifiant du Groupe de Secrets à modifier (s'il est précisé, sinon créé le Groupe)
-	* @param[in] $Label (string) Libellé du Groupe de Secrets
-	* @param[in] $Alert (boolean) Précise si les accès au Groupe de Secrets génère des alertes
-	*
-	* @return Renvoi vrai sur le succès de la mise à jour du Groupe, sinon lève une Exception
-	*/
-		if ( $sgr_id == '' ) {
-			if ( ! $Result = $this->prepare( 'INSERT INTO sgr_secrets_groups ' .
-				'( sgr_label, sgr_alert ) ' .
-				'VALUES ( :Label, :Alert )' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		} else {
-			if ( ! $Result = $this->prepare( 'UPDATE sgr_secrets_groups SET ' .
-				'sgr_label = :Label, sgr_alert = :Alert ' .
-				'WHERE sgr_id = :sgr_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-			
-			if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-				
-		if ( ! $Result->bindParam( ':Label', $Label, PDO::PARAM_STR, 60 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':Alert', $Alert, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( $sgr_id == '' ) {
-			switch( $this->getAttribute(PDO::ATTR_DRIVER_NAME) ) {
-			 default;
-				$this->LastInsertId = $this->lastInsertId();
-				break;
-
-			 case 'pgsql';
-				$this->LastInsertId = $this->lastInsertId( 'sgr_secrets_groups_sgr_id_seq' );
-				break;
-			}
-		}
-		
-		return true;
-	}
-
-
-	public function listGroups( $idn_id = '', $orderBy = '', $rgh_id = '' ) {
-	/**
-	* Liste les Groupes.
-	*
-	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-07
-	*
-	* @param[in] $idn_id (int) Identifiant de l'identité pour laquelle on recherche les Groupes d'appartenance (si précisée, sinon recherche tous les Groupes)
-	* @param[in] $orderBy (string) Code de la colonne sur lequel se fera le tri à l'affichage
-	*
-	* @return Renvoi vrai sur le succès de la mise à jour du Groupe, sinon lève une Exception
-	*/
-		$Request = 'SELECT DISTINCT ' .
-		 'T1.sgr_id, sgr_label, sgr_alert, T2.rgh_id ' .
-		 'FROM sgr_secrets_groups AS T1 ' .
-		 'LEFT JOIN prsg_profiles_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' ;
-		
-		if ( $idn_id != '' ) {
-			$Request .= 
-			 'LEFT JOIN idpr_identities_profiles AS T3 ON T2.prf_id = T3.prf_id ' .
-			 'WHERE T3.idn_id = :idn_id ';
-		}
-		
-		if ( $rgh_id != '' ) {
-			if ( strpos( $Request, 'WHERE' ) === false ) {
-				$Request .= 'WHERE T2.rgh_id >= :rgh_id ';
-			} else {
-				$Request .= 'AND T2.rgh_id >= :rgh_id ';
-			}
-		}
-		
-		switch( $orderBy ) {
-		 default:
-		 case 'label':
-			$Request .= 'ORDER BY sgr_label ';
-			
-			break;
-
-		 case 'label-desc':
-			$Request .= 'ORDER BY sgr_label DESC ';
-			
-			break;
-
-		 case 'alert':
-			$Request .= 'ORDER BY sgr_alert ';
-			
-			break;
-
-		 case 'alert-desc':
-			$Request .= 'ORDER BY sgr_alert DESC ';
-			
-			break;
-		}
-		
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( $idn_id != '' ) {
-			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-		if ( $rgh_id != '' ) {
-			if ( ! $Result->bindParam( ':rgh_id', $rgh_id, PDO::PARAM_INT ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Data = array();
-		
-		while ( $Occurrence = $Result->fetchObject() ) {
-			$Data[ $Occurrence->sgr_id ] = $Occurrence;
-		}
- 
- 		return $Data;
-	}
-
-
-	/* -------------------
-	** Récupère les informations d'un Groupe.
-	*/
-	public function get( $sgr_id ) {
-		$Data = false;
-		
-		$Request = 'SELECT ' .
-		 'sgr_label, sgr_alert ' .
-		 'FROM sgr_secrets_groups ' .
-		 'WHERE sgr_id = :sgr_id ' ;
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		return $Result->fetchObject() ;
-	}
-
-
-	/* ----------------------
-	** Supprime un Groupe.
-	*/
-	public function delete( $sgr_id ) {
-		/*
-		** Démarre la transaction.
-		*/
-		$this->beginTransaction();
-		
-		
-		if ( ! $Result = $this->prepare( 'DELETE ' .
-		 'FROM sgr_secrets_groups ' .
-		 'WHERE sgr_id = :sgr_id' ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ;
-		
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-
-		/*
-		** Détruit les associations entre ce Groupe et
-		** les Profils.
-		*/
-		if ( ! $Result = $this->prepare( 'DELETE ' .
-		 'FROM prsg_profiles_secrets_groups ' .
-		 'WHERE sgr_id = :sgr_id' ) ) {
-			$this->rollBack();
-			
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		$Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ;
-
-		if ( ! $Result->execute() ) {
-			$this->rollBack();
-
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-
-		// Sauvegarde l'ensemble des modifications.
-		$this->commit();
- 
-		return true;
-	}
-
-	
-	/* -----------------------------
-	** Ajoute au Groupe un Profil.
-	*/
-	public function addProfile( $sgr_id, $prf_id, $rgh_id = 1 ) {
-		if ( ! $Result = $this->prepare( 'INSERT INTO prsg_profiles_secrets_groups ' .
-			'( prf_id, sgr_id, rgh_id ) ' .
-			'VALUES ( :prf_id, :sgr_id, :rgh_id )' ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':prf_id', $prf_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->bindParam( ':rgh_id', $rgh_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		return true;
-	}
-
-	
-	/* -----------------------------
-	** Supprime au Groupe un Profil.
-	*/
-	public function deleteProfile( $grp_id, $prf_id ) {
-		if ( ! $Result = $this->prepare( 'DELETE FROM prsg_profiles_secrets_groups ' .
-			'WHERE prf_id = :prf_id AND sgr_id = :sgr_id ' ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':prf_id', $prf_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		return true;
-	}
-
-	
-	/* -----------------------------
-	** Supprime au Groupe les Profils.
-	*/
-	public function deleteProfiles( $sgr_id, $prf_id = '' ) {
-		$Request = 'DELETE FROM prsg_profiles_secrets_groups ' ;
-		
-		if ( $sgr_id != '' ) $Request .= 'WHERE sgr_id = :sgr_id ';
-
-		if ( $prf_id != '' ) $Request .= 'WHERE prf_id = :prf_id ';
-			
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( $sgr_id != '' ) {
-			if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-		if ( $prf_id != '' ) {
-			if ( ! $Result->bindParam( ':prf_id', $prf_id, PDO::PARAM_INT ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		return true;
-	}
-
-	
-	/* -----------------------------
-	** Liste les Profils d'un Groupe.
-	*/
-	public function listProfiles( $sgr_id, $Keys = 0 ) {
-		if ( ! $Result = $this->prepare( 'SELECT sgr_id, prf_id, rgh_id ' .
-		 'FROM prsg_profiles_secrets_groups ' .
-		 'WHERE sgr_id = :sgr_id ' ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-				
-		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		$Data = array();
-		
-		while ( $Occurrence = $Result->fetchObject() ) {
-			if ( $Keys == 1 ) {
-				$Key = $Occurrence->sgr_id . '-' . $Occurrence->prf_id .
-				 '-' . $Occurrence->rgh_id ;
-			} else {
-				$Key = '';
-			}
-		
-			$Data[ $Key ] = $Occurrence;
-		}
- 
- 		return $Data;
-	}
-
-
-	/* -------------------
-	** Vérifie si le Groupe est associé.
-	*/
-	public function isAssociated( $sgr_id ) {
-		$Request = 'SELECT ' .
-		 'count(*) ' .
-		 'FROM scr_secrets ' .
-		 'WHERE sgr_id = :sgr_id ' ;
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Valeur = $Result->fetch() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Status = false;
-		
-		if ( $Valeur[ 0 ] != 0 ) $Status = true;
-
-		$Request = 'SELECT ' .
-		 'count(*) ' .
-		 'FROM prsg_profiles_secrets_groups ' .
-		 'WHERE sgr_id = :sgr_id ' ;
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Valeur = $Result->fetch() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( $Valeur[ 0 ] != 0 ) $Status = true;
-		
-		return $Status ;
-	}
-
-
-
-	/* -------------------
-	** Récupère le nombre total de Groupes.
-	*/
-	public function total( $idn_id = '' ) {
-		if ( $idn_id == '' ) {
-			$Request = 'SELECT ' .
-			 'count(*) AS total ' .
-			 'FROM sgr_secrets_groups ' ;
-		} else {
-			$Request = 'SELECT ' .
-			 'count(*) AS total ' .
-			 'FROM idpr_identities_profiles AS T1 ' .
-			 'LEFT JOIN prsg_profiles_secrets_groups AS T2 ON T1.prf_id = T2.prf_id ' .
-			 'WHERE idn_id = :idn_id ';
-//			 sgr_secrets_groups ' ;
-		}
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-		if ( $idn_id != '' ) {
-			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Occurrence = $Result->fetchObject() ;
-		
-		return $Occurrence->total;
-	}
-
-
-
-	/* -------------------
-	** Formate une chaine descriptive du Groupe accédé pour le tracer dans l'historique.
-	*/
-	public function getGroupForHistory( $sgr_id, $oGroup = '' ) {
-		if ( $sgr_id == '' ) return '';
-
-		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');
-
-		$pHTML = new HTML();
-
-    	// Récupère les dernières informations du Secret qui vient d'être modifié.
-    	if ( $oGroup == '' ) $oGroup = $this->get( $sgr_id );
-
-    	// Récupère les libellés pour le message
-    	$Labels = $pHTML->getTextCode( array( 'L_Group', 'L_Alert' ) );
-
-    	return ' (' . $Labels['L_Group'] . ':"' . $oGroup->sgr_label . '", ' .
-    		$Labels['L_Alert'] . ':"' . $oGroup->sgr_alert . '")';
-	}
-
-} // Fin class IICA_Groups
-
-
-// ===========================================================================
-// ===========================================================================
 
 
 class IICA_Secrets extends IICA_DB_Connector {
@@ -581,7 +39,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 	** Crée ou modifie un Secret.
 	*/
 	public function set( $scr_id, $sgr_id, $stp_id, $scr_host, $scr_user, $scr_password,
-	 $scr_comment, $scr_alert, $env_id, $app_id, $scr_expiration_date = NULL ) {
+	 $scr_comment, $scr_alert, $env_id, $app_id, $scr_expiration_date = NULL, $idn_id = NULL ) {
 		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
@@ -600,10 +58,10 @@ class IICA_Secrets extends IICA_DB_Connector {
 		if ( $scr_id == '' ) {
 			$Request = 'INSERT INTO scr_secrets ' .
 				'( sgr_id, stp_id, scr_host, scr_user, scr_password, scr_comment, ' .
-				'scr_alert, scr_creation_date, env_id, app_id, scr_expiration_date ) ' .
+				'scr_alert, scr_creation_date, env_id, app_id, scr_expiration_date, idn_id ) ' .
 				'VALUES ( :sgr_id, :stp_id, :scr_host, :scr_user, :scr_password, ' .
 				':scr_comment, :scr_alert, "' . date( 'Y-m-d H:n:s' ) . '", :env_id, :app_id, ' .
-				':scr_expiration_date ) ';
+				':scr_expiration_date, :idn_id ) ';
 
 			if ( ! $Result = $this->prepare( $Request ) ) {
 				$Error = $Result->errorInfo();
@@ -614,7 +72,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 				'scr_id = :scr_id, sgr_id = :sgr_id, stp_id = :stp_id, scr_host = :scr_host, ' .
 				'scr_user = :scr_user, scr_password = :scr_password, scr_comment = :scr_comment, ' .
 				'scr_alert = :scr_alert, scr_modification_date = "' . date( 'Y-m-d H:n:s' ) . '", ' .
-				'env_id = :env_id, app_id = :app_id, scr_expiration_date = :scr_expiration_date ' .
+				'env_id = :env_id, app_id = :app_id, scr_expiration_date = :scr_expiration_date, ' .
+				'idn_id = :idn_id ' .
 				'WHERE scr_id = :scr_id';
 
 			if ( ! $Result = $this->prepare( $Request ) ) {
@@ -692,6 +151,11 @@ class IICA_Secrets extends IICA_DB_Connector {
 		}
 
 		if ( ! $Result->bindParam( ':scr_expiration_date', $scr_expiration_date, PDO::PARAM_STR, 19 ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+				
+		if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -856,11 +320,15 @@ class IICA_Secrets extends IICA_DB_Connector {
 			
 		}
 
+		if ( $Where == '' ) $Where = 'WHERE T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ';
+		else $Where .= 'AND ( T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ';
+
 		$Request = 'SELECT DISTINCT ' .
 		 'scr_id, T1.app_id, app_name, scr_host, scr_user, scr_comment, scr_alert, ' .
 		 'T1.sgr_id, sgr_label, sgr_alert, scr_expiration_date, ' .
 		 'T1.stp_id, stp_name, ' .
-		 'T1.env_id, env_name ' .
+		 'T1.env_id, env_name, ' .
+		 'T1.idn_id ' .
 		 'FROM scr_secrets AS T1 ' .
 		 'LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' .
 		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
@@ -1027,26 +495,23 @@ class IICA_Secrets extends IICA_DB_Connector {
 	public function listSecrets2( $searchSecret = '', $idn_id = '', $Administrator = false, $orderBy = '' ) {
 		$Data = false;
 
-		$Where = '';
-		
 
-		if ( $Administrator === false ) {
-			$Where = 'WHERE T6.idn_id = :idn_id AND (';
-		}
-		
-		if ( $Where == '' ) $Where .= 'WHERE ';
+		if ( $Administrator === false ) $Where = 'WHERE T6.idn_id = :idn_id ';
+		else $Where = 'WHERE ( T1.idn_id IS NULL OR T1.idn_id = :idn_id ) ';
 
-		$Where .= 'T2.sgr_label like :secret ' .
+		$Where1 = '';
+		
+		if ( $searchSecret != '' ) {
+			$Where1 = 'AND ( T2.sgr_label like :secret ' .
 			'OR T3.stp_name like :secret ' .
 			'OR T4.env_name like :secret ' .
 			'OR T7.app_name like :secret ' .
 			'OR T1.scr_host like :secret ' .
 			'OR T1.scr_user like :secret ' .
 			'OR T1.scr_comment like :secret ' .
-			'OR T1.scr_expiration_date like :secret ';
+			'OR T1.scr_expiration_date like :secret ) ';
 
-		if ( $Administrator === false ) {
-			$Where .= ') ' ;
+			$Where .= $Where1;
 		}
 
 
@@ -1054,7 +519,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 		 'scr_id, T1.app_id, app_name, scr_host, scr_user, scr_comment, scr_alert, ' .
 		 'T1.sgr_id, sgr_label, sgr_alert, scr_expiration_date, ' .
 		 'T1.stp_id, stp_name, ' .
-		 'T1.env_id, env_name ' .
+		 'T1.env_id, env_name, ' .
+		 'T1.idn_id ' .
 		 'FROM scr_secrets AS T1 ' .
 		 'LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' .
 		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
@@ -1068,6 +534,19 @@ class IICA_Secrets extends IICA_DB_Connector {
 		}
 		 
 		$Request .= $Where ;
+
+		if ( $Administrator === false ) {
+			$Request .= 'UNION ALL
+			SELECT DISTINCT scr_id, T1.app_id, app_name, scr_host, scr_user, scr_comment, scr_alert, T1.sgr_id, sgr_label, sgr_alert,
+			 scr_expiration_date, T1.stp_id, stp_name, T1.env_id, env_name, T1.idn_id
+			FROM scr_secrets AS T1
+			LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id
+			LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id
+			LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id
+			LEFT JOIN app_applications AS T7 ON T1.app_id = T7.app_id
+			WHERE T1.idn_id = :idn_id ' . $Where1 ;
+		}
+
 
 		switch( $orderBy ) {
 		 default:
@@ -1152,14 +631,16 @@ class IICA_Secrets extends IICA_DB_Connector {
 		}
 
 
-		$searchSecret = '%' . $searchSecret . '%';
-		if ( ! $Result->bindParam( ':secret', $searchSecret, PDO::PARAM_STR, 30 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $searchSecret != '' ) {
+			$searchSecret = '%' . $searchSecret . '%';
+			if ( ! $Result->bindParam( ':secret', $searchSecret, PDO::PARAM_STR, 30 ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 
 		if ( $idn_id != '' ) {
-			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_STR, 30 ) ) {
+			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
@@ -1198,13 +679,15 @@ class IICA_Secrets extends IICA_DB_Connector {
 		 'scr_creation_date, scr_modification_date, T1.app_id, app_name, scr_expiration_date, ' .
 		 'T1.sgr_id, sgr_label, sgr_alert, ' .
 		 'T1.stp_id, stp_name, ' .
-		 'T1.env_id, env_name ' .
+		 'T1.env_id, env_name, ' .
+		 'T1.idn_id ' .
 		 'FROM scr_secrets AS T1 ' .
 		 'LEFT JOIN sgr_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' .
 		 'LEFT JOIN stp_secret_types AS T3 ON T1.stp_id = T3.stp_id ' .
 		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ' .
 		 'LEFT JOIN app_applications AS T5 ON T1.app_id = T5.app_id ' .
-		 'WHERE scr_id = :scr_id ' ;
+		 'WHERE scr_id = :scr_id ' .
+		 'AND ( T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ';
 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -1239,7 +722,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		} else {
 			$Occurrence->scr_password = $Secret_Server->mc_decrypt( $Occurrence->scr_password );
 		}
-		
+
 		return $Occurrence;
 	}
 
@@ -1250,7 +733,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 	public function delete( $scr_id ) {
 		if ( ! $Result = $this->prepare( 'DELETE ' .
 		 'FROM scr_secrets ' .
-		 'WHERE scr_id = :scr_id' ) ) {
+		 'WHERE scr_id = :scr_id ' .
+		 'AND ( T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ' ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -1284,7 +768,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 			 'FROM idpr_identities_profiles AS T1 ' .
 			 'LEFT JOIN prsg_profiles_secrets_groups AS T2 ON T1.prf_id = T2.prf_id ' .
 			 'LEFT JOIN scr_secrets AS T3 ON T2.sgr_id_id = T3.sgr_id ' .
-			 'WHERE idn_id = :idn_id ';
+			 'WHERE idn_id = :idn_id ' .
+			 'AND ( T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ';
 		}
 		
 
@@ -1551,150 +1036,5 @@ class IICA_Secrets extends IICA_DB_Connector {
     }
 
 } // Fin class IICA_Secrets
-
-
-
-// ===================================
-class IICA_Referentials extends IICA_DB_Connector {
-/**
-* Cette classe gère les référentiels internes.
-*
-* PHP version 5
-* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-* @author Pierre-Luc MARY
-* @version 1.1
-* @date 2012-11-19
-*/
-
-	/* ===============================
-	** Connexion à la base de données.
-	*/
-	public function __construct() {
-		parent::__construct();
-		
-		return true;
-	}
-
-
-	/* -------------------
-	** Lister les Droits.
-	*/
-	public function listRights() {
-		$Data = false;
-		
-		$Request = 'SELECT ' .
-		 'rgh_id, rgh_name ' .
-		 'FROM rgh_rights ' ;
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Data = array();
-		
-		while ( $Occurrence = $Result->fetchObject() ) {
-			$Data[] = $Occurrence;
-		}
- 
- 		return $Data;
-	}
-
-
-	/* -------------------
-	** Lister les Types de Secret.
-	*/
-	public function listSecretTypes() {
-		$Data = false;
-		
-		$Request = 'SELECT ' .
-		 'stp_id, stp_name ' .
-		 'FROM stp_secret_types ' ;
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Data = array();
-		
-		while ( $Occurrence = $Result->fetchObject() ) {
-			$Data[] = $Occurrence;
-		}
- 
- 		return $Data;
-	}
-
-
-	/* -------------------
-	** Lister les Environnements.
-	*/
-	public function listEnvironments() {
-		$Data = false;
-		
-		$Request = 'SELECT ' .
-		 'env_id, env_name ' .
-		 'FROM env_environments ' ;
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Data = array();
-		
-		while ( $Occurrence = $Result->fetchObject() ) {
-			$Data[] = $Occurrence;
-		}
- 
- 		return $Data;
-	}
-
-
-	/* -------------------
-	** Lister les Actions dans l'Historique.
-	*/
-	public function listActions() {
-		$Data = false;
-		
-		$Request = 'SELECT ' .
-		 'hac_id, hac_name ' .
-		 'FROM hac_history_actions_codes ' ;
-
-		if ( ! $Result = $this->prepare( $Request ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		if ( ! $Result->execute() ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-		
-		$Data = array();
-		
-		while ( $Occurrence = $Result->fetchObject() ) {
-			$Data[] = $Occurrence;
-		}
- 
- 		return $Data;
-	}
-
-} // Fin class IICA_Referentials
 
 ?>

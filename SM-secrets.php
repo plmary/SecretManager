@@ -999,7 +999,9 @@ switch( $Action ) {
         'L_Alert' => $L_Alert,
         'L_Comment' => $L_Comment,
         'L_Expiration_Date' => $L_Expiration_Date,
-        'L_Mandatory_Field' => $L_Mandatory_Field
+        'L_Mandatory_Field' => $L_Mandatory_Field,
+        'L_Personal' => $L_Personal
+
     ) );
 
     exit();
@@ -1012,17 +1014,23 @@ switch( $Action ) {
 		if ( isset( $_POST[ 'Alert' ] ) ) $Alert = 1;
 		else $Alert = 0;
 
-		if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) ==
-		 -1 ) {
-		    echo json_encode( array(
-		        'Status' => 'error',
-		        'Message' => $L_Invalid_Value . ' (sgr_id)'
-		    ) );
 
-			exit();
-		}
+		if ( $_POST['Personal'] == false ) {
+			if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) ==
+			 -1 ) {
+			    echo json_encode( array(
+			        'Status' => 'error',
+			        'Message' => $L_Invalid_Value . ' (sgr_id)'
+			    ) );
+
+				exit();
+			}
 		
-		$Group = $Groups->get( $sgr_id );
+			$Group = $Groups->get( $sgr_id );
+		} else {
+			$sgr_id = 0;
+		}
+
 		
 		if ( ($stp_id = $Security->valueControl( $_POST[ 'stp_id' ], 'NUMERIC' )) ==
 		 -1 ) {
@@ -1033,6 +1041,7 @@ switch( $Action ) {
 		    
 			exit();
 		}
+
 		
 		if ( ($env_id = $Security->valueControl( $_POST[ 'env_id' ], 'NUMERIC' )) ==
 		 -1 ) {
@@ -1048,9 +1057,9 @@ switch( $Action ) {
         $Delete_Right = 0;
 
         if ( ! $PageHTML->is_administrator() ) {
-            if ( array_key_exists( $_POST['sgr_id'], $groupsRights ) ) {
-                $Update_Right = in_array( 3, $groupsRights[ $_POST['sgr_id' ] ] );
-                $Delete_Right = in_array( 4, $groupsRights[ $_POST['sgr_id' ] ] );
+            if ( array_key_exists( $sgr_id, $groupsRights ) ) {
+                $Update_Right = in_array( 3, $groupsRights[ $sgr_id ] );
+                $Delete_Right = in_array( 4, $groupsRights[ $sgr_id ] );
             }
         }
 
@@ -1066,6 +1075,11 @@ switch( $Action ) {
  
 		$scr_id = '';
 
+		if ( $_POST['Personal'] == true ) {
+			$sgr_id = 0;
+			$idn_id = $_SESSION['idn_id'];
+		}
+
 		try {
 			$Secrets->set( '', $sgr_id, $stp_id, 
 				$Security->valueControl( $_POST[ 'Host' ] ),
@@ -1073,7 +1087,7 @@ switch( $Action ) {
 				$Security->valueControl( $_POST[ 'Password' ] ),
 				$Security->valueControl( $_POST[ 'Comment' ] ), $Alert, 
 				$env_id, $Security->valueControl( $_POST[ 'Application' ] ),
-				$Security->valueControl( $_POST[ 'Expiration_Date' ] ) );
+				$Security->valueControl( $_POST[ 'Expiration_Date' ] ), $idn_id );
 			 
 			$scr_id = $Secrets->LastInsertId;
 
@@ -1129,11 +1143,16 @@ switch( $Action ) {
 
 	    $alert_message = $Labels[ $L_Message ] . ' [' . $scr_id . ']';
 
+		if ( $_POST['Personal'] == true ) {
+			$sgr_label = $L_Personal;
+		} else {
+			$sgr_label = $Group->sgr_label;
+		}
 
 	    if ( $Verbosity_Alert == 2 ) {
 			$oSecret = new stdClass();
 
-	    	$oSecret->sgr_label = $Group->sgr_label;
+	    	$oSecret->sgr_label = $sgr_label;
 	    	$oSecret->stp_name = $Labels[ 'L_Secret_Type_' . $stp_id ];
 	    	$oSecret->env_name = $Labels[ 'L_Environment_' . $env_id ];
 	    	$oSecret->app_name = $_POST[ 'Application' ];
@@ -1208,7 +1227,7 @@ switch( $Action ) {
 	}
 
 	if ( $Authentication->is_administrator()
-	 or $accessControl ) {
+	 or $accessControl or $Secret->sgr_id == 0 ) {
 		$Resultat = array( 'Statut' => 'succes',
 		 'group' => $Secret->sgr_label,
 		 'l_group' => $L_Group,
@@ -1224,8 +1243,12 @@ switch( $Action ) {
 		 'l_user' => $L_User,
 		 'l_nothing' => $L_Nothing,
 		 'l_invalid_mother_key' => $L_ERR_MOTHER_KEY_CORRUPTED,
-		 'password' => stripslashes( $Secret->scr_password ),
+		 'password' => $Security->XSS_Protection( $Secret->scr_password ),
 		 'l_password' => $L_Password );
+	} else {
+		$Resultat = array( 'Statut' => 'error',
+		 'Message' => $L_No_Authorize );
+
 	}
 
 	echo json_encode( $Resultat );
@@ -2077,6 +2100,34 @@ switch( $Action ) {
  	if ( $Verbosity_Alert == 2 ) $alert_message .= $MyApplications->getMessageForHistory( $app_id );
 
 	$Security->updateHistory( 'L_ALERT_APP', $alert_message, 3, $L_Status );
+
+ 	exit();
+
+
+ case 'CTRL_SRV_X': // Réponse AJAX
+ 	include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+ 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+
+ 	$SecretServer = new Secret_Server();
+
+ 	try {
+ 		list( $srv_Status, $srv_Operateur, $srv_Date ) = $SecretServer->SS_statusMotherKey();
+
+ 		if ( $srv_Status == 'OK' ) $Status = 'success';
+ 		else $Status = 'error';
+
+    	$Resultat = array(
+        	'Status' => $Status,
+        	'Message' => $srv_Status
+    	);
+    } catch( Exception $e ) {
+    	$Resultat = array(
+        	'Status' => 'error',
+        	'Message' => ${$e->getMessage()}
+    	);    	
+    }
+
+	echo json_encode( $Resultat );
 
  	exit();
 }

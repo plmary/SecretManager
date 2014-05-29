@@ -104,6 +104,8 @@
 	$L_Level = 'Level';
 	$L_Gravity_Level = 'Gravity level';
 
+	$L_Personal = 'Personal';
+
 	$FLAG_ERROR = 0;
 	$FLAG_SUCCESS = 1;
 

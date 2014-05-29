@@ -177,6 +177,7 @@ CREATE TABLE scr_secrets (
                 stp_id BIGINT NOT NULL,
                 env_id BIGINT NOT NULL,
                 app_id BIGINT,
+                idn_id BIGINT,
                 scr_host VARCHAR(255) NOT NULL,
                 scr_user VARCHAR(100) NOT NULL,
                 scr_password LONGBLOB NOT NULL,

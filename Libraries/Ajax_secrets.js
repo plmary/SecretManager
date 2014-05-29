@@ -41,6 +41,26 @@ function hideModal() {
 // Traite l'affichage d'un secret.
 function viewPassword( scr_id ){
     if ($('#inputlabel').val() != '') {
+        var S_Status = 1;
+
+        $.ajax({
+            async: false,
+            url: 'SM-secrets.php?action=CTRL_SRV_X',
+            type: 'POST',
+            dataType: 'json',
+            success: function(reponse) {
+                if ( reponse['Status'] != 'success' ) {
+                    S_Status = 0;
+                    showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+                }
+            },
+            error: function(reponse) {
+                alert('Erreur sur serveur : ' + reponse['responseText']);
+            }
+        });
+
+        if ( S_Status == 0 ) return;
+
         $.ajax({
             url: '../../SM-secrets.php?action=SCR_V',
             type: 'POST',
@@ -414,6 +434,26 @@ function deleteGroup( Id ) {
 // ============================================
 // Gestion des créations de Profil à la volée et dans une "modale".
 function getCreateSecret( sgr_id ){
+    var S_Status = 1;
+
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=CTRL_SRV_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            if ( reponse['Status'] != 'success' ) {
+                S_Status = 0;
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            }
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur : ' + reponse['responseText']);
+        }
+    });
+
+    if ( S_Status == 0 ) return;
+
     var L_Secret_Create,
         L_Group,
         L_Type,
@@ -428,7 +468,8 @@ function getCreateSecret( sgr_id ){
         L_Alert,
         L_Comment,
         L_Expiration_Date,
-        L_Mandatory_Field;
+        L_Mandatory_Field,
+        L_Personal;
 
     $.ajax({
         async: false,
@@ -451,6 +492,7 @@ function getCreateSecret( sgr_id ){
             L_Comment = reponse['L_Comment'];
             L_Expiration_Date = reponse['L_Expiration_Date'];
             L_Mandatory_Field = reponse['L_Mandatory_Field'];
+            L_Personal = reponse['L_Personal'];
         }
     });
 
@@ -506,7 +548,7 @@ function getCreateSecret( sgr_id ){
      '</div>' +
      '<div class="modal-body">' +
      '<div class="row-fluid"style="margin-top:8px;">' +
-     '<table style="margin:10px auto;width:80%">' +
+     '<table style="margin:10px auto;width:90%">' +
      '<tbody>' +
      '<tr>' +
      '<td class="align-right">' + L_Group + '</td>' +
@@ -516,10 +558,12 @@ function getCreateSecret( sgr_id ){
      List_Groups +
      '</select>' +
      '</td>' +
+     '<td class="align-right" id="i_l_personal">' + L_Personal + '</td>' +
+     '<td class="align-left"><input type="checkbox" id="i_personal" /></td>' +
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Type + '</td>' +
-     '<td>' +
+     '<td colspan="3">' +
      '<select id="i_stp_id">' +
      '  <option value="-">---</option>'+
      List_Types +
@@ -528,7 +572,7 @@ function getCreateSecret( sgr_id ){
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Environment + '</td>' +
-     '<td>' +
+     '<td colspan="3">' +
      '<select id="i_env_id">' +
      '  <option value="-">---</option>'+
      List_Environments +
@@ -537,7 +581,7 @@ function getCreateSecret( sgr_id ){
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Application + '</td>' +
-     '<td>' +
+     '<td colspan="3">' +
      '<select id="i_app_id">' +
      '  <option value="-">---</option>'+
      List_Applications +
@@ -546,30 +590,30 @@ function getCreateSecret( sgr_id ){
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Host + '</td>' +
-     '<td><input id="i_Host" type="text" size="100" maxlength="255" /></td>' +
+     '<td colspan="3"><input id="i_Host" type="text" size="100" maxlength="255" /></td>' +
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_User + '</td>' +
-     '<td><input id="i_User" type="text" size="100" maxlength="100\" /></td>' +
+     '<td colspan="3"><input id="i_User" type="text" size="100" maxlength="100\" /></td>' +
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Password + '</td>' +
-     '<td><input name="Password" id="i_Password" type="text" size="64" maxlength="64" onkeyup="checkPassword(\'i_Password\', \'Result\', 3, 8);" onfocus="checkPassword(\'i_Password\', \'Result\', 3, 8);"/><a class="button" onclick="generatePassword( \'i_Password\', 3, 8 )">' + L_Generate + '</a><img id="Result" class="no-border" width="16" height="16" alt="Ok" src="' + Parameters['URL_PICTURES'] + '/blank.gif" /></td>' +
-     "</tr>" +
-     "<tr>" +
-     "<td class=\"align-right\">" + L_Expiration_Date + "</td>" +
-     "<td><input id=\"i_Expiration_Date\" type=\"text\" size=\"19\" maxlength=\"19\" /></td>" +
-     "</tr>" +
-     "<tr>" +
-     "<td class=\"align-right\">" + L_Comment + "</td>" +
-     "<td><input id=\"i_Comment\" type=\"text\" size=\"100\" maxlength=\"100\" /></td>" +
-     "</tr>" +
-     "<tr>" +
-     "<td class=\"align-right\">" + L_Alert + "</td>" +
-     "<td><input id=\"i_Alert\" type=\"checkbox\" /></td>" +
-     "</tr>" +
-     "</tbody>" +
-     "</table>" +
+     '<td colspan="3"><input name="Password" id="i_Password" type="text" size="64" maxlength="64" onkeyup="checkPassword(\'i_Password\', \'Result\', 3, 8);" onfocus="checkPassword(\'i_Password\', \'Result\', 3, 8);"/><a class="button" onclick="generatePassword( \'i_Password\', 3, 8 )">' + L_Generate + '</a><img id="Result" class="no-border" width="16" height="16" alt="Ok" src="' + Parameters['URL_PICTURES'] + '/blank.gif" /></td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Expiration_Date + '</td>' +
+     '<td colspan="3"><input id="i_Expiration_Date" type="text" size="19" maxlength="19" /></td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Comment + '</td>' +
+     '<td colspan="3"><input id="i_Comment" type="text" size="100" maxlength="100" /></td>' +
+     '</tr>' +
+     '<tr>' +
+     '<td class="align-right">' + L_Alert + '</td>' +
+     '<td colspan="3"><input id="i_Alert" type="checkbox" /></td>' +
+     '</tr>' +
+     '</tbody>' +
+     '</table>' +
      '</div>' +
      '</div>' +
      '<div class="modal-footer">' +
@@ -582,6 +626,15 @@ function getCreateSecret( sgr_id ){
 
     // Met le focus sur le 1er champ du calque.
     $('#i_sgr_id').focus();
+
+    // Masque la modale quand on clique un objet de class "close"
+    $('#i_personal').on('click', function() {
+        if ( $("#i_personal").is(':checked') == true ) {
+            $('#i_sgr_id').attr('disabled', true);
+        } else {
+            $('#i_sgr_id').attr('disabled', false);
+        }
+    });
 
 
     $('#i_sgr_id, #i_stp_id, #i_env_id, #i_Application, #i_Host, #i_User, #i_Password, '+
@@ -614,10 +667,17 @@ function getCreateSecret( sgr_id ){
 // ============================================
 // Gestion des créations de Profil à la volée et dans une "modale".
 function CreateSecret( sgr_id ){
-    var ID_Group = $('#i_sgr_id').val();
-    var L_Group = $('#i_sgr_id option:selected').text();
+    var Personal = $('#i_personal').is(':checked');
+
+    if ( Personal == false ) {
+        var ID_Group = $('#i_sgr_id').val();
+        var L_Group = $('#i_sgr_id option:selected').text();
+    } else {
+        var ID_Group = 0;
+        var L_Group = '<b>' + $('#i_l_personal').text() + '</b>';
+    }
     
-    if ( ID_Group == '-' ) {
+    if ( ID_Group == '-' && Personal == false ) {
         $('#i_sgr_id').focus();
         $('#i_sgr_id').addClass( 'mandatory' );
         return;
@@ -687,7 +747,8 @@ function CreateSecret( sgr_id ){
 			'Expiration_Date': Expiration_Date,
 			'Comment': Comment,
 			'Alert': Alert,
-			'Application': ID_Application
+			'Application': ID_Application,
+            'Personal': Personal
         }),
         dataType: 'json',
         success: function(reponse) {

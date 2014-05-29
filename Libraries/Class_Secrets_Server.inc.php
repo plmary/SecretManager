@@ -340,9 +340,10 @@ public function SS_statusMotherKey() {
 	* @date 2013-03-10
 	*
 	*
-	* @return array Retourne un tableau ou le 1er élément est le statut de la clé
-	* en mémoire (obligatoirement "OK"), le 2ème élément est le nom de l'opérateur qui
-	* a créé la clé et le 3ème élément est la date de création de la clé. Sinon,
+	* @return array Retourne un tableau où :
+	*  le 1er élément est le statut de la clé en mémoire (obligatoirement "OK"),
+	*  le 2ème élément est le nom de l'opérateur qui a créé la clé
+	*  et le 3ème élément est la date de création de la clé. Sinon,
 	* lève une Exception.
 	*/
 	$Result = $this->__sendServerSocket( session_id() . "###status###\n" );

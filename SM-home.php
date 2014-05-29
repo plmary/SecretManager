@@ -162,14 +162,23 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 			$Host = '<a href="' . $Host . '" target="_blank">' . $Host . '</a>';
 		}
 
-		print( "       <tr class=\"surline\" id=\"" . $Secret->scr_id . "\" " .
+		$Secret->sgr_label = $Security->XSS_Protection( $Secret->sgr_label );
+
+		if ( $Secret->sgr_id == 0 ) {
+			$Secret->sgr_label = '<b>' . $GLOBALS['L_Personal'] . '</b>';
+			$Background = 'surline1';
+		} else {
+			$Background = 'surline';
+		}
+
+		print( "       <tr class=\"" . $Background . "\" id=\"" . $Secret->scr_id . "\" " .
 		 "style=\"cursor: pointer;\" data-total=\"" . $Total . "\" " .
 		 "data-cancel=\"" . $GLOBALS['L_Cancel'] . "\" data-modify=\"" . $GLOBALS['L_Modify'] . "\" " .
 		 "data-delete=\"" . $GLOBALS['L_Delete'] . "\">\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Group'] ."px; " .
 		 "width:". $GLOBALS['S_Group'] ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\" data-id=\"" . $Secret->sgr_id . "\">" . 
-		 $Security->XSS_Protection( $Secret->sgr_label ) . "</td>\n" .
+		 $Secret->sgr_label . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Type'] ."px; " .
 		 "width:". $GLOBALS['S_Type'] ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\" data-id=\"" . $Secret->stp_id . "\">" . ${$Secret->stp_name} . "</td>\n" .
@@ -230,7 +239,7 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 		$Buttons = '';
 		$B_Rights = '';
 		
-		if ( $PageHTML->is_administrator() or $Update_Right ) {
+		if ( $PageHTML->is_administrator() or $Update_Right or $Secret->idn_id == $_SESSION['idn_id'] ) {
 			$Buttons .= "         <a class=\"simple\" href=\"javascript:setSecret(" . $Secret->scr_id .
 			 ")\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_edit.png\" alt=\"" .
 			 $GLOBALS['L_Modify'] . "\" title=\"" . $GLOBALS['L_Modify'] . "\" /></a>\n";
@@ -238,7 +247,7 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 			$B_Rights .= 'M';
 		}
 		
-		if ( $PageHTML->is_administrator() or $Delete_Right ) {
+		if ( $PageHTML->is_administrator() or $Delete_Right or $Secret->idn_id == $_SESSION['idn_id'] ) {
 			$Buttons .= "         <a class=\"simple\" href=\"javascript:setSecret(" . $Secret->scr_id .
 			 ", 'D')\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_drop.png\" alt=\"" .
 			 $GLOBALS['L_Delete'] . "\" title=\"" . $GLOBALS['L_Delete'] . "\" /></a>\n";
@@ -526,7 +535,9 @@ switch( $Action ) {
             'L_Alert' => $L_Alert,
             'alert' => $Secret->scr_alert,
             'L_Password' => $L_Password,
-            'Password' => $Secret->scr_password
+            'Password' => $Secret->scr_password,
+            'L_Personal' => $L_Personal,
+            'Owner' => $Secret->idn_id
             );
     } catch( Exception $e ) {
         $Resultat = array(
@@ -543,10 +554,13 @@ switch( $Action ) {
  case 'AJAX_S':
     // Cet appel sauvegarde les informations modifiées d'un secret.
 
+ 	if ( $_POST['Personal'] == 1 ) $idn_id = $_SESSION['idn_id'];
+ 	else $idn_id = NULL;
+
     $Secret = $Secrets->set( $_POST['scr_id'], $_POST['sgr_id'], $_POST['stp_id'],
         $_POST['scr_host'], $_POST['scr_user'], $_POST['scr_password'],
 	    $_POST['scr_comment'], $_POST['scr_alert'], $_POST['env_id'],
-	    $_POST['scr_application'], $_POST['scr_expiration_date'] );
+	    $_POST['scr_application'], $_POST['scr_expiration_date'], $idn_id );
 
     if ( $Secret === true ) {
         $Status = 'success';

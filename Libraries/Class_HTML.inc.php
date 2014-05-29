@@ -23,7 +23,7 @@ public function __construct( $DB_Access = 1 ) {
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
 * @version 1.0
-* @date 2013-02-19
+* @date 2014-05-21
 *
 * @param[in] $DB_Access Par défaut, il y a un accès (une ouverture) de la base avec les informations par défaut.
 *
@@ -32,7 +32,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.8-5'; // Version de l'outil
+	$this->Version = '0.8-6'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	

@@ -39,6 +39,26 @@ $(document).ready( function() {
 
 
 function setSecret( secret_id, action ) {
+    var S_Status = 1;
+
+    $.ajax({
+        async: false,
+        url: 'SM-secrets.php?action=CTRL_SRV_X',
+        type: 'POST',
+        dataType: 'json',
+        success: function(reponse) {
+            if ( reponse['Status'] != 'success' ) {
+                S_Status = 0;
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            }
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur : ' + reponse['responseText']);
+        }
+    });
+
+    if ( S_Status == 0 ) return;
+
     var action = action || '';
     var ListeApplications;
     
@@ -73,23 +93,29 @@ function setSecret( secret_id, action ) {
             if ( $('#' + secret_id + ' td p').length == 0 ) {
                 if ( reponse['statut'] == 'success' ) {
                     var group, group_id, type, type_id, environment, environment_id, application,
-                        host, user, expiration, comment, right, dirname, L_Edit, L_Delete, L_View;
-                    $('tr#' + secret_id + ' td').each( function( index ) {
-                        if ( index == 0 ) {                        
-                            group_id = $(this).attr('data-id');
+                        host, user, expiration, comment, right, dirname, L_Edit, L_Delete, L_View, L_Personal;
 
-                            $.each(reponse['listGroups'], function(attribut, valeur) {
-                                if ( group_id == valeur['sgr_id'] ) {
-                                    var Selected = ' selected';
-                                } else {
-                                    var Selected = '';
-                                }
-                            
-                                group = group + '<option value=' + valeur['sgr_id'] + Selected +
-                                    '>' + valeur['sgr_label'] + '</option>';
-                            });
-                
-                            group_o = $(this).text();                
+                    $('tr#' + secret_id + ' td').each( function( index ) {
+                        if ( index == 0 ) {
+                            if ( reponse['Owner'] == '' || reponse['Owner'] == null ) {
+                                group_id = $(this).attr('data-id');
+
+                                $.each(reponse['listGroups'], function(attribut, valeur) {
+                                    if ( group_id == valeur['sgr_id'] ) {
+                                        var Selected = ' selected';
+                                    } else {
+                                        var Selected = '';
+                                    }
+                                
+                                    group = group + '<option value=' + valeur['sgr_id'] + Selected +
+                                        '>' + valeur['sgr_label'] + '</option>';
+                                });
+                    
+                                group_o = $(this).text();
+                            } else {
+                                group_id = 0;
+                                group = '<b id="i_personal">' + reponse['L_Personal'] + '</b>';
+                            }
                         } else if ( index == 1 ) {
                             type_id = $(this).attr('data-id');
                             
@@ -160,9 +186,17 @@ function setSecret( secret_id, action ) {
                         '<table>' +
                         '<tr>' +
                         '<td><label for="'+'group_'+secret_id+'">' + reponse['L_Group'] + '</label></td>' +
-                        '<td colspan="3"><select id="'+'group_'+secret_id+'" class="input-xlarge"' +
-                        Delete_Mode + '>' + group + '</select></td>' +
-                        '<td><label for="'+'type_'+secret_id+'">' + reponse['L_Type'] + '</label></td>' +
+                        '<td colspan="3">';
+
+                    if ( reponse['Owner'] == '' || reponse['Owner'] == null ) {
+                        newOcc = newOcc + '<select id="'+'group_'+secret_id+'" class="input-xlarge"' +
+                            Delete_Mode + '>' + group + '</select>';
+                    } else {
+                        newOcc = newOcc + group;
+                    }
+
+                        
+                    newOcc = newOcc + '</td><td><label for="'+'type_'+secret_id+'">' + reponse['L_Type'] + '</label></td>' +
                         '<td><select id="'+'type_'+secret_id+'" class="input-medium"' + Delete_Mode + '>' +
                         type +
                         '</select></td>' +
@@ -257,6 +291,14 @@ function save( secret_id ) {
     var scr_alert = $('#alert_'+secret_id).is(':checked');
     var scr_application = $('#application_'+secret_id).val();
     var scr_expiration_date = $('#expiration_'+secret_id).val();
+    var Personal;
+
+    if ( $('#i_personal') ) {
+        Personal = 1;
+        sgr_id = 0;
+    } else {
+        Personal = 0;
+    }
 
     if ( scr_alert == true ) {
         scr_alert = 1;
@@ -269,19 +311,20 @@ function save( secret_id ) {
         type: 'POST',
         data: $.param({
             'scr_id': secret_id, 
-            'sgr_id' : sgr_id,
-            'sgr_name' : sgr_name,
-            'stp_id' : stp_id,
-            'stp_name' : stp_name,
-            'scr_host' : scr_host,
-            'scr_user' : scr_user,
-            'scr_password' : scr_password,
-	        'scr_comment' : scr_comment,
-	        'scr_alert' : scr_alert,
-	        'env_id' : env_id,
-            'env_name' : env_name,
-	        'scr_application' : scr_application,
-	        'scr_expiration_date' : scr_expiration_date
+            'sgr_id': sgr_id,
+            'sgr_name': sgr_name,
+            'stp_id': stp_id,
+            'stp_name': stp_name,
+            'scr_host': scr_host,
+            'scr_user': scr_user,
+            'scr_password': scr_password,
+	        'scr_comment': scr_comment,
+	        'scr_alert': scr_alert,
+	        'env_id': env_id,
+            'env_name': env_name,
+	        'scr_application': scr_application,
+	        'scr_expiration_date': scr_expiration_date,
+            'Personal': Personal
 	        }),
         dataType: 'json', // le résultat est transmit dans un objet JSON
         success: function(reponse) {

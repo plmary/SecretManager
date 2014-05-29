@@ -11,7 +11,7 @@
 */
 
 	$L_ERR_SERVER_NOT_LOADED = 'SecretServer not loaded';
-	$L_ERR_SERVER_NOT_STARTED = 'SecretServer non started';
+	$L_ERR_SERVER_NOT_STARTED = 'SecretServer not started';
 	$L_ERR_MOTHER_KEY_CORRUPTED = "Mother key corrupted or invalid";
 	$L_ERR_NO_CMD_SEND = 'No command send';
 	$L_ERR_NO_SESSION = 'No ID Session';
