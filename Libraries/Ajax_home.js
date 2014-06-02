@@ -253,6 +253,12 @@ function setSecret( secret_id, action ) {
 
                     $('tr#' + secret_id).hide();
                     $(newOcc).insertAfter('tr#' + secret_id);
+
+                    $('#MOD_' + secret_id).keyup(function(e){
+                        if(e.which == 13) {
+                            save(secret_id);
+                        }
+                    });
                 } else {
                     showInfoMessage( reponse['statut'], reponse['message'] );
                 }
@@ -328,9 +334,9 @@ function save( secret_id ) {
 	        }),
         dataType: 'json', // le résultat est transmit dans un objet JSON
         success: function(reponse) {
-            showInfoMessage( reponse['status'], reponse['message'] ); // SecretManager.js
+            showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
             
-            if ( reponse['status'] == 'success' ) {
+            if ( reponse['Status'] == 'success' ) {
                 $.ajax({
                     url: '../SM-home.php?action=AJAX_R',
                     type: 'POST',
@@ -386,6 +392,10 @@ function remove( secret_id ) {
             if ( reponse['status'] == 'success' ) {
                 $('#' + secret_id ).remove();
                 $('#MOD_' + secret_id ).remove();
+
+                var Total = $('#total').text();
+                Total = Number(Total) - 1;
+                $('#total').text( Total );
             }
         },
         error: function(reponse) {

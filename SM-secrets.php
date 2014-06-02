@@ -1112,7 +1112,20 @@ switch( $Action ) {
 		        'Status' => 'error',
 		        'Message' => $L_ERR_CREA_Secret
 		    ) );
+
+		    exit();
 		} catch( Exception $e ) {
+			if ( $e->getCode() == 1062 ) {
+				$L_Message = 'L_ERR_DUPL_Secret';
+
+                echo json_encode( array(
+                    'Status' => 'error',
+                    'Message' => ${$L_Message}
+                ) );
+
+                exit();
+			}
+
 			$L_Level = LOG_ERR;
 			$L_Message = 'L_ERR_CREA_Secret';		
 
@@ -1127,15 +1140,8 @@ switch( $Action ) {
                     'Status' => 'error',
                     'Message' => $Error
                 ) );
-			} else {
-				if ( $e->getCode() == 1062 ) {
-					$L_Message = 'L_ERR_DUPL_Secret';
-
-                    echo json_encode( array(
-                        'Status' => 'error',
-                        'Message' => ${$L_Message}
-                    ) );
-				}
+                
+                exit();
 			}
 		}
 

@@ -734,7 +734,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		if ( ! $Result = $this->prepare( 'DELETE ' .
 		 'FROM scr_secrets ' .
 		 'WHERE scr_id = :scr_id ' .
-		 'AND ( T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ' ) ) {
+		 'AND ( idn_id IS NULL OR idn_id = ' . $_SESSION['idn_id'] . ' ) ' ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}

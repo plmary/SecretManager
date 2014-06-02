@@ -557,10 +557,36 @@ switch( $Action ) {
  	if ( $_POST['Personal'] == 1 ) $idn_id = $_SESSION['idn_id'];
  	else $idn_id = NULL;
 
-    $Secret = $Secrets->set( $_POST['scr_id'], $_POST['sgr_id'], $_POST['stp_id'],
-        $_POST['scr_host'], $_POST['scr_user'], $_POST['scr_password'],
-	    $_POST['scr_comment'], $_POST['scr_alert'], $_POST['env_id'],
-	    $_POST['scr_application'], $_POST['scr_expiration_date'], $idn_id );
+ 	try {
+	    $Secret = $Secrets->set( $_POST['scr_id'], $_POST['sgr_id'], $_POST['stp_id'],
+	        $_POST['scr_host'], $_POST['scr_user'], $_POST['scr_password'],
+		    $_POST['scr_comment'], $_POST['scr_alert'], $_POST['env_id'],
+		    $_POST['scr_application'], $_POST['scr_expiration_date'], $idn_id );
+    } catch( Exception $e ) {
+		if ( $e->getCode() == 1062 ) {
+			$L_Message = 'L_ERR_DUPL_Secret';
+
+            echo json_encode( array(
+                'Status' => 'error',
+                'Message' => ${$L_Message}
+            ) );
+
+            exit();
+		}
+
+		$Error = $e->getMessage();
+		
+		if ( isset( ${$Error} ) ) $Error = ${$Error};
+
+        $Resultat = array(
+            'Status' => 'error',
+            'Message' => $Error
+            );
+        
+	    echo json_encode( $Resultat );
+	    exit();
+    }
+
 
     if ( $Secret === true ) {
         $Status = 'success';
@@ -575,8 +601,8 @@ switch( $Action ) {
     }
 
     $Resultat = array(
-        'status' => $Status,
-        'message' => $Message
+        'Status' => $Status,
+        'Message' => $Message
         );
 
     echo json_encode( $Resultat );
