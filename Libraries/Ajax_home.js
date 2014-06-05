@@ -43,7 +43,7 @@ function setSecret( secret_id, action ) {
 
     $.ajax({
         async: false,
-        url: 'SM-secrets.php?action=CTRL_SRV_X',
+        url: 'SM-secrets.php?action=CTRL_SRV_X', // Vérifie que le SecretServer est bien démarré.
         type: 'POST',
         dataType: 'json',
         success: function(reponse) {
@@ -70,7 +70,7 @@ function setSecret( secret_id, action ) {
     
     $.ajax({
         async: false,
-        url: '../SM-secrets.php?action=AJAX_L_APP_X',
+        url: '../SM-secrets.php?action=AJAX_L_APP_X', // Récupère la liste des Applications disponibles
         type: 'POST',
         data: $.param({'scr_id': secret_id}),
         dataType: 'json', // le résultat est transmit dans un objet JSON
@@ -85,7 +85,7 @@ function setSecret( secret_id, action ) {
     cancel();
 
     $.ajax({
-        url: '../SM-home.php?action=AJAX_LV',
+        url: '../SM-home.php?action=AJAX_LV', // Récupère les différents libellés.
         type: 'POST',
         data: $.param({'scr_id': secret_id}),
         dataType: 'json', // le résultat est transmit dans un objet JSON
@@ -299,18 +299,20 @@ function save( secret_id ) {
     var scr_expiration_date = $('#expiration_'+secret_id).val();
     var Personal;
 
-    if ( $('#i_personal') ) {
+    if ( $('#i_personal').text() != '' ) {
         Personal = 1;
         sgr_id = 0;
     } else {
         Personal = 0;
     }
 
+
     if ( scr_alert == true ) {
         scr_alert = 1;
     } else {
         scr_alert = 0;
     }
+
 
     $.ajax({
         url: '../SM-home.php?action=AJAX_S',

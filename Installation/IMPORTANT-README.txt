@@ -1,4 +1,4 @@
-Date : 2014-05-20
+Date : 2014-06-03
 Author : Pierre-Luc MARY
 
 Beta Software Code : https://github.com/plmary/SecretManager
@@ -8,38 +8,36 @@ Bug track ticket : https://sourceforge.net/p/secretmanager/tickets/?source=navba
 
 [ FR ]
 Quelles nouvelles :
-Cette version implémente une nouvelle gestion de l'historique :
-- Toutes les actions sur tous les objets sont désormais historisées ;
-- Le paramétrage des alertes est désormais facilité (notamment les remontés par courriel) ;
-- L'écran de suivi de l'historique a été modifié également.
+Cette version implémente la gestion des secrets Personnels. Secrets que l'on ne partage pas (d'où leur nom).
+Plusieurs petites modifications :
+- Corrections sur la notion de doublon lors des Créations et des Modifications de Secrets ;
+- Possibilité d'utiliser la touche Entrée lors des Modifications de Secrets.
 
 Première installation :
-Déziper "SecretManager_v0.8-5.zip" dans le "DocumentRoot" de votre Serveur Apache.
+Déziper "SecretManager_v0.8-6.zip" dans le "DocumentRoot" de votre Serveur Apache.
 Ensuite, lire le "Guide d'installation" dans le répertoire "Documentations" dans l'arborescence de SecretManager.
 
-Mise à jour de v0.8-4 à v0.8-5 :
-Déziper "upd_SecretManager_v0.8-5.zip" dans le précédent répertoire d'installation de votre "SecretManager".
-Attention : il faut mettre à jour la base de données par l'exécution des scripts suivants :
-- upd-1-v0.8-5-SecretManager.sql
-- upd-2-v0.8-5-SecretManager.sql
+Mise à jour de v0.8-5 à v0.8-6 :
+Déziper "upd_SecretManager_v0.8-6.zip" dans le précédent répertoire d'installation de votre "SecretManager".
+Attention : il faut mettre à jour la base de données "Secret_Manager" par l'exécution du script suivant :
+- upd-1-v0.8-6-SecretManager.sql
 
 
 [ EN ]
-What's news :
-This version implements a new history management:
-- All actions on all objects are now historized;
-- The setting alerts is now easier (especially reassembled by email);
-- Screen history tracking has also been modified.
+What news:
+This version implements the management of Personal secrets. This Secrets that are not shared (hence their name).
+Several small changes:
+- Corrections on Secrets duplication during Creating and Changing;
+- Possibility to use the Enter key when modifications Secrets.
 
 First installation:
-Unzip "SecretManager_v0.8-5.zip" in the "DocumentRoot" your Apache Server.
-Read the "Installation Guide" in the "Documentations" folder in the tree SecretManager.
+Unzip "SecretManager_v0.8-6.zip" in the "DocumentRoot" your Apache Server.
+Then read the "Installation Guide" in the "Documents" folder in the tree SecretManager.
 
-Update v0.8 v0.8-4-5:
-Unzip "upd_SecretManager_v0.8-5.zip" in your previous installation "SecretManager" directory.
-Warning: you must update the database by executing the following scripts:
-- upd-1-v0.8-5-SecretManager.sql
-- upd-2-v0.8-5-SecretManager.sql
+Update v0.8-5 to v0.8-6:
+Unzip "upd_SecretManager_v0.8-6.zip" in your previous installation "SecretManager" directory.
+Warning: you must update the "Secret_Manager" database by executing the following script:
+- Upd-1-v0.8-6-SecretManager.sql
 
 
 * ==========================================================
