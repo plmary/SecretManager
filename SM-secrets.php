@@ -1014,8 +1014,7 @@ switch( $Action ) {
 		if ( isset( $_POST[ 'Alert' ] ) ) $Alert = 1;
 		else $Alert = 0;
 
-
-		if ( $_POST['Personal'] == false ) {
+		if ( $_POST['Personal'] == 'false' ) {
 			if ( ($sgr_id = $Security->valueControl( $_POST[ 'sgr_id' ], 'NUMERIC' )) ==
 			 -1 ) {
 			    echo json_encode( array(
@@ -1027,8 +1026,10 @@ switch( $Action ) {
 			}
 		
 			$Group = $Groups->get( $sgr_id );
+			$idn_id = NULL;
 		} else {
 			$sgr_id = 0;
+			$idn_id = $_SESSION['idn_id'];
 		}
 
 		
@@ -1074,11 +1075,6 @@ switch( $Action ) {
         }
  
 		$scr_id = '';
-
-		if ( $_POST['Personal'] == true ) {
-			$sgr_id = 0;
-			$idn_id = $_SESSION['idn_id'];
-		}
 
 		try {
 			$Secrets->set( '', $sgr_id, $stp_id, 
