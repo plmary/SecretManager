@@ -77,4 +77,10 @@
 	$L_Key_Complexity = 'Komplexität des Schlüssels';
 	$L_Mother_Key = 'Key Mutter';
 	$L_Operator_Key = 'Key Operator';
+
+	$L_Secrets_Complexity = 'Secrets complexity';
+	$L_Secrets_Size = 'Secrets size';
+	$L_Secrets_Lifetime = 'Secrets lifetime (in months)';
+	
+	$L_Stop_SecretServer_On_Alert = "SecretServer stops when an alert";
 ?>

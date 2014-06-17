@@ -335,12 +335,12 @@ switch( $Action ) {
 
 	$myButtons = '';
 
-	if ( $PageHTML->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
+	//if ( $PageHTML->is_administrator() or $groupsRights[ 'W' ] == 1 ) {
 //    	$addButton = '<a class="btn btn-small" href="' . URL_BASE . '/SM-secrets.php?action=SCR_A&rp=home" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
     	$addButton = '<a class="btn btn-small" href="javascript:getCreateSecret( 0 );" title="' . $L_Create . '"><i class="icon-plus"></i></a>';
-    } else {
-    	$addButton = '';
-    }
+    //} else {
+    //	$addButton = '';
+    //}
 
    	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' . $Script . '?action=R2">' .
    	 '<div class="input-append">' .
@@ -537,7 +537,14 @@ switch( $Action ) {
             'L_Password' => $L_Password,
             'Password' => $Secret->scr_password,
             'L_Personal' => $L_Personal,
-            'Owner' => $Secret->idn_id
+            'Owner' => $Secret->idn_id,
+        	'L_Complexity_1' => $_Password_Complexity_1,
+        	'L_Complexity_2' => $_Password_Complexity_2,
+        	'L_Complexity_3' => $_Password_Complexity_3,
+        	'L_Complexity_4' => $_Password_Complexity_4,
+        	'Secrets_Size' => $PageHTML->getParameter('secrets_size'),
+        	'Secrets_Complexity' => $PageHTML->getParameter('secrets_complexity'),
+        	'L_Generate' => $L_Generate
             );
     } catch( Exception $e ) {
         $Resultat = array(

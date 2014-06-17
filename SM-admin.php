@@ -3,7 +3,7 @@
 /**
 * Ce script gère l'installation du SecretManager et du SecretServer.
 *
-* PHP version 5.4
+* PHP version 5.5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
 * @version 1.3
@@ -46,7 +46,7 @@ if ( ! $PageHTML->is_connect() ) {
 
 
 // Si l'utilisateur n'est pas Administrateur alors l'exécution du script est bloqué.
-if ( ! $PageHTML->is_administrator() ) {
+if ( ! $PageHTML->is_administrator() and ! $PageHTML->is_operator() ) {
 	$Javascripts = '';
 
 	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $Javascripts, $innerJS ) .
@@ -225,134 +225,148 @@ function getDateRestoreFiles() {
 
 switch( $Action ) {
  default:
-	print(
-		 "     <!-- Début : affichage de la synthèse des utilisateurs -->\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"users\">" . $L_List_Users . "</p>\n" .
-		 "      <div class=\"corps\" id=\"c_users\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Identities->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Disabled . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalDisabled() . "</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Expired . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalExpired() . "</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Attempted . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalAttempted() . "</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Users_Super_Admin . " : </span>\n" .
-		 "        <span class=\"green bold\">" . $Identities->totalSuperAdmin() . "</span>\n" .
-		 "       </p>\n" .
-		 "      </div> <!-- Fin : corps -->\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php\">" . $L_Manage_Users . "</a></p>\n" .
-		 "     </div> <!-- Fin : affichage de la synthèse des utilisateurs -->\n\n" );
+	if ( $PageHTML->is_administrator() ) {
+		print(
+			 "     <!-- Début : affichage de la synthèse des utilisateurs -->\n" .
+			 "     <div class=\"tableau_synthese\">\n" .
+			 "      <p class=\"titre\" id=\"users\">" . $L_List_Users . "</p>\n" .
+			 "      <div class=\"corps\" id=\"c_users\">\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Users_Base . " : </span>\n" .
+			 "        <span class=\"bg-green bold\">&nbsp;" . $Identities->total() . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Users_Disabled . " : </span>\n" .
+			 "        <span class=\"green bold\">" . $Identities->totalDisabled() . "</span>\n" .
+			 "       </p>\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Users_Expired . " : </span>\n" .
+			 "        <span class=\"green bold\">" . $Identities->totalExpired() . "</span>\n" .
+			 "       </p>\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Users_Attempted . " : </span>\n" .
+			 "        <span class=\"green bold\">" . $Identities->totalAttempted() . "</span>\n" .
+			 "       </p>\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Users_Super_Admin . " : </span>\n" .
+			 "        <span class=\"green bold\">" . $Identities->totalSuperAdmin() . "</span>\n" .
+			 "       </p>\n" .
+			 "      </div> <!-- Fin : corps -->\n" .
+			 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php\">" . $L_Manage_Users . "</a></p>\n" .
+			 "     </div> <!-- Fin : affichage de la synthèse des utilisateurs -->\n\n" );
+	}
 
 	// ===========================================
 	// Tableau d'affichage des Groupes de Secrets.
-	print( "     <!-- Début : affichage de la synthèse des groupes -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"groups\">" . $L_List_Groups . "</p>\n" .
-		 "      <div class=\"corps\" id=\"c_groups\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Groups_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Groups->total( '' ) . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-secrets.php?rp=admin\">" . $L_Manage_Groups .
-		 "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" );
+	if ( $PageHTML->is_administrator() ) {
+		print( "     <!-- Début : affichage de la synthèse des groupes -->\n\n" .
+			 "     <div class=\"tableau_synthese\">\n" .
+			 "      <p class=\"titre\" id=\"groups\">" . $L_List_Groups . "</p>\n" .
+			 "      <div class=\"corps\" id=\"c_groups\">\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Groups_Base . " : </span>\n" .
+			 "        <span class=\"bg-green bold\">&nbsp;" . $Groups->total( '' ) . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "      </div>\n" .
+			 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-secrets.php?rp=admin\">" . $L_Manage_Groups .
+			 "</a></p>\n" .
+			 "     </div>\n" .
+			 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" );
+	}
 
 	// ===========================================
 	// Tableau d'affichage des Profils.
-	print( "     <!-- Début : affichage de la synthèse des profils -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"profiles\">" . $L_List_Profiles . "</p>\n" .
-		 "      <div class=\"corps\" id=\"c_profiles\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Profiles_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Profiles->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=PRF_V&rp=admin\">" . 
-		 $L_Manage_Profiles . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" );
+	if ( $PageHTML->is_administrator() ) {
+		print( "     <!-- Début : affichage de la synthèse des profils -->\n\n" .
+			 "     <div class=\"tableau_synthese\">\n" .
+			 "      <p class=\"titre\" id=\"profiles\">" . $L_List_Profiles . "</p>\n" .
+			 "      <div class=\"corps\" id=\"c_profiles\">\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Profiles_Base . " : </span>\n" .
+			 "        <span class=\"bg-green bold\">&nbsp;" . $Profiles->total() . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "      </div>\n" .
+			 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=PRF_V&rp=admin\">" . 
+			 $L_Manage_Profiles . "</a></p>\n" .
+			 "     </div>\n" .
+			 "     <!-- Fin : affichage de la synthèse des groupes -->\n\n" );
+	}
 
 	// ===========================================
 	// Tableau d'affichage des Entités.
-	print( "     <!-- Début : affichage de la synthèse des entités -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"entities\">" . $L_List_Entities . "</p>\n" .
-		 "      <div class=\"corps\" id=\"c_entities\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Entities->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=ENT_V&rp=admin\">" . 
-		 $L_Manage_Entities . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des entités -->\n\n" );
+	if ( $PageHTML->is_administrator() ) {
+		print( "     <!-- Début : affichage de la synthèse des entités -->\n\n" .
+			 "     <div class=\"tableau_synthese\">\n" .
+			 "      <p class=\"titre\" id=\"entities\">" . $L_List_Entities . "</p>\n" .
+			 "      <div class=\"corps\" id=\"c_entities\">\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
+			 "        <span class=\"bg-green bold\">&nbsp;" . $Entities->total() . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "      </div>\n" .
+			 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=ENT_V&rp=admin\">" . 
+			 $L_Manage_Entities . "</a></p>\n" .
+			 "     </div>\n" .
+			 "     <!-- Fin : affichage de la synthèse des entités -->\n\n" );
+	}
 
 	// ===========================================
 	// Tableau d'affichage des Civilités.
-	print( "     <!-- Début : affichage de la synthèse des civilités -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Civilities . "</p>\n" .
-		 "      <div class=\"corps\" id=\"c_civilities\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Civilities->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=CVL_V&rp=admin\">" . 
-		 $L_Manage_Civilities . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des civilités -->\n\n" );
+	if ( $PageHTML->is_administrator() ) {
+		print( "     <!-- Début : affichage de la synthèse des civilités -->\n\n" .
+			 "     <div class=\"tableau_synthese\">\n" .
+			 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Civilities . "</p>\n" .
+			 "      <div class=\"corps\" id=\"c_civilities\">\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Entities_Base . " : </span>\n" .
+			 "        <span class=\"bg-green bold\">&nbsp;" . $Civilities->total() . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "      </div>\n" .
+			 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php?action=CVL_V&rp=admin\">" . 
+			 $L_Manage_Civilities . "</a></p>\n" .
+			 "     </div>\n" .
+			 "     <!-- Fin : affichage de la synthèse des civilités -->\n\n" );
+	}
 
 	// ===========================================
 	// Tableau d'affichage des Applications.
-	print( "     <!-- Début : affichage de la synthèse des Applications -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Applications . "</p>\n" .
-		 "      <div class=\"corps\" id=\"c_civilities\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Applications_Base . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $MyApplications->total() . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-secrets.php?action=APP_V&rp=admin\">" . 
-		 $L_Manage_Applications . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse des Applications -->\n\n" );
+	if ( $PageHTML->is_administrator() ) {
+		print( "     <!-- Début : affichage de la synthèse des Applications -->\n\n" .
+			 "     <div class=\"tableau_synthese\">\n" .
+			 "      <p class=\"titre\" id=\"civilities\">" . $L_List_Applications . "</p>\n" .
+			 "      <div class=\"corps\" id=\"c_civilities\">\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Applications_Base . " : </span>\n" .
+			 "        <span class=\"bg-green bold\">&nbsp;" . $MyApplications->total() . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "      </div>\n" .
+			 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-secrets.php?action=APP_V&rp=admin\">" . 
+			 $L_Manage_Applications . "</a></p>\n" .
+			 "     </div>\n" .
+			 "     <!-- Fin : affichage de la synthèse des Applications -->\n\n" );
+	}
 
 	// ===========================================
 	// Tableau de synthèse de l'Historique.
-	print( "     <!-- Début : affichage de la synthèse de l'historique -->\n\n" .
-		 "     <div class=\"tableau_synthese\">\n" .
-		 "      <p class=\"titre\" id=\"historique\">" . $L_Historical_Records_Management . "</p>\n" .
-		 "      <div class=\"corps\" id=\"c_historique\">\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Total_Historical_Records . " : </span>\n" .
-		 "        <span class=\"bg-green bold\">&nbsp;" . $Total_History . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "       <p>\n" .
-		 "        <span>" . $L_Oldest_Date_History . " : </span>\n" .
-		 "        <span class=\"green bold\">&nbsp;" . $First_Date_History . "&nbsp;</span>\n" .
-		 "       </p>\n" .
-		 "      </div>\n" .
-		 "      <p class=\"align-center\"><a class=\"button\" href=\"" . $Script . "?action=H\">" .
-		 $L_Manage_Historical . "</a></p>\n" .
-		 "     </div>\n" .
-		 "     <!-- Fin : affichage de la synthèse de l'historique -->\n\n" );
+	if ( $PageHTML->is_administrator() ) {
+		print( "     <!-- Début : affichage de la synthèse de l'historique -->\n\n" .
+			 "     <div class=\"tableau_synthese\">\n" .
+			 "      <p class=\"titre\" id=\"historique\">" . $L_Historical_Records_Management . "</p>\n" .
+			 "      <div class=\"corps\" id=\"c_historique\">\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Historical_Records . " : </span>\n" .
+			 "        <span class=\"bg-green bold\">&nbsp;" . $Total_History . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Oldest_Date_History . " : </span>\n" .
+			 "        <span class=\"green bold\">&nbsp;" . $First_Date_History . "&nbsp;</span>\n" .
+			 "       </p>\n" .
+			 "      </div>\n" .
+			 "      <p class=\"align-center\"><a class=\"button\" href=\"" . $Script . "?action=H\">" .
+			 $L_Manage_Historical . "</a></p>\n" .
+			 "     </div>\n" .
+			 "     <!-- Fin : affichage de la synthèse de l'historique -->\n\n" );
+	}
 
 
     $_UseSecretServer = $PageHTML->getParameter( 'use_SecretServer' );
@@ -475,6 +489,11 @@ switch( $Action ) {
  // ========================
  // Gestion de l'Historique
  case 'H':
+	if ( ! $PageHTML->is_administrator() ) {
+		print( $L_No_Authorize );
+		break;
+	}
+
     $List_Identities = $Identities->listIdentities();
 
     if ( array_key_exists( 'scr_id', $_POST ) ) {
@@ -964,108 +983,112 @@ switch( $Action ) {
      "          </tr>\n" .
      "         </table>\n" .
      "        </td>\n" .
-     "       </tr>\n" .
-     "       <tr>\n" .
-     "        <td class=\"pair align-right align-middle\">" .
-     $L_Transcrypt_Mother_Key . "</td>\n" .
-     "        <td class=\"pair\">\n" .
-     "         <table>\n" .
-     "          <tr>\n" .
-     "           <td class=\"pair\">" . $L_Insert_New_Operator_Key . "</td>\n" .
-     "           <td>\n" .
-     "            <div class=\"input-append\">\n" .
-     "             <input type=\"text\" class=\"left-search input-large\" " .
-     "id=\"iNew_Operator_Key_1\" name=\"New_Operator_Key\" " .
-     "onFocus=\"checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\" " .
-     "onBlur=\"resetEmptyField('iNew_Operator_Key_1', 'Result_1');\" " .
-     "onKeyup=\"checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\" />\n" .
-     "             <button class=\"btn right-search btn-small\" " .
-     "onClick=\"javascript:generatePassword( 'iNew_Operator_Key_1', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\">" . $L_Generate . "</button>\n" .
-     "            </div>\n" .
-     "<img id=\"Result_1\" class=\"no-border align-middle\" width=\"16\" height=\"16\" " .
-     "src=\"" . URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
-     "           </td>\n" .
-     "          </tr>\n" .
-     "          <tr>\n" .
-     "           <td class=\"pair\">&nbsp;</td>\n" .
-     "           <td><a href=\"javascript:confirmTranscryptMotherKey();\" class=\"button\" id=\"iSaveNewOeratorKey_1\" " .
-     "data-cancel-op=\"".$L_Operation_Cancel_Not_Given_O_Key."\" " .
-     "data-warning=\"".$L_Warning."\" " .
-     "data-confirm=\"".$L_Confirm."\" " .
-     "data-cancel=\"".$L_Cancel."\" " .
-     "data-text-1=\"".$L_Warning_Transcrypt_mother_key."\">" . $L_Transcrypt . "</a></td>\n" .
-     "          </tr>\n" .
-     "         </table>\n" .
-     "        </td>\n" .
-     "       </tr>\n" .
+     "       </tr>\n" );
 
-     "       <tr>\n" .
-     "        <td class=\"pair align-right align-middle\">" .
-     $L_New_Mother_Key . "</td>\n" .
-     "        <td class=\"pair\">\n" .
-     "          <table>\n" .
-     "           <tr>\n" .
-     "            <td class=\"pair\">" . $L_Insert_Operator_Key . "</td>\n" .
-     "            <td>\n" .
-     "             <div class=\"input-append\">\n" .
-     "              <input type=\"text\" class=\"left-search input-large\" " .
-     "id=\"iNew_Operator_Key_2\" name=\"New_Operator_Key\" " .
-     "onFocus=\"checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\" " .
-     "onBlur=\"resetEmptyField('iNew_Operator_Key_2', 'Result_2');\" " .
-     "onKeyup=\"checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\" />\n" .
-     "              <button type=\"submit\" class=\"btn right-search btn-small\" " .
-     "onClick=\"javascript:generatePassword( 'iNew_Operator_Key_2', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\">" .
-     $L_Generate . "</button>\n" .
-     "             </div>\n" .
-     "<img id=\"Result_2\" class=\"no-border\" width=\"16\" height=\"16\" " .
-     "src=\"" . URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
-     "            </td>\n" .
-     "           </tr>\n" .
-     "           <tr>\n" .
-     "            <td class=\"pair\">" . $L_Insert_New_Mother_Key . "</td>\n" .
-     "            <td>\n" .
-     "             <div class=\"input-append\">\n" .
-     "              <input type=\"text\" class=\"left-search input-large\" " .
-     "id=\"iNew_Mother_Key\" name=\"New_Mother_Key\" " .
-     "onFocus=\"checkPassword('iNew_Mother_Key', 'Result_3', " . $Operator_Key_Complexity .
-     ", " . $Operator_Key_Size . ");\" " .
-     "onBlur=\"resetEmptyField('iNew_Mother_Key', 'Result_3');\" " .
-     "onKeyup=\"checkPassword('iNew_Mother_Key', 'Result_3', " . $Mother_Key_Complexity .
-     ", " . $Mother_Key_Size . ");\"/>\n" .
-     "              <button type=\"submit\" class=\"btn right-search btn-small\" " .
-     "onClick=\"javascript:generatePassword( 'iNew_Mother_Key', " . $Mother_Key_Complexity .
-     ", " . $Mother_Key_Size . " );checkPassword('iNew_Mother_Key', 'Result_3', " . $Mother_Key_Complexity .
-     ", " . $Mother_Key_Size . ");\">" . $L_Generate . "</button>\n" .
-     "             </div>\n" .
-     "<img id=\"Result_3\" class=\"no-border\" width=\"16\" height=\"16\" " .
-     "src=\"". URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
-     "            </td>\n" .
-     "           </tr>\n" .
-     "           <tr>\n" .
-     "            <td class=\"pair\">&nbsp;</td>\n" .
-     "            <td>\n" .
-     "             <a href=\"javascript:confirmChangeMotherKey();\" class=\"button\" id=\"iChangeMotherKey\" " .
-     "data-text=\"" . $L_Warning_Change_Mother_Key . "\">" . $L_Transcrypt .
-     "</a>&nbsp;\n" .
-     "             <a href=\"javascript:confirmCreateMotherKey();\" class=\"button\" " .
-     "data-cancel-operation=\"" . $L_Operation_Cancel_Not_Given_Keys . "\" " .
-     "data-text=\"" . $L_Warning_Create_Mother_Key . "\" " .
-     "id=\"iCreateMotherKey\">" . $L_Create . "</a>\n" .
-     "            </td>\n" .
-     "           </tr>\n" .
-     "          </table>\n" .
-     "         </form>\n" .
-     "        </td>\n" .
-     "       </tr>\n" .
-     "       <tr>\n" .
+	if ( $PageHTML->is_administrator() ) {
+	    print( "       <tr>\n" .
+	     "        <td class=\"pair align-right align-middle\">" .
+	     $L_Transcrypt_Mother_Key . "</td>\n" .
+	     "        <td class=\"pair\">\n" .
+	     "         <table>\n" .
+	     "          <tr>\n" .
+	     "           <td class=\"pair\">" . $L_Insert_New_Operator_Key . "</td>\n" .
+	     "           <td>\n" .
+	     "            <div class=\"input-append\">\n" .
+	     "             <input type=\"text\" class=\"left-search input-large\" " .
+	     "id=\"iNew_Operator_Key_1\" name=\"New_Operator_Key\" " .
+	     "onFocus=\"checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . ");\" " .
+	     "onBlur=\"resetEmptyField('iNew_Operator_Key_1', 'Result_1');\" " .
+	     "onKeyup=\"checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . ");\" />\n" .
+	     "             <button class=\"btn right-search btn-small\" " .
+	     "onClick=\"javascript:generatePassword( 'iNew_Operator_Key_1', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_1', 'Result_1', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . ");\">" . $L_Generate . "</button>\n" .
+	     "            </div>\n" .
+	     "<img id=\"Result_1\" class=\"no-border align-middle\" width=\"16\" height=\"16\" " .
+	     "src=\"" . URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
+	     "           </td>\n" .
+	     "          </tr>\n" .
+	     "          <tr>\n" .
+	     "           <td class=\"pair\">&nbsp;</td>\n" .
+	     "           <td><a href=\"javascript:confirmTranscryptMotherKey();\" class=\"button\" id=\"iSaveNewOeratorKey_1\" " .
+	     "data-cancel-op=\"".$L_Operation_Cancel_Not_Given_O_Key."\" " .
+	     "data-warning=\"".$L_Warning."\" " .
+	     "data-confirm=\"".$L_Confirm."\" " .
+	     "data-cancel=\"".$L_Cancel."\" " .
+	     "data-text-1=\"".$L_Warning_Transcrypt_mother_key."\">" . $L_Transcrypt . "</a></td>\n" .
+	     "          </tr>\n" .
+	     "         </table>\n" .
+	     "        </td>\n" .
+	     "       </tr>\n" .
+
+	     "       <tr>\n" .
+	     "        <td class=\"pair align-right align-middle\">" .
+	     $L_New_Mother_Key . "</td>\n" .
+	     "        <td class=\"pair\">\n" .
+	     "          <table>\n" .
+	     "           <tr>\n" .
+	     "            <td class=\"pair\">" . $L_Insert_Operator_Key . "</td>\n" .
+	     "            <td>\n" .
+	     "             <div class=\"input-append\">\n" .
+	     "              <input type=\"text\" class=\"left-search input-large\" " .
+	     "id=\"iNew_Operator_Key_2\" name=\"New_Operator_Key\" " .
+	     "onFocus=\"checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . ");\" " .
+	     "onBlur=\"resetEmptyField('iNew_Operator_Key_2', 'Result_2');\" " .
+	     "onKeyup=\"checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . ");\" />\n" .
+	     "              <button type=\"submit\" class=\"btn right-search btn-small\" " .
+	     "onClick=\"javascript:generatePassword( 'iNew_Operator_Key_2', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . " );checkPassword('iNew_Operator_Key_2', 'Result_2', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . ");\">" .
+	     $L_Generate . "</button>\n" .
+	     "             </div>\n" .
+	     "<img id=\"Result_2\" class=\"no-border\" width=\"16\" height=\"16\" " .
+	     "src=\"" . URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
+	     "            </td>\n" .
+	     "           </tr>\n" .
+	     "           <tr>\n" .
+	     "            <td class=\"pair\">" . $L_Insert_New_Mother_Key . "</td>\n" .
+	     "            <td>\n" .
+	     "             <div class=\"input-append\">\n" .
+	     "              <input type=\"text\" class=\"left-search input-large\" " .
+	     "id=\"iNew_Mother_Key\" name=\"New_Mother_Key\" " .
+	     "onFocus=\"checkPassword('iNew_Mother_Key', 'Result_3', " . $Operator_Key_Complexity .
+	     ", " . $Operator_Key_Size . ");\" " .
+	     "onBlur=\"resetEmptyField('iNew_Mother_Key', 'Result_3');\" " .
+	     "onKeyup=\"checkPassword('iNew_Mother_Key', 'Result_3', " . $Mother_Key_Complexity .
+	     ", " . $Mother_Key_Size . ");\"/>\n" .
+	     "              <button type=\"submit\" class=\"btn right-search btn-small\" " .
+	     "onClick=\"javascript:generatePassword( 'iNew_Mother_Key', " . $Mother_Key_Complexity .
+	     ", " . $Mother_Key_Size . " );checkPassword('iNew_Mother_Key', 'Result_3', " . $Mother_Key_Complexity .
+	     ", " . $Mother_Key_Size . ");\">" . $L_Generate . "</button>\n" .
+	     "             </div>\n" .
+	     "<img id=\"Result_3\" class=\"no-border\" width=\"16\" height=\"16\" " .
+	     "src=\"". URL_PICTURES . "/blank.gif\" alt=\"Ok\">\n" .
+	     "            </td>\n" .
+	     "           </tr>\n" .
+	     "           <tr>\n" .
+	     "            <td class=\"pair\">&nbsp;</td>\n" .
+	     "            <td>\n" .
+	     "             <a href=\"javascript:confirmChangeMotherKey();\" class=\"button\" id=\"iChangeMotherKey\" " .
+	     "data-text=\"" . $L_Warning_Change_Mother_Key . "\">" . $L_Transcrypt .
+	     "</a>&nbsp;\n" .
+	     "             <a href=\"javascript:confirmCreateMotherKey();\" class=\"button\" " .
+	     "data-cancel-operation=\"" . $L_Operation_Cancel_Not_Given_Keys . "\" " .
+	     "data-text=\"" . $L_Warning_Create_Mother_Key . "\" " .
+	     "id=\"iCreateMotherKey\">" . $L_Create . "</a>\n" .
+	     "            </td>\n" .
+	     "           </tr>\n" .
+	     "          </table>\n" .
+	     "         </form>\n" .
+	     "        </td>\n" .
+	     "       </tr>\n" );
+	}
+
+    print( "       <tr>\n" .
      "        <td class=\"pair align-right align-middle\" width=\"30%\">" . $L_Shutdown_SecretServer . "</td>\n" .
      "        <td class=\"pair\">\n" .
      "          <p><a href=\"javascript:shutdownSecretServer();\" class=\"button\" " .
@@ -1113,7 +1136,15 @@ switch( $Action ) {
         
         $Status = 'success';
     } catch( Exception $e ) {
-        $Result = $Message = ${$e->getMessage()};
+		//$MyMessage = ${$e->getMessage()};
+
+    	if ( isset( ${$e->getMessage()} ) ) {
+    		$MyMessage = ${$e->getMessage()};
+    	} else {
+    		$MyMessage = $e->getMessage();
+    	}
+
+        $Result = $Message = $MyMessage;
         $L_Message = $e->getMessage();
         $Status = 'error';
         $Operator = '';

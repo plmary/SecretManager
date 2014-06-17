@@ -796,16 +796,22 @@ class Security extends IICA_Parameters {
 
 		$Separator = '|';
 
-		if ( array_key_exists( 'idn_login', $_SESSION ) ) {
+		if ( isset( $_SESSION[ 'idn_login' ] ) ) {
 			$idn_login = $_SESSION[ 'idn_login' ];
 		} else {
 			$idn_login = '';
 		}
 
+		if ( isset( $_SERVER[ 'REMOTE_ADDR' ] ) ) $Server = $_SERVER[ 'REMOTE_ADDR' ];
+		else $Server = '';
+
 		if ( $pObject == '' ) return FALSE;
 
-		return $idn_login . $Separator . $_SERVER[ 'REMOTE_ADDR' ] . $Separator . $action .
-		 $Separator . $pObject->scr_id . $Separator . ${$pObject->stp_name} . $Separator . ${$pObject->env_name} .
+		if ( ! isset( $pObject->stp_name ) ) $pObject->stp_name = ${$pObject->stp_name};
+		if ( ! isset( $pObject->env_name ) ) $pObject->env_name = ${$pObject->env_name};
+
+		return $idn_login . $Separator . $Server . $Separator . $action .
+		 $Separator . $pObject->scr_id . $Separator . $pObject->stp_name . $Separator . $pObject->env_name .
 		 $Separator . $pObject->app_name . $Separator . $pObject->scr_host . $Separator . $pObject->scr_user;
 	}	
  	
@@ -920,6 +926,201 @@ class Security extends IICA_Parameters {
 
 		// Envoi
 		return mail($to, $subject, $body, $headers);
+	}
+	
+	
+	public function writeMailSecurity( $message ) {
+	/**
+	* Envoi le message par courriel
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @version 1.0
+	* @date 2012-11-08
+	*
+	* @param[in] $message Message à envoyer dans le courriel.
+	* @param[in] $from Emetteur du courriel
+	* @param[in] $to Destinataires du courriel
+	*
+	* @return Retourne vrai si le message a été envoyé au serveur de messagerie, sinon retrouve faux (attention, envoyé au serveur de messagerie, ne signifie pas bien arrivé auprès des destinataires)
+	*/
+		include( DIR_LABELS . '/' . $this->getParameter( 'language_alert' ) . '_labels_referentials.php' );
+		include( DIR_LABELS . '/' . $this->getParameter( 'language_alert' ) . '_labels_generic.php' );
+
+		$from = $this->getParameter('mail_from');
+		$to = $this->getParameter('mail_to');
+		$subject = $L_Security_Alert;
+
+		$body = '<html><head><title>' . $subject . '</title></head><body><p>' . $message . '</p></body></html>';
+
+		// Pour envoyer un mail HTML, l'en-tête Content-type doit être défini
+		$headers = 'From: ' .$from . "\r\n";
+		$headers .= 'MIME-Version: 1.0' . "\r\n";
+		$headers .= 'Content-type: text/html; charset="UTF-8"' . "\r\n";
+
+		// Envoi
+		return mail($to, $subject, $body, $headers);
+	}
+
+
+	function checkFilesIntegrity( $ForceCreating = FALSE ) {
+	/**
+	* Crée le fichier des "empreintes" des fichiers à surveiller en intégrité ou Vérifie l'intégrité des fichiers surveiller.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @version 1.0
+	* @date 2012-11-08
+	*
+	* @param[in] $ForceCreating Permet de forcer la création du fichier des empreintes.
+	*
+	* @return Retourne vrai si aucun fichier n'a été modifié ou si le fichier a été créé OU un tableau contenant la liste des fichiers qui ont été modifiés.
+	*/
+		include( DIR_LABELS . '/en_labels_generic.php' );
+
+		$Directories = array(
+			'Master' => APPLICATION_PATH,
+			'Libraries' => DIR_LIBRARIES
+			);
+
+		$Patterns = array(
+			'Master' => array( '/^SM/', '/^index/' ), // Surveillance des fichiers commençant par "SM-" et "index".
+			'Libraries' => array( '/^Class/', '/^password_js/', '/\.js$/' ) // Surveillance des fichiers commençant par "Class_" et "password_js" et des fichiers terminant par ".js".
+			);
+
+			
+		if ( $ForceCreating === TRUE ) { // Construit le fichier des contrôles d'intégrité.
+			$File_P = fopen( INTEGRITY_FILENAME, 'w' );
+			
+			foreach( $Directories as $Directory => $Directory_Location ) {
+				$Directory_P = dir( $Directory_Location );
+			
+				while ( false !== ($File = $Directory_P->read()) ) {
+					foreach( $Patterns[ $Directory ] as $Pattern ) {
+						if ( preg_match( $Pattern, $File ) ) {
+							$File = $Directory_P->path . DIRECTORY_SEPARATOR . $File;
+							$Hash_File = hash_file( 'sha256', $File );
+
+							if ( fputs( $File_P, $File . '=' . $Hash_File . "\n" ) === FALSE ) {
+								print( 'fputs error<br/>' );
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			fclose( $File_P );
+			$Directory_P->close();
+
+			return TRUE;
+		} else { // Utilise le fichier des contrôles d'intégrité.
+			$Hashes = parse_ini_file( INTEGRITY_FILENAME );
+			$Files_Corrupted = '';
+
+			foreach( $Directories as $Directory => $Directory_Location ) {
+				$Directory_P = dir( $Directory_Location );
+			
+				while ( false !== ($File = $Directory_P->read()) ) {
+					foreach( $Patterns[ $Directory ] as $Pattern ) {
+						if ( preg_match( $Pattern, $File ) ) {
+							$File = $Directory_P->path . DIRECTORY_SEPARATOR . $File;
+							$Hash_File = hash_file( 'sha256', $File );
+
+							if ( $Hash_File != $Hashes[ $File ] ) {
+								$pObject = new stdClass();
+
+								$pObject->scr_id = '';
+								$pObject->stp_name = '';
+								$pObject->env_name = '';
+		 						$pObject->app_name = '';
+		 						$pObject->scr_host = '';
+		 						$pObject->scr_user = '';
+
+		 						$Message = sprintf( $L_File_Integrity_Alert, $File );
+
+		 						$this->writeLog( $Message, $pObject, LOG_ERR );
+		 						$this->writeMailSecurity( $Message );
+
+		 						$Files_Corrupted[] = $File;
+							}
+						}
+					}
+				}
+			}
+
+			if ( $Files_Corrupted != '' ) {
+				return array( FALSE, $Files_Corrupted );
+			} else {
+				return array( TRUE );
+			}
+		}
+	}
+
+
+
+	function checkMasterFileIntegrity( $ForceCreating = FALSE, $Memory_Hash = '' ) {
+	/**
+	* Crée le fichier "d'empreinte" du fichier des "empreintes" des fichiers à surveiller.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @version 1.0
+	* @date 2012-11-08
+	*
+	* @param[in] $ForceCreating Permet de forcer la création du fichier des empreintes.
+	*
+	* @return Retourne vrai si aucun fichier n'a été modifié ou si le fichier a été créé OU faux si une erreur survient ou si le fichier un tableau contenant la liste des fichiers qui ont été modifiés.
+	*/
+		include( DIR_LABELS . '/en_labels_generic.php' );
+
+			
+		if ( $ForceCreating === TRUE ) { // Construit le fichier protégeant le fichier des contrôles d'intégrité.
+			if ( file_exists( INTEGRITY_FILENAME ) ) {
+				$Hash_File = hash_file( 'sha256', INTEGRITY_FILENAME );
+
+				$File_P = fopen( MASTER_INTEGRITY_FILENAME, 'w' );
+			
+				if ( fputs( $File_P, INTEGRITY_FILENAME . '=' . $Hash_File . "\n" ) === FALSE ) {
+					print( 'fputs error<br/>' );
+					break;
+				}
+			
+				fclose( $File_P );
+			} else {
+				return array( FALSE );
+			}
+
+			return array( TRUE, $Hash_File );
+		} else { // Utilise le fichier des contrôles d'intégrité.
+			if ( $Memory_Hash == '' ) {
+				$Hashes = parse_ini_file( MASTER_INTEGRITY_FILENAME );
+			} else {
+				$Hashes[ INTEGRITY_FILENAME ] = $Memory_Hash;
+			}
+
+			$Hash_File = hash_file( 'sha256', INTEGRITY_FILENAME );
+
+			if ( $Hash_File != $Hashes[ INTEGRITY_FILENAME ] ) {
+				$pObject = new stdClass();
+
+				$pObject->scr_id = '';
+				$pObject->stp_name = '';
+				$pObject->env_name = '';
+				$pObject->app_name = '';
+				$pObject->scr_host = '';
+				$pObject->scr_user = '';
+
+				$Message = sprintf( $L_File_Integrity_Alert, INTEGRITY_FILENAME );
+
+				$this->writeLog( $Message, $pObject, LOG_ERR );
+				$this->writeMailSecurity( $Message );
+
+				return array( FALSE );
+			} else {
+				return array( TRUE, $Hash_File );
+			}
+		}
 	}
 
 }

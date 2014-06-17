@@ -25,11 +25,12 @@ $(document).ready( function() {
     
     $("#iSaveUseServer").click(function(){
         var UseSecretServer = $('#Use_SecretServer').val();
+        var StopSecretServer = $('#Stop_SecretServer').val();
 
         $.ajax({
             url: '../SM-preferences.php?action=SUX',
             type: 'POST',
-            data: $.param({'UseSecretServer': UseSecretServer}),
+            data: $.param({'UseSecretServer': UseSecretServer, 'StopSecretServer': StopSecretServer}),
             dataType: 'json',
             success: function(reponse){
                 if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {

@@ -220,8 +220,25 @@ function setSecret( secret_id, action ) {
                         password = '************';
                     }
                     
-                    newOcc = newOcc + '<td><input id="'+'secret_'+secret_id+'" type="text" value="' + password + 
-                        '" class="input-medium"' + Delete_Mode + '></td>' +
+                    newOcc = newOcc + '<td><input id="secret_'+secret_id+'" type="text" value="' + password + 
+                        '" class="input-medium"' + Delete_Mode + ' ' +
+                        'onkeyup="checkPassword(\'secret_'+secret_id+'\', \'Result\', ' + reponse['Secrets_Complexity'] + ', ' + reponse['Secrets_Size'] + ');" ' +
+                        'onfocus="checkPassword(\'secret_'+secret_id+'\', \'Result\', ' + reponse['Secrets_Complexity'] + ', ' + reponse['Secrets_Size'] + ');"/>';
+
+                    if ( Delete_Mode == '' ) {
+                        newOcc = newOcc + '<div class="btn-group">' +
+                            '<button id="btn-done" class="btn">' + reponse['L_Generate'] + '</button>' +
+                            '<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>' +
+                            '<ul class="dropdown-menu pull-right">' +
+                            '<li style="font-size:10px;"><a id="cpl_1" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+                            '<li style="font-size:10px;"><a id="cpl_2" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+                            '<li style="font-size:10px;"><a id="cpl_3" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+                            '<li style="font-size:10px;"><a id="cpl_4" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+                            '</ul></div> <!-- Fin : btn-group -->' +
+                            '&nbsp;<img id="Result" class="no-border" width="16" height="16" alt="Ok" src="' + Parameters['URL_PICTURES'] + '/blank.gif" />';
+                    }
+
+                    newOcc = newOcc + '</td>' +
                         '</tr>' +
                         '<tr>' +
                         '<td><label for="'+'alert_'+secret_id+'">' + reponse['L_Alert'] + '</label></td>' +
@@ -233,8 +250,63 @@ function setSecret( secret_id, action ) {
                         '<td colspan="3"><input id="'+'comment_'+secret_id+'" type="text" value="' + comment + '" class="input-xlarge"' + 
                         Delete_Mode + '></td>' +
                         '</tr>' +
-                        '</table>' +
-                        '</div>' +
+                        '</table>';
+
+                    if ( Delete_Mode == '' ) {
+                        newOcc = newOcc + '<script>' +
+                            'function reset_selector_cpl() {' +
+                            ' var L_Complexity_1 = "'+reponse['L_Complexity_1']+'";' +
+                            ' var L_Complexity_2 = "'+reponse['L_Complexity_2']+'";' +
+                            ' var L_Complexity_3 = "'+reponse['L_Complexity_3']+'";' +
+                            ' var L_Complexity_4 = "'+reponse['L_Complexity_4']+'";' +
+                            ' $(\'a[data-toggle="selector_cpl"]\').each( function(index) {' +
+                            '   var S_Id = $(this).attr("id");'+
+                            '   var T_Id = S_Id.split("_");'+
+                            '   $("#"+S_Id).attr("data-selection", 0);'+
+                            '   $("#"+S_Id).html(eval("L_Complexity_"+T_Id[1]));'+
+                            ' } );' +
+                            '}' +
+                            'function setEventPassword( id ) {' +
+                            ' var OldOnKeyUp = $("#secret_'+secret_id+'").attr("onkeyup");' +
+                            ' var T_OldOnKeyUp = OldOnKeyUp.split(", ");' +
+                            ' $("#secret_'+secret_id+'").attr("onkeyup", T_OldOnKeyUp[0] + ", " + T_OldOnKeyUp[1] + ", " + id + ", " + T_OldOnKeyUp[3]);' +
+                            ' $("#secret_'+secret_id+'").attr("onfocus", T_OldOnKeyUp[0] + ", " + T_OldOnKeyUp[1] + ", " + id + ", " + T_OldOnKeyUp[3]);' +
+                            '}' +
+                            'reset_selector_cpl();' +
+                            '$("#cpl_1").on("click", function() {' +
+                            ' reset_selector_cpl();' +
+                            ' $("#cpl_1").attr("data-selection", 1);' +
+                            ' $("#cpl_1").html(\'<i class="icon-ok"></i>&nbsp;'+reponse['L_Complexity_1']+'\');' +
+                            ' setEventPassword( 1 );' +
+                            '});' +
+                            '$("#cpl_2").on("click", function() {' +
+                            ' reset_selector_cpl();' +
+                            ' $("#cpl_2").attr("data-selection", 1);' +
+                            ' $("#cpl_2").html(\'<i class="icon-ok"></i>&nbsp;'+reponse['L_Complexity_2']+'\');' +
+                            ' setEventPassword( 2 );' +
+                            '});' +
+                            '$("#cpl_3").on("click", function() {' +
+                            ' reset_selector_cpl();' +
+                            ' $("#cpl_3").attr("data-selection", 1);' +
+                            ' $("#cpl_3").html(\'<i class="icon-ok"></i>&nbsp;'+reponse['L_Complexity_3']+'\');' +
+                            ' setEventPassword( 3 );' +
+                            '});' +
+                            '$("#cpl_4").on("click", function() {' +
+                            ' reset_selector_cpl();' +
+                            ' $("#cpl_4").attr("data-selection", 1);' +
+                            ' $("#cpl_4").html(\'<i class="icon-ok"></i>&nbsp;'+reponse['L_Complexity_4']+'\');' +
+                            ' setEventPassword( 4 );' +
+                            '});' +
+                            '$("#btn-done").on("click", function() {' +
+                            ' var MyID = $(\'a[data-selection="1"]\').attr("id");' +
+                            ' MyID = MyID.split("_");' +
+                            ' generatePassword( \'secret_'+secret_id+'\', MyID[1], ' + reponse['Secrets_Size'] + ' );' +
+                            '});' +
+                            '$("#cpl_' + reponse['Secrets_Complexity'] + '").trigger("click");' +
+                            '</script>';
+                    }
+
+                    newOcc = newOcc + '</div>' +
                         '<p style="margin-top: 6px;margin-bottom: 6px;padding:0">' +
                         '<span class="div-left tbrl_padding_6"><a class="button" href="javascript:cancel();">' + L_Cancel + '</a></span>';
                     
@@ -276,9 +348,11 @@ function cancel() {
     $('tbody#listeSecrets tr td div').each( function() {
         var currentId = $(this).parent().parent().attr('id');
         $('#' + currentId).remove();
-        
-        var Tmp = currentId.split('_');
-        $('#'+Tmp[1]).show();
+
+        if ( currentId ) {
+            var Tmp = currentId.split('_');
+            $('#'+Tmp[1]).show();
+        }
     } );
 }
 

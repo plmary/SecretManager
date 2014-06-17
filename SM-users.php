@@ -258,9 +258,30 @@ switch( $Action ) {
 		
 			$tmpSort = 'administrator';
 		}
+
+		if ( strlen( $L_Administrator ) > 5 ) $L_Administrator = sprintf( "%.5s&hellip;", $L_Administrator );
+
 		print( "        <th onclick=\"javascript:document.location='" . $Script . 
 		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
 		 $L_Administrator . "</th>\n" );
+
+		 
+		if ( $orderBy == 'operator' ) {
+			$tmpClass = 'order-select';
+		
+			$tmpSort = 'operator-desc';
+		} else {
+			if ( $orderBy == 'operator-desc' ) $tmpClass = 'order-select';
+			else $tmpClass = 'order';
+		
+			$tmpSort = 'operator';
+		}
+
+		if ( strlen( $L_Operator ) > 5 ) $L_Operator = sprintf( "%.5s&hellip;", $L_Operator );
+
+		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
+		 $L_Operator . "</th>\n" );
 		
 		 
 		print( "        <th>" . $L_Status . "</th>\n" .
@@ -287,6 +308,13 @@ switch( $Action ) {
 				$Flag_Admin = '<img class="no-border" src="' . URL_PICTURES . '/bouton_non_coche.gif" alt="Ko" />';
 			} else {
 				$Flag_Admin = '<img class="no-border" src="' . URL_PICTURES . '/bouton_coche.gif" alt="Ko" />';
+		  	}
+
+
+			if ( $Identity->idn_operator == 0 ) {
+				$Flag_Oper = '<img class="no-border" src="' . URL_PICTURES . '/bouton_non_coche.gif" alt="Ko" />';
+			} else {
+				$Flag_Oper = '<img class="no-border" src="' . URL_PICTURES . '/bouton_coche.gif" alt="Ko" />';
 		  	}
 
 
@@ -372,6 +400,7 @@ switch( $Action ) {
 			 "        <td class=\"align-middle\">" . 
 			 $Security->XSS_Protection( $Identity->idn_last_connection ) . "</td>\n" .
 			 "        <td class=\"align-center align-middle\">" . $Flag_Admin . "</td>\n" .
+			 "        <td class=\"align-center align-middle\">" . $Flag_Oper . "</td>\n" .
 			 "        <td class=\"align-center align-middle\">" . $Flag_Status . "</td>\n" .
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
@@ -478,8 +507,8 @@ switch( $Action ) {
 	 "          <tr>\n" .
 	 "           <td><label for=\"iAdministrator\">" . $L_Administrator . "</label></td>\n" .
 	 "           <td><input id=\"iAdministrator\" name=\"Administrator\" type=\"checkbox\" /></td>\n" .
-//	 "           <td><label for=\"iAuditor\">" . $L_Auditor . "</label></td>\n" .
-//	 "           <td><input id=\"iAuditor\" name=\"Auditor\" type=\"checkbox\" /></td>\n" .
+	 "           <td><label for=\"iOperator\">" . $L_Operator . "</label></td>\n" .
+	 "           <td><input id=\"iOperator\" name=\"Operator\" type=\"checkbox\" /></td>\n" .
 	 "          </tr>\n" .
 	 "         </table>\n" .
 
@@ -516,6 +545,14 @@ switch( $Action ) {
 	}
 	
 
+	if ( isset( $_POST[ 'Operator' ] ) ) {
+		if ( $_POST[ 'Operator' ] == 'on' )
+			$Operator = 1;
+	} else {
+		$Operator = 0;
+	}
+	
+
 	// ===========================================================
 	// Calcule un nouveau grain de sel spécifique à l'utilisateur.
 	$size = 8;
@@ -548,6 +585,7 @@ switch( $Action ) {
 		$oUser = new stdClass();
 		$oUser->idn_login = $Username;
 		$oUser->idn_super_admin = $SuperAdmin;
+		$oUser->idn_operator = $Operator;
 		$oUser->cvl_last_name = stripslashes( $tCivility->cvl_last_name );
 		$oUser->cvl_first_name = stripslashes( $tCivility->cvl_first_name );
 		$oUser->ent_code = stripslashes( $tEntity->ent_code );
@@ -557,7 +595,7 @@ switch( $Action ) {
 
 	try {
 		$Identities->set( '', $Username, $Authenticator, 1, 0,
-			$SuperAdmin, 0, $ent_id, $cvl_id, $Salt );
+			$SuperAdmin, $Operator, $ent_id, $cvl_id, $Salt );
 
 		$Last_ID = $Identities->LastInsertId;
 
@@ -740,10 +778,10 @@ switch( $Action ) {
 	else
 		$Flag_Check_Administrator = "";
 
-	if ( $Identity->idn_auditor == 1 )
-		$Flag_Check_Auditor = "checked";
+	if ( $Identity->idn_operator == 1 )
+		$Flag_Check_Operator = "checked";
 	else
-		$Flag_Check_Auditor = "";
+		$Flag_Check_Operator = "";
 
 
 	$T_Entities = $Entities->listEntities();
@@ -853,6 +891,8 @@ switch( $Action ) {
 	 "        <td class=\"td-aere\">\n" .
 	 "           <label for=\"iAdministrator\">" . $L_Administrator . "</label>\n" .
 	 "           <input id=\"iAdministrator\" name=\"Administrator\" type=\"checkbox\" " . $Flag_Check_Administrator . " />\n" .
+	 "           <label for=\"iOperator\">" . $L_Operator . "</label>\n" .
+	 "           <input id=\"iOperator\" name=\"Operator\" type=\"checkbox\" " . $Flag_Check_Operator . " />\n" .
 	 "        </td>\n" .
  	 "       </tr>\n" .
 	 "       <tr>\n" .
@@ -905,11 +945,11 @@ switch( $Action ) {
 		$SuperAdmin = 0;
 	}
 	
-	if ( isset( $_POST[ 'Auditor' ] ) ) {
-		if ( $_POST[ 'Auditor' ] == 'on' )
-			$Auditor = 1;
+	if ( isset( $_POST[ 'Operator' ] ) ) {
+		if ( $_POST[ 'Operator' ] == 'on' )
+			$Operator = 1;
 	} else {
-		$Auditor = 0;
+		$Operator = 0;
 	}
 
 
@@ -935,7 +975,7 @@ switch( $Action ) {
 
 	
 	try {
-		$Identities->set( $idn_id, $Username, '', 1, 0, $SuperAdmin, $Auditor, $ent_id,
+		$Identities->set( $idn_id, $Username, '', 1, 0, $SuperAdmin, $Operator, $ent_id,
 		 $cvl_id );
 
 		$alert_message = $PageHTML->getTextCode( 'L_User_Modified' ) . ' [' . $idn_id . ']';

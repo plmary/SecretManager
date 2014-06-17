@@ -51,6 +51,7 @@
 	$L_Preferences_Management = "Gestion des Préférences";
 	$L_Civilities_Management = "Gestion des civilités";
 	$L_Entities_Management = "Gestion des entités";
+	$L_SecretServer_Management = 'Gestion du SecretServer';
 	$L_Group_List = 'Liste groupée';
 	$L_Detail_List = 'Liste détaillée';
 	$L_Associate = "Associer";
@@ -124,4 +125,8 @@
 
 	$L_Since = 'Depuis';
 	$L_Before = 'Avant';
+
+	$L_Security_Alert = 'Alerte de Sécurité';
+	$L_File_Integrity_Alert = 'Alerte d\'intégrité sur le fichier : %s';
+	$L_Files_Integrity_Alert = 'Alerte sur l\'intégrité des fichiers sensibles de SecretManager';
 ?>

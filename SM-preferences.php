@@ -134,6 +134,8 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
              "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
              "</a></li>\n"
             );
             break;
@@ -145,6 +147,8 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection .
              "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
              "</a></li>\n"
             );
             break;
@@ -155,6 +159,8 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
              "       <li class=\"active\">" . $L_Connection . "</li>\n" .
              "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
              "</a></li>\n"
             );
             break;
@@ -164,7 +170,20 @@ if ( $Authentication->is_administrator() ) {
             print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
-             "       <li class=\"active\">" . $L_SecretServer . "</li>\n"
+             "       <li class=\"active\">" . $L_SecretServer . "</li>\n" .
+             "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
+             "</a></li>\n"
+            );
+            break;
+
+         case 'SCR':
+         case 'SCRX':
+            print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n" .
+             "       <li class=\"active\">" . $L_Secrets . "</li>\n"
             );
             break;
         }
@@ -1047,6 +1066,15 @@ if ( $Authentication->is_administrator() ) {
 			$Select_No = 'selected';
 		}
 
+		if ( $PageHTML->getParameter( 'stop_SecretServer_on_alert' ) == '1' ) {
+			$Select_Stop_Yes = 'selected';
+			$Select_Stop_No = '';
+		} else {
+			$Select_Stop_Yes = '';
+			$Select_Stop_No = 'selected';
+		}
+
+
         $Operator_Key_Size = $PageHTML->getParameter( 'Operator_Key_Size' );
         $Operator_Key_Complexity = $PageHTML->getParameter( 'Operator_Key_Complexity' );
 
@@ -1106,7 +1134,7 @@ if ( $Authentication->is_administrator() ) {
 		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:95%\">\n" .
 		 "       <thead>\n" .
 		 "       <tr>\n" .
-		 "        <th colspan=\"2\">SecretServer</th>\n" .
+		 "        <th colspan=\"2\">" . $L_SecretServer_Management . "</th>\n" .
 		 "       </tr>\n" .
 		 "       </thead>\n" .
 		 
@@ -1117,14 +1145,24 @@ if ( $Authentication->is_administrator() ) {
 		 "         <table>\n" .
 		 "          <tbody>\n" .
 		 "          <tr>\n" .
-		 "           <td class=\"align-middle\">\n" .
+		 "           <th width=\"40%\">" . $L_Use_SecretServer . "</th>\n" .
+		 "           <td class=\"align-middle align-center pair\" width=\"30%\">\n" .
 		 "            <select id=\"Use_SecretServer\">\n" .
 		 "             <option value=\"0\" " . $Select_No . ">" .  $L_No . "</option>\n" .
 		 "             <option value=\"1\" " . $Select_Yes . ">" .  $L_Yes . "</option>\n" .
 		 "            </select>\n" .
 		 "           </td>\n" .
-		 "           <td>\n" .
+		 "           <td rowspan=\"2\" class=\"align-middle\">\n" .
 		 "            <a href=\"#\" class=\"button\" id=\"iSaveUseServer\">" . $L_Save . "</a>\n" .
+		 "           </td>\n" .
+		 "          </tr>\n" .
+		 "          <tr>\n" .
+		 "           <th>" . $L_Stop_SecretServer_On_Alert . "</th>\n" .
+		 "           <td class=\"align-middle align-center impair\">\n" .
+		 "            <select id=\"Stop_SecretServer\">\n" .
+		 "             <option value=\"0\" " . $Select_Stop_No . ">" .  $L_No . "</option>\n" .
+		 "             <option value=\"1\" " . $Select_Stop_Yes . ">" .  $L_Yes . "</option>\n" .
+		 "            </select>\n" .
 		 "           </td>\n" .
 		 "          </tr>\n" .
 		 "          </tbody>\n" .
@@ -1197,6 +1235,7 @@ if ( $Authentication->is_administrator() ) {
 
 		try {
 		    $PageHTML->setParameter( 'use_SecretServer', $_POST[ 'UseSecretServer' ] );
+		    $PageHTML->setParameter( 'stop_SecretServer_on_alert', $_POST[ 'StopSecretServer' ] );
 		} catch( PDOException $e ) {
 		    $Ajax_Result = array(
                 'Status' => 'error',
@@ -1207,17 +1246,17 @@ if ( $Authentication->is_administrator() ) {
             exit();
 		}
 
-		if ( $_POST[ 'UseSecretServer' ] == 0 ) $Value = $L_No;
-		else $Value = $L_Yes;
+//		if ( $_POST[ 'UseSecretServer' ] == 0 ) $Value = $L_No;
+//		else $Value = $L_Yes;
 		
 
 		$Labels = $PageHTML->getTextCode( 'L_Parameters_Updated', $PageHTML->getParameter( 'language_alert' ) );
 		$alert_message = $Labels;
 
 		if ( $F_Verbosity_Alert == 1 ) {
-			$alert_message .= ' (UseSecretServer)';
+			$alert_message .= ' (UseSecretServer, StopSecretServer)';
 		} else {
-			$alert_message .= ' (UseSecretServer="' . $_POST[ 'UseSecretServer' ] . '")';
+			$alert_message .= ' (UseSecretServer="' . $_POST[ 'UseSecretServer' ] . '",StopSecretServer="' . $_POST[ 'StopSecretServer' ] . '")';
 		}
 	
 		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
@@ -1275,6 +1314,125 @@ if ( $Authentication->is_administrator() ) {
         echo json_encode( $Ajax_Result );
         exit();
         
+		break;
+
+
+	 case 'SCR':
+		$Active_1 = '';
+		$Active_2 = '';
+		$Active_3 = '';
+		$Active_4 = '';
+
+		switch ( $PageHTML->getParameter( 'secrets_complexity' ) ) {
+		 case '1':
+			$Active_1 = ' selected';
+			break;
+
+		 case '2':
+			$Active_2 = ' selected';
+			break;
+
+		 default:
+		 case '3':
+			$Active_3 = ' selected';
+			break;
+
+		 case '4':
+			$Active_4 = ' selected';
+			break;
+		}
+
+		print( "     <form method=\"post\" name=\"PageHTML\" action=\"" . $Script . "?action=SCRX\">\n" .
+		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:90%\">\n" .
+		 "       <thead>\n" .
+		 "       <tr>\n" .
+		 "        <th colspan=\"3\">" . $L_Secrets_Management . "</th>\n" .
+		 "       </tr>\n" .
+		 "       </thead>\n" .
+		 "       <tbody>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" .
+		 "<label for=\"id_secrets_complexity\">" . $L_Secrets_Complexity . "</label></td>\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
+		 "            <select class=\"input-xxlarge\" id=\"id_secrets_complexity\" name=\"Secrets_Complexity\">\n" .
+		 "             <option value=\"1\"" . $Active_1 . ">" . $_Password_Complexity_1 . "</option>\n" .
+		 "             <option value=\"2\"" . $Active_2 . ">" . $_Password_Complexity_2 . "</option>\n" .
+		 "             <option value=\"3\"" . $Active_3 . ">" . $_Password_Complexity_3 . "</option>\n" .
+		 "             <option value=\"4\"" . $Active_4 . ">" . $_Password_Complexity_4 . "</option>\n" .
+		 "            </select>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" .
+		 "<label for=\"id_secrets_size\">" . $L_Secrets_Size . "</label></td>\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
+		 "         <input id=\"id_secrets_size\" type=\"text\" name=\"Secrets_Size\" class=\"input-small\" value=\"" .
+		 $PageHTML->getParameter( 'secrets_size' ) . "\" />\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" .
+		 "<label for=\"id_secrets_size\">" . $L_Secrets_Lifetime . "</label></td>\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
+		 "         <input id=\"id_secrets_lifetime\" type=\"text\" name=\"Secrets_Lifetime\" class=\"input-small\" value=\"" .
+		 $PageHTML->getParameter( 'secrets_lifetime' ) . "\" />\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
+		 "        <td>&nbsp;</td>" .
+		 "        <td colspan=\"2\"><input type=\"submit\" class=\"button\" value=\"". $L_Save .
+		 "\" /></td>\n" .
+		 "       </tr>\n" .
+		 "       </tbody>\n" .
+		 "      </table>\n" .
+		 "     </form>\n"
+		);
+
+		break;
+
+
+	 case 'SCRX':
+		if ( ($Secrets_Complexity = $Security->valueControl( $_POST[ 'Secrets_Complexity' ], 'NUMERIC' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Secrets_Complexity)</h1>" );
+				break;
+		}
+		
+		if ( ($Secrets_Size = $Security->valueControl( $_POST[ 'Secrets_Size' ], 'NUMERIC' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Secrets_Size)</h1>" );
+				break;
+		}
+
+		if ( ($Secrets_Lifetime = $Security->valueControl( $_POST[ 'Secrets_Lifetime' ], 'NUMERIC' )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (Secrets_Lifetime)</h1>" );
+				break;
+		}
+
+		try {
+			$PageHTML->setParameter( 'secrets_complexity', $Secrets_Complexity );
+			$PageHTML->setParameter( 'secrets_size', $Secrets_Size );
+			$PageHTML->setParameter( 'secrets_lifetime', $Secrets_Lifetime );
+		} catch( PDOException $e ) {
+			print( $PageHTML->returnPage( $L_Title, $L_ERR_MAJ_Alert, $Script .
+			 "?action=SCR" ) );
+			exit();
+		}
+
+		$alert_message = $PageHTML->getTextCode( 'L_Parameters_Updated', $PageHTML->getParameter( 'language_alert' ) );
+
+		if ( $F_Verbosity_Alert == 1 ) {
+			$alert_message .= ' (secrets_complexity, secrets_size, secrets_lifetime)';
+		} else {
+			$alert_message .= ' (secrets_complexity="' . $Secrets_Complexity . '", secrets_size="' . $Secrets_Size .
+				'", secrets_lifetime="' . $Secrets_Lifetime . '")';
+		}
+
+		$Security->updateHistory( 'L_ALERT_SPR', $alert_message, 3, LOG_INFO );
+
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=SCR\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Parameters_Updated . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
+
 		break;
 	}
 } else {

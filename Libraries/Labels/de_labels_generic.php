@@ -48,6 +48,7 @@
 	$L_Civilities_Management = "Civilities Management";
 	$L_Entities_Management = "Instanzen verwalten";
 	$L_Preferences_Management = "Einstellungen verwalten";
+	$L_SecretServer_Management = 'SecretServer verwalten';
 	$L_Group_List = 'Gruppierte Liste';
 	$L_Detail_List = 'Detailierte Liste';
 	$L_Associate = "Verbunden";
@@ -119,4 +120,8 @@
 
 	$L_Since = 'Since';
 	$L_Before = 'Before';
+
+	$L_Security_Alert = 'Security Alert';
+	$L_File_Integrity_Alert = 'File integrity alert : %s';
+	$L_Files_Integrity_Alert = 'SecretManager files integrity Alert';
 ?>

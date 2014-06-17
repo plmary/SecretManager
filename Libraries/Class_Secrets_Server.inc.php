@@ -28,6 +28,8 @@ public function __construct() {
 	*
 	* @return TRUE .
 	*/
+	parent::__construct();
+
 	include( DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php' );
 	
 	$this->IP_Address = $IP_Address;
@@ -185,6 +187,18 @@ public function SS_createMotherKey( $Operator_Key, $Mother_Key ) {
 	*  En cas d'erreur, cette fonction lève une exception.
 	*/
 
+	$Integrity_Status = $this->checkFilesIntegrity();
+	if ( $Integrity_Status === FALSE ) {
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+		
+		if ( $this->getParameter('stop_SecretServer_on_alert') == 1 ) {
+			$this->SS_Shutdown();
+		}
+
+		throw new Exception( $L_Files_Integrity_Alert, 1 );
+	}
+
+
 	$Result = $this->setTransportKey( session_id() );
 	if ( $Result[ 0 ] === FALSE ) {
 		throw new Exception( trim( $Result[ 1 ] ) );
@@ -227,6 +241,19 @@ public function SS_changeMotherKey( $Operator_Key, $Mother_Key ) {
 	* la clé mère, le 2ème élément est la clé opérateur qui a été utilisée et
 	* le 3ème élément est la mère utilisée est stockée ou lève une Exception.
 	*/
+
+	$Integrity_Status = $this->checkFilesIntegrity();
+	if ( $Integrity_Status === FALSE ) {
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+		
+		if ( $this->getParameter('stop_SecretServer_on_alert') == 1 ) {
+			$this->SS_Shutdown();
+		}
+
+		throw new Exception( $L_Files_Integrity_Alert, 1 );
+	}
+
+
 	include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
     
     $Backup = new Backup();
@@ -279,6 +306,19 @@ public function SS_transcryptMotherKey( $Operator_Key ) {
 	* la clé mère, le 2ème élément est la clé opérateur qui a été utilisée et
 	* le 3ème élément est la mère utilisée est stockée ou lève une Exception.
 	*/
+
+	$Integrity_Status = $this->checkFilesIntegrity();
+	if ( $Integrity_Status === FALSE ) {
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+		
+		if ( $this->getParameter('stop_SecretServer_on_alert') == 1 ) {
+			$this->SS_Shutdown();
+		}
+
+		throw new Exception( $L_Files_Integrity_Alert, 1 );
+	}
+
+
 	$Result = $this->setTransportKey( session_id() );
 	if ( $Result[ 0 ] === FALSE ) {
 		throw new Exception( trim( $Result[ 1 ] ) );
@@ -312,6 +352,30 @@ public function SS_loadMotherKey( $Operator_Key ) {
 	*
 	* @return string Confirme le chargement de la clé ou lève une Exception.
 	*/
+
+	$Integrity_Status = $this->checkFilesIntegrity();
+
+	if ( $Integrity_Status[ 0 ] === FALSE ) {
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+		
+		if ( $this->getParameter('stop_SecretServer_on_alert') == 1 ) {
+			$this->SS_Shutdown();
+		}
+
+		$Files = '';
+
+		foreach( $Integrity_Status[ 1 ] as $File ) {
+			if ( $Files != '' ) $Files .= '<br/>';
+
+			$Files .= $File;
+		}
+
+		$Files = '<br/>(' . $Files . ')';
+
+		throw new Exception( $L_Files_Integrity_Alert . $Files, 1 );
+	}
+
+
 	$Result = $this->setTransportKey( session_id() );
 	if ( $Result[ 0 ] === FALSE ) {
 		throw new Exception( trim( $Result[ 1 ] ) );
@@ -373,6 +437,18 @@ public function SS_encryptValue( $Encrypt_Value ) {
 	if ( $Encrypt_Value == '' ) {
 		throw new Exception( 'L_ERR_NO_VALUE' );
 	}
+
+	$Integrity_Status = $this->checkFilesIntegrity();
+	if ( $Integrity_Status === FALSE ) {
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+		
+		if ( $this->getParameter('stop_SecretServer_on_alert') == 1 ) {
+			$this->SS_Shutdown();
+		}
+
+		throw new Exception( $L_Files_Integrity_Alert, 1 );
+	}
+
 	
 	$Result = $this->setTransportKey( session_id() );
 	if ( $Result[ 0 ] === FALSE ) {
@@ -410,6 +486,18 @@ public function SS_decryptValue( $Decrypt_Value ) {
 	if ( $Decrypt_Value == '' ) {
 		throw new Exception( 'L_ERR_NO_VALUE' );
 	}
+
+	$Integrity_Status = $this->checkFilesIntegrity();
+	if ( $Integrity_Status === FALSE ) {
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
+		
+		if ( $this->getParameter('stop_SecretServer_on_alert') == 1 ) {
+			$this->SS_Shutdown();
+		}
+
+		throw new Exception( $L_Files_Integrity_Alert, 1 );
+	}
+
 
 	$Data = $this->__sendServerSocket( session_id() . "###decrypt###" . $Decrypt_Value . "\n" );
 	 

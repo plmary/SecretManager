@@ -67,8 +67,6 @@ function viewPassword( scr_id ){
             data: $.param({'scr_id': scr_id}),
             dataType: 'json',
             success: function(reponse) {
-                $('#afficherSecret').show();
-
                 var statut = reponse['Statut'];
                 var password = reponse['password'];
                 var Message = '';
@@ -81,19 +79,44 @@ function viewPassword( scr_id ){
                     var couleur_fond = 'bg-orange ';                    
                 }
 
+                // Contrôle s'il faut gérer un lien.
+                var regex_http = new RegExp('^http://', 'gi');
+                var regex_https = new RegExp('^https://', 'gi');
+                var regex_www = new RegExp('^www.', 'gi');
+
                 if (statut == 'succes') {
+                    if ( reponse['host'].match( regex_http )
+                     || reponse['host'].match( regex_https )
+                     || reponse['host'].match( regex_www ) ) {
+                        reponse['host'] = '<a href="' + reponse['host'] + '" target="_blank">' + reponse['host'] + '</a>';
+                    }
+
                     Message += '<p><span>'+reponse['l_host']+' : </span>'+
                         '<span class="td-aere">'+reponse['host']+'</span></p>'+
                         '<p><span>'+reponse['l_user']+' : </span>'+
                         '<span class="td-aere">'+reponse['user']+'</span></p>'+
                         '<p><span>'+reponse['l_password']+' : </span>'+
-                        '<span class="'+couleur_fond+'td-aere">'+password+'</span></p>';
+                        '<span class="'+couleur_fond+'td-aere" id="iPassword">'+password+'</span></p>';
 
                     $('#detailSecret').html(Message);
                 }
                 else if (statut == 'erreur') {
-                    $('#detailSecret').text(reponse['Message']);
+                    $('#detailSecret').html(reponse['Message']);
                 }
+
+                $('#afficherSecret').show();
+
+                var OldSize = $('#afficherSecret').width();
+                var MinSize = 400;
+                if ( MinSize > OldSize ) {
+                    OldSize = 400;
+                }
+
+                $('#afficherSecret').css({
+                    'left': ((window.outerWidth - OldSize) / 2) + 'px',
+                    'maxWidth': OldSize + 'px',
+                    'minWidth': MinSize + 'px'
+                });
 
             },
             error: function(reponse) {
@@ -469,7 +492,13 @@ function getCreateSecret( sgr_id ){
         L_Comment,
         L_Expiration_Date,
         L_Mandatory_Field,
-        L_Personal;
+        L_Personal,
+        L_Complexity_1,
+        L_Complexity_2,
+        L_Complexity_3,
+        L_Complexity_4,
+        Secrets_Complexity,
+        Secrets_Size;
 
     $.ajax({
         async: false,
@@ -493,6 +522,13 @@ function getCreateSecret( sgr_id ){
             L_Expiration_Date = reponse['L_Expiration_Date'];
             L_Mandatory_Field = reponse['L_Mandatory_Field'];
             L_Personal = reponse['L_Personal'];
+            L_Complexity_1 = reponse['L_Complexity_1'];
+            L_Complexity_2 = reponse['L_Complexity_2'];
+            L_Complexity_3 = reponse['L_Complexity_3'];
+            L_Complexity_4 = reponse['L_Complexity_4'];
+            Secrets_Complexity = reponse['Secrets_Complexity'];
+            Secrets_Size = reponse['Secrets_Size'];
+            Secrets_Lifetime = reponse['Secrets_Lifetime'];
         }
     });
 
@@ -540,14 +576,31 @@ function getCreateSecret( sgr_id ){
         }
     });
 
-    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+    var CurrentDate = new Date();
+
+    NewDay = parseInt( CurrentDate.getDate() );
+    NewMonth = parseInt( CurrentDate.getMonth() ) + parseInt( Secrets_Lifetime ) + 1;
+    NewYear = parseInt( CurrentDate.getFullYear() );
+
+    var FutureDate = new Date(NewYear, NewMonth, NewDay);
+
+    NewDay = FutureDate.getDate();
+    NewMonth = parseInt( FutureDate.getMonth() ) + 1;
+    if ( NewMonth.toString().length == 1 ) NewMonth = '0' + NewMonth.toString();
+    NewYear = FutureDate.getFullYear();
+    if ( NewYear.toString().length == 1 ) NewYear = '0' + NewYear.toString();
+
+    FutureDate = NewYear + '/' + NewMonth + '/' + NewDay;
+
+
+    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1" style="min-width:700px;">' +
      '<div class="modal-header">' +
      '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
      'onClick="javascript:hideConfirmMessage();">×</button>' +
      '<h4 id="myModalLabel">'+L_Secret_Create+'</h4>' +
-     '</div>' +
+     '</div> <!-- Fin : modal-header -->' +
      '<div class="modal-body">' +
-     '<div class="row-fluid"style="margin-top:8px;">' +
+     '<div class="row-fluid" style="margin-top:8px;">' +
      '<table style="margin:10px auto;width:90%">' +
      '<tbody>' +
      '<tr>' +
@@ -598,15 +651,27 @@ function getCreateSecret( sgr_id ){
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Password + '</td>' +
-     '<td colspan="3"><input name="Password" id="i_Password" type="text" size="64" maxlength="64" onkeyup="checkPassword(\'i_Password\', \'Result\', 3, 8);" onfocus="checkPassword(\'i_Password\', \'Result\', 3, 8);"/><a class="button" onclick="generatePassword( \'i_Password\', 3, 8 )">' + L_Generate + '</a><img id="Result" class="no-border" width="16" height="16" alt="Ok" src="' + Parameters['URL_PICTURES'] + '/blank.gif" /></td>' +
+     '<td><input name="Password" id="i_Password" type="text" size="64" maxlength="64" ' +
+     'onkeyup="checkPassword(\'i_Password\', \'Result\', ' + Secrets_Complexity + ', ' + Secrets_Size + ');" ' +
+     'onfocus="checkPassword(\'i_Password\', \'Result\', ' + Secrets_Complexity + ', ' + Secrets_Size + ');"/></td>'+
+     '<td colspan="2" class="align-right"><div class="btn-group">' +
+     '<button id="btn-done" class="btn">' + L_Generate + '</button>' +
+     '<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>' +
+     '<ul class="dropdown-menu pull-right">' +
+     '<li style="font-size:10px;"><a id="cpl_1" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+     '<li style="font-size:10px;"><a id="cpl_2" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+     '<li style="font-size:10px;"><a id="cpl_3" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+     '<li style="font-size:10px;"><a id="cpl_4" href="#" style="line-height: 14px;" data-toggle="selector_cpl"></a></li>' +
+     '</ul></div> <!-- Fin : btn-group -->' +
+     '&nbsp;<img id="Result" class="no-border" width="16" height="16" alt="Ok" src="' + Parameters['URL_PICTURES'] + '/blank.gif" /></td>' +
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Expiration_Date + '</td>' +
-     '<td colspan="3"><input id="i_Expiration_Date" type="text" size="19" maxlength="19" /></td>' +
+     '<td colspan="3"><input id="i_Expiration_Date" type="text" size="19" maxlength="19" class="input-small" value="' + FutureDate + '" /></td>' +
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Comment + '</td>' +
-     '<td colspan="3"><input id="i_Comment" type="text" size="100" maxlength="100" /></td>' +
+     '<td colspan="2"><input id="i_Comment" type="text" class="input-xxlarge" size="100" maxlength="100" /></td>' +
      '</tr>' +
      '<tr>' +
      '<td class="align-right">' + L_Alert + '</td>' +
@@ -614,15 +679,66 @@ function getCreateSecret( sgr_id ){
      '</tr>' +
      '</tbody>' +
      '</table>' +
-     '</div>' +
-     '</div>' +
+     '<script>' +
+     'function reset_selector_cpl() {' +
+     ' var L_Complexity_1 = "'+L_Complexity_1+'";' +
+     ' var L_Complexity_2 = "'+L_Complexity_2+'";' +
+     ' var L_Complexity_3 = "'+L_Complexity_3+'";' +
+     ' var L_Complexity_4 = "'+L_Complexity_4+'";' +
+     ' $(\'a[data-toggle="selector_cpl"]\').each( function(index) {' +
+     '   var S_Id = $(this).attr("id");'+
+     '   var T_Id = S_Id.split("_");'+
+     '   $("#"+S_Id).attr("data-selection", 0);'+
+     '   $("#"+S_Id).html(eval("L_Complexity_"+T_Id[1]));'+
+     '   } );' +
+     '}' +
+     'function setEventPassword( id ) {' +
+     ' var OldOnKeyUp = $("#i_Password").attr("onkeyup");' +
+     ' var T_OldOnKeyUp = OldOnKeyUp.split(", ");' +
+     ' $("#i_Password").attr("onkeyup", T_OldOnKeyUp[0] + ", " + T_OldOnKeyUp[1] + ", " + id + ", " + T_OldOnKeyUp[3]);' +
+     ' $("#i_Password").attr("onfocus", T_OldOnKeyUp[0] + ", " + T_OldOnKeyUp[1] + ", " + id + ", " + T_OldOnKeyUp[3]);' +
+     '}' +
+     'reset_selector_cpl();' +
+     '$("#cpl_1").on("click", function() {' +
+     ' reset_selector_cpl();' +
+     ' $("#cpl_1").attr("data-selection", 1);' +
+     ' $("#cpl_1").html(\'<i class="icon-ok"></i>&nbsp;'+L_Complexity_1+'\');' +
+     ' setEventPassword( 1 );' +
+     '});' +
+     '$("#cpl_2").on("click", function() {' +
+     ' reset_selector_cpl();' +
+     ' $("#cpl_2").attr("data-selection", 1);' +
+     ' $("#cpl_2").html(\'<i class="icon-ok"></i>&nbsp;'+L_Complexity_2+'\');' +
+     ' setEventPassword( 2 );' +
+     '});' +
+     '$("#cpl_3").on("click", function() {' +
+     ' reset_selector_cpl();' +
+     ' $("#cpl_3").attr("data-selection", 1);' +
+     ' $("#cpl_3").html(\'<i class="icon-ok"></i>&nbsp;'+L_Complexity_3+'\');' +
+     ' setEventPassword( 3 );' +
+     '});' +
+     '$("#cpl_4").on("click", function() {' +
+     ' reset_selector_cpl();' +
+     ' $("#cpl_4").attr("data-selection", 1);' +
+     ' $("#cpl_4").html(\'<i class="icon-ok"></i>&nbsp;'+L_Complexity_4+'\');' +
+     ' setEventPassword( 4 );' +
+     '});' +
+     '$("#btn-done").on("click", function() {' +
+     ' var MyID = $(\'a[data-selection="1"]\').attr("id");' +
+     ' MyID = MyID.split("_");' +
+     ' generatePassword( \'i_Password\', MyID[1], ' + Secrets_Size + ' );' +
+     '});' +
+     '$("#cpl_' + Secrets_Complexity + '").trigger("click");' +
+     '</script>' +
+     '</div> <!-- Fin : row-fluid -->' +
+     '</div> <!-- Fin : modal-body -->' +
      '<div class="modal-footer">' +
      '<a class="button" id="iCancel" href="javascript:hideConfirmMessage();">' +
      L_Cancel + '</a>&nbsp;' +
      '<a class="button" href="javascript:CreateSecret(' + sgr_id + ');">' +
      L_Create+'</a>' +
-     '</div>' +
-     '</div>\n' ).prependTo( 'body' );
+     '</div> <!-- Fin : modal-footer -->' +
+     '</div> <!-- Fin : confirm_message -->\n' ).prependTo( 'body' );
 
     // Met le focus sur le 1er champ du calque.
     $('#i_sgr_id').focus();

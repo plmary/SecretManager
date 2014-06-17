@@ -33,6 +33,7 @@
 	$L_ERR_SECRET_FILE_CREATION = 'Fehler bei der Erstellunge des Secretfile';
 	$L_ERR_TRANSCRYPT = 'Error during database transcrypt';
 	$L_ERR_INVALID_OPERATOR_KEY_BACKUP = 'The Operator Key does not open the File Restore Mother Key';
+	$L_ERR_MASTER_INTEGRITY_ALERT = 'Integrity Alert on the Master File';	
 	
 	$L_MOTHER_KEY_LOADED = 'Mutterkey geladen';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mutterkey automatisch erstellt';

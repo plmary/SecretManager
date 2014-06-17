@@ -54,6 +54,16 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		$Secret_Server = new Secret_Server();
 
+
+		if ( ($Corrupted_Files = $Security->checkFilesIntegrity()) ) {
+			if ( $Security->getParameter('stop_secret_server_on_alert') == 1 ) {
+				$Secret_Server->SS_Shutdown();
+			}
+
+			throw new Exception( $L_Files_Integrity_Alert, 1 );
+		}
+
+
 		
 		if ( $scr_id == '' ) {
 			$Request = 'INSERT INTO scr_secrets ' .
@@ -667,11 +677,35 @@ class IICA_Secrets extends IICA_DB_Connector {
 	*/
 	public function get( $scr_id ) {
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 		include_once( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 
 		$Parameters = new IICA_Parameters();
 
 		$Secret_Server = new Secret_Server();
+
+
+		$Security = new Security();
+
+		$Integrity_Status = $Security->checkFilesIntegrity();
+
+		if ( $Integrity_Status[ 0 ] === FALSE ) {
+			if ( $Security->getParameter('stop_secret_server_on_alert') == 1 ) {
+				$Secret_Server->SS_Shutdown();
+			}
+
+			$Files = '';
+
+			foreach( $Integrity_Status[ 1 ] as $File ) {
+				if ( $Files != '' ) $Files .= '<br/>';
+
+				$Files .= $File;
+			}
+
+			$Files = '<br/>(' . $Files . ')';
+
+			throw new Exception( '<p class="alert">'. $L_Files_Integrity_Alert . '</p><p>' . $Files . '</p>', 1 );
+		}
 
 		
 		$Request = 'SELECT ' .
@@ -715,7 +749,9 @@ class IICA_Secrets extends IICA_DB_Connector {
 				 $Occurrence->scr_password );
 			} catch( Exception $e ) {
 				$Error = $e->getMessage();
-				if ( isset( ${$Error} ) ) $Error = ${$Error};
+				if ( isset( ${$Error} ) ) {
+					$Error = ${$Error};
+				}
 				
 				throw new Exception( $Error, 0 );
 			}

@@ -23,7 +23,7 @@
 
 include( 'Constants.inc.php' );
 
-$VERSION = '0.8-0';
+$VERSION = '0.9-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -36,20 +36,25 @@ $ShortOpts .= "c:"; // Spécifie un fichier de configuration spécifique
 $ShortOpts .= "d";  // Force l'exécution en mode "debug"
 $ShortOpts .= "h";  // Affiche l'aide
 $ShortOpts .= "v";  // Affiche la version
+$ShortOpts .= "f";  // Force l'arrêt du SecretServer en cas de problème d'intégrité
 
 $LongOpts  = array(
 	"config:", // Spécifie un fichier de configuration spécifique
 	"debug",   // Force l'exécution en mode "debug"
 	"help",    // Affiche l'aide
 	"version", // Affiche la version
+	"force" // Force l'arrêt du SecretServer en cas de problème d'intégrité
 );
 
 $Options = getopt( $ShortOpts, $LongOpts );
 //var_dump($Options);
 
 $FLAG_DEBUG = 0;
+$FLAG_FORCE = 0;
+
 $Config_File = DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php';
 $Security_File = DIR_LIBRARIES . '/Class_Security.inc.php';
+
 $Session_Dir = DIR_SESSION;
 
 
@@ -75,7 +80,9 @@ foreach( $Options as $Option => $Valeur ) {
 		 "-debug              : script execution is in \"debug\" mode\n" .
 		 "-d                  : script execution is in \"debug\" mode\n" .
 		 "-version            : show script version\n" .
-		 "-v                  : show script version\n"
+		 "-v                  : show script version\n" .
+		 "-force              : force SecretServer to stop when we've got an integrity alert\n" .
+		 "-f                  : force SecretServer to stop when we've got an integrity alert\n"
 		);
 		exit( 0 );
 
@@ -83,6 +90,11 @@ foreach( $Options as $Option => $Valeur ) {
 	 case 'version':
 		print( "SecretServer v" . $VERSION . "\n" );
 		exit( 0 );
+
+	 case 'f':
+	 case 'force':
+		$FLAG_FORCE = 1;
+		break;
 	}
 }
 
@@ -109,6 +121,7 @@ foreach( $Files as $File ) {
         }
     }
 }
+
 
 // ===================================
 // Charge le fichier de configuration.
@@ -139,6 +152,46 @@ $Security = new Security();
 if ( $FLAG_DEBUG ) {
 	print( $PREFIX_DEBUG . "\"Security module\" loaded\n" );
 }
+
+
+// ===================================
+// Charge le fichier des libellés génériques.
+$Labels_File = DIR_LABELS . '/' . $Security->getParameter( 'language_alert' ) . '_labels_generic.php';
+
+if ( file_exists( $Labels_File ) ) {
+	include( $Labels_File );
+} else {
+	print( $PREFIX_ERROR . 'Labels file (' . $Labels_File .
+	 ") not exists or inaccessible\n" );
+	exit( 1 );
+}
+if ( $FLAG_DEBUG ) {
+	print( $PREFIX_DEBUG . 'Labels file (' . $Labels_File .
+	 ") loaded\n" );
+}
+
+
+// ===================================
+// Vérifie si le fichier de contrôle des fichiers d'empreintes des fichiers sensibles existe.
+if ( file_exists( MASTER_INTEGRITY_FILENAME ) ) {
+	$ForceCreating = FALSE;
+	$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating );
+
+	if ( $Tmp[ 0 ] === FALSE ) {
+		print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
+		exit( 1 );
+	}
+} else {
+	$ForceCreating = TRUE;
+	$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating );	
+
+	if ( $Tmp[ 0 ] === FALSE ) {
+		print( $PREFIX_ERROR . sprintf( "Error with file : %s\n", MASTER_INTEGRITY_FILENAME ) );
+		exit( 1 );
+	}
+}
+
+$Master_Integrity = $Tmp[ 1 ];
 
 
 // ===================================
@@ -362,7 +415,7 @@ do {
 		}
 
 
-		// ****************************************
+		// *******************************************************************
 		// Coeur de traitement du serveur.
 		// ****************************************
 		if ( $FLAG_DEBUG ) {
@@ -405,6 +458,19 @@ do {
 				break; // Déconnecte le client.
 			}
 			
+			$ForceCreating = FALSE;
+			$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating, $Master_Integrity );
+
+			if ( $Tmp[ 0 ] === FALSE ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
 			
 			// Teste le paramètre reçu.
 			if ( $Parameter == '' ) {
@@ -501,6 +567,18 @@ do {
 				break; // Déconnecte le client.
 			}
 			
+			$ForceCreating = FALSE;
+			$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating, $Master_Integrity );
+
+			if ( $Tmp[ 0 ] === FALSE ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
 			
             $_Create_Date = time();
 
@@ -552,6 +630,19 @@ do {
 				break; // Déconnecte le client.
 			}
 			
+			$ForceCreating = FALSE;
+			$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating, $Master_Integrity );
+
+			if ( $Tmp[ 0 ] === FALSE ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
             $old_Secret_Key = $Secret_Key;
 
 			// Teste le paramètre reçu.
@@ -686,6 +777,19 @@ do {
 				break; // Déconnecte le client.
 			}
 			
+			$ForceCreating = FALSE;
+			$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating, $Master_Integrity );
+
+			if ( $Tmp[ 0 ] === FALSE ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
 			// Sauvegarde l'ancienne clé mère.
 			if ( $Secret_Key != '' ) $Old_Secret_Key = $Secret_Key;
 			else $Old_Secret_Key = '';
@@ -847,6 +951,19 @@ do {
 				break; // Déconnecte le client.
 			}
 
+			$ForceCreating = FALSE;
+			$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating, $Master_Integrity );
+
+			if ( $Tmp[ 0 ] === FALSE ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
 			// Récupère la clé de transport.
 			$T_Key = $Security->getTransportKey( $ID_Session );
 			if ( $T_Key[ 0 ] === FALSE ) {
@@ -890,6 +1007,19 @@ do {
 				sendMessageToClient( $MsgSock, FLAG_ERROR .
 				 "###L_ERR_MOTHER_KEY_NOT_LOADED\n" );
 				break; // Déconnecte le client.
+			}
+
+			$ForceCreating = FALSE;
+			$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating, $Master_Integrity );
+
+			if ( $Tmp[ 0 ] === FALSE ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
 			}
 
 			// Récupère la clé mère.

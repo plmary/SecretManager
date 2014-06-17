@@ -40,7 +40,7 @@
 	
 	$L_Entity = 'Entité';
 	$L_Civility = 'Civilité';
-	$L_Auditor = 'Auditeur';
+	$L_Operator = 'Opérateur';
 	$L_Administrator = 'Administrateur';
 
 	$L_User_Created = 'Utilisateur créé' ;

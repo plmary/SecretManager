@@ -35,7 +35,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	*/
 	
 	public function set( $idn_id, $Login, $Authenticator, $ChangeAuthenticator, $Attempt,
-	 $SuperAdmin, $Auditor, $Id_Entity, $Id_Civility, $Salt = '' ) {
+	 $SuperAdmin, $Operator, $Id_Entity, $Id_Civility, $Salt = '' ) {
 	/**
 	* Créé ou actualise une Identité.
 	*
@@ -72,7 +72,7 @@ class IICA_Identities extends IICA_DB_Connector {
 			 'idn_expiration_date, ' .
 			 'idn_updated_authentication, ' .
 			 'idn_super_admin, ' .
-			 'idn_auditor ' ;
+			 'idn_operator ' ;
 			
 			if ( $Salt != '' ) {
 				$Request .= ', idn_salt ' ;
@@ -88,7 +88,7 @@ class IICA_Identities extends IICA_DB_Connector {
 			 ':idn_expiration_date, ' .
 			 ':idn_updated_authentication, ' .
 			 ':idn_super_admin, ' .
-			 ':idn_auditor ' ;
+			 ':idn_operator ' ;
 			
 			if ( $Salt != '' ) {
 				$Request .= ', :idn_salt ' ;
@@ -131,7 +131,7 @@ class IICA_Identities extends IICA_DB_Connector {
 			 'idn_expiration_date = :idn_expiration_date, ' .
 			 'idn_updated_authentication = :idn_updated_authentication, ' .
 			 'idn_super_admin = :idn_super_admin, ' .
-			 'idn_auditor = :idn_auditor ' .
+			 'idn_operator = :idn_operator ' .
 			 'WHERE idn_id = :idn_id' ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Command . $Error[ 2 ], $Error[ 1 ] );
@@ -185,7 +185,7 @@ class IICA_Identities extends IICA_DB_Connector {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
 		
-		if ( ! $Result->bindParam( ':idn_auditor', $Auditor, PDO::PARAM_BOOL ) ) {
+		if ( ! $Result->bindParam( ':idn_operator', $Operator, PDO::PARAM_BOOL ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -268,7 +268,7 @@ class IICA_Identities extends IICA_DB_Connector {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
 		
-		if ( ! $Result->bindParam( ':idn_auditor', $Auditor, PDO::PARAM_BOOL ) ) {
+		if ( ! $Result->bindParam( ':idn_operator', $Auditor, PDO::PARAM_BOOL ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -303,7 +303,7 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'idn_attempt, ' .
 		 'idn_updated_authentication, ' .
 		 'idn_super_admin, ' .
-		 'idn_auditor, ' .
+		 'idn_operator, ' .
 		 'idn_disable ' .
 		 'FROM idn_identities ' ;
 
@@ -355,7 +355,7 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'T1.idn_expiration_date, ' .
 		 'T1.idn_updated_authentication, ' .
 		 'T1.idn_super_admin, ' .
-		 'T1.idn_auditor, ' .
+		 'T1.idn_operator, ' .
 	     'T2.cvl_first_name, ' .
     	 'T2.cvl_last_name, ' .
     	 'T2.cvl_sex, ' .
@@ -368,7 +368,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
     	// Flag pour déterminer si on doit limiter l'affichage des Identités aux seuls administrateurs.
     	if ( $Admin == true ) {
-    		$Request .= 'WHERE t1.idn_auditor = true ';
+    		$Request .= 'WHERE t1.idn_operator = true ';
     	}
 
 
@@ -453,12 +453,12 @@ class IICA_Identities extends IICA_DB_Connector {
 			$Request .= 'ORDER BY T1.idn_super_admin DESC ';
 			break;
 
-		 case 'auditor':
-			$Request .= 'ORDER BY T1.idn_auditor ';
+		 case 'operator':
+			$Request .= 'ORDER BY T1.idn_operator ';
 			break;
 
-		 case 'auditor-desc':
-			$Request .= 'ORDER BY T1.idn_auditor DESC ';
+		 case 'operator-desc':
+			$Request .= 'ORDER BY T1.idn_operator DESC ';
 			break;
 		}
 
@@ -507,7 +507,7 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'idn_expiration_date, ' .
 		 'idn_updated_authentication, ' .
 		 'idn_super_admin, ' .
-		 'idn_auditor ' .
+		 'idn_operator ' .
 		 'FROM idn_identities ' .
 		 'WHERE idn_id = :idn_id ';
 		 
@@ -553,7 +553,7 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'T1.idn_expiration_date, ' .
 		 'T1.idn_updated_authentication, ' .
 		 'T1.idn_super_admin, ' .
-		 'T1.idn_auditor, ' .
+		 'T1.idn_operator, ' .
 		 'T2.cvl_last_name, ' .
 		 'T2.cvl_first_name, ' .
 		 'T2.cvl_sex, ' .
@@ -1307,20 +1307,20 @@ class IICA_Identities extends IICA_DB_Connector {
 	}
 
 
-	public function totalAuditor() {
+	public function totalOperator() {
 	/**
-	* Récupère le nombre total d'Identités Auditor.
+	* Récupère le nombre total d'Identités Opérateur.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @return Renvoi le nombre total d'Identités Auditor
+	* @return Renvoi le nombre total d'Identités Opérateur
 	*/
 		if ( ! $Result = $this->prepare( 'SELECT ' .
 		 'count(*) as total ' .
 		 'FROM idn_identities ' .
-		 'WHERE idn_auditor = 1 ' ) ) {
+		 'WHERE idn_operator = 1 ' ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -1470,11 +1470,12 @@ class IICA_Identities extends IICA_DB_Connector {
 
  
     	// Récupère les libellés pour le message
-    	$Labels = $pHTML->getTextCode( array( 'L_Username', 'L_Administrator', 'L_Civility', 'L_Entity' ), $pHTML->getParameter( 'language_alert' ) );
+    	$Labels = $pHTML->getTextCode( array( 'L_Username', 'L_Administrator', 'L_Civility', 'L_Entity', 'L_Operator' ), $pHTML->getParameter( 'language_alert' ) );
 
  		return ' (' . $Labels['L_Username'] . '="' . $oUser->idn_login . '", ' . $Labels['L_Administrator' ] . '="' . $oUser->idn_super_admin .
  			'", ' . $Labels['L_Civility'] . '="' . $oUser->cvl_first_name . ' ' .
- 			$oUser->cvl_last_name . '", ' . $Labels['L_Entity'] . '="' . $oUser->ent_code . ' - ' . $oUser->ent_label . '")';
+ 			'", ' . $Labels['L_Operator' ] . '="' . $oUser->idn_operator . $oUser->cvl_last_name . '", ' .
+ 			$Labels['L_Entity'] . '="' . $oUser->ent_code . ' - ' . $oUser->ent_label . '")';
 	}
 
 

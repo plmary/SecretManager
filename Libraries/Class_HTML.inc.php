@@ -32,7 +32,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.8-6'; // Version de l'outil
+	$this->Version = '0.9-0'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	
@@ -297,6 +297,8 @@ public function afficherActions( $Administrator ) {
 //		"     <span id=\"menu-icon-users\" class=\"icon28\" title=\"" . $L_Users_Management . "\" onClick=\"javascript:document.location='SM-users.php'\"></span>\n" .
 		"     <span id=\"menu-icon-options\" class=\"icon28\" title=\"" . $L_Preferences_Management . "\" onClick=\"javascript:document.location='SM-preferences.php'\"></span>\n" .
         "     <span id=\"menu-icon-tools\" class=\"icon28\" title=\"" . $L_Management . "\" onClick=\"javascript:document.location='SM-admin.php'\"></span>\n";
+	} elseif ( $this->is_operator() ) {
+	 	$Actions .= "     <span id=\"menu-icon-tools\" class=\"icon28\" title=\"" . $L_Management . "\" onClick=\"javascript:document.location='SM-admin.php'\"></span>\n";
 	}
 
 	$Actions .= "    </div> <!-- fin : actions -->\n";

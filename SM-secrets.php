@@ -1000,8 +1000,14 @@ switch( $Action ) {
         'L_Comment' => $L_Comment,
         'L_Expiration_Date' => $L_Expiration_Date,
         'L_Mandatory_Field' => $L_Mandatory_Field,
-        'L_Personal' => $L_Personal
-
+        'L_Personal' => $L_Personal,
+        'L_Complexity_1' => $_Password_Complexity_1,
+        'L_Complexity_2' => $_Password_Complexity_2,
+        'L_Complexity_3' => $_Password_Complexity_3,
+        'L_Complexity_4' => $_Password_Complexity_4,
+        'Secrets_Complexity' => $PageHTML->getParameter( 'secrets_complexity'),
+        'Secrets_Size' => $PageHTML->getParameter( 'secrets_size'),
+        'Secrets_Lifetime' => $PageHTML->getParameter( 'Secrets_Lifetime' )
     ) );
 
     exit();
@@ -1186,7 +1192,7 @@ switch( $Action ) {
 	if ( ($scr_id = $Security->valueControl( $_POST[ 'scr_id' ], 'NUMERIC' )) ==
 	 -1 ) {
 	    echo json_encode( array(
-	        'Status' => 'error',
+	        'Status' => 'erreur',
 	        'Message' => $L_Invalid_Value . ' (scr_id)'
 	    ) );
 
@@ -1248,7 +1254,7 @@ switch( $Action ) {
 		 'password' => $Security->XSS_Protection( $Secret->scr_password ),
 		 'l_password' => $L_Password );
 	} else {
-		$Resultat = array( 'Statut' => 'error',
+		$Resultat = array( 'Statut' => 'erreur',
 		 'Message' => $L_No_Authorize );
 
 	}
@@ -1893,7 +1899,15 @@ switch( $Action ) {
 
  	if ( isset( $_POST['scr_id'] ) ) {
 	 	if ( $_POST['scr_id'] != '' or $_POST['scr_id'] != 0 ) {
-	 		$Secret = $Secrets->get($_POST['scr_id']);
+	 		try {
+	 			$Secret = $Secrets->get($_POST['scr_id']);
+	 		} catch( Exception $e ) {
+			    echo json_encode( array(
+			        'applications' => ''
+			    ) );
+			    
+			    exit();
+			}
 	 		$app_id_s = $Secret->app_id;
 	 	} else {
 	 		$app_id_s = '';

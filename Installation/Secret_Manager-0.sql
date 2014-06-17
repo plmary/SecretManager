@@ -128,7 +128,7 @@ CREATE TABLE idn_identities (
                 idn_salt VARCHAR(32) NOT NULL,
                 idn_change_authenticator BOOLEAN DEFAULT true NOT NULL,
                 idn_super_admin BOOLEAN DEFAULT false NOT NULL,
-                idn_auditor BOOLEAN DEFAULT false NOT NULL,
+                idn_operator BOOLEAN DEFAULT false NOT NULL,
                 idn_attempt SMALLINT DEFAULT 0 NOT NULL,
                 idn_disable BOOLEAN DEFAULT false NOT NULL,
                 idn_logical_delete BOOLEAN DEFAULT 0 NOT NULL,
@@ -201,7 +201,7 @@ CREATE TABLE ach_access_history (
                 rgh_id BIGINT,
                 hac_id BIGINT,
                 ach_gravity_level INT,
-                ach_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                ach_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 ach_ip VARCHAR(40),
                 ach_access VARCHAR(300) NOT NULL,
                 PRIMARY KEY (ach_id)
@@ -244,12 +244,6 @@ REFERENCES rgh_rights (rgh_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-ALTER TABLE ach_access_history ADD CONSTRAINT rgh_ach_fk
-FOREIGN KEY (rgh_id)
-REFERENCES rgh_rights (rgh_id)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION;
-
 ALTER TABLE scr_secrets ADD CONSTRAINT stp_scr_fk
 FOREIGN KEY (stp_id)
 REFERENCES stp_secret_types (stp_id)
@@ -274,12 +268,6 @@ REFERENCES idn_identities (idn_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-ALTER TABLE ach_access_history ADD CONSTRAINT idn_ach_fk
-FOREIGN KEY (idn_id)
-REFERENCES idn_identities (idn_id)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION;
-
 ALTER TABLE scr_secrets ADD CONSTRAINT sgr_scr_fk
 FOREIGN KEY (sgr_id)
 REFERENCES sgr_secrets_groups (sgr_id)
@@ -289,11 +277,5 @@ ON UPDATE NO ACTION;
 ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT sgr_prpg_fk
 FOREIGN KEY (sgr_id)
 REFERENCES sgr_secrets_groups (sgr_id)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION;
-
-ALTER TABLE ach_access_history ADD CONSTRAINT scr_ach_fk
-FOREIGN KEY (scr_id)
-REFERENCES scr_secrets (scr_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;

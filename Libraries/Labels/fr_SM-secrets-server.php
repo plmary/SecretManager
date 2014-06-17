@@ -33,7 +33,8 @@
 	$L_ERR_SECRET_FILE_CREATION = 'Erreur à la création du fichier pour la Clé Mère';
 	$L_ERR_TRANSCRYPT = 'Erreur durant le transchiffrement de la base';
 	$L_ERR_INVALID_OPERATOR_KEY_BACKUP = 'La Clé Opérateur n\'ouvre pas la Clé Mère du fichier à Restaurer';
-	
+	$L_ERR_MASTER_INTEGRITY_ALERT = 'Alerte sur l\'intégrité du fichier maître';
+
 	$L_MOTHER_KEY_LOADED = 'Clé Mère chargée';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Clé Mère crée automatiquement';
 	$L_MOTHER_KEY_MANUALLY_CREATED = 'Clé Mère crée manuellement';

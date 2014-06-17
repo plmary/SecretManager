@@ -86,6 +86,7 @@ class IICA_Authentications extends IICA_Parameters {
 		 'T1.idn_updated_authentication, ' .
 		 'T1.idn_last_connection, ' .
 		 'T1.idn_super_admin, ' .
+		 'T1.idn_operator, ' .
 		 'T1.idn_authenticator, ' .
 		 'T1.idn_salt, ' .
 		 'T1.idn_disable, ' .
@@ -276,6 +277,7 @@ class IICA_Authentications extends IICA_Parameters {
 		 $Occurrence->idn_updated_authentication ;
 		$_SESSION[ 'idn_last_connection' ] = $Occurrence->idn_last_connection ;
 		$_SESSION[ 'idn_super_admin' ] = $Occurrence->idn_super_admin ;
+		$_SESSION[ 'idn_operator' ] = $Occurrence->idn_operator ;
 
 		$_SESSION[ 'cvl_last_name' ] = $Security->XSS_Protection(
 		 $Occurrence->cvl_last_name );
@@ -353,19 +355,21 @@ class IICA_Authentications extends IICA_Parameters {
 	}
 
 
-	public function is_auditor() {
+	public function is_operator() {
 	/** -----------------------------
-	* Contrôle si l'utilisateur connecté est un auditeur.
+	* Contrôle si l'utilisateur connecté est un opérateur.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @return Retourne vrai si l'utilisateur est un auditeur, sinon retourne faux
+	* @return Retourne vrai si l'utilisateur est un operateur, sinon retourne faux
 	*/
-		if ( $_SESSION[ 'idn_auditor' ] == true ) {
-			return true;
+		if ( isset( $_SESSION[ 'idn_operator' ] ) ) {
+			if ( $_SESSION[ 'idn_operator' ] == true ) {
+				return true;
+			}
 		}
 
 		return false;

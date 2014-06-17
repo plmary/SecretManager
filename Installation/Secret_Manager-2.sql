@@ -42,7 +42,7 @@ INSERT INTO `env_environments` (`env_id`, `env_name`) VALUES
 -- Contenu de la table `idn_identities`
 --
 
-INSERT INTO `idn_identities` (`idn_id`, `ent_id`, `cvl_id`, `idn_login`, `idn_authenticator`, `idn_salt`, `idn_change_authenticator`, `idn_super_admin`, `idn_auditor`, `idn_attempt`, `idn_disable`, `idn_last_connection`, `idn_expiration_date`, `idn_updated_authentication`) VALUES
+INSERT INTO `idn_identities` (`idn_id`, `ent_id`, `cvl_id`, `idn_login`, `idn_authenticator`, `idn_salt`, `idn_change_authenticator`, `idn_super_admin`, `idn_operator`, `idn_attempt`, `idn_disable`, `idn_last_connection`, `idn_expiration_date`, `idn_updated_authentication`) VALUES
 (1, 1, 1, 'root', '658be8288e1156eccbcf7c62a8d731d55fe81e7d', '0.X-n:A/9', 0, 1, 0, 0, 0, '0000-00-00 00:00:00', '2099-01-01 00:00:00', '0000-00-00 00:00:00');
 
 

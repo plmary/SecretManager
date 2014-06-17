@@ -35,4 +35,7 @@ define( 'IICA_LABELS', DIR_LABELS );
 
 define( 'MAIL_BODY', DIR_LIBRARIES . "/Mail_Body.dat" );
 
+define( 'INTEGRITY_FILENAME', DIR_LIBRARIES . '/files_integrity.dat' );
+define( 'MASTER_INTEGRITY_FILENAME', DIR_LIBRARIES . '/file_integrity.dat' );
+
 ?>

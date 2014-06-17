@@ -65,7 +65,13 @@
 	$L_LDAP_Organization = 'Organisation du LDAP';
 	$L_LDAP_RDN_Prefix = 'Préfixe RDN LDAP';
 	$L_Testing_Connection = 'Tester connexion';
-	
+
 	$L_ERR_MAJ_Alert = 'Erreur durant la mise à jour des paramètres d\'Alertes';
 	$L_ERR_MAJ_Connection = 'Erreur durant la mise à jour des paramètres de Connexion';
+
+	$L_Secrets_Complexity = 'Complexité des Secrets';
+	$L_Secrets_Size = 'Taille des Secrets';
+	$L_Secrets_Lifetime = 'Durée de vie des Secrets (en mois)';
+
+	$L_Stop_SecretServer_On_Alert = "Arrête le SecretServer en cas d'alerte";
 ?>

@@ -78,10 +78,12 @@
 	 "}\n" .
 	 "function generatePassword( Password_Field, Complexity, Size ){\n" .
 	 "	Size	= parseInt( Size );\n" .
-	 "	if ( ! Size )\n" .
+	 "	if ( ! Size ) {\n" .
 	 "		Size = 8;\n" .
-	 "	if ( ! Complexity )\n" .
-	 "		Complexity = 3;\n" .
+	 "  }\n".
+	 "	if ( ! Complexity ) {\n" .
+	 "		Complexity = '3';\n" .
+	 "  }\n".
 	 "	var Password = '';\n" .
 	 "	var Numbers  = '0123456789';\n" .
 	 "	var Accentuations = 'àçèéêëîïôöùûüÿ';\n" .
@@ -90,17 +92,20 @@
 	 "	var NextChar;\n" .
 	 "	var Attempt  = 0;\n" .
 	 "	switch( Complexity ) {\n" .
-	 "	 case 2:\n" .
+	 "	 case '1':\n" .
+	 "		break;\n" .
+	 "	 case '2':\n" .
 	 "	 	Chars += Numbers;\n" .
 	 "		break;\n" .
 	 "	 default:\n" .
-	 "	 case 3:\n" .
+	 "	 case '3':\n" .
 	 "	 	Chars += Numbers + Special_Chars;\n" .
 	 "		break;\n" .
-	 "	 case 4:\n" .
+	 "	 case '4':\n" .
 	 "	 	Chars += Numbers + Special_Chars + Accentuations;\n" .
 	 "		break;\n" .
 	 "	}\n" .
+//	 "alert(Chars);".
 	 "	var CharsN   = Chars.length;\n" .
 	 "	var regex_lower = new RegExp('[a-z]', 'g');\n" .
 	 "	var regex_upper = new RegExp('[A-Z]', 'g');\n" .
@@ -111,11 +116,15 @@
 	 "			NextChar = Chars.charAt( Math.floor( Math.random() * CharsN ) );\n" .
 	 "			Password += NextChar;\n" .
 	 "		}\n" .
+	 "      if ( Password != '' && Complexity == '1' ) break;\n" .
 	 "		if ( Password.match( regex_lower ) != null\n" .
 	 "		 && Password.match( regex_upper ) != null\n" .
 	 "		 && Password.match( regex_num ) != null\n" .
-	 "		 && Password.match( regex_sc ) != null ) break;\n" .
-	 "		else Password = '';\n" .
+	 "		 && Password.match( regex_sc ) != null ) {\n" .
+	 "			break;\n" .
+	 "		} else {\n" .
+	 "			Password = '';\n" .
+	 "		}" .
 	 "		Attempt++;\n" .
 	 "	}\n" .
 	 "	element = document.getElementById( Password_Field );\n" .

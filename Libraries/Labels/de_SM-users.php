@@ -35,7 +35,7 @@
 	
 	$L_Entity = 'Instanz';
 	$L_Civility = 'Civility';
-	$L_Auditor = 'Auditor';
+	$L_Operator = 'Operator';
 	$L_Administrator = 'Administrator';
 	$L_Rights = 'Berechtigungen';
 
