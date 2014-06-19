@@ -1,2 +1,0 @@
--- Modifie la table des Utilisateurs pour introduire la notion d'Opérateur en lieu et place au profil Auditeur.
-ALTER TABLE `idn_identities` CHANGE `idn_auditor` `idn_operator` TINYINT(1) NOT NULL DEFAULT '0';

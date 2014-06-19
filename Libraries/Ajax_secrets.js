@@ -265,7 +265,7 @@ function putAddGroup() {
         }
     });
 
-    $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+    $( '<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
      '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
      'onClick="javascript:hideConfirmMessage();">×</button>' +
@@ -313,6 +313,18 @@ function hideConfirmMessage() {
 function addGroup(){
     // Gère le cas d'une création d'un Groupe de Secret.
     if ( $('#iGroupLabel').val() != '' ) {
+        var Rights;
+        $.ajax({
+            async: false,
+            url: '../../SM-users.php?action=L_RIGHTS_X',
+            type: 'POST',
+            //data: $.param({'sgr_id': Id, 'Alert': Alert, 'Label': Label}),
+            dataType: 'json',
+            success: function(reponse) {
+                Rights = reponse['liste_rights'];
+            }
+        });
+
         var Secret_Alert = $('#iGroupAlert').is(':checked');
         var Label = $('#iGroupLabel').val()
 
@@ -351,24 +363,33 @@ function addGroup(){
                             URL_PICTURES + '/bouton_non_coche.gif" />';
                     }
 
-                    $('#listeSecrets').prepend(
-                     '<tr id="sgr_id-'+Id+'" class="surline">'+
-                     '<td id="label-'+Id+'" class="align-middle">'+Label+'</td>'+
-                     '<td id="alert-'+Id+'" class="align-middle">'+Image+'</td>'+
-                     '<td>'+
-                     '<a id="modify_'+Id+'" class="simple" href="javascript:editFields(\''+Id+'\');">'+
-                     '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+'" /></a>\n'+
-                     '<a class="simple" href="'+Script+'?action=D&sgr_id='+Id+'">'+
-                     '<img class="no-border" src="'+URL_PICTURES+'/b_drop.png" alt="'+L_Delete+'" title="'+L_Delete+'" /></a>\n'+
-                     '<a class="simple" href="'+Script+'?action=PRF&sgr_id='+Id+'">'+
-                     '<img class="no-border" src="'+URL_PICTURES+'/b_usrscr_2.png" alt="'+L_Profiles_Associate+
-                     '" title="'+L_Groups_Associate+'" /></a>\n'+
-                     '<a class="simple" href="'+Script+'?action=SCR&sgr_id='+Id+'&store">'+
-                     '<img class="no-border" src="'+URL_PICTURES+'/b_scredit_1.png" alt="'+L_Secret_Management+
-                     '" title="'+L_Groups_Associate+'" /></a>'+
-                     '</td>'+
-                     '</tr>'
-                    );
+                    if ( $('#fAGSP').attr('id') ) {
+                        $('tbody#listeSecrets').prepend(
+                         '<tr>'+
+                         '<td class="align-middle">'+Label+'</td>'+
+                         '<td><select multiple size="4" name="r_'+Id+'[]">'+Rights+'</select></td>'+
+                         '</tr>'
+                        );
+                    } else {
+                        $('#listeSecrets').prepend(
+                         '<tr id="sgr_id-'+Id+'" class="surline">'+
+                         '<td id="label-'+Id+'" class="align-middle">'+Label+'</td>'+
+                         '<td id="alert-'+Id+'" class="align-middle">'+Image+'</td>'+
+                         '<td>'+
+                         '<a id="modify_'+Id+'" class="simple" href="javascript:editFields(\''+Id+'\');">'+
+                         '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+'" /></a>\n'+
+                         '<a class="simple" href="'+Script+'?action=D&sgr_id='+Id+'">'+
+                         '<img class="no-border" src="'+URL_PICTURES+'/b_drop.png" alt="'+L_Delete+'" title="'+L_Delete+'" /></a>\n'+
+                         '<a class="simple" href="'+Script+'?action=PRF&sgr_id='+Id+'">'+
+                         '<img class="no-border" src="'+URL_PICTURES+'/b_usrscr_2.png" alt="'+L_Profiles_Associate+
+                         '" title="'+L_Groups_Associate+'" /></a>\n'+
+                         '<a class="simple" href="'+Script+'?action=SCR&sgr_id='+Id+'&store">'+
+                         '<img class="no-border" src="'+URL_PICTURES+'/b_scredit_1.png" alt="'+L_Secret_Management+
+                         '" title="'+L_Groups_Associate+'" /></a>'+
+                         '</td>'+
+                         '</tr>'
+                        );
+                    }
                     
                     var Total = $('#total').text();
                     Total = Number(Total) + 1;
@@ -756,22 +777,23 @@ function getCreateSecret( sgr_id ){
     $('#i_sgr_id, #i_stp_id, #i_env_id, #i_Application, #i_Host, #i_User, #i_Password, '+
         '#i_Expiration_Date, #i_Comment, #i_Alert').keyup(function(e){
         if (e.which == 13) {
-            if ( $('#i_sgr_id').val() != '-'
-             && $('#i_stp_id').val() != '-'
-             && $('#i_env_id').val() != '-'
-             && $('#i_Application').val() != ''
-             && $('#i_Host').val() != ''
+            if ( //$('#i_sgr_id').val() != '-'
+             //&& 
+             $('#i_stp_id').val() != '-'
+//             && $('#i_env_id').val() != '-'
+//             && $('#i_Application').val() != ''
+//             && $('#i_Host').val() != ''
              && $('#i_User').val() != ''
              && $('#i_Password').val() != '' ) {
                 CreateSecret();
             } else {
-                if ( $('#i_sgr_id').val() != '-' ) $('#i_sgr_id').focus();
-                if ( $('#i_stp_id').val() != '-' ) $('#i_stp_id').focus();
-                if ( $('#i_env_id').val() != '-' ) $('#i_env_id').focus();
-                if ( $('#i_Application').val() != '' ) $('#i_Application').focus();
-                if ( $('#i_Host').val() != '' ) $('#i_Host').focus();
-                if ( $('#i_User').val() != '' ) $('#i_User').focus();
-                if ( $('#i_Password').val() != '' ) $('#i_Password').focus();
+//                if ( $('#i_sgr_id').val() == '-' ) $('#i_sgr_id').focus();
+                if ( $('#i_stp_id').val() == '-' ) $('#i_stp_id').focus();
+//                if ( $('#i_env_id').val() == '-' ) $('#i_env_id').focus();
+//                if ( $('#i_Application').val() == '' ) $('#i_Application').focus();
+//                if ( $('#i_Host').val() == '' ) $('#i_Host').focus();
+                if ( $('#i_User').val() == '' ) $('#i_User').focus();
+                if ( $('#i_Password').val() == '' ) $('#i_Password').focus();
 
                 showInfoMessage( 'error', L_Mandatory_Field ); // SecretManager.js
             }
@@ -811,7 +833,7 @@ function CreateSecret( sgr_id ){
     var ID_Environment = $('#i_env_id').val();
     var L_Environment = $('#i_env_id option:selected').text();
     
-    if ( ID_Environment == '-' ) {
+    if ( ID_Environment == '-' && Personal == false ) {
         $('#i_env_id').focus();
         $('#i_env_id').addClass( 'mandatory' );
         return;
@@ -822,7 +844,7 @@ function CreateSecret( sgr_id ){
 
     var Host = $('#i_Host').val();
     var User = $('#i_User').val();
-    var Password = $('#i_Password').val();
+    var U_Password = $('#i_Password').val();
     var Expiration_Date = $('#i_Expiration_Date').val();
     var Comment = $('#i_Comment').val();
     var Alert = $('#i_Alert').is(':checked');
@@ -833,7 +855,7 @@ function CreateSecret( sgr_id ){
         return;
     }
     
-    if ( Password == '' ) {
+    if ( U_Password == '' ) {
         $('#i_Password').focus();
         $('#i_Password').addClass( 'mandatory' );
         return;
@@ -859,7 +881,7 @@ function CreateSecret( sgr_id ){
             'Alert': Alert,
 			'Host': Host,
 			'User': User,
-			'Password': Password,
+			'Password': U_Password,
 			'Expiration_Date': Expiration_Date,
 			'Comment': Comment,
 			'Alert': Alert,

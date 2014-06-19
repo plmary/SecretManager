@@ -1,7 +1,7 @@
 -- Author  : Pierre-Luc MARY
--- Date    : 12/05/2014
--- Base    : SecretManager
--- Model   : 1.3-0
+-- Date    : 2014-06-19
+-- Base    : secret_manager
+-- Model   : 1.5-0
 
 DROP DATABASE IF EXISTS secret_manager;
 CREATE DATABASE secret_manager DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;

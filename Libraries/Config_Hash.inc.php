@@ -10,7 +10,7 @@
 *
 */
 
-$_salt_user = ''; //'0.X-n:A/9';
-$_salt_secret = 'S2{as89t!';
+$_salt_user = '';
+$_salt_secret = 'CleM';
 
 ?>

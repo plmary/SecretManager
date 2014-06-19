@@ -706,14 +706,10 @@ switch( $Action ) {
 	print( "    <div id=\"dashboard\">\n" );
 
 	if ( $Authentication->is_administrator() ) {
-		$listButtons = '<div id="view-switch-list-current" class="view-switch" style="float: right" title="' . $L_Group_List . '"></div>' .
-		'<div id="view-switch-excerpt-current" class="view-switch" style="float: right" title="' . $L_Detail_List . '"></div>';
+		$addButton = '<a class="button" href="javascript:getCreateSecret(' . $sgr_id . ');">' . $L_Create . '</a>';
+		$returnButton = '<a class="button" href="' . $Script . '">' . $L_Return . '</a>' ;
 		
-		$addButton = '<span style="float: right"><a class="button" href="javascript:getCreateSecret(' . $sgr_id . ');">' . $L_Create . '</a></span>';
-		
-		$returnButton = '<span style="float: right"><a class="button" href="' . $Script . '">' . $L_Return . '</a></span>' ;
-		
-		$Buttons = $addButton . $returnButton; // . $listButtons ;
+		$Buttons = $addButton . $returnButton;
 		
 		$Group = $Groups->get( $sgr_id );
 
@@ -721,13 +717,13 @@ switch( $Action ) {
 		print( "     <table class=\"table-bordered principal\">\n" .
 		 "      <thead class=\"fixedHeader\">\n" .
 		 "       <tr>\n" .
-		 "        <th colspan=\"8\">" . $L_List_Secrets . "</th>\n" .
+		 "        <th colspan=\"9\">" . $L_List_Secrets . "<span class=\"div-right\">" . $Buttons . "</span></th>\n" .
 		 "       </tr>\n" .
-		 "       <tr>\n" .
-		 "        <td colspan=\"8\">\n" .
-		 $L_Group . " : " . "<span class=\"green bold\">" . stripslashes( $Group->sgr_label ) . "</span>" . $Buttons . "\n" .
-		 "        </td>\n" .
-		 "       </tr>\n" );
+		 "       <tr>" .
+		 "<th colspan=\"9\">" .
+		 $L_Group . " : " . "<span class=\"green bold\">" . stripslashes( $Group->sgr_label ) . "</span>" .
+		 "</th>" .
+		 "</tr>\n" );
 		 
 		$List_Secrets = $Secrets->listSecrets( $sgr_id, '', '', '', '', '', '', '',
 		 false, $orderBy );
@@ -915,8 +911,8 @@ switch( $Action ) {
 		}
 		
 		print( "      </tbody>\n" .
-		 "      <tfoot><tr><th colspan=\"8\">Total : <span class=\"green\">" . 
-		 count( $List_Secrets ) . "</span>" . $Buttons . "</th></tr></tfoot>\n" .
+		 "      <tfoot><tr><th colspan=\"9\">Total : <span class=\"green\">" . 
+		 count( $List_Secrets ) . "</span><span class=\"div-right\">" . $Buttons . "</span></th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "\n" );
 	} else {
@@ -1049,9 +1045,11 @@ switch( $Action ) {
 			exit();
 		}
 
-		
-		if ( ($env_id = $Security->valueControl( $_POST[ 'env_id' ], 'NUMERIC' )) ==
-		 -1 ) {
+		if ( $_POST['env_id'] == '-' ) $_POST['env_id'] = '';
+
+		$env_id = $Security->valueControl( $_POST[ 'env_id' ], 'NUMERIC' );
+
+		if ( $env_id == -1 and $_POST[ 'env_id' ] != '' ) {
 		    echo json_encode( array(
 		        'Status' => 'error',
 		        'Message' => $L_Invalid_Value . ' (env_id)'
@@ -1917,7 +1915,7 @@ switch( $Action ) {
  	}
 
  	$tmpApplications = $MyApplications->listApplications();
- 	$Liste_Applications = '';
+ 	$Liste_Applications = '<option value="-">---</option>';
 
  	foreach ( $tmpApplications as $Application ) {
  		if ( $Application->app_id == $app_id_s ) $Selected = ' selected';
@@ -2121,27 +2119,34 @@ switch( $Action ) {
 
 
  case 'CTRL_SRV_X': // Réponse AJAX
- 	include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
- 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+ 	if ( $PageHTML->getParameter( 'use_SecretServer' ) == 1 ) {
+	 	include( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+	 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 
- 	$SecretServer = new Secret_Server();
+	 	$SecretServer = new Secret_Server();
 
- 	try {
- 		list( $srv_Status, $srv_Operateur, $srv_Date ) = $SecretServer->SS_statusMotherKey();
+	 	try {
+	 		list( $srv_Status, $srv_Operateur, $srv_Date ) = $SecretServer->SS_statusMotherKey();
 
- 		if ( $srv_Status == 'OK' ) $Status = 'success';
- 		else $Status = 'error';
+	 		if ( $srv_Status == 'OK' ) $Status = 'success';
+	 		else $Status = 'error';
 
+	    	$Resultat = array(
+	        	'Status' => $Status,
+	        	'Message' => $srv_Status
+	    	);
+	    } catch( Exception $e ) {
+	    	$Resultat = array(
+	        	'Status' => 'error',
+	        	'Message' => ${$e->getMessage()}
+	    	);    	
+	    }
+	} else {
     	$Resultat = array(
-        	'Status' => $Status,
-        	'Message' => $srv_Status
-    	);
-    } catch( Exception $e ) {
-    	$Resultat = array(
-        	'Status' => 'error',
-        	'Message' => ${$e->getMessage()}
-    	);    	
-    }
+        	'Status' => 'success',
+        	'Message' => 'not_use'
+    	);		
+	}
 
 	echo json_encode( $Resultat );
 

@@ -1,10 +1,20 @@
+/**
+* Ce script gère une partie des fonctions Ajax disponible pour le script "SM-users.php.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-06-18
+*/
+
+
+// Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready(function(){
     // Masque la modale quand on clique un objet de class "close"
      $(".close").on('click', function() {
         $('#addCivility').hide();
     });
 
-    // Change couleur si vide ou plein des champs obligatoires
+    // Change la couleur des champs obligatoires (si vide ou plein)
     $('input.obligatoire').focusout(function(){
         if ($(this).val() != '') {
             $(this).css("border", "1px solid #cdcdcd");
@@ -16,7 +26,7 @@ $(document).ready(function(){
 });
 
 
-// Création d'une Civilité à la volée.
+// Affiche une boîte de dialogue pour la création d'une Civilité à la volée.
 function putAddCivility(Title,L_First_Name,L_Last_Name,L_Sex,L_Man,L_Woman,L_Cancel,L_Create){
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
@@ -70,6 +80,7 @@ function putAddCivility(Title,L_First_Name,L_Last_Name,L_Sex,L_Man,L_Woman,L_Can
 }
 
 
+// Création de la Civilité.
 function addCivility(){
     var LastName = $('#iLastName').val();
     var FirstName = $('#iFirstName').val();
@@ -133,9 +144,12 @@ function addCivility(){
 
             },
             error: function(reponse) {
-                alert('Erreur serveur : ' + reponse['responseText']);
+                alert('Erreur serveur addCivility() : ' + reponse['responseText']);
             }
         });
+    } else {
+        // Comme le champ est vide et obligatoire, on repositionne l'utilisateur dans ce champ.
+        $('#iFirstName').focus();
     }
 }
 
@@ -185,7 +199,7 @@ function deleteCivility( Id ){
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur deleteCivility() : ' + reponse['responseText']);
         }
     });
 }
@@ -257,6 +271,8 @@ function modifyCivility( Id, L_Man, L_Woman, CancelButton, ModifyButton ) {
     });
 }
 
+
+// Sauvegarde en base de données les modifications "en place" qui viennent d'être réalisées.
 function saveModifyCivility( Id, L_Man, L_Woman ) {
     var First_Name = $('#iFirstName').val();
     var Last_Name = $('#iLastName').val();
@@ -286,7 +302,7 @@ function saveModifyCivility( Id, L_Man, L_Woman ) {
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur saveModifyCivility() : ' + reponse['responseText']);
         }
     });
 }
@@ -309,6 +325,7 @@ function endAllModifyCivility() {
 }
 
 
+// Détruit et cache la fenêtre de confirmation.
 function hideConfirmMessage() {
     $('#confirm_message').remove();
 }

@@ -1,18 +1,33 @@
+/**
+* Ce script gère une partie des fonctions Ajax disponible pour le script "SM-admin.php.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-06-18
+*/
+
+
+// Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready( function() {
-    $(document).keyup(function(e){
-        if(e.which == 27){ //|| e.which == 13){
+    // Quitte les fenêtres modales et cache les boîtes d'information.
+    $(document).keyup(function(e){ // Gestion des touches où que ce soit dans la page HTML présentée.
+        if(e.which == 27){ // Gestion de la touche "Echap".
             hideConfirmMessage();
             hideInfoMessage();
         }
     });
 
+
+    // Gestion des touches du clavier dans le champ de saisie de la "Clé Opérateur".
     $('#iOperator_Key').keyup(function(e){
-        if(e.which == 13){
+        if(e.which == 13){ // Gestion de la touche "Enter".
             LoadMotherKey();
         }
     });
 
-    $("#iSearchSecret").on('click', function(){
+
+    // Lance la Recherche en fonction de la chaîne spécifiée.
+    $("#iSearchSecret").on('click', function(){ // Gestion du click gauche sur le bouton de Recherche.
         var recherche = $(this).val();
         
         $('tbody#listeSecrets').html("");
@@ -38,7 +53,7 @@ $(document).ready( function() {
     
     
     // Sauvegarde le cas d'utilisation du SecretServer.
-    $("#iSaveUseServer").click(function(){
+    $("#iSaveUseServer").click(function(){ // Gestion du click gauche sur le bouton.
         var UseSecretServer = $('#Use_SecretServer').val();
 
         $.ajax({
@@ -60,8 +75,8 @@ $(document).ready( function() {
     });
 
 
-    // Sauve les propriétés des clés.    
-    $("#iSaveKeysProperties").click(function(){
+    // Sauve les propriétés des clés.
+    $("#iSaveKeysProperties").click(function(){ // Gestion du click sur le bouton.
         var Operator_Key_Size = $('#Operator_Key_Size').val();
         var Operator_Key_Complexity = $('#Operator_Key_Complexity').val();
 
@@ -92,12 +107,12 @@ $(document).ready( function() {
     });    
 
 
-    // Gère l'affichage d'une image d'attente durant un traitement
+    // Gère l'affichage d'une image d'attente durant un traitement Ajax.
     $(document).ajaxStart(function(){
         $('<div id="wait_message" class="modal" role="dialog" tabindex="-1">' +
          '<div class="modal-body">' +
          '<div class="row-fluid"style="width:100%; margin-top:8px;">' +
-         '<p><img src="' + Parameters["URL_PICTURES"] + '/wpspin_light.gif" /> Working...</p>' +
+         '<p><img src="' + Parameters["URL_PICTURES"] + '/attente-orange.gif" /> Working...</p>' +
          '</div>' +
          '</div>' +
          '</div>\n' ).prependTo( 'body' );
@@ -108,11 +123,13 @@ $(document).ready( function() {
 });
 
 
+// Masque l'affichage de la boîte de confirmation.
 function hideConfirmMessage() {
     $('#confirm_message').remove();
 }
 
 
+// Affiche une boîte de confirmation pour créer la "clé mère".
 function confirmCreateMotherKey() {
     var Operator_Key = $('#iNew_Operator_Key_2').val();
     var Mother_Key = $('#iNew_Mother_Key').val();
@@ -151,6 +168,7 @@ function confirmCreateMotherKey() {
 }
 
 
+// Crée la "clé mère".
 function createMotherKey(){
     var Operator_Key = $('#iNew_Operator_Key_2').val();
     var Mother_Key = $('#iNew_Mother_Key').val();
@@ -226,6 +244,7 @@ function createMotherKey(){
 }
 
 
+// Affiche une boîte de confirmation pour changer la "clé mère".
 function confirmChangeMotherKey(){
     var Operator_Key = $('#iNew_Operator_Key_2').val();
     var Mother_Key = $('#iNew_Mother_Key').val();
@@ -264,7 +283,6 @@ function confirmChangeMotherKey(){
 }
 
 
-// ==========================================================
 // Change la clé Mère, transchiffre les Secrets dans la base et stocke la nouvelle clé Mère avec la clé Opérateur précisée.
 function changeMotherKey() {
     var Operator_Key = $('#iNew_Operator_Key_2').val();
@@ -341,7 +359,7 @@ function changeMotherKey() {
 }
 
 
-// Sauvegarde la valeur de la nouvelle clé Mère ainsi que sa clé Opérateur.
+// Affiche une boîte de confirmation pour transchiffrer la "clé mère" avec la nouvelle "clé opérateur".
 function confirmTranscryptMotherKey(){
     if ( $("#iNew_Operator_Key_1").val() == '' ) {
         var Warning = $("#iSaveNewOeratorKey_1").attr('data-cancel-op');
@@ -375,7 +393,7 @@ function confirmTranscryptMotherKey(){
 }
 
 
-// Sauvegarde la clé mère actuelle du SecretServer avec la clé Opérateur.
+// Transchiffre la "clé mère" avec la nouvelle "clé opérateur".
 function transcryptMotherKey() {
     var Operator_Key = $('#iNew_Operator_Key_1').val();
 
@@ -402,6 +420,7 @@ function transcryptMotherKey() {
 }
 
 
+// Charge la "clé mère" avec la "clé opérateur" spécifié par "l'opérateur" ou "l'administrateur".
 function LoadMotherKey() {
     var Operator_Key = $('#iOperator_Key').val();
 
@@ -462,6 +481,7 @@ function LoadMotherKey() {
 }
 
 
+// Arrête le SecretServer.
 function shutdownSecretServer() {
     $.ajax({
         url: '../SM-admin.php?action=SHUTX',
@@ -487,6 +507,7 @@ function shutdownSecretServer() {
 }
 
 
+// Lance la sauvegarde des Secrets.
 function backupSecrets() {
     $.ajax({
         url: '../SM-admin.php?action=STOR_SX',
@@ -510,6 +531,7 @@ function backupSecrets() {
 }
 
 
+// Lance la sauvegarde de toutes les données.
 function backupTotal() {
     $.ajax({
         url: '../SM-admin.php?action=STOR_TX',
@@ -533,6 +555,7 @@ function backupTotal() {
 }
 
 
+// Affiche une image vide si le champ est vide.
 function resetEmptyField( Field_Name, Image_Name ) {
     if ( $('#'+Field_Name).val() == '' ) {
         $('#'+Image_Name).attr( 'src', Parameters['URL_PICTURES'] + '/blank.gif' );
@@ -540,11 +563,13 @@ function resetEmptyField( Field_Name, Image_Name ) {
 }
 
 
+// Ne fait rien sur l'utilisation de la touche "Enter".
 function noEnterKey( evt ) {
     if ( evt.which == 13 ) return false;
 }
 
 
+// Affiche une boîte de confirmation pour restaurer les "Secrets".
 function confirmRestoreSecrets() {
     var Message, Message_1, Confirm, Cancel, Warning;
 
@@ -590,6 +615,7 @@ function confirmRestoreSecrets() {
 }
 
 
+// Affiche une boîte de confirmation pour restaurer toutes les "Données".
 function confirmRestoreFull() {
     var Message, Message_1, Confirm, Cancel, Warning;
 
@@ -637,6 +663,7 @@ function confirmRestoreFull() {
 }
 
 
+// Réclamme la "Clé Opérateur" pour déchiffrer la "Clé Mère" fournie dans le fichier de sauvegarde.
 function prepareRestoreBackup( Type_Backup, Restore_Date_ID ) {
     var Message, Confirm, Cancel, Warning, FileName;
 
@@ -692,6 +719,7 @@ function prepareRestoreBackup( Type_Backup, Restore_Date_ID ) {
 }
 
 
+// Lance la restauration de la "Sauvegarde".
 function restoreBackup( FileName ) {
     var Operator_Key = $("#op_key").val();
 
@@ -721,6 +749,7 @@ function restoreBackup( FileName ) {
 }
 
 
+// Affiche une boîte de dialogue pour supprimer une sauvegarde.
 function confirmDeleteBackupSecrets() {
     var Message, Confirm, Cancel, Warning;
 
@@ -765,6 +794,8 @@ function confirmDeleteBackupSecrets() {
     $('#i_cancel_m').focus();
 }
 
+
+// Supprime une sauvegarde de "Secrets".
 function deleteBackupSecrets( Restore_Date ) {
     $.ajax({
         url: '../SM-admin.php?action=DELE_RESTORE_SX',
@@ -793,6 +824,7 @@ function deleteBackupSecrets( Restore_Date ) {
 }
 
 
+// Affiche une boîte de confirmation pour supprimer une sauvegarde de "Totale".
 function confirmDeleteBackupTotal() {
     var Message, Confirm, Cancel, Warning;
 
@@ -837,6 +869,8 @@ function confirmDeleteBackupTotal() {
     $('#i_cancel_m').focus();
 }
 
+
+// Supprime une sauvegarde de "Totale".
 function deleteBackupTotal( Restore_Date ) {
     $.ajax({
         url: '../SM-admin.php?action=DELE_RESTORE_SX',
@@ -865,6 +899,7 @@ function deleteBackupTotal( Restore_Date ) {
 }
 
 
+/*
 function confirmLoadSecretsBackup() {
     var Restore_Date = $('#i_secretsDateRestore option:selected').text();
     var i_Restore_Date = $('#i_secretsDateRestore').val();
@@ -879,6 +914,7 @@ function confirmLoadTotalBackup() {
     
     notYetImplemented();
 }
+*/
 
 
 function putModalMessage( Warning, Message, Cancel ) {

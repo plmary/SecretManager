@@ -808,7 +808,10 @@ class Security extends IICA_Parameters {
 		if ( $pObject == '' ) return FALSE;
 
 		if ( ! isset( $pObject->stp_name ) ) $pObject->stp_name = ${$pObject->stp_name};
-		if ( ! isset( $pObject->env_name ) ) $pObject->env_name = ${$pObject->env_name};
+
+		if ( ! isset( $pObject->env_name ) ) {
+			if ( $pObject->env_name != '' ) $pObject->env_name = ${$pObject->env_name};
+		} else $pObject->env_name = '';
 
 		return $idn_login . $Separator . $Server . $Separator . $action .
 		 $Separator . $pObject->scr_id . $Separator . $pObject->stp_name . $Separator . $pObject->env_name .

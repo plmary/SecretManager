@@ -1,3 +1,8 @@
+-- Author  : Pierre-Luc MARY
+-- Date    : 2014-06-19
+-- Base    : secret_manager
+-- Model   : 1.5-0
+
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT=1;
 SET time_zone = "+00:00";

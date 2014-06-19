@@ -1593,8 +1593,10 @@ case 'STOR_TX':
 	include( DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php' );
 	
 
-    // Arrêt du SecretServer.
-    $Secret_Server = new Secret_Server();
+	if ( $PageHTML->getParameter( 'use_SecretServer' ) == 1 ) {
+	    // Crée une instance du SecretServer.
+	    $Secret_Server = new Secret_Server();
+	}
 
     $Backup = new Backup();
     
@@ -1621,7 +1623,11 @@ case 'STOR_TX':
     	// Lance la restauration et récupère la clé mère contenue dans ce fichier.
         list( $Mother_Key, $Store_Date ) = $Backup->restore_backup( $FileName, $_POST['Operator_Key'] );
 
-		$Secret_Server->SS_saveExternalMotherKey( $_POST['Operator_Key'], $Mother_Key );
+		if ( $PageHTML->getParameter( 'use_SecretServer' ) == 1 ) {
+			$Secret_Server->SS_saveExternalMotherKey( $_POST['Operator_Key'], $Mother_Key );
+		} else {
+			// Mettre à jour le fichier Hash.
+		}
 
         $Result = $L_Retore_File_Success;
         $L_Message = 'L_Retore_File_Success';
@@ -1630,7 +1636,7 @@ case 'STOR_TX':
     } catch( Exception $e ) {
         $Result = $e->getMessage();
         $L_Message = $e->getMessage();
-        $Status = 'error';
+        $Status = $Store_Date = 'error';
         $L_Level = LOG_ERR;
     }
  	

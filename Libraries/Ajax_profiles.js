@@ -37,6 +37,27 @@ $(document).ready(function(){
 function putAddProfile(){
     $('#addProfile').show('slow');
 
+    var OldWidth = $('#addProfile').width();
+    var MinWidth = 400;
+    if ( MinWidth > OldWidth ) {
+        OldWidth = 400;
+    }
+
+    var OldHeight = $('#addProfile').height();
+    var MinHeight = 130;
+    if ( MinHeight > OldHeight ) {
+        OldHeight = 130;
+    }
+
+    $('#addProfile').css({
+        'left': ((window.outerWidth - OldWidth) / 2) + 'px',
+        'maxWidth': OldWidth + 'px',
+        'minWidth': MinWidth + 'px',
+        'top': (((window.outerHeight - OldHeight) / 2) - 100) + 'px',
+        'maxHeight': OldHeight + 'px',
+        'minHeight': MinHeight + 'px',
+    });
+
     $('#iProfileLabel').keyup(function(e){
         if (e.which == 13) {
             if ($('#iProfileLabel').val() != '') addProfile();

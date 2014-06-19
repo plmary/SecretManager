@@ -171,6 +171,9 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 			$Background = 'surline';
 		}
 
+		if ( isset( $Secret->env_name ) ) $env_name = ${$Secret->env_name};
+		else $env_name = ''; 
+
 		print( "       <tr class=\"" . $Background . "\" id=\"" . $Secret->scr_id . "\" " .
 		 "style=\"cursor: pointer;\" data-total=\"" . $Total . "\" " .
 		 "data-cancel=\"" . $GLOBALS['L_Cancel'] . "\" data-modify=\"" . $GLOBALS['L_Modify'] . "\" " .
@@ -184,7 +187,7 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 		 $Secret->scr_id . ");\" data-id=\"" . $Secret->stp_id . "\">" . ${$Secret->stp_name} . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Environment'] ."px; " .
 		 "width:". $GLOBALS['S_Environment'] ."px;\" onclick=\"viewPassword(" . 
-		 $Secret->scr_id . ");\" data-id=\"" . $Secret->env_id . "\">" . ${$Secret->env_name} . "</td>\n" .
+		 $Secret->scr_id . ");\" data-id=\"" . $Secret->env_id . "\">" . $env_name . "</td>\n" .
 		 "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Application'] ."px; " .
 		 "width:". $GLOBALS['S_Application'] ."px;\" onclick=\"viewPassword(" . 
 		 $Secret->scr_id . ");\" data-id=\"" . $Secret->app_id . "\">" . $Security->XSS_Protection( $Secret->app_name ) . "</td>\n" .

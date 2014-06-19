@@ -47,6 +47,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		include_once( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
 		
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 
 		$Security = new Security();
 
@@ -54,13 +55,24 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		$Secret_Server = new Secret_Server();
 
-
-		if ( ($Corrupted_Files = $Security->checkFilesIntegrity()) ) {
+		
+		$Integrity_Status = $Security->checkFilesIntegrity();
+		if ( $Integrity_Status[0] == FALSE ) {
 			if ( $Security->getParameter('stop_secret_server_on_alert') == 1 ) {
 				$Secret_Server->SS_Shutdown();
 			}
 
-			throw new Exception( $L_Files_Integrity_Alert, 1 );
+			$Files = '';
+
+			foreach( $Integrity_Status[ 1 ] as $File ) {
+				if ( $Files != '' ) $Files .= '<br/>';
+
+				$Files .= $File;
+			}
+
+			$Files = '<br/>(' . $Files . ')';
+
+			throw new Exception( '<p class="alert">'. $L_Files_Integrity_Alert . '</p><p>' . $Files . '</p>', 1 );
 		}
 
 
@@ -290,7 +302,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 			if ( $Where == '' ) $Where = 'WHERE T6.idn_id = :idn_id ';
 			else $Where .= 'AND T6.idn_id = :idn_id ';
 				
-		}
+		} else $Where = 'WHERE ( T1.idn_id IS NULL OR T1.idn_id = 0 OR T1.idn_id = :idn_id ) ';
+
 		
 		if ( $stp_id != '' ) {
 			if ( $Where == '' ) $Where = 'WHERE T1.stp_id = :stp_id ';
@@ -330,8 +343,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 			
 		}
 
-		if ( $Where == '' ) $Where = 'WHERE T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ';
-		else $Where .= 'AND ( T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ';
+		if ( $Where == '' ) $Where = 'WHERE T1.idn_id IS NULL OR T1.idn_id = 0 OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ';
+		else $Where .= 'AND ( T1.idn_id IS NULL OR T1.idn_id = 0 OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ';
 
 		$Request = 'SELECT DISTINCT ' .
 		 'scr_id, T1.app_id, app_name, scr_host, scr_user, scr_comment, scr_alert, ' .
@@ -507,7 +520,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 
 		if ( $Administrator === false ) $Where = 'WHERE T6.idn_id = :idn_id ';
-		else $Where = 'WHERE ( T1.idn_id IS NULL OR T1.idn_id = :idn_id ) ';
+		else $Where = 'WHERE ( T1.idn_id IS NULL OR T1.idn_id = 0 OR T1.idn_id = :idn_id ) ';
 
 		$Where1 = '';
 		
@@ -688,7 +701,6 @@ class IICA_Secrets extends IICA_DB_Connector {
 		$Security = new Security();
 
 		$Integrity_Status = $Security->checkFilesIntegrity();
-
 		if ( $Integrity_Status[ 0 ] === FALSE ) {
 			if ( $Security->getParameter('stop_secret_server_on_alert') == 1 ) {
 				$Secret_Server->SS_Shutdown();
@@ -721,7 +733,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 		 'LEFT JOIN env_environments AS T4 ON T1.env_id = T4.env_id ' .
 		 'LEFT JOIN app_applications AS T5 ON T1.app_id = T5.app_id ' .
 		 'WHERE scr_id = :scr_id ' .
-		 'AND ( T1.idn_id IS NULL OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ';
+		 'AND ( T1.idn_id IS NULL OR T1.idn_id = 0 OR T1.idn_id = ' . $_SESSION['idn_id'] . ' ) ';
 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();

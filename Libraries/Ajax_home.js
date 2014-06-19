@@ -1,11 +1,23 @@
-$(document).keyup(function(e){
-    if(e.which == 27) { // || e.which == 13){
-            cancel();
-    }
-});
+/**
+* Ce script gère une partie des fonctions Ajax disponible pour le script "SM-home.php.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-06-19
+*/
 
 
+// Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready( function() {
+    // Surveille les touches du clavier utilisées dans tout le document HTML.
+    $(document).keyup(function(e){
+        if(e.which == 27) { // Gestion de la touche "Echap"
+                cancel();
+        }
+    });
+
+
+    // Surveille les touches du clavier utilisées dans le champ de Recherche.
     $("#iSearchSecret").keyup(function(){
         var recherche = $(this).val();
         
@@ -30,8 +42,10 @@ $(document).ready( function() {
         }); 
     });
 
+    // Force l'ajustement du tableau dans lesquels les Secrets sont affichés.
     resizeSecretsWindow();  // SecretManager.js
 
+    // Force l'ajustement du tableau dans lesquels les Secrets sont affichés quand l'utilisateur change la taille d'affichage de son navigateur.
     $(window).resize( function() {
         resizeSecretsWindow();  // SecretManager.js
     });
@@ -53,7 +67,8 @@ function setSecret( secret_id, action ) {
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "CTRL_SRV_X" : ' + reponse['responseText']);
+            return;
         }
     });
 
@@ -78,7 +93,8 @@ function setSecret( secret_id, action ) {
             ListeApplications = reponse[ 'applications' ];
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "AJAX_L_APP_X" : ' + reponse['responseText']);
+            return;
         }
     });
     
@@ -97,7 +113,12 @@ function setSecret( secret_id, action ) {
 
                     $('tr#' + secret_id + ' td').each( function( index ) {
                         if ( index == 0 ) {
-                            if ( reponse['Owner'] == '' || reponse['Owner'] == null ) {
+                            // Uniformisme la réponse pour simplifier la gestion ultérieure.
+                            if ( reponse['Owner'] == '' || reponse['Owner'] == 0 || reponse['Owner'] == null ) {
+                                reponse['Owner'] = 0;
+                            }
+
+                            if ( reponse['Owner'] == 0 ) {
                                 group_id = $(this).attr('data-id');
 
                                 $.each(reponse['listGroups'], function(attribut, valeur) {
@@ -133,6 +154,10 @@ function setSecret( secret_id, action ) {
                             type_o = $(this).text();
                         } else if ( index == 2 ) {
                             environment_id = $(this).attr('data-id');
+
+                            if ( group_id == 0 ) {
+                                environment = environment + '<option value="-" selected>---</option>';                                
+                            }
 
                             $.each(reponse['listEnvironments'], function(attribut, valeur) {
                                 if ( environment_id == valeur['env_id'] ) {
@@ -188,7 +213,7 @@ function setSecret( secret_id, action ) {
                         '<td><label for="'+'group_'+secret_id+'">' + reponse['L_Group'] + '</label></td>' +
                         '<td colspan="3">';
 
-                    if ( reponse['Owner'] == '' || reponse['Owner'] == null ) {
+                    if ( reponse['Owner'] == 0 ) {
                         newOcc = newOcc + '<select id="'+'group_'+secret_id+'" class="input-xlarge"' +
                             Delete_Mode + '>' + group + '</select>';
                     } else {
@@ -337,7 +362,8 @@ function setSecret( secret_id, action ) {
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "AJAX_LV" : ' + reponse['responseText']);
+            return;
         }
     }); 
     

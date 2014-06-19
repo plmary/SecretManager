@@ -1,12 +1,24 @@
-$(document).keyup(function(e){
-    if(e.which == 27) { // || e.which == 13){
-        endAllModifyEntity();
-        
-        hideConfirmMessage();
-    }
-});
+/**
+* Ce script gère une partie des fonctions Ajax disponible pour le script "SM-users.php.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-06-19
+*/
 
+
+// Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready(function(){
+    // Supervise l'utilisation des touches du clavier dans tout le document.
+    $(document).keyup(function(e){
+        // Gestion de la touche "Echap" pour annuler les modifications et supprimer la fenêtre de confirmation.
+        if(e.which == 27) {
+            endAllModifyEntity();
+            
+            hideConfirmMessage();
+        }
+    });
+
     // Masque la modale quand on clique un objet de class "close"
      $(".close").on('click', function() {
         $('#addEntity').hide();
@@ -24,7 +36,7 @@ $(document).ready(function(){
 });
 
 
-// Création d'une Entité à la volée.
+// Affiche la boîte de dialogue de création d'une Entité à la volée.
 function putAddEntity(Title,L_Code,L_Label,L_Cancel,L_Create){
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
@@ -67,6 +79,7 @@ function putAddEntity(Title,L_Code,L_Label,L_Cancel,L_Create){
 }
 
 
+// Création d'une Entité à la volée.
 function addEntity(){
     var Code = $('#iEntityCode').val().toUpperCase();
     var Label = $('#iEntityLabel').val();
@@ -129,7 +142,7 @@ function addEntity(){
 }
 
 
-// Création d'une Entité à la volée.
+// Affiche la boîte de confirmation d'une Entité.
 function confirmDeleteEntity(Id,Title,Message,L_Cancel,L_Confirm){
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +
@@ -154,7 +167,7 @@ function confirmDeleteEntity(Id,Title,Message,L_Cancel,L_Confirm){
 }
 
 
-// Gestion des suppressions d'Entité à la volée.
+// Suppression d'une Entité à la volée.
 function deleteEntity( Id ){
     $.ajax({
         url: 'SM-users.php?action=ENT_DX',
@@ -180,7 +193,7 @@ function deleteEntity( Id ){
 }
 
 
-// Gestion des modifications "en place".
+// Gestion des modifications d'une Entité "en place".
 function modifyEntity( Id, CancelButton, ModifyButton ) {
     endAllModifyEntity();
 
@@ -223,6 +236,8 @@ function modifyEntity( Id, CancelButton, ModifyButton ) {
     });
 }
 
+
+// Sauvegarde les modifications apportées à une Entité.
 function saveModifyEntity( Id ) {
     var Code = $('#iCode').val().toUpperCase();
     var Label = $('#iLabel').val();
@@ -250,14 +265,14 @@ function saveModifyEntity( Id ) {
 }
 
 
-// Annule la modification en cours.
+// Annule les modifications en cours sur une Entité.
 function endModifyEntity(Id) {
     $('#MODI_'+Id).remove();
     $('#entity_'+Id).show();
 }
 
 
-// Annule toutes les modifications en cours.
+// Annule toutes les modifications en cours sur les Entités.
 function endAllModifyEntity() {
     $('tr[id^="MODI_"]').each( function(index) {
         var T_ID = $(this).attr( 'id' );
@@ -267,6 +282,7 @@ function endAllModifyEntity() {
 }
 
 
+// Supprime la fenêtre de Confirmation.
 function hideConfirmMessage() {
     $('#confirm_message').remove();
 }

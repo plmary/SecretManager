@@ -250,6 +250,24 @@ function validAdminUser( $user_session ) {
 }
 
 
+// =====================================================================================
+// Cette fonction valide que l'utilisateur appelant le serveur est Opérateur dans 
+// SecretManager.
+function validOperatorUser( $user_session ) {
+	$ValidUser = 0;
+
+	if ( array_key_exists( 'idn_operator', $user_session ) ) {
+		if ( $user_session[ 'idn_operator' ] == 1 ) $ValidUser = 1;
+	}
+
+	if ( $ValidUser == 0 ) {
+		return FALSE;
+	}
+	
+	return TRUE;
+}
+
+
 // ====================================================
 // Cette fonction envoie un message au client appelant.
 function sendMessageToClient( $MsgSock, $Message ) {
@@ -771,7 +789,7 @@ do {
 		// ===================================================
 		// Charge la clé mère dans la mémoire du SecretServer.
 		if ( $Command == 'load' ) {
-			if ( ! validAdminUser( $user_session ) ) {
+			if ( ! validAdminUser( $user_session ) and ! validOperatorUser( $user_session ) ) {
 				sendMessageToClient( $MsgSock, FLAG_ERROR .
 				 "###L_ERR_USER_NOT_ADMIN\n" );
 				break; // Déconnecte le client.
@@ -842,6 +860,9 @@ do {
 			if ( $FLAG_DEBUG ) {
 				print( $PREFIX_DEBUG . "Analyze Mother Key\n" );
 			}
+
+			//print($Secret_Key);
+
 			$Record = explode( '###', $Secret_Key );
 			if ( $Record[ 0 ] != 'OK' ) {
 				if ( isset( $Old_Secret_Key ) ) $Secret_Key = $Old_Secret_Key;

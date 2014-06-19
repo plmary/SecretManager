@@ -92,7 +92,7 @@ if ( array_key_exists( 'action', $_GET ) ) {
 
 if ( ! preg_match("/X$/i", $Action ) ) {
 	$JS_Scripts = array( 'SecretManager.js', 'Ajax_users.js', 'Ajax_profiles.js', 'Ajax_entities.js',
-	    'Ajax_civilities.js' );
+	    'Ajax_civilities.js', 'Ajax_secrets.js' );
 
 	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language, $JS_Scripts ) .
 	 "   <!-- debut : zoneTitre -->\n" .
@@ -2043,7 +2043,7 @@ switch( $Action ) {
 
 	$Identity = $Identities->detailedGet( $idn_id );
 	
-	$Action_Button = "<a class=\"button\" href=\"javascript:putAddProfile();\" title=\"" . $L_Profile_Create . "\">+</a>" ;
+	$Action_Button = "<a class=\"button\" href=\"javascript:putAddProfile();\" title=\"" . $L_Profile_Create . "\">&nbsp;+&nbsp;</a>" ;
 	
 	print( "     <form method=\"post\" action=\"" . $Script . "?action=PX&idn_id=" .
 	 $idn_id . "\">\n" .
@@ -2081,7 +2081,7 @@ switch( $Action ) {
 //	 "         <div id=\"dashboard\">\n" .
 	 "         <table class=\"table-bordered table-max inner\">\n" .
 	 "          <thead>\n" .
-	 "           <tr><th colspan=\"3\"><span class=\"div-right\">" . $Action_Button . "</span></th></tr>\n" .
+	 "           <tr><th colspan=\"3\" class=\"align-right\"><span>" . $Action_Button . "</span></th></tr>\n" .
 	 "          </thead>\n" .
 	 "          <tbody id=\"listeSecrets\">\n" );
 
@@ -2113,7 +2113,7 @@ switch( $Action ) {
 			 "\" id=\"P_" . $Profile->prf_id . "\"" . $Validate . " /></td>\n" .
 			 "           <td class=\"td-aere align-middle\"><label for=\"P_" . $Profile->prf_id . "\">" .
 			 stripslashes( $Profile->prf_label ) . "</label></td>\n" .
-			 "           <td class=\"align-center\"><a class=\"simple\" href=\"?action=PRF_G&prf_id=" . $Profile->prf_id . "\">" .
+			 "           <td class=\"align-center\"><a class=\"simple\" href=\"?action=PRF_G&prf_id=" . $Profile->prf_id . "&home=P&idn_id=". $_GET['idn_id'] . "\">" .
 			 "<img src=\"" . URL_PICTURES . "/b_usrscr_2.png\" class=\"no-border\" alt=\"" . $L_Groups_Associate . "\" title=\"" . $L_Groups_Associate . "\" /></a></td>\n" .
 			 "          </tr>\n" );
 		}
@@ -2140,7 +2140,7 @@ switch( $Action ) {
 	 "       </tbody>\n" .
 	 "      </table>\n" .
 	 "     </form>\n" .
-	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\" style=\"top:50%;left:40%;\">\n".
+	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\">\n".
 	 "      <button type=\"button\" class=\"close\">×</button>\n".
 	 "      <p class=\"titre\">".$L_Profile_Create."</p>\n".
 	 "      <div id=\"detailProfile\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
@@ -2880,6 +2880,14 @@ switch( $Action ) {
 	$Profile = $Profiles->get( $_GET[ 'prf_id' ] );
 
 	$List_Groups_Associated = $Profiles->listGroups( $_GET[ 'prf_id' ] );
+
+	if ( isset( $_GET['home'] ) ) {
+		if ( $_GET['home'] == 'P' ) {
+			$Return_Page = $Script . '?action=' . $_GET['home'] . '&idn_id=' . $_GET['idn_id'];
+		}
+	} else {
+		$Return_Page = $_SERVER[ 'HTTP_REFERER' ];
+	}
 	
 
 	$Groups = new IICA_Groups();
@@ -2893,9 +2901,10 @@ switch( $Action ) {
 
 
 	if ( $Authentication->is_administrator() ) {
-		print( "    <form method=\"post\" action=\"" . $Script .
+		print( "    <div id=\"dashboard\">\n" .
+		 "    <form id=\"fAGSP\" method=\"post\" action=\"" . $Script .
 		 "?action=PRF_GX&prf_id=" . $_GET[ 'prf_id' ] . "\">\n" .
-		 "     <table style=\"margin: 10px auto;width: 60%;\">\n" .
+		 "     <table class=\"table-bordered\" style=\"margin: 10px auto;width: 60%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
 		 "        <th colspan=\"2\">" . $L_Profile_Groups . "</th>\n" .
@@ -2916,9 +2925,9 @@ switch( $Action ) {
 		 "        <td colspan=\"2\">&nbsp;</td>\n" .
 		 "       </tr>\n" 
 		);
-		
-		$manageGroups = "         <a class=\"button\" href=\"" . URL_BASE . "/SM-secrets.php?rp=users-prf_g&prf_id=" .
-		 $_GET[ 'prf_id' ] . "\">" . $L_Groups_Management . "</a>\n" ;
+
+		//$manageGroups = "         <a class=\"button\" href=\"" . URL_BASE . "/SM-secrets.php?rp=users-prf_g&prf_id=" .
+		$manageGroups = "         <a class=\"button\" href=\"javascript:putAddGroup();\" title=\"" . $L_Group_Create . "\">&nbsp;+&nbsp;</a>\n" ;
 		
 		print( "       <tr>\n" .
 		 "        <td class=\"align-right\">" . $L_Groups . "</td>\n" .
@@ -2926,32 +2935,25 @@ switch( $Action ) {
 		 "         <table class=\"table-bordered\">\n" .
 		 "          <thead>\n" .
 		 "          <tr>\n" .
-		 "           <th colspan=\"2\">\n" .
+		 "           <th colspan=\"2\" class=\"align-right\">\n" .
 		 $manageGroups .
 		 "           </th>\n" .
 		 "          </tr>\n" .
+		 "          <tr class=\"pair\">\n" .
+		 "           <td>" . $L_Label . "</td>\n" .
+		 "           <td>" . $L_Rights . "</td>\n" .
+		 "          </tr>\n" .
 		 "          </thead>\n" .
-		 "          <tbody>\n" .
-		 "          <tr>\n" .
-		 "           <th>" . $L_Label . "</th>\n" .
-		 "           <th>" . $L_Rights . "</th>\n" .
-		 "          </tr>\n" );
+		 "          <tbody id=\"listeSecrets\">\n" );
 		
-		$BackGround = "pair";
-
 
 		foreach( $List_Groups as $Group ) {
-			if ( $BackGround == "pair" )
-				$BackGround = "impair";
-			else
-				$BackGround = "pair";
-			
 			if ( array_key_exists( $Group->sgr_id, $List_Groups_Associated ) )
 				$Status = ' checked ';
 			else $Status = '';
 
 			print( 
-			 "          <tr class=\"" . $BackGround . "\">\n" .
+			 "          <tr>\n" .
 			 "           <td class=\"align-middle\">" . stripslashes( $Group->sgr_label ) . "</td>\n" .
 			 "           <td>\n" .
 			 "            <select name=\"r_" . $Group->sgr_id . "[]\" size=\"4\" " .
@@ -2981,7 +2983,7 @@ switch( $Action ) {
 		print( "          </tbody>\n" .
 		 "          <tfoot>\n" .
 		 "          <tr>\n" .
-		 "           <th colspan=\"2\">\n" .
+		 "           <th colspan=\"2\" class=\"align-right\">\n" .
 		 $manageGroups .
 		 "           </th>\n" .
 		 "          </tr>\n" .
@@ -2996,13 +2998,14 @@ switch( $Action ) {
 		 "        <td>&nbsp;</td>\n" .
 		 "        <td>" .
 		 "<input type=\"submit\" class=\"button\" value=\"" . $L_Associate . "\" />" .
-		 "<a class=\"button\" href=\"" . $_SERVER[ 'HTTP_REFERER' ] . "\">" . $L_Cancel .
+		 "<a class=\"button\" href=\"" . $Return_Page . "\">" . $L_Cancel .
 		 "</a></td>\n" .
 		 "       </tr>\n" .
 		 "      </tbody>\n" .
 		 "     </table>\n" .
 		 "\n" .
-		 "    </form>\n" );
+		 "    </form>\n" .
+		 "    </div>\n" );
 	} else {
 		$Return_Page = 'https://' . $Server . '/SM-home.php';
  
@@ -3087,6 +3090,26 @@ switch( $Action ) {
 		"<script>document.fInfoMessage.submit();</script>\n" );
 
 	break;
+
+
+ case 'L_RIGHTS_X':
+ 	include( DIR_LIBRARIES . '/Class_IICA_Referentials_PDO.inc.php' );
+ 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
+
+ 	$Referentials = new IICA_Referentials();
+
+ 	$Liste_Rights = $Referentials->listRights();
+ 	$Options = '';
+
+ 	foreach( $Liste_Rights as $Right ) {
+ 		$Options .= '<option value="' . $Right->rgh_id . '">' . ${$Right->rgh_name} . '</option>';
+ 	}
+
+    echo json_encode( array(
+        'liste_rights' => $Options
+    ) ) ;
+    
+    exit();
 
 
  case 'L_MODIF_PROFILE_X':

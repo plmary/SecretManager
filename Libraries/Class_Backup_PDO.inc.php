@@ -192,7 +192,7 @@ class Backup extends IICA_Parameters {
         // Traitement de la table des "Secrets".		    
         if ( ! $Result = $this->prepare( 'SELECT ' . 
             'scr_id, sgr_id, stp_id, env_id, ' .
-            'scr_host, scr_user, scr_password, app_id, scr_comment, scr_alert, ' .
+            'app_id, idn_id, scr_host, scr_user, scr_password, scr_comment, scr_alert, ' .
             'scr_creation_date, scr_modification_date, scr_expiration_date ' .
             'FROM scr_secrets' ) ) {
             $Error = $Result->errorInfo();
@@ -217,10 +217,11 @@ class Backup extends IICA_Parameters {
 		        '   <column name="sgr_id">' . $Occurrence->sgr_id . '</column>' . "\n" .
 		        '   <column name="stp_id">' . $Occurrence->stp_id . '</column>' . "\n" .
 		        '   <column name="env_id">' . $Occurrence->env_id . '</column>' . "\n" .
+		        '   <column name="app_id">' . $Occurrence->app_id . '</column>' . "\n" .
+		        '   <column name="idn_id">' . $Occurrence->idn_id . '</column>' . "\n" .
 		        '   <column name="scr_host">' . $Occurrence->scr_host . '</column>' . "\n" .
 		        '   <column name="scr_user">' . $Occurrence->scr_user . '</column>' . "\n" .
 		        '   <column name="scr_password">' . $Occurrence->scr_password . '</column>' . "\n" .
-		        '   <column name="app_id">' . $Occurrence->app_id . '</column>' . "\n" .
 		        '   <column name="scr_comment">' . $Occurrence->scr_comment . '</column>' . "\n" .
 		        '   <column name="scr_alert">' . $Occurrence->scr_alert . '</column>' . "\n" .
 		        '   <column name="scr_creation_date">' . $Occurrence->scr_creation_date . '</column>' . "\n" .
@@ -423,8 +424,8 @@ class Backup extends IICA_Parameters {
         // Traitement de la table des "Identités".
         if ( ! $Result = $this->prepare( 'SELECT idn_id, ent_id, cvl_id, idn_login, ' .
             'idn_authenticator, idn_salt, idn_change_authenticator, idn_super_admin, ' .
-            'idn_attempt, idn_disable, idn_last_connection, idn_expiration_date, ' .
-            'idn_updated_authentication ' .
+            'idn_operator, idn_attempt, idn_disable, idn_last_connection, ' .
+            'idn_expiration_date, idn_updated_authentication ' .
             'FROM idn_identities ' ) ) {
             $Error = $Result->errorInfo();
             throw new Exception( $Error[ 2 ], $Error[ 1 ] );
@@ -451,6 +452,7 @@ class Backup extends IICA_Parameters {
 		        '   <column name="idn_salt">' . $Occurrence->idn_salt . '</column>' . "\n" .
 		        '   <column name="idn_change_authenticator">' . $Occurrence->idn_change_authenticator . '</column>' . "\n" .
 		        '   <column name="idn_super_admin">' . $Occurrence->idn_super_admin . '</column>' . "\n" .
+		        '   <column name="idn_operator">' . $Occurrence->idn_operator . '</column>' . "\n" .
 		        '   <column name="idn_attempt">' . $Occurrence->idn_attempt . '</column>' . "\n" .
 		        '   <column name="idn_disable">' . $Occurrence->idn_disable . '</column>' . "\n" .
 		        '   <column name="idn_last_connection">' . $Occurrence->idn_last_connection . '</column>' . "\n" .
@@ -679,7 +681,8 @@ class Backup extends IICA_Parameters {
 			$Table_Name = $Tables->item( $tables_i )->getAttribute( 'name' );
 
 			$Query = 'DELETE FROM ' . $Table_Name . ';';
-	//		print( $Query . "<br>" );
+//			print( $Query . "<br>" );
+
 			if ( ! $Result = $this->prepare( $Query ) ) {
 				$Error = $Result->errorInfo();
 
@@ -713,7 +716,7 @@ class Backup extends IICA_Parameters {
 				}
 				
 				$Query = 'INSERT INTO ' . $Table_Name . ' (' . $Columns_Name . ') VALUES (' . $Values . ');';
-	//			print( $Query . "<br>" );
+//				print( $Query . "<br>" );
 
 				if ( ! $Result = $this->prepare( $Query ) ) {
 					$Error = $Result->errorInfo();
