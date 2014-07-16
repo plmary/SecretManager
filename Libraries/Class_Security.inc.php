@@ -12,7 +12,6 @@ include_once( IICA_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 * @date 2012-11-08
 *
 */
@@ -31,10 +30,10 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $value Chaine de caractère à contrôler
+	* @param[in] $mode Type de contrôle à réaliser
 	*
 	* @return Retourne le résultat protégé (prêt à l'affichage) ou faux
 	*/
@@ -82,14 +81,14 @@ class Security extends IICA_Parameters {
 	public function valueControl( $value, $mode='ASCII' ) {
 	/**
 	* Contrôle et prépare les variables avant un stockage.
-	* A utiliser avant l'affichage d'une variable.
+	* A utiliser avant le stockage d'une information.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $value Chaine de caractère à contrôler
+	* @param[in] $mode Type de contrôle à réaliser
 	*
 	* @return Retourne le résultat protégé ou faux
 	*/
@@ -136,7 +135,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $value Chaine de caractère à protéger
@@ -154,7 +152,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $value Chaine de caractère à protéger
@@ -173,7 +170,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $Time Valeur temporelle de l'expiration (date et heure d'expiration)
@@ -195,7 +191,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $size Longeur du mot de passe à générer (par défaut 8 caractères)
@@ -244,7 +239,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $Password Mot de passe à contrôler
@@ -311,7 +305,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-09
 	*
 	* @param[in] $String Chaine à contrôler
@@ -337,7 +330,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-09
 	*
 	* @param[in] $String Chaine à contrôler
@@ -363,7 +355,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-09
 	*
 	* @param[in] $String Chaine à contrôler
@@ -389,7 +380,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-09
 	*
 	* @param[in] $String Chaine à contrôler
@@ -415,7 +405,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-09
 	*
 	* @param[in] $String Chaine à contrôler
@@ -448,7 +437,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $encrypt Données à chiffrer.
@@ -484,7 +472,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $decrypt Données à déchiffrer.
@@ -522,7 +509,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-03-08
 	*
 	* @param[in] $ID_Session ID de Session (identifie la personne faisant le tranport).
@@ -579,7 +565,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-03-08
 	*
 	* @param[in] $ID_Session ID de Session (identifie la personne faisant le tranport).
@@ -628,24 +613,22 @@ class Security extends IICA_Parameters {
 	}
 
 	
-	/* -----------------------------
-	** Met à jour l'historique des actions sur les objets du SecretManager.
-	*/
 	public function updateHistory( $hac_name, $ach_access = '', $rgh_id = '', $level = LOG_INFO, $pSecret = '' ) {
-		/**
-		* Crée ou modifie un Groupe.
-		*
-		* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
-		* @author Pierre-Luc MARY
-		* @date 2014-05-11
-		*
-		* @param[in] $hot_name (string) Nom du type d'objet du SecretManager
-		* @param[in] $rgh_id (int) Type d'accès réalisé sur l'objet
-		* @param[in] $pSecret (object) Pointeur du Secret qui a été accédé
-		* @param[in] $ach_access (string) Texte de description de l'accès (complément d'information)
-		*
-		* @return Renvoi vrai sur le succès de la mise à jour du Groupe, sinon lève une Exception
-		*/
+	/**
+	* Met à jour l'historique des actions sur les objets du SecretManager.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-05-11
+	*
+	* @param[in] $hac_name (string) Code de l'action qui vient d'être réalisée
+	* @param[in] $ach_access (string) Texte de description de l'accès (complément d'information)
+	* @param[in] $rgh_id (int) Type d'accès réalisé sur l'objet
+	* @param[in] $level (integer) Indique le type de LOG à remonter dans le SYSLOG
+	* @param[in] $pSecret (object) Pointeur du Secret qui a été accédé
+	*
+	* @return Renvoi vrai sur le succès de la mise à jour du Groupe, sinon lève une Exception
+	*/
 
 		// Récupère l'ID associé au code action.
 		if ( ! $Result = $this->prepare( 'SELECT hac_id FROM hac_history_actions_codes ' .
@@ -784,7 +767,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $action Action à tracer.
@@ -825,8 +807,7 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-08
+	* @date 2014-06-08
 	*
 	* @param[in] $action Action à tracer.
 	* @param[in] $pObject Pointeur sur le Secret manipulé
@@ -871,12 +852,10 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-08
+	* @date 2014-06-08
 	*
-	* @param[in] $message Message à envoyer dans le courriel.
-	* @param[in] $from Emetteur du courriel
-	* @param[in] $to Destinataires du courriel
+	* @param[in] $Action Type d'action qui l'on vient de réaliser sur un Secret et que l'on souhaite notifier.
+	* @param[in] $pSecret Objet de type Secret qui vient d'être accédé
 	*
 	* @return Retourne vrai si le message a été envoyé au serveur de messagerie, sinon retrouve faux (attention, envoyé au serveur de messagerie, ne signifie pas bien arrivé auprès des destinataires)
 	*/
@@ -901,8 +880,9 @@ class Security extends IICA_Parameters {
 		$message = str_ireplace( '%UserIP', $_SESSION['user_ip'], $message );
 		$message = str_ireplace( '%GroupSecrets', $pSecret->sgr_label, $message );
 		$message = str_ireplace( '%SecretType', ${$pSecret->stp_name}, $message );
-		$message = str_ireplace( '%SecretEnvironment', ${$pSecret->env_name}, $message );
+		$message = str_ireplace( '%SecretEnvironment', $pSecret->env_name, $message );//${$pSecret->env_name}, $message );
 		$message = str_ireplace( '%SecretApplication', $pSecret->app_name, $message );
+		$message = str_ireplace( '%SecretUser', $pSecret->scr_user, $message );
 		$message = str_ireplace( '%SecretHost', $pSecret->scr_host, $message );
 		$message = str_ireplace( '%SecretComment', $pSecret->scr_comment, $message );
 
@@ -938,12 +918,9 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-08
+	* @date 2014-06-08
 	*
-	* @param[in] $message Message à envoyer dans le courriel.
-	* @param[in] $from Emetteur du courriel
-	* @param[in] $to Destinataires du courriel
+	* @param[in] $message Alerte de sécurité à envoyer dans le courriel.
 	*
 	* @return Retourne vrai si le message a été envoyé au serveur de messagerie, sinon retrouve faux (attention, envoyé au serveur de messagerie, ne signifie pas bien arrivé auprès des destinataires)
 	*/
@@ -972,7 +949,6 @@ class Security extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-08
 	*
 	* @param[in] $ForceCreating Permet de forcer la création du fichier des empreintes.
@@ -1072,6 +1048,7 @@ class Security extends IICA_Parameters {
 	* @date 2012-11-08
 	*
 	* @param[in] $ForceCreating Permet de forcer la création du fichier des empreintes.
+	* @param[in] $Memory_Hash Permet de contrôler le Hash qui va être calculé avec celui qui a été précédemment calculé.
 	*
 	* @return Retourne vrai si aucun fichier n'a été modifié ou si le fichier a été créé OU faux si une erreur survient ou si le fichier un tableau contenant la liste des fichiers qui ont été modifiés.
 	*/

@@ -14,6 +14,7 @@
 	$L_Langue_en = "Anglais";
 	$L_Langue_fr = "Français";
 	$L_Langue_de = "Allemand";
+	$L_Langue_es = "Espagnol";
 	
 	$L_No_Authorize = "Vous n'êtes pas habilité pour cet écran";
 	$L_Default = 'Défaut';

@@ -1169,7 +1169,14 @@ switch( $Action ) {
 	    	$alert_message .= ' ' . $Secrets->getMessageForHistory( $scr_id, $oSecret );
 	    }
 		
-		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 2, $L_Level, $Secrets->get( $scr_id ) );
+		try {
+			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 2, $L_Level, $Secrets->get( $scr_id ) );
+		} catch ( Exception $e ) {
+            echo json_encode( array(
+                'Status' => 'error',
+                'Message' => $e->getMessage()
+            ) );			
+		}
 
         exit();
 	} else {
@@ -1211,7 +1218,7 @@ switch( $Action ) {
 
 		echo json_encode( $Resultat );
 		
-		break;
+		exit();
 	}
 
 	$Group = $Groups->get( $Secret->sgr_id );
@@ -1223,7 +1230,16 @@ switch( $Action ) {
 	    	$alert_message .= ' ' . $Secrets->getMessageForHistory( $scr_id );
 	    }
 
-		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 1, LOG_INFO, $Secrets->get( $scr_id ) );
+	    try {
+			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 1, LOG_INFO, $Secrets->get( $scr_id ) );
+		} catch( Exception $e ) {
+			$Resultat = array( 'Statut' => 'erreur',
+				'Message' => $e->getMessage() );
+
+			echo json_encode( $Resultat );
+		
+			exit();
+		}
 	}
 
 	if ( isset( $groupsRights[ $Secret->sgr_id ] ) ) {
@@ -1525,7 +1541,11 @@ switch( $Action ) {
 
 			$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $scr_id . ']';
 
-			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, $L_Status, $Secrets->get( $scr_id ) );
+			try {
+				$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, $L_Status, $Secrets->get( $scr_id ) );
+			} catch( Exception $e ) {
+				$Message = $e->getMessage();
+			}
 
 			print( $PageHTML->returnPage( $L_Title, $Message, $Return_Page, 1 ) );
 
@@ -1542,7 +1562,11 @@ switch( $Action ) {
 
 			$alert_message = $PageHTML->getTextCode( $L_Message ) . ' [' . $scr_id . ']';
 
-			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, $L_Status, $Secrets->get( $scr_id ) );
+			try {
+				$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, $L_Status, $Secrets->get( $scr_id ) );
+			} catch( Exception $e ) {
+				$Message = $e->getMessage();
+			}
 
 			print( $PageHTML->returnPage( $L_Title, $Message, $Return_Page, 1 ) );
 
@@ -1554,7 +1578,12 @@ switch( $Action ) {
 
 		if ( $Verbosity_Alert == 2 ) $alert_message .= $Secrets->getMessageForHistory( $scr_id );
 
-		$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, LOG_INFO, $Secrets->get( $scr_id ) );
+		try {
+			$Security->updateHistory( 'L_ALERT_SCR', $alert_message, 3, LOG_INFO, $Secrets->get( $scr_id ) );
+		} catch( Exception $e ) {
+			print( $PageHTML->returnPage( $L_Title, $e->getMessage(), $Return_Page, 1 ) );
+			exit();
+		}
 
 		$Group = $Groups->get( $sgr_id );
 			
@@ -1716,7 +1745,13 @@ switch( $Action ) {
 			exit();
 		}
 
-		$pSecret = $Secrets->get( $scr_id );
+		try {
+			$pSecret = $Secrets->get( $scr_id );
+		} catch( Exception $e ) {
+			$Return_Page = "https://" . $Server . $Script . "?action=P&id=" . $scr_id;
+			print( $PageHTML->returnPage( $L_Title, $e->getMessage(), $Return_Page, 1 ) );
+			exit();
+		}
 		
 		try {
 			$Secrets->delete( $scr_id );
@@ -1921,7 +1956,7 @@ switch( $Action ) {
  		if ( $Application->app_id == $app_id_s ) $Selected = ' selected';
  		else $Selected ='';
 
- 		$Liste_Applications .= '<option value="' . $Application->app_id . '"' . $Selected . '>' . $Application->app_name . '</option>';
+ 		$Liste_Applications .= '<option value="' . $Application->app_id . '"' . $Selected . '>' . stripslashes( $Application->app_name ) . '</option>';
  	}
 
     echo json_encode( array(

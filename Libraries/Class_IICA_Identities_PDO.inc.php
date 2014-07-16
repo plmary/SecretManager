@@ -11,6 +11,7 @@ class IICA_Identities extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
+* @date 2014-06-23
 */
     public $LastInsertId;
 
@@ -41,8 +42,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-13
+	* @date 2014-06-23
 	*
 	* @param[in] $idn_id Identifiant de l'identité à modifier (si précisé)
 	* @param[in] $Login Nom de connexion de l'utilisateur
@@ -50,7 +50,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	* @param[in] $ChangeAuthenticator Booléen pour indiquer s'il faut changer le mot de passe
 	* @param[in] $Attempt Nombre de tentative de connexion
 	* @param[in] $SuperAdmin Booléen pour indiquer si l'utilisateur est un Administrateur
-	* @param[in] $Auditor Booléen pour indiquer si l'utilisateur est un Auditeur
+	* @param[in] $Operator Booléen pour indiquer si l'utilisateur est un Opérateur
 	* @param[in] $Id_Entity Identifiant de l'Entité de rattachement de l'utilisateur
 	* @param[in] $Id_Civility Identifiant de la Civilité de rattachement de l'utilisateur
 	* @param[in] $Salt Grain de sel à utiliser pour hacher les mots de passe
@@ -217,7 +217,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-13
 	*
 	* @param[in] $idn_id Identifiant de l'identité à modifier
@@ -340,6 +339,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @param[in] $orderBy Permet de changer l'ordre d'affichage des identités
 	* @param[in] $SpecificIdentities Permet de préciser des critères spécifiques
+	* @param[in] $Admin Drapeau pour déterminer si on doit limiter l'affichage des Identités aux seuls administrateurs.
 	*
 	* @return Renvoi une liste détaillée d'identités (avec toutes les relations) ou une liste vide
 	*/
@@ -585,14 +585,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function delete( $idn_id ) {
 	/**
-	* Supprimer une Identité en détail.
+	* Supprimer une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-12-24
 	*
 	* @param[in] $idn_id Identifiant de l'Identité à supprimer
-	* @param[in] $Type Permet de supprimer les identités logiquement ou physiquement
 	*
 	* @return Renvoi vrai si l'Identité a été supprimée, sinon lève une exception
 	*/
@@ -738,7 +737,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function addGroup( $Id_Identity, $Id_Group, $Flag_Admin = false ) {
 	/**
-	* Ajouter un Groupe à une Identité.
+	* Associer un Groupe de Secrets à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -746,7 +745,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité de référence
 	* @param[in] $Id_Group Identifiant du Groupe de Secrets à associer à l'Identité
-	* @param[in] $Flag_Admin Booléen permettant de préciser si l'Identité est Administrateur du Groupe de Secrets
+	* @param[in] $Flag_Admin Drapeau permettant de préciser si l'Identité est Administrateur du Groupe de Secrets
 	*
 	* @return Renvoi vrai si le Groupe de Secrets a été ajouté à l'Identité, sinon lève une exception
 	*/
@@ -773,7 +772,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function deleteGroup( $Id_Identity, $Id_Group ) {
 	/**
-	* Supprimer une Identité à un Groupe.
+	* Dissocier une Identité d'un Groupe de Secrets.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -805,7 +804,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function listGroups( $Id_Identity ) {
 	/**
-	* Lister les Groupes d'une Identité.
+	* Lister les Groupes de Secret associés à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -844,7 +843,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function listEntities( $Id_Identity ) {
 	/**
-	* Lister les Entités d'une Identité.
+	* Lister les Entités associées à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -889,7 +888,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function addEntity( $Id_Identity, $Id_Entity, $Flag_Admin = false ) {
 	/**
-	* Ajouter une Entité à une Identité.
+	* Associer une Entité à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -897,7 +896,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @param[in] $Id_Identity Identifiant de l'Identité
 	* @param[in] $Id_Entity Identifiant de l'Entité
-	* @param[in] $Flag_Admin Permet d'indiquer si l'Identifiant est administrateur de l'Entité
+	* @param[in] $Flag_Admin Permet d'indiquer si l'Identité (utilisateur) sera l'administrateur de l'Entité
 	*
 	* @return Renvoi vrai si l'Identité a été associée à l'Entité, sinon lève une exception
 	*/
@@ -924,14 +923,14 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function deleteEntity( $Id_Identity, $Id_Entity ) {
 	/**
-	* Détruire une Entité rattachée à une Identité.
+	* Détruit l'association entre une Entité et une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $Id_Identity Identifiant de l'Identité
-	* @param[in] $Id_Entity Identifiant de l'Entité
+	* @param[in] $Id_Identity Identité à traiter
+	* @param[in] $Id_Entity Entité à traiter
 	*
 	* @return Renvoi vrai si l'association entre l'Identité et l'Entité a été supprimée, sinon lève une exception
 	*/
@@ -956,13 +955,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function listProfiles( $Id_Identity ) {
 	/**
-	* Lister les Profils d'une Identité.
+	* Lister les Profils associés à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $Id_Identity Identifiant de l'Identité
+	* @param[in] $Id_Identity Identité à contrôler
 	*
 	* @return Renvoi la liste des Profiles rattachés à l'Identité, sinon une liste vide
 	*/
@@ -994,16 +993,16 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function addProfile( $Id_Identity, $Id_Profile ) {
 	/**
-	* Ajouter un Profil à une Identité.
+	* Associer un Profil à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $Id_Identity Identifiant de l'Identité
-	* @param[in] $Id_Profile Identifiant du Profil
+	* @param[in] $Id_Identity Identité à traiter
+	* @param[in] $Id_Profile Profil à traiter
 	*
-	* @return Renvoi vrai si l'association entre l'Identité et le Profile a été créée, sinon lève une exception
+	* @return Renvoi vrai si l'association entre l'Identité et le Profil a été créée, sinon lève une exception
 	*/
 		if ( ! $Result = $this->prepare( 'INSERT ' .
 		 'INTO idpr_identities_profiles ' .
@@ -1059,13 +1058,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function deleteProfiles( $Id_Identity ) {
 	/**
-	* Détruire les Profiles rattaché à une Identité.
+	* Détruit les Profiles rattaché à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $Id_Identity Identifiant de l'Identité
+	* @param[in] $Id_Identity Identité à traiter
 	*
 	* @return Renvoi vrai si l'association entre l'Identité et tous ses Profiles ont été supprimées, sinon lève une exception
 	*/
@@ -1089,13 +1088,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function listApplications( $Id_Identity ) {
 	/**
-	* Lister les Applications d'une Identité.
+	* Liste les Applications associées à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $Id_Identity Identifiant de l'Identité
+	* @param[in] $Id_Identity Identité à traiter
 	*
 	* @return Renvoi la liste des Applications associé à l'Identité, sinon renvoi une liste vide
 	*/
@@ -1128,14 +1127,14 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function addApplication( $Id_Identity, $Id_Application ) {
 	/**
-	* Ajouter une Application à une Identité.
+	* Associe une Application à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $Id_Identity Identifiant de l'Identité
-	* @param[in] $Id_Application Identifiant de l'Application
+	* @param[in] $Id_Identity Identité à associer
+	* @param[in] $Id_Application Application à associer
 	*
 	* @return Renvoi vrai si l'association entre l'Identité et une Application a été créée, sinon lève une exception
 	*/
@@ -1161,14 +1160,14 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function deleteApplication( $Id_Identity, $Id_Application ) {
 	/**
-	* Détruire une Application rattachée à une Identité.
+	* Détruit l'association entre une Application et une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $Id_Identity Identifiant de l'Identité
-	* @param[in] $Id_Application Identifiant de l'Application
+	* @param[in] $Id_Identity Identité à traiter
+	* @param[in] $Id_Application Application à traiter
 	*
 	* @return Renvoi vrai si l'association entre l'Identité et une Application a été supprimée, sinon lève une exception
 	*/
@@ -1193,7 +1192,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function total() {
 	/**
-	* Récupère le nombre total d'Identités.
+	* Calcul le nombre total d'Identités.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -1221,7 +1220,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function totalDisabled() {
 	/**
-	* Récupère le nombre total d'Identités désactivées.
+	* Calcul le nombre total d'Identités désactivées.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -1250,7 +1249,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function totalExpired() {
 	/**
-	* Récupère le nombre total d'Identités expirées.
+	* Calcul le nombre total d'Identités expirées.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -1280,7 +1279,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function totalSuperAdmin() {
 	/**
-	* Récupère le nombre total d'Identités Super Administrateur.
+	* Calcul le nombre total d'Identités Super Administrateur.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -1309,7 +1308,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function totalOperator() {
 	/**
-	* Récupère le nombre total d'Identités Opérateur.
+	* Calcul le nombre total d'Identités Opérateur.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -1338,7 +1337,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function totalAttempted() {
 	/**
-	* Récupère le nombre total d'Identités ayant atteint le maximum de tentative de
+	* Calcul le nombre total d'Identités ayant atteint le maximum de tentative de
 	* connexion.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
@@ -1377,9 +1376,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Vérifie si le Groupe est associé.
-	*/
 	public function isAssociated( $idn_id, $Table ) {
 	/**
 	* Vérifie si une Identité est associée
@@ -1451,15 +1447,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function getUserForHistory( $idn_id, $oUser = '' ) {
 	/**
-	* Récupère le nombre total d'Identités ayant atteint le maximum de tentative de
-	* connexion.
+	* Formatte une chaîne pour remonter des informations dans l'historique.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @date 2012-11-13
+	* @date 2014-06-20
 	*
-	* @return Renvoi le nombre total d'Identités ayant atteint le maximum de tentative de
-	* connexion.
+	* @return Renvoi la chaîne formattée
 	*/
 		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 
@@ -1481,7 +1475,7 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function getCivility( $cvl_id, $idn_id = '' ) {
 	/**
-	* Récupère les champs utiles d'une Civilité.
+	* Récupère les informations d'une Civilité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -1529,13 +1523,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function getEntity( $ent_id ) {
 	/**
-	* Récupère les champs utiles d'une Civilité.
+	* Récupère les informations d'une Civilité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2014-05-15
 	*
-	* @return Renvoi un objet Civlité ou lève une exception en cas d'erreur.
+	* @return Renvoi un objet Entité ou lève une exception en cas d'erreur.
 	*/
 		$Request = 'SELECT ' .
 		 'ent_code, ent_label ' .
@@ -1568,13 +1562,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function getProfile( $prf_id ) {
 	/**
-	* Récupère les champs utiles d'un Profil.
+	* Récupère les informations d'un Profil.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2014-05-15
 	*
-	* @return Renvoi un objet Civlité ou lève une exception en cas d'erreur.
+	* @return Renvoi un objet Profil ou lève une exception en cas d'erreur.
 	*/
 		$Request = 'SELECT ' .
 		 'prf_label ' .
@@ -1607,13 +1601,13 @@ class IICA_Identities extends IICA_DB_Connector {
 
 	public function getGroups( $sgr_id ) {
 	/**
-	* Récupère les champs utiles d'un Profil.
+	* Récupère les informations sur un Groupe de Secrets.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2014-05-15
 	*
-	* @return Renvoi un objet Civlité ou lève une exception en cas d'erreur.
+	* @return Renvoi un objet Groupe de Secrets ou lève une exception en cas d'erreur.
 	*/
 		$Request = 'SELECT ' .
 		 'sgr_label, sgr_alert ' .

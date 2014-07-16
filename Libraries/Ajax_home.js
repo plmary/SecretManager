@@ -37,7 +37,7 @@ $(document).ready( function() {
                 }
             },
             error: function(reponse) {
-                alert('Erreur sur serveur : ' + reponse['responseText']);
+                alert('Erreur sur serveur "Ajax_home.js" - "R" : ' + reponse['responseText']);
             }
         }); 
     });
@@ -52,6 +52,7 @@ $(document).ready( function() {
 });
 
 
+// Affiche les moyens de modification d'un Secret "en ligne".
 function setSecret( secret_id, action ) {
     var S_Status = 1;
 
@@ -67,7 +68,7 @@ function setSecret( secret_id, action ) {
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur "CTRL_SRV_X" : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_home.js" - "CTRL_SRV_X" : ' + reponse['responseText']);
             return;
         }
     });
@@ -93,7 +94,7 @@ function setSecret( secret_id, action ) {
             ListeApplications = reponse[ 'applications' ];
         },
         error: function(reponse) {
-            alert('Erreur sur serveur "AJAX_L_APP_X" : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_home.js" - "AJAX_L_APP_X" : ' + reponse['responseText']);
             return;
         }
     });
@@ -362,7 +363,7 @@ function setSecret( secret_id, action ) {
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur "AJAX_LV" : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_home.js" - "AJAX_LV" : ' + reponse['responseText']);
             return;
         }
     }); 
@@ -370,6 +371,7 @@ function setSecret( secret_id, action ) {
 }
 
 
+// Ferme toutes les occurrences ouvertes en modification.
 function cancel() {
     $('tbody#listeSecrets tr td div').each( function() {
         var currentId = $(this).parent().parent().attr('id');
@@ -383,6 +385,7 @@ function cancel() {
 }
 
 
+// Sauvegarde les modifications apportées à un Secret.
 function save( secret_id ) {
     var sgr_id = $('#group_'+secret_id).val();
     var sgr_name = $('#group_'+secret_id+' option:selected').text();
@@ -446,21 +449,20 @@ function save( secret_id ) {
                         $('tbody#listeSecrets').html(reponse);
                     },
                     error: function(reponse) {
-                        alert('Erreur sur serveur : ' + reponse['responseText']);
+                        alert('Erreur sur serveur "Ajax_home.js" - "AJAX_R" : ' + reponse['responseText']);
                     }
                 });
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_home.js" - "AJAX_S" : ' + reponse['responseText']);
         }
     }); 
 
 }
 
 
-
-
+// Supprime un Secret à la volée.
 function remove( secret_id ) {
     var stp_name = $('#type_'+secret_id+' option:selected').text();
     var env_name = $('#environment_'+secret_id+' option:selected').text();
@@ -501,7 +503,7 @@ function remove( secret_id ) {
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_home.js" - "AJAX_D" : ' + reponse['responseText']);
         }
     }); 
 

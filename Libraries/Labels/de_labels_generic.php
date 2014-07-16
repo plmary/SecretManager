@@ -14,6 +14,7 @@
 	$L_Langue_en = "Englisch";
 	$L_Langue_de = "Deutsch";
 	$L_Langue_fr = "Französisch";
+	$L_Langue_es = "Spanisch";
 	$L_No_Authorize = "Zugriff nicht erlaubt";
 	$L_Default = 'Standard';
 	$L_Actions = "Aktionen";

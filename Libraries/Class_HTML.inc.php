@@ -7,11 +7,10 @@ include_once( IICA_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
 class HTML extends IICA_Authentications {
 /**
-* Cette classe gère l'affichage des principales parties des écrans.
+* Cette classe gère l'affichage des parties principales des écrans.
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.2
 * @date 2012-11-26
 */
 public $Version; // Version de l'outil (précisé dans le constructeur)
@@ -22,7 +21,6 @@ public function __construct( $DB_Access = 1 ) {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 * @date 2014-05-21
 *
 * @param[in] $DB_Access Par défaut, il y a un accès (une ouverture) de la base avec les informations par défaut.
@@ -46,11 +44,12 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-12
+* @date 2014-06-23
 *
-* @param[in] $Title Titre à afficher dans la fenêtre des navigateurs
-* @param[in] $Language_Zone Booléen permettant de gérer l'affichage de la zone de choix de langue
+* @param[in] $Title Titre à afficher dans la fenêtre des navigateurs.
+* @param[in] $Language_Zone Booléen permettant de gérer l'affichage de la zone de choix de langue.
+* @param[in] $Fichiers_Javascript Précise les fichiers Javascript qu'il faut charger de façon spécifique.
+* @param[in] $innerJS Permet d'inclure des instructions Javascript.
 *
 * @return Retourne une chaîne matérialisant le début d'une page HTML
 */
@@ -70,9 +69,6 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 	}
 	
 
-//	$Header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" " .
-//	 " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n\n" .
-//	 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\" lang=\"fr\">\n" .
 	$Header = "<!DOCTYPE html>\n\n" .
 	 "<html lang=\"fr\">\n" .
 	 " <head>\n" .
@@ -152,6 +148,10 @@ public function enteteHTML( $Title = "", $Language_Zone = 0, $Fichiers_JavaScrip
 		 "      <img src=\"" . URL_PICTURES . "/flag-deu.png\" alt=\"" . $L_Langue_de . 
 		 "\" title=\"" . $L_Langue_de . "\"  class=\"no-border\" />\n" .
 		 "     </a>\n" .
+		 "     <a href=\"" . $Script . "?Lang=es\">\n" .
+		 "      <img src=\"" . URL_PICTURES . "/flag-spa.png\" alt=\"" . $L_Langue_es . 
+		 "\" title=\"" . $L_Langue_es . "\"  class=\"no-border\" />\n" .
+		 "     </a>\n" .
 		 "    </div> <!-- fin : zoneLangues -->\n\n" ;
 	} else {
 		if ( array_key_exists( 'idn_login', $_SESSION ) ) {
@@ -176,16 +176,14 @@ public function mini_HTMLHeader( $Title = "" ) {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-12
+* @date 2014-06-23
 *
 * @param[in] $Title Titre à afficher dans la fenêtre des navigateurs
 *
 * @return Retourne une chaîne matérialisant le début d'une page HTML
 */
-	return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" " .
-	 "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n\n" .
-	 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\" lang=\"fr\">\n" .
+	return "<!DOCTYPE html>\n\n" .
+	 "<html lang=\"fr\">\n" .
 	 " <head>\n" .
 	 "  <meta name=\"Description\" content=\"Secret Management\" />\n" .
 	 "  <meta http-equiv=\"Content-Type\" content=\"text/html; " .
@@ -211,8 +209,7 @@ public function construireFooter( $Buttons = 0, $Previous = '' ) {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-12
+* @date 2014-06-23
 *
 * @param[in] $Buttons Booléen gérant l'affichage des boutons en bas de page
 * @param[in] $Previous Permet de spécifier un code de page retour pour la suite
@@ -257,8 +254,7 @@ public function piedPageHTML() {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-12
+* @date 2014-06-23
 *
 * @return Retourne une chaîne matérialisant les fins de page HTML
 */
@@ -275,8 +271,7 @@ public function afficherActions( $Administrator ) {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-12
+* @date 2014-06-23
 *
 * @param[in] $Administrator Booléen permettant de gérer les icônes des administrateurs
 *
@@ -292,11 +287,8 @@ public function afficherActions( $Administrator ) {
 	 "     <span id=\"menu-icon-home\" class=\"icon28\" title=\"" . $L_Dashboard . "\" onClick=\"javascript:document.location='SM-home.php'\"></span>\n" ;
 
 	if ( $Administrator ) {
-	 	$Actions .= //"     <span id=\"menu-icon-access\" class=\"icon28\" title=\"" .
-//	 	 $L_Secrets_Management . "\"  onClick=\"javascript:document.location='SM-secrets.php'\"></span>\n" .
-//		"     <span id=\"menu-icon-users\" class=\"icon28\" title=\"" . $L_Users_Management . "\" onClick=\"javascript:document.location='SM-users.php'\"></span>\n" .
-		"     <span id=\"menu-icon-options\" class=\"icon28\" title=\"" . $L_Preferences_Management . "\" onClick=\"javascript:document.location='SM-preferences.php'\"></span>\n" .
-        "     <span id=\"menu-icon-tools\" class=\"icon28\" title=\"" . $L_Management . "\" onClick=\"javascript:document.location='SM-admin.php'\"></span>\n";
+	 	$Actions .= "     <span id=\"menu-icon-options\" class=\"icon28\" title=\"" . $L_Preferences_Management . "\" onClick=\"javascript:document.location='SM-preferences.php'\"></span>\n" .
+        	"     <span id=\"menu-icon-tools\" class=\"icon28\" title=\"" . $L_Management . "\" onClick=\"javascript:document.location='SM-admin.php'\"></span>\n";
 	} elseif ( $this->is_operator() ) {
 	 	$Actions .= "     <span id=\"menu-icon-tools\" class=\"icon28\" title=\"" . $L_Management . "\" onClick=\"javascript:document.location='SM-admin.php'\"></span>\n";
 	}
@@ -313,8 +305,7 @@ public function drawBox( $Title = "", $Text = "" ) {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-12
+* @date 2014-06-23
 *
 * @param[in] $Title Titre du tableau
 * @param[in] $Text Corps du tableau
@@ -343,14 +334,14 @@ public function drawBox( $Title = "", $Text = "" ) {
 	 "     </table>\n" ;
 }
 
+
 public function infoBox( $Message, $Script, $Alert = 1 ) {
 /**
-* Affiche une boîte d'information.
+* Affiche une mini boîte d'information.
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-18
+* @date 2014-06-23
 *
 * @param[in] $Message Message à afficher
 * @param[in] $Script Script à exécuter sur le clique du bouton retour
@@ -396,7 +387,6 @@ public function returnPage( $Title, $Message, $Script, $Alert = 1 ) {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
 * @date 2012-11-12
 *
 * @param[in] $Title Titre du navigateur et du haut de page
@@ -423,14 +413,12 @@ public function returnPage( $Title, $Message, $Script, $Alert = 1 ) {
 	 "    </div> <!-- fin : zoneTitre -->\n" .
 	 "    <!-- debut : zoneMilieuComplet -->\n" .
 	 "    <div id=\"zoneMilieuComplet\">\n" .
-//	 "     <div id=\"dashboard\">\n" .
-	 "      <div id=\"" . $Type_Message . "\" style=\"margin-top: 20px;\"><img class=\"no-border\" src=\"Pictures/" .
+	 "     <div id=\"" . $Type_Message . "\" style=\"margin-top: 20px;\"><img class=\"no-border\" src=\"Pictures/" .
 	 $Icon_Name . ".png\" alt=\"KO\" />\n" .
 	 $Message .
 	 "<br/><br/><a id=\"b_return\" href=\"" . $Script . "\" class=\"button\">" . 
 	 $L_Return . "</a>" .
 	 "</div>\n" .
-//	 "     </div> <!-- fin : dashboard -->\n" .
 	 "    </div> <!-- fin : zoneMilieuComplet -->\n" .
 	 "    <script>\n" .
 	 "document.getElementById( 'b_return' ).focus();" .
@@ -447,13 +435,12 @@ public function page( $Title, $Message, $Language_Zone = 1, $Buttons = 1 ) {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2012-11-12
+* @date 2014-06-23
 *
 * @param[in] $Title Titre du navigateur et du haut de page
 * @param[in] $Message Message à afficher
-* @param[in] $Script Script à exécuter sur le clique du bouton retour
-* @param[in] $Alert Type de message avertissement ou de succès (influence la couleur et l'icône du message)
+* @param[in] $Language_Zone Drapeau pour faire afficher les boutons de sélection de la langue
+* @param[in] $Buttons Drapeau pour faire afficher les boutons de bas de page (déconnexion et changement de mot de passe)
 *
 * @return Retourne une chaîne matérialisant l'affichage de cet écran d'information
 */
@@ -467,8 +454,6 @@ public function page( $Title, $Message, $Language_Zone = 1, $Buttons = 1 ) {
 	 $this->afficherActions( $_SESSION['idn_super_admin'] ) .
 	 "   </div> <!-- fin : zoneTitre -->\n" .
 	 "\n" .
-//	 "   <!-- debut : zoneGauche -->\n" .
-//	 "   <div id=\"zoneGauche\" >&nbsp;</div> <!-- fin : zoneGauche -->\n" .
 	 "\n" .
 	 "   <!-- debut : zoneMilieuComplet -->\n" .
 	 "   <div id=\"zoneMilieuComplet\">\n" .
@@ -492,7 +477,7 @@ public function getTextCode( $Codes, $Language = '' ) {
 * @date 2014-05-14
 *
 * @param[in] $Codes Code(s) à rechercher
-* @param[in] $Language Langue de recherche
+* @param[in] $Language Langue de recherche du code
 *
 * @return Retourne une chaîne matérialisant le texte associé au Code et à la Langue spécifiés
 */

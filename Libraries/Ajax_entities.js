@@ -65,13 +65,7 @@ function putAddEntity(Title,L_Code,L_Label,L_Cancel,L_Create){
     // Met le focus sur le 1er champ du calque.
     $('#iEntityCode').focus();
 
-    $('#iEntityLabel').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iEntityLabel').val() != '' || $('#iEntityCode').val() != '' ) addEntity();
-        }
-    });
-
-    $('#iEntityCode').keyup(function(e){
+    $('#iEntityLabel, #iEntityCode').keyup(function(e){
         if (e.which == 13) {
             if ( $('#iEntityLabel').val() != '' || $('#iEntityCode').val() != '' ) addEntity();
         }
@@ -215,17 +209,7 @@ function modifyEntity( Id, CancelButton, ModifyButton ) {
     document.getElementById('iCode').focus();
     document.getElementById('iCode').selectionStart = Label.length;
 
-    $('#iLabel').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iLabel').val() != '' || $('#iCode').val() != '' ) saveModifyEntity( Id );
-        }
-
-        if (e.which == 27) {
-            endModifyEntity( Id );
-        }
-    });
-
-    $('#iCode').keyup(function(e){
+    $('#iLabel, #iCode').keyup(function(e){
         if (e.which == 13) {
             if ( $('#iLabel').val() != '' || $('#iCode').val() != '' ) saveModifyEntity( Id );
         }

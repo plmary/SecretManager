@@ -11,6 +11,7 @@ class IICA_Entities extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
+* @date 2014-06-23
 */
 	public $LastInsertId;
 
@@ -110,7 +111,6 @@ class IICA_Entities extends IICA_DB_Connector {
 	* @author Pierre-Luc MARY
 	* @date 2013-12-24
 	*
-	* @param[in] $Type Permet d'afficher ou pas les Entités supprimées logiquement.
 	* @param[in] $orderBy Permet de gérer l'ordre d'affichage.
 	*
 	* @return Renvoi une liste d'Entités ou une liste vide.
@@ -406,10 +406,19 @@ class IICA_Entities extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Construit le message détaillé à remonter dans l'Historique.
-	*/
 	public function getMessageForHistory( $ent_id, $Entity = '' ) {
+	/**
+	* Construit le message détaillé à remonter dans l'Historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-06-23
+	*
+	* @param[in] $ent_id Identitifiant de l'Id qui vient d'être traité 
+	* @param[in] $Entity Fournit des informations spécifiques sur une Entité qui vient d'être créée
+	*
+	* @return Renvoi le nombre total d'Entités de stocker en base
+	*/
 		if ( $ent_id == '' ) return '';
 
 		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');

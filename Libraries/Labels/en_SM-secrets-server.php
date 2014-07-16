@@ -33,7 +33,8 @@
 	$L_ERR_SECRET_FILE_CREATION = 'Error on creation Secret file';
 	$L_ERR_TRANSCRYPT = 'Error during database transcrypt';
 	$L_ERR_INVALID_OPERATOR_KEY_BACKUP = 'The Operator Key does not open the File Restore Mother Key';
-	$L_ERR_MASTER_INTEGRITY_ALERT = 'Integrity Alert on the Master File';	
+	$L_ERR_MASTER_INTEGRITY_ALERT = 'Integrity Alert on the Primary File (SecretManager)';
+	$L_ERR_SECRETSERVER_INTEGRITY_ALERT = 'Integrity Alert on the Secondairy File (SecretServer)';
 	
 	$L_MOTHER_KEY_LOADED = 'Mother key loaded';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mother key automatically created';

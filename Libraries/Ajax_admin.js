@@ -46,7 +46,7 @@ $(document).ready( function() {
                 }
             },
             error: function(reponse) {
-                alert('Erreur sur serveur : ' + reponse['responseText']);
+                alert('Erreur sur serveur "Ajax_admin.js" - "R" : ' + reponse['responseText']);
             }
         }); 
     });
@@ -69,7 +69,7 @@ $(document).ready( function() {
                 }
             },
             error: function(reponse) {
-                alert('Erreur sur serveur : ' + reponse['responseText']);
+                alert('Erreur sur serveur "Ajax_admin.js" - "SUX" : ' + reponse['responseText']);
             }
         }); 
     });
@@ -97,7 +97,7 @@ $(document).ready( function() {
                 if ( reponse['Status'] == 'success' || reponse['Status'] == 'error' ) {
                     showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
                 } else {
-                    alert('Erreur sur serveur : ' + reponse);
+                    alert('Erreur sur serveur "Ajax_admin.js" - "SKX" : ' + reponse);
                 }
             },
             error: function(reponse) {
@@ -234,7 +234,7 @@ function createMotherKey(){
                     '</html>\n' );
                 w.document.close();
             } else {
-                alert('Erreur sur serveur : ' + reponse);
+                alert('Erreur sur serveur "Ajax_admin.js" - "CRMKX" : ' + reponse);
             }
         },
         error: function(reponse) {
@@ -349,7 +349,7 @@ function changeMotherKey() {
                     '</html>\n' );
                 w.document.close();
             } else {
-                alert('Erreur sur serveur : ' + reponse);
+                alert('Erreur sur serveur "Ajax_admin.js" - "CMKX" : ' + reponse);
             }
         },
         error: function(reponse) {
@@ -410,7 +410,7 @@ function transcryptMotherKey() {
                 $('#iNew_Operator_Key_1').val('');
                 hideConfirmMessage();
             } else {
-                alert('Erreur sur serveur : ' + reponse);
+                alert('Erreur sur serveur "Ajax_admin.js" - "TMKX" : ' + reponse);
             }
         },
         error: function(reponse) {
@@ -471,7 +471,7 @@ function LoadMotherKey() {
                 $('#iSecretServerStatus').html( Message );
 
             } else {
-                alert('Erreur sur serveur : ' + reponse);
+                alert('Erreur sur serveur "Ajax_admin.js" - "LKX" : ' + reponse);
             }
         },
         error: function(reponse) {
@@ -497,7 +497,7 @@ function shutdownSecretServer() {
                     "&nbsp;</span>\n"
                 );
             } else {
-                alert('Erreur sur serveur : ' + reponse);
+                alert('Erreur sur serveur "Ajax_admin.js" - "SHUTX" : ' + reponse);
             }
         },
         error: function(reponse) {
@@ -521,7 +521,7 @@ function backupSecrets() {
                 $('#i_deleteSecretsDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
                 $('#i_secretsDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
             } else {
-                alert('Erreur sur serveur : ' + reponse);
+                alert('Erreur sur serveur "Ajax_admin.js" - "STOR_SX" : ' + reponse);
             }
         },
         error: function(reponse) {
@@ -545,7 +545,7 @@ function backupTotal() {
                 $('#i_deleteFullDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
                 $('#i_fullDateRestore').prepend( '<option value="'+ reponse['Date1'] +'">'+ reponse['Date'] + '</option>');
             } else {
-                alert('Erreur sur serveur : ' + reponse);
+                alert('Erreur sur serveur "Ajax_admin.js" - "STOR_TX" : ' + reponse);
             }
         },
         error: function(reponse) {
@@ -899,24 +899,7 @@ function deleteBackupTotal( Restore_Date ) {
 }
 
 
-/*
-function confirmLoadSecretsBackup() {
-    var Restore_Date = $('#i_secretsDateRestore option:selected').text();
-    var i_Restore_Date = $('#i_secretsDateRestore').val();
-    
-    notYetImplemented();
-}
-
-
-function confirmLoadTotalBackup() {
-    var Restore_Date = $('#i_fullDateRestore option:selected').text();
-    var i_Restore_Date = $('#i_fullDateRestore').val();
-    
-    notYetImplemented();
-}
-*/
-
-
+// Affiche un boite d'information.
 function putModalMessage( Warning, Message, Cancel ) {
     $('<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
      '<div class="modal-header">' +

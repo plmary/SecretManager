@@ -11,6 +11,7 @@ class MyApplications extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
+* @date 2014-06-26
 */
 	public $LastInsertId;
 
@@ -20,7 +21,6 @@ class MyApplications extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
@@ -37,17 +37,16 @@ class MyApplications extends IICA_DB_Connector {
 	
 	public function set( $app_id, $app_name ) {
 	/**
-	* Créé ou actualise une Entité.
+	* Créé ou actualise une Application.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2012-11-13
 	*
-	* @param[in] $ent_id Identifiant de l'entité à modifier (si précisé)
-	* @param[in] $Code Code de l'entité
-	* @param[in] $Label Libeller de l'entité
+	* @param[in] $app_id Identifiant de l'Application à modifier (si précisé)
+	* @param[in] $app_name Nom de l'Application
 	*
-	* @return Renvoi vrai si l'entité a été créée ou modifiée.
+	* @return Renvoi vrai si l'Application a été créée ou modifiée, sinon lève une exception.
 	*/
 		if ( $app_id == '' ) {
 			if ( ! $Result = $this->prepare( 'INSERT INTO app_applications ' .
@@ -104,7 +103,9 @@ class MyApplications extends IICA_DB_Connector {
 	* @author Pierre-Luc MARY
 	* @date 2013-12-24
 	*
-	* @return Renvoi une liste des Applications ou une liste vide.
+	* @param[in] $orderBy Colonne sur laquelle sera réalisée le tri à l'affichage
+	*
+	* @return Renvoi une liste des Applications ou une liste vide, sinon lève une exception.
 	*/
 		$Request = 'SELECT ' .
 		 'app_id, app_name ' .
@@ -151,7 +152,7 @@ class MyApplications extends IICA_DB_Connector {
 	*
 	* @param[in] $app_id Identifiant de l'application à récupérer
 	*
-	* @return Renvoi l'occurrence d'une Application
+	* @return Renvoi l'occurrence d'une Application, sinon lève une exception
 	*/
 		$Data = false;
 		
@@ -189,11 +190,8 @@ class MyApplications extends IICA_DB_Connector {
 	*
 	* @param[in] $app_id Identifiant de l'Application à supprimer
 	*
-	* @return Renvoi vrai si l'Application a été supprimée
+	* @return Renvoi vrai si l'Application a été supprimée, sinon lève une exception
 	*/
-		/*
-		** Détruit l'entité physiquement.
-		*/
         if ( ! $Result = $this->prepare( 'DELETE ' .
          'FROM app_applications ' .
          'WHERE app_id = :app_id' ) ) {
@@ -220,7 +218,7 @@ class MyApplications extends IICA_DB_Connector {
 	* @author Pierre-Luc MARY
 	* @date 2013-12-24
 	*
-	* @return Renvoi le nombre total d'Applications stockées en base
+	* @return Renvoi le nombre total d'Applications stockées en base, sinon lève une exception
 	*/
 		$Request = 'SELECT ' .
 		 'count(*) AS total ' .
@@ -243,9 +241,18 @@ class MyApplications extends IICA_DB_Connector {
 
 
 	/* -------------------
-	** Construit le message détaillé à remonter dans l'Historique.
+	** 
 	*/
 	public function getMessageForHistory( $app_id, $Application = '' ) {
+	/**
+	* Construit le message détaillé à remonter dans l'Historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-06-24
+	*
+	* @return Renvoi la chaîne pour l'historique, sinon renvoi une chaîne vide
+	*/
 		if ( $app_id == '' ) return '';
 
 		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');

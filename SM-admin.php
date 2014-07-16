@@ -6,8 +6,7 @@
 * PHP version 5.5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.3
-* @date 2013-11-05
+* @date 2014-06-29
 *
 */
 
@@ -38,6 +37,7 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 
 $PageHTML = new HTML();
+
 
 if ( ! $PageHTML->is_connect() ) {
    header( 'Location: ' . URL_BASE . '/SM-login.php' );
@@ -70,6 +70,7 @@ if ( ! $PageHTML->is_administrator() and ! $PageHTML->is_operator() ) {
 
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-profils.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_referentials.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
@@ -180,8 +181,16 @@ if ( ! preg_match("/X$/i", $Action ) ) {
 }
 
 
-// Cette fonction récupère toutes les dates des fichiers de sauvegarde.
 function getDateRestoreFiles() {
+	/**
+	* Cette fonction récupère toutes les dates des fichiers de sauvegarde.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-06-29
+	*
+	* @return Renvoi un tableau contenant les dates des fichiers de sauvegarde, sinon retourne un tableau vide
+	*/
     $t_Secrets = array();
     $t_Full = array();
 
@@ -223,6 +232,8 @@ function getDateRestoreFiles() {
     return array( $Restore_Secrets_Points_Options, $Restore_Full_Points_Options );
 }
 
+
+// Exécute l'action fournit en paramètre.
 switch( $Action ) {
  default:
 	if ( $PageHTML->is_administrator() ) {

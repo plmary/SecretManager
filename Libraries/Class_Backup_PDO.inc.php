@@ -18,7 +18,7 @@ class Backup extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @date 2013-11-25
+	* @date 2014-06-23
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
 	*/
@@ -38,9 +38,12 @@ class Backup extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @date 2013-11-25
+	* @date 2014-06-22
 	*
-	* @return Renvoi la date de sauvegarde quand cela c'est bien passé, sinon "FALSE".
+	* @param[in] $pFile Pointeur du fichier à sauvegarder (déjà ouvert par l'appelant).
+	* @param[in] $Save_Date_1 Date formatée par l'appelant et qui sera utilisée en retour de cette procédure.
+	*
+	* @return Renvoi la date de sauvegarde quand cela c'est bien passé, sinon envoi une exception.
 	*/
 
 		if ( $pFile == '' ) {
@@ -254,13 +257,13 @@ class Backup extends IICA_Parameters {
 
 	public function backup_total() {
 	/**
-	* Sauvegarde total des données de SecretManager.
+	* Sauvegarde total des données de SecretManager (fait appel à la sauvegarde des données).
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-11-25
 	*
-	* @return Renvoi la date de sauvegarde quand cela c'est bien passé, sinon "FALSE".
+	* @return Renvoi la date de sauvegarde quand cela c'est bien passé, sinon envoi une exception.
 	*/
 		$Save_Date = date( 'Y-m-d_H.i.s' );
 		$Save_Date_1 = str_replace( '_', ' ', $Save_Date );
@@ -643,7 +646,10 @@ class Backup extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @date 2013-02-05
+	* @date 2014-06-23
+	*
+	* @param[in] $FileName Nom du fichier à restaurer.
+	* @param[in] $Operator_Key Clé opérateur permettant d'accéder à la clé mère contenu dans le fichier à restaurer.
 	*
 	* @return Renvoi la date du fichier qui vient d'être restauré, sinon lève une exception en cas d'erreur.
 	*/
@@ -681,7 +687,6 @@ class Backup extends IICA_Parameters {
 			$Table_Name = $Tables->item( $tables_i )->getAttribute( 'name' );
 
 			$Query = 'DELETE FROM ' . $Table_Name . ';';
-//			print( $Query . "<br>" );
 
 			if ( ! $Result = $this->prepare( $Query ) ) {
 				$Error = $Result->errorInfo();
@@ -716,7 +721,6 @@ class Backup extends IICA_Parameters {
 				}
 				
 				$Query = 'INSERT INTO ' . $Table_Name . ' (' . $Columns_Name . ') VALUES (' . $Values . ');';
-//				print( $Query . "<br>" );
 
 				if ( ! $Result = $this->prepare( $Query ) ) {
 					$Error = $Result->errorInfo();

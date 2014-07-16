@@ -6,8 +6,7 @@
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.1
-* @date 2013-08-13
+* @date 2014-06-13
 *
 */
 

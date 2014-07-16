@@ -1,14 +1,27 @@
-$(document).keyup(function(e){
-    if(e.which == 27) { // || e.which == 13){
-        $('#addCivility').hide();
-    }
-});
+/**
+* Ce script gère une partie des fonctions Ajax disponible pour le script "SM-users.php.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-06-20
+*/
 
+
+// Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready(function(){
+    // Gère les touches du clavier sur l'ensemble de la page HTML.
+    $(document).keyup(function(e){ // Gère l'utilisation de la touche "Echap".
+        if(e.which == 27) {
+            $('#addCivility').hide();
+        }
+    });
+
+
     // Masque la modale quand on clique un objet de class "close"
      $(".close").on('click', function() {
         $('#addCivility').hide();
     });
+
 
     // Change couleur si vide ou plein des champs obligatoires
     $('input.obligatoire').focusout(function(){
@@ -19,42 +32,28 @@ $(document).ready(function(){
         }
     });
 
-    $('#iEntityLabel').keyup(function(e){
-        if (e.which == 13) {
+
+    // Gère les touches du clavier sur les objets identifiés comme "iEntityLabel" et "iEntityCode".
+    $('#iEntityLabel, #iEntityCode').keyup(function(e){
+        if (e.which == 13) { // Gère le cas de la touche "Enter".
             addEntity();
         }
     });
 
-    $('#iEntityCode').keyup(function(e){
-        if (e.which == 13) {
-            addEntity();
-        }
-    });
-
+    // Gère le click gauche sur l'objet identifié comme "iButtonCreateEntity".
     $('#iButtonCreateEntity').on('click', function(){
         addEntity();
     });
 
-    // ===================
 
-    $('#iCivilityLastName').keyup(function(e){
+    // Gère les touches du clavier sur l'objet identifié comme "iCivilityLastName".
+    $('#iCivilityLastName, #iCivilityFirstName, #iCivilitySex').keyup(function(e){
         if (e.which == 13) {
             addCivility();
         }
     });
 
-    $('#iCivilityFirstName').keyup(function(e){
-        if (e.which == 13) {
-            addCivility();
-        }
-    });
-
-    $('#iCivilitySex').keyup(function(e){
-        if (e.which == 13) {
-            addCivility();
-        }
-    });
-
+    // Gère les touches du clavier sur l'objet identifié comme "iEntityCode".
     $('#iButtonCreateCivility').on('click', function(){
         addCivility();
     });
@@ -62,6 +61,8 @@ $(document).ready(function(){
 });
 
 
+// Remet le mot de passe par défaut à l'utilisateur.
+// Le Mot de passe par défaut est défini dant les préférences.
 function resetPassword( Id ) {
     $.ajax({
         url: 'SM-users.php?action=RST_PWDX',
@@ -78,6 +79,7 @@ function resetPassword( Id ) {
 }
 
 
+// Remet le compteur des tentatives de l'utilisateur à zéro.
 function resetAttempt( Id ) {
     $.ajax({
         url: 'SM-users.php?action=RST_ATTX',
@@ -97,6 +99,8 @@ function resetAttempt( Id ) {
 }
 
 
+// Recalcul la prochaine date d'expiration de l'utilisateur.
+// Le nombre de mois à ajouter à la date du jour est défini dant les préférences.
 function resetExpirationDate( Id ) {
     $.ajax({
         url: 'SM-users.php?action=RST_EXPX',
@@ -117,6 +121,7 @@ function resetExpirationDate( Id ) {
 }
 
 
+// Active ou désactive un utilisateur.
 function enableDisableUser( Id, Status ) {
     $.ajax({
         url: 'SM-users.php?action=RST_DISX',
@@ -125,12 +130,6 @@ function enableDisableUser( Id, Status ) {
         dataType: 'json',
         success: function(reponse) {
             showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
-            
-/*            'Activated' => $Activated,
-            'Disable_Color' => $Disable_Color,
-            'Disable_Msg' => $Disable_Msg,
-            'Disable_Action' => $Disable_Action,
-            'Disable_Status' => $Disable_Status */
             
             var CurrentClass = $("#disabled-user").attr("class");
             $("#disabled-user").removeClass(CurrentClass).addClass(reponse['Disable_Color']).html('&nbsp;'+

@@ -10,8 +10,7 @@ class IICA_Referentials extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.1
-* @date 2012-11-19
+* @date 2014-06-24
 */
 
 	/* ===============================
@@ -24,10 +23,16 @@ class IICA_Referentials extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Lister les Droits.
-	*/
 	public function listRights() {
+	/**
+	* Lister les Droits
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-19
+	*
+	* @return Renvoi un tableau contentant tous les Droits disponibles dans la Base de Données, sinon lève une exception
+	*/
 		$Data = false;
 		
 		$Request = 'SELECT ' .
@@ -54,10 +59,16 @@ class IICA_Referentials extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Lister les Types de Secret.
-	*/
 	public function listSecretTypes() {
+	/**
+	* Lister les Types de Secret.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-19
+	*
+	* @return Renvoi un tableau contenant les Types de Secrets en Base de Données, sinon lève une exception
+	*/
 		$Data = false;
 		
 		$Request = 'SELECT ' .
@@ -84,10 +95,16 @@ class IICA_Referentials extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Lister les Environnements.
-	*/
 	public function listEnvironments() {
+	/**
+	* Lister les Environnements.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-19
+	*
+	* @return Renvoi un tableau contenant les ENvironnements en Base de Données, sinon lève une exception
+	*/
 		$Data = false;
 		
 		$Request = 'SELECT ' .
@@ -114,10 +131,16 @@ class IICA_Referentials extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Lister les Actions dans l'Historique.
-	*/
 	public function listActions() {
+	/**
+	* Lister les Actions dans l'Historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-19
+	*
+	* @return Renvoi un tableau contenant les Actions en Base de Données, sinon lève une exception
+	*/
 		$Data = false;
 		
 		$Request = 'SELECT ' .

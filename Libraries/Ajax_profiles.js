@@ -1,18 +1,31 @@
-$(document).keyup(function(e){
-    if(e.which == 27) { // || e.which == 13){
-        $('#addProfile').hide();
+/**
+* Ce script gère une partie des fonctions Ajax disponible pour le script "SM-users.php.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-06-20
+*/
 
-        endAllModifyProfile();
-        
-        hideConfirmMessage();
-    }
-});
 
+// Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready(function(){
+    // Surveille les touches du clavier utilisées dans toute la page.
+    $(document).keyup(function(e){
+        if(e.which == 27) {
+            $('#addProfile').hide();
+
+            endAllModifyProfile();
+            
+            hideConfirmMessage();
+        }
+    });
+
+
     // Masque la modale quand on clique un objet de class "close"
      $(".close").on('click', function() {
         $('#addProfile').hide();
     });
+
 
     // Change couleur si vide ou plein des champs obligatoires
     $('input.obligatoire').focusout(function(){
@@ -23,17 +36,21 @@ $(document).ready(function(){
         }
     });
 
+
+    // Ajoute un Profil quand l'utilisateur click sur le bouton d'Ajout.
     $('#iButtonCreateProfile').on('click', function(){
         addProfile();
     });
 
+
+    // Supprime un Profil quand l'utilisateur click sur le bouton de "Suppression".
     $('#iButtonDeleteProfile').on('click', function(){
         deleteProfile();
     });
 });
 
 
-// Gestion des créations de Profil à la volée.
+// Affiche la boite de dialogue de création d'un Profil.
 function putAddProfile(){
     $('#addProfile').show('slow');
 
@@ -68,6 +85,7 @@ function putAddProfile(){
 }
 
 
+// Ajoute un Profil (sauvegarde en base et mise à jour de l'écran)
 function addProfile(){
     if ($('#iProfileLabel').val() != '') {
         $.ajax({
@@ -135,14 +153,14 @@ function addProfile(){
                 }
             },
             error: function(reponse) {
-                alert('Erreur sur serveur : ' + reponse['responseText']);
+                alert('Erreur sur serveur "Ajax_profiles.js" - "PRF_AX" : ' + reponse['responseText']);
             }
         });
     }
 }
 
 
-// Gestion des suppressions de Profil à la volée.
+// Supprime le Profil à la volée (mise à jour de la base et suppression de l'occurrence à l'écran.
 function deleteProfile( Id ){
     $.ajax({
         url: 'SM-users.php?action=PRF_DX',
@@ -164,13 +182,13 @@ function deleteProfile( Id ){
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_profiles.js" - "PRF_DX" : ' + reponse['responseText']);
         }
     });
 }
 
 
-// Gestion des modifications "en place".
+// Transforme l'occurrence pour pouvoir modifier un Profil "en place".
 function modifyProfile( Id ) {
     endAllModifyProfile();
     
@@ -186,7 +204,7 @@ function modifyProfile( Id ) {
             ModifyButton = reponse['Modify'];
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_profiles.js" - "L_MODIF_PROFILE_X" : ' + reponse['responseText']);
         }
     });
    
@@ -214,6 +232,7 @@ function modifyProfile( Id ) {
 }
 
 
+// Sauvegarde les modifications réalisées sur un Profil.
 function saveModifyProfile( Id ) {
     var Label = $('#iLabel').val();
 
@@ -235,20 +254,20 @@ function saveModifyProfile( Id ) {
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_profiles.js" - "PRF_MX" : ' + reponse['responseText']);
         }
     });
 }
 
 
-// Annule la modification en cours.
+// Annule la modification d'un Profil en cours.
 function endModifyProfile(Id) {
     $('#MODI_'+Id).remove();
     $('#profil_'+Id).show();
 }
 
 
-// Annule toutes les modifications en cours.
+// Annule toutes les modifications sur les Profils en cours.
 function endAllModifyProfile() {
     $('tr[id^="MODI_"]').each( function(index) {
         var T_ID = $(this).attr( 'id' );
@@ -258,11 +277,13 @@ function endAllModifyProfile() {
 }
 
 
+// Supprime la fenêtre de confirmation.
 function hideConfirmMessage() {
     $('#confirm_message').remove();
 }
 
 
+// Affiche une fenêtre de confirmation avant suppression d'un Profil.
 function confirmDeleteProfile( Id ) {
     var Message, Warning, Cancel, Confirm;
 
@@ -278,7 +299,7 @@ function confirmDeleteProfile( Id ) {
             Confirm = reponse['Confirm'];
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_profiles.js" - "L_DELETE_PROFILE_X" : ' + reponse['responseText']);
         }
     });
 

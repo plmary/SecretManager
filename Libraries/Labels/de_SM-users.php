@@ -13,6 +13,7 @@
 	$L_Title = 'Benutzer verwalten';
 	$L_List_Users = 'Benutzer Liste';
 	$L_List_Entities = 'Instanzen Liste';
+	$L_List_Profiles = 'Profiles list';
 	$L_List_Civilities = 'Civilities Liste';
 	$L_First_Name = 'Vorname' ;
 	$L_Last_Name = 'Nachname' ;

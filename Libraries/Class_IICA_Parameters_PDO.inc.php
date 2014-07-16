@@ -6,7 +6,7 @@
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
+* @date 2014-06-23
 *
 * Contrat d'interface :
 *  boolean __construct( $_Host, $_Port, $_Driver, $_Base, $_User, $_Password )
@@ -27,7 +27,6 @@ class IICA_Parameters extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
@@ -48,7 +47,6 @@ class IICA_Parameters extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Name Nom du paramètre recherché
@@ -94,7 +92,6 @@ class IICA_Parameters extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Name Nom du paramètre à créer ou mettre à jour

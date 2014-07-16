@@ -587,7 +587,8 @@ if ( $Authentication->is_administrator() ) {
 		 "        <td class=\"pair\"  colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"D\" name=\"authentication_type\" " .
 		 $Password_Selected . " id=\"id_pwd\" onClick=\"activeFields('D');\" />&nbsp;" .
-		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
+		 "<a class=\"button\" href=\"javascript:prepareTestConnection('" . addslashes($L_Testing_Connection) . "', '" . addslashes($L_Use_Password) . "', '" .
+		 addslashes($L_Username) . "', '" . addslashes($L_Password) . "', '" . addslashes($L_Connection) . "', '" . $L_Cancel . "', 'D');\">" . $L_Testing_Connection . "</a>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
@@ -674,7 +675,9 @@ if ( $Authentication->is_administrator() ) {
 		 "        <td class=\"pair\" colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"R\" name=\"authentication_type\" " .
 		 $Radius_Selected . " id=\"id_rds\" onClick=\"activeFields('R');\" />&nbsp;" .
-		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
+		 "<a class=\"button\" href=\"javascript:prepareTestConnection('" . addslashes($L_Testing_Connection) . "', '" . addslashes($L_Use_Radius) . "', '" .
+		 addslashes($L_Username) . "', '" . addslashes($L_Password) . "', '" . addslashes($L_Connection) . "', '" . $L_Cancel . "', 'R');\">" .
+		 addslashes($L_Testing_Connection) . "</a>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
@@ -715,7 +718,8 @@ if ( $Authentication->is_administrator() ) {
 		 "        <td class=\"pair\" colspan=\"2\">\n" .
 		 "         <input type=\"radio\" value=\"L\" name=\"authentication_type\" " .
 		 $LDAP_Selected . " id=\"id_rds\" onClick=\"activeFields('L');\" />&nbsp;" .
-		 "<a class=\"button\" href=\"#\">" . $L_Testing_Connection . "</a>\n" .
+		 "<a class=\"button\" href=\"javascript:prepareTestConnection('" . addslashes($L_Testing_Connection) . "', '" . addslashes($L_Use_LDAP) . "', '" .
+		 addslashes($L_Username) . "', '" . addslashes($L_Password) . "', '" . addslashes($L_Connection) . "', '" . $L_Cancel . "', 'L');\">" . $L_Testing_Connection . "</a>\n" .
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr class=\"pair\">\n" .
@@ -1313,8 +1317,6 @@ if ( $Authentication->is_administrator() ) {
         
         echo json_encode( $Ajax_Result );
         exit();
-        
-		break;
 
 
 	 case 'SCR':
@@ -1411,7 +1413,7 @@ if ( $Authentication->is_administrator() ) {
 			$PageHTML->setParameter( 'secrets_complexity', $Secrets_Complexity );
 			$PageHTML->setParameter( 'secrets_size', $Secrets_Size );
 			$PageHTML->setParameter( 'secrets_lifetime', $Secrets_Lifetime );
-		} catch( PDOException $e ) {
+		} catch( Exception $e ) {
 			print( $PageHTML->returnPage( $L_Title, $L_ERR_MAJ_Alert, $Script .
 			 "?action=SCR" ) );
 			exit();
@@ -1434,6 +1436,54 @@ if ( $Authentication->is_administrator() ) {
 			"<script>document.fMessage.submit();</script>" );
 
 		break;
+
+
+	 case 'AJAX_CTRL_AUTH_X':
+		$Result = '';
+		$Status = 'success';
+		$ConnectionTest = TRUE;
+
+		// Test des variables reçues.
+		if ( ($Login = $Security->valueControl( $_POST[ 'Login' ], 'ASCII' )) == -1 ) {
+			if ( $Result != '' ) $Result .= ', ';
+			$Result .= $L_Invalid_Value . " (Login)";
+			$Status = 'error';
+		}
+
+		if ( ($Authenticator = $Security->valueControl( $_POST[ 'Authenticator' ], 'ASCII' )) == -1 ) {
+			if ( $Result != '' ) $Result .= ', ';
+			$Result .= $L_Invalid_Value . " (Authenticator)";
+			$Status = 'error';
+		}
+
+		if ( ($ConnectionType = $Security->valueControl( $_POST[ 'ConnectionType' ], 'ASCII' )) == -1 ) {
+			if ( $Result != '' ) $Result .= ', ';
+			$Result .= $L_Invalid_Value . " (ConnectionType)";
+			$Status = 'error';
+		}
+
+		if ( $Status == 'success' ) {
+			$Result = $L_Success;
+
+			// Contrôle l'ensemble de l'authentification avec les informations reçues.
+			try {
+				$Authentication->authentication( $Login, $Authenticator, $ConnectionType, '', $ConnectionTest );
+			} catch( Exception $e ) {
+				if ( $Result != '' ) $Result .= ', ';
+				$Result = $e->getMessage();
+				$Status = 'error';
+			}
+		}
+
+			
+        $Ajax_Result = array(
+            'Status' => $Status,
+            'Message' => $Result
+        );
+        
+        echo json_encode( $Ajax_Result );
+
+        exit();
 	}
 } else {
 	print( "<h1>" . $L_No_Authorize . "</h1>" );

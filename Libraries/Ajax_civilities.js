@@ -57,26 +57,27 @@ function putAddCivility(Title,L_First_Name,L_Last_Name,L_Sex,L_Man,L_Woman,L_Can
      '</div>' +
      '</div>\n' ).prependTo( 'body' );
 
+
+    // Gère le clavier sur les champs de saisie.
+    $('#iFirstName, #iLastName, #iSex').keyup(function(e){
+        if (e.which == 13) { // Si la touche "Enter" est utilisé.
+            var Field = '';
+            if ( $('#iFirstName').val() == '' ) Field = 'FirstName';
+            if ( $('#iLastName').val() == '' ) Field = 'iLastName';
+            if ( $('#iSex').val() == '' ) Field = 'iSex';
+
+            if ( Field != '' ) {
+                $('#' + Field).focus();
+                return;
+            }
+
+            addCivility();
+        }
+    });
+
+
     // Met le focus sur le 1er champ du calque.
     $('#iFirstName').focus();
-
-    $('#iFirstName').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iFirstName').val() != '' || $('#iLastName').val() != '' ) addCivility();
-        }
-    });
-
-    $('#iLastName').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iFirstName').val() != '' || $('#iLastName').val() != '' ) addCivility();
-        }
-    });
-
-    $('#iSex').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iFirstName').val() != '' || $('#iLastName').val() != '' ) addCivility();
-        }
-    });
 }
 
 
@@ -240,27 +241,7 @@ function modifyCivility( Id, L_Man, L_Woman, CancelButton, ModifyButton ) {
     document.getElementById('iFirstName').focus();
     document.getElementById('iFirstName').selectionStart = FirstName.length;
 
-    $('#iFirstName').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iFirstName').val() != '' || $('#iLastName').val() != '' ) saveModifyCivility( Id, L_Man, L_Woman );
-        }
-
-        if (e.which == 27) {
-            endModifyCivility( Id );
-        }
-    });
-
-    $('#iLastName').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iFirstName').val() != '' || $('#iLastName').val() != '' ) saveModifyCivility( Id, L_Man, L_Woman );
-        }
-
-        if (e.which == 27) {
-            endModifyCivility( Id );
-        }
-    });
-
-    $('#iSex').keyup(function(e){
+    $('#iFirstName, #iLastName, #iSex').keyup(function(e){
         if (e.which == 13) {
             if ( $('#iFirstName').val() != '' || $('#iLastName').val() != '' ) saveModifyCivility( Id, L_Man, L_Woman );
         }

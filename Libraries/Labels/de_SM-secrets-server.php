@@ -31,9 +31,10 @@
 	$L_ERR_SECRET_FILE_OPEN = 'Secretfile konnte nicht geöffnet werden';
 	$L_ERR_SECRET_FILE_READ = 'Secretfile konnte nicht geschrieben werden';
 	$L_ERR_SECRET_FILE_CREATION = 'Fehler bei der Erstellunge des Secretfile';
-	$L_ERR_TRANSCRYPT = 'Error during database transcrypt';
-	$L_ERR_INVALID_OPERATOR_KEY_BACKUP = 'The Operator Key does not open the File Restore Mother Key';
-	$L_ERR_MASTER_INTEGRITY_ALERT = 'Integrity Alert on the Master File';	
+	$L_ERR_TRANSCRYPT = 'Fehler bei der Datenbank Transcrypt';
+	$L_ERR_INVALID_OPERATOR_KEY_BACKUP = 'Die Operatorkey öffnet nicht die Datei wiederherstellen MutterKey';
+	$L_ERR_MASTER_INTEGRITY_ALERT = 'Integrität Alarm auf dem Primäre Datei (SecretManager)';
+	$L_ERR_SECRETSERVER_INTEGRITY_ALERT = 'Integrität Alarm auf der Secondairy Datei (SecretServer)';
 	
 	$L_MOTHER_KEY_LOADED = 'Mutterkey geladen';
 	$L_MOTHER_KEY_AUTOMATICALLY_CREATED = 'Mutterkey automatisch erstellt';

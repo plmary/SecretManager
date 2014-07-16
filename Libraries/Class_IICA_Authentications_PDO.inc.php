@@ -10,7 +10,7 @@ class IICA_Authentications extends IICA_Parameters {
 *
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @date 2012-11-07
+* @date 2014-06-23
 *
 */
 
@@ -32,18 +32,19 @@ class IICA_Authentications extends IICA_Parameters {
 
 
 	public function authentication( $Login, $Authenticator, $Type = 'database',
-	 $Salt = '', $_Port = '' ) {
+	 $Salt = '', $ConnectionTest = FALSE ) {
 	/**
 	* Contrôle les éléments d'authentification
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @date 2013-04-07
+	* @date 2014-06-23
 	*
 	* @param[in] $Login Nom de connexion de l'utilisateur
 	* @param[in] $Authenticator Authentifiant de l'utilisageur.
 	* @param[in] $Type Type d'authentification (par défaut 'database', l'autre valeur possible est radius)
 	* @param[in] $Salt Grain de sel à utiliser pour calculer le hash du mot de passe
+	* @param[in] $ConnectionTest Drapeau pour limiter cette fonction à un simple test ou non (un simple test ne met pas à jour la session utilisateur)
 	*
 	* @param[out] $_SESSION['idn_id'] Identifiant de l'utilisateur connecté
 	* @param[out] $_SESSION['ent_id'] Identifiant de l'entité d'appartenance de l'utilisateur
@@ -54,12 +55,12 @@ class IICA_Authentications extends IICA_Parameters {
 	* @param[out] $_SESSION['idn_updated_authentication'] Date de mise à jour du mot de passe
 	* @param[out] $_SESSION['idn_last_connection'] Date de dernière connexion
 	* @param[out] $_SESSION['idn_super_admin'] Flag sur le droit Super Administrateur
+	* @param[out] $_SESSION['idn_operator'] Flag sur le droit Opérateur
 	* @param[out] $_SESSION['cvl_last_name'] Nom usuel de l'utilisateur
 	* @param[out] $_SESSION['cvl_first_name'] Prénom de l'utilisateur
 	* @param[out] $_SESSION['cvl_sex'] Sexe de l'utilisateur
 	* @param[out] $_SESSION['ent_code'] Code de l'entité d'appartenance de l'utilisateur
 	* @param[out] $_SESSION['ent_label'] Libellé de l'entité d'appartenance de l'utilisateur
-	* @param[out] $_SESSION['Expired'] Temps d'expiration
 	* @param[out] $_SESSION['user_ip'] IP de l'utilisateur (client)
 	* @exception Exception Exception standard. Le message retourné étant applicatif dans la majorité des cas
 	*
@@ -134,6 +135,7 @@ class IICA_Authentications extends IICA_Parameters {
 		switch( $Type ) {
 		 default:
 		 case 'database':
+		 case 'D':
 			$Authenticator = sha1( $Authenticator . $Occurrence->idn_salt );
 	  
 			if ( $Authenticator != $Occurrence->idn_authenticator ) {
@@ -143,6 +145,7 @@ class IICA_Authentications extends IICA_Parameters {
 			break;
 		
 		 case 'radius':
+		 case 'R':
 			include( DIR_RADIUS . '/radius.class.php' );
 			include( DIR_LIBRARIES . '/Config_Radius.inc.php' );
 
@@ -164,13 +167,14 @@ class IICA_Authentications extends IICA_Parameters {
 			$radius = new Radius( $_Radius_Server, $_Radius_Secret_Common,
 			 $Radius_Suffix, $UPD_Timeout, $authentication_port, $accounting_port );
 
-			if ( ! $radius->AccessRequest( $Login, $Authenticator ) ) {
+			if ( ! @$radius->AccessRequest( $Login, $Authenticator ) ) {
 				throw new Exception( $L_Err_Auth, -1 );
 			}
 			
 			break;
 		
 		 case 'ldap':
+		 case 'L':
 			include( DIR_LIBRARIES . '/Config_LDAP.inc.php' );
 			
 			$LDAP_RDN = $_LDAP_RDN_Prefix . '=' . $Login . ',' . $_LDAP_Organization;
@@ -197,6 +201,14 @@ class IICA_Authentications extends IICA_Parameters {
 			}
 
 			break;
+		}
+
+
+		/* ---------------------------------------------
+		** Vérifie s'il faut juste réaliser une authentification de test.
+		*/		
+		if ( $ConnectionTest == TRUE ) {
+			return TRUE;
 		}
 
 
@@ -342,7 +354,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Retourne vrai si l'utilisateur est un administrateur, sinon retourne faux
@@ -361,8 +372,7 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
-	* @date 2012-11-07
+	* @date 2014-06-23
 	*
 	* @return Retourne vrai si l'utilisateur est un operateur, sinon retourne faux
 	*/
@@ -378,14 +388,14 @@ class IICA_Authentications extends IICA_Parameters {
 
 	public function resetPassword( $idn_id ) {
 	/** -----------------------------
-	* Ecrase le mot de passe de l'utilisateur par celui par défaut.
+	* Ecrase le mot de passe de l'utilisateur par celui par le mot de passe par défaut.
+	* Le mot de passe par défaut est celui paramétré dans les préférences de SecretManager.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $idn_id Identifiant de l'utilisateur
+	* @param[in] $idn_id Identifiant de l'utilisateur pour lequel on remettre le mot de passe par défaut
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
@@ -456,7 +466,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $idn_id Identifiant de l'utilisateur
@@ -541,14 +550,13 @@ class IICA_Authentications extends IICA_Parameters {
 
 	public function resetAttempt( $idn_id ) {
 	/** -----------------------------
-	* Remet à zéro le nombre de tentative de connexion.
+	* Remet à zéro le nombre de tentative de connexion d'un utilisateur.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $idn_id Identifiant de l'utilisateur
+	* @param[in] $idn_id Identifiant de l'utilisateur pour lequel on va remettre à zero le nombre de tentative de connexion
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
@@ -584,14 +592,14 @@ class IICA_Authentications extends IICA_Parameters {
 
 	public function resetExpirationDate( $idn_id ) {
 	/** -----------------------------
-	* Réactualise la date d'expiration de l'utilisateur.
+	* Récalcule la date d'expiration de l'utilisateur.
+	* Le calcul est basé sur la date du jour à laquelle on rajoute le nombre de mois définit dans les préférences du SecretManager.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $idn_id Identifiant de l'utilisateur
+	* @param[in] $idn_id Identifiant de l'utilisateur pour lequel on recalcule la date d'expiration.
 	*
 	* @return Retourne la date remise à jour en cas de succès, sinon lève une exception en cas d'erreur
 	*/
@@ -641,10 +649,9 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
-	* @param[in] $idn_id Identifiant de l'utilisateur
+	* @param[in] $idn_id Identifiant de l'utilisateur à traiter
 	* @param[in] $Status Statut d'activation de l'utilisateur (0 = active, 1 = désactive)
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
@@ -692,7 +699,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $idn_id Identifiant de l'utilisateur
@@ -745,7 +751,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Retourne vrai si la session n'a pas expirée, sinon retourne faux.
@@ -766,7 +771,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Retourne vrai en cas de succès, sinon retourne faux
@@ -821,7 +825,6 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $Login Nom de l'utilisateur à traiter

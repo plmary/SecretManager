@@ -12,6 +12,7 @@ class IICA_Profiles extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
+* @date 2014-06-24
 */
 	public $LastInsertId;
 

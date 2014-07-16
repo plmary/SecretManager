@@ -10,9 +10,12 @@
 */
 
 	$L_Subtitle = "Password-sharing Tool ";
+	
 	$L_Langue_en = "English";
 	$L_Langue_fr = "French";
 	$L_Langue_de = "German";
+	$L_Langue_es = "Spanish";
+
 	$L_No_Authorize = "You are not authorized to view this page";
 	$L_Default = 'Default';
 	$L_Actions = "Actions";

@@ -10,7 +10,7 @@ class IICA_DB_Connector extends PDO {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
+* @date 2014-06-24
 */
 
 	public function __construct() {

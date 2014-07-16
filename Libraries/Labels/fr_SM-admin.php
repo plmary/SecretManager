@@ -2,7 +2,7 @@
 	$L_Title = 'Administration';
 
 	$L_Total_Users_Base = 'Nombre total d\'utilisateurs en base';
-	$L_Total_Users_Disabled = 'Utilisateurs désativés';
+	$L_Total_Users_Disabled = 'Utilisateurs désactivés';
 	$L_Total_Users_Expired = 'Utilisateurs expirés';
 	$L_Total_Users_Attempted = 'Utilisateurs ayant dépassé le nombre d\'essais';
 	$L_Total_Users_Super_Admin = 'Utilisateurs super admin';

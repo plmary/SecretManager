@@ -1,5 +1,15 @@
+/**
+* Ce script gère une partie des fonctions Ajax disponible pour le script "SM-users.php.
+*
+* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+* @author Pierre-Luc MARY
+* @date 2014-06-20
+*/
+
+
+// Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready(function(){
-    // Masque les "modales", si l'utilisateur utilise les touches "Return" ou "Escape".
+    // Masque les "modales", si l'utilisateur utilise les touches Echap".
     $(document).keyup(function(e){
         if(e.which == 27){
             hideModal();
@@ -25,6 +35,7 @@ $(document).ready(function(){
 });
 
 
+// Cache la modale et remet à blanc les champs de saisie.
 function hideModal() {
     // Remet à zéro les champs du calque
     $('#iGroupLabel').attr('data-id','');    
@@ -55,7 +66,7 @@ function viewPassword( scr_id ){
                 }
             },
             error: function(reponse) {
-                alert('Erreur sur serveur : ' + reponse['responseText']);
+                alert('Erreur sur serveur "Ajax_secrets.js" - "CTRL_SRV_X" : ' + reponse['responseText']);
             }
         });
 
@@ -74,7 +85,6 @@ function viewPassword( scr_id ){
                 if ( password == null ) {
                     password = '('+reponse['l_invalid_mother_key']+')';
                     var couleur_fond = '';
-                    //Message += resultat['responseText'];
                 } else {
                     var couleur_fond = 'bg-orange ';                    
                 }
@@ -120,14 +130,13 @@ function viewPassword( scr_id ){
 
             },
             error: function(reponse) {
-                alert('Erreur serveur : ' + reponse['responseText']);
+                alert('Erreur serveur "Ajax_secrets.js" - "SCR_V" : ' + reponse['responseText']);
             }
         });
     }
 }
 
 
-// ============================================
 // Modification des Groupes de secrets en ligne.
 function editFields(Id) {
     hideAllEditFields();
@@ -147,7 +156,7 @@ function editFields(Id) {
             ModifyButton = reponse['Modify'];
         },
         error: function(reponse) {
-            alert('Erreur serveur : ' + reponse['responseText']);
+            alert('Erreur serveur "Ajax_secrets.js" - "L_EDIT_FIELDS_X" : ' + reponse['responseText']);
         }
     });
 
@@ -185,11 +194,14 @@ function editFields(Id) {
 }
 
 
+// Annule une modification en cours.
 function hideEditFields( Id ) {
     $('#MOD_'+Id).remove();
     $('#sgr_id-'+Id).show();
 }
 
+
+// Annule toutes les modifications en cours.
 function hideAllEditFields() {
     $('tr[data-line-open="1"]').each( function(index) {
         var L_Id = $(this).attr("id");
@@ -199,7 +211,7 @@ function hideAllEditFields() {
 }
 
 
-// Traite l'affichage d'un secret.
+// Sauvegarde les modificiations d'un Secret.
 function saveEditFields( Id ){
     var Label = $('#iGroupLabel').val();
     var Alert = $('#iGroupAlert').is(':checked');
@@ -239,15 +251,14 @@ function saveEditFields( Id ){
 
             },
             error: function(reponse) {
-                alert('Erreur serveur : ' + reponse['responseText']);
+                alert('Erreur serveur "Ajax_secrets.js" - "MX" : ' + reponse['responseText']);
             }
         });
     }
 }
 
 
-// ============================================
-// Gestion des créations de Profil à la volée et dans une "modale".
+// Affiche une boîte de dialogue pour créer un nouveau Groupe de Secrets.
 function putAddGroup() {
     var Title, Label, Alert, Cancel, ButtonName;
     $.ajax({
@@ -262,6 +273,9 @@ function putAddGroup() {
             Alert = reponse['Alert'];
             Cancel = reponse['Cancel'];
             ButtonName = reponse['ButtonName'];
+        },
+        error: function(reponse) {
+            alert('Erreur serveur "Ajax_secrets.js" - "L_ADD_GROUP_X" : ' + reponse['responseText']);
         }
     });
 
@@ -291,13 +305,7 @@ function putAddGroup() {
     // Met le focus sur le 1er champ du calque.
     $('#iGroupLabel').focus();
 
-    $('#iGroupLabel').keyup(function(e){
-        if (e.which == 13) {
-            if ( $('#iGroupLabel').val() != '' ) addGroup();
-        }
-    });
-
-    $('#iGroupAlert').keyup(function(e){
+    $('#iGroupLabel, #iGroupAlert').keyup(function(e){
         if (e.which == 13) {
             if ( $('#iGroupLabel').val() != '' ) addGroup();
         }
@@ -305,11 +313,13 @@ function putAddGroup() {
 }
 
 
+// Supprime la boîte de dialogue affichée.
 function hideConfirmMessage() {
     $('#confirm_message').remove();
 }
 
 
+// Crée un nouveau Groupe de Secrets.
 function addGroup(){
     // Gère le cas d'une création d'un Groupe de Secret.
     if ( $('#iGroupLabel').val() != '' ) {
@@ -322,6 +332,9 @@ function addGroup(){
             dataType: 'json',
             success: function(reponse) {
                 Rights = reponse['liste_rights'];
+            },
+            error: function(reponse) {
+                alert('Erreur serveur "Ajax_secrets.js" - "L_RIGHTS_X" : ' + reponse['responseText']);
             }
         });
 
@@ -401,13 +414,14 @@ function addGroup(){
                 showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
             },
             error: function(reponse) {
-                alert('Erreur sur serveur : ' + reponse['responseText']);
+                alert('Erreur sur serveur "Ajax_secrets.js" - "ADDX" : ' + reponse['responseText']);
             }
         });
     }
 }
 
 
+// Affiche une boîte de dialogue pour supprimer un Groupe de Secrets.
 function confirmDeleteGroup( Id ) {
     var Label = $('#label-'+Id).text();
     
@@ -425,7 +439,7 @@ function confirmDeleteGroup( Id ) {
             Confirm = reponse['Confirm'];
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_secrets.js" - "L_DELETE_GROUP_X" : ' + reponse['responseText']);
         }
     });
     
@@ -451,6 +465,7 @@ function confirmDeleteGroup( Id ) {
 }
 
 
+// Supprime un Groupe de Secrets.
 function deleteGroup( Id ) {
     $.ajax({
         url: 'SM-secrets.php?action=DX',
@@ -470,13 +485,15 @@ function deleteGroup( Id ) {
             var Total = $('#total').text();
             Total = Number(Total) - 1;
             $('#total').text( Total );
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "DX" : ' + reponse['responseText']);
         }
     });
 }
 
 
-// ============================================
-// Gestion des créations de Profil à la volée et dans une "modale".
+// Affiche une boîte de dialogue pour créer un nouveau Secret.
 function getCreateSecret( sgr_id ){
     var S_Status = 1;
 
@@ -492,7 +509,7 @@ function getCreateSecret( sgr_id ){
             }
         },
         error: function(reponse) {
-            alert('Erreur sur serveur : ' + reponse['responseText']);
+            alert('Erreur sur serveur "Ajax_secrets.js" - "CTRL_SRV_X" : ' + reponse['responseText']);
         }
     });
 
@@ -550,6 +567,9 @@ function getCreateSecret( sgr_id ){
             Secrets_Complexity = reponse['Secrets_Complexity'];
             Secrets_Size = reponse['Secrets_Size'];
             Secrets_Lifetime = reponse['Secrets_Lifetime'];
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "LABELS_X" : ' + reponse['responseText']);
         }
     });
 
@@ -560,6 +580,9 @@ function getCreateSecret( sgr_id ){
         type: 'POST',
         success: function(reponse) {
             List_Environments = reponse;
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "LIST_ENV_X" : ' + reponse['responseText']);
         }
     });
 
@@ -571,6 +594,9 @@ function getCreateSecret( sgr_id ){
         dataType: 'json',
         success: function(reponse) {
             List_Applications = reponse['applications'];
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "AJAX_L_APP_X" : ' + reponse['responseText']);
         }
     });
 
@@ -584,6 +610,9 @@ function getCreateSecret( sgr_id ){
         type: 'POST',
         success: function(reponse) {
             List_Groups = reponse;
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "LIST_GRP_X" : ' + reponse['responseText']);
         }
     });
 
@@ -594,6 +623,9 @@ function getCreateSecret( sgr_id ){
         type: 'POST',
         success: function(reponse) {
             List_Types = reponse;
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "LIST_TYP_X" : ' + reponse['responseText']);
         }
     });
 
@@ -777,21 +809,12 @@ function getCreateSecret( sgr_id ){
     $('#i_sgr_id, #i_stp_id, #i_env_id, #i_Application, #i_Host, #i_User, #i_Password, '+
         '#i_Expiration_Date, #i_Comment, #i_Alert').keyup(function(e){
         if (e.which == 13) {
-            if ( //$('#i_sgr_id').val() != '-'
-             //&& 
-             $('#i_stp_id').val() != '-'
-//             && $('#i_env_id').val() != '-'
-//             && $('#i_Application').val() != ''
-//             && $('#i_Host').val() != ''
+            if ( $('#i_stp_id').val() != '-'
              && $('#i_User').val() != ''
              && $('#i_Password').val() != '' ) {
                 CreateSecret();
             } else {
-//                if ( $('#i_sgr_id').val() == '-' ) $('#i_sgr_id').focus();
                 if ( $('#i_stp_id').val() == '-' ) $('#i_stp_id').focus();
-//                if ( $('#i_env_id').val() == '-' ) $('#i_env_id').focus();
-//                if ( $('#i_Application').val() == '' ) $('#i_Application').focus();
-//                if ( $('#i_Host').val() == '' ) $('#i_Host').focus();
                 if ( $('#i_User').val() == '' ) $('#i_User').focus();
                 if ( $('#i_Password').val() == '' ) $('#i_Password').focus();
 
@@ -802,8 +825,7 @@ function getCreateSecret( sgr_id ){
 }
 
 
-// ============================================
-// Gestion des créations de Profil à la volée et dans une "modale".
+// Crée le nouveau Secret.
 function CreateSecret( sgr_id ){
     var Personal = $('#i_personal').is(':checked');
 
@@ -864,11 +886,11 @@ function CreateSecret( sgr_id ){
     if ( Alert == true ) {
         Alert = 1;
         Img_Alert = '<img class="no-border" alt="Oui" title="Oui" src="' +
-            Parameters["URL_PICTURES"] + '/bouton_coche.gif">';
+        Parameters["URL_PICTURES"] + '/bouton_coche.gif">';
     } else {
         Alert = 0;
         Img_Alert = '<img class="no-border" alt="Non" title="Non" src="' + 
-            Parameters["URL_PICTURES"] + '/bouton_non_coche.gif">';
+        Parameters["URL_PICTURES"] + '/bouton_non_coche.gif">';
     }
 
     $.ajax({
@@ -958,6 +980,9 @@ function CreateSecret( sgr_id ){
             }
                     
             $('#total').text( Total );
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "SCR_AX" : ' + reponse['responseText']);
         }
     });
 }

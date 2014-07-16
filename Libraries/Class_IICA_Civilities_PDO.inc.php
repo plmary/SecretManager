@@ -12,7 +12,7 @@ class IICA_Civilities extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @date 2012-11-07
+* @date 2014-06-23
 */
 
    public $LastInsertID;

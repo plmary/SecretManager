@@ -16,8 +16,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.1
-* @date 2012-11-19
+* @date 2014-06-24
 */
     public $LastInsertId;
 
@@ -34,12 +33,31 @@ class IICA_Secrets extends IICA_DB_Connector {
 	/* ===============================================================================
 	** Gestion des Secrets
 	*/
-	
-	/* -----------------------------
-	** Crée ou modifie un Secret.
-	*/
+
 	public function set( $scr_id, $sgr_id, $stp_id, $scr_host, $scr_user, $scr_password,
 	 $scr_comment, $scr_alert, $env_id, $app_id, $scr_expiration_date = NULL, $idn_id = NULL ) {
+	/**
+	* Crée ou modifie un Secret.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $scr_id Identifiant du Secret à modifier (quand précisé)
+	* @param[in] $sgr_id Identifiant du Groupe de Secrets auquel le Secret peut être associé
+	* @param[in] $stp_id Identifiant du Type de Secrets constituant le Secret
+	* @param[in] $scr_host Serveur constituant le Secret
+	* @param[in] $scr_user Utilisateur constituant le Secret
+	* @param[in] $scr_password Mot de passe constituant le Secret
+	* @param[in] $scr_comment Commentaire donnant des informations sur le Secret
+	* @param[in] $scr_alert Drapeau indiquant si ce Secret doit explicitement être supervisé en traçabilité
+	* @param[in] $env_id Environnement auquel peut être rattaché le Secret
+	* @param[in] $app_id Application à laquelle peut être rattaché le Secret
+	* @param[in] $scr_expiration_date Date d'expiration calculée par défaut pour le Secret (Date du jour  + Nombre de mois définit dans les préférences)
+	* @param[in] $idn_id Identifiant de l'identité auquel est rattaché le Secret (si précisé et dans ce cas nous parlons de Secret Personnel)
+	*
+	* @return Renvoi vrai si le Secret a été mis à jour ou créé, sinon lève une exception
+	*/
 		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
 		include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
@@ -203,20 +221,26 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 	
-	/* -----------------------------
-	** Déchiffre le Secret avec l'ancienne clé mère et rechiffre le Secret avec la nouvelle clé mère.
-	*/
 	public function transcrypt( $old_Mother_Key, $new_Mother_Key ) {
+	/**
+	* Déchiffre le Secret avec l'ancienne clé mère et rechiffre le Secret avec la nouvelle clé mère (opération de transchiffrement).
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $old_Mother_Key Ancienne clé Mère
+	* @param[in] $new_Mother_Key Nouvelle clé Mère
+	*
+	* @return Renvoi vrai si le Profil a été créé ou mis à jour, sinon lève une exception
+	*/
 		include_once( DIR_LIBRARIES . '/Class_Security.inc.php' );
-		//include_once( DIR_LIBRARIES . '/Class_IICA_Parameters_PDO.inc.php' );
 
 		include_once( DIR_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
 
 		if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'en';
 
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
-
-		//include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
 		
 
 		$Security = new Security();
@@ -284,12 +308,29 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Lister les Secrets.
-	*/
 	public function listSecrets( $sgr_id = '', $idn_id = '', $stp_id = '', $env_id = '',
 	 $app_id = '', $scr_host = '', $scr_user = '', $scr_comment = '',
 	 $Administrator = false, $orderBy = '' ) {
+	/**
+	* Lister les Secrets (ne fournit que les informations générales des Secrets).
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $sgr_id Id. du Groupe de Secret précisé comme critère de recherche pour les Secrets
+	* @param[in] $idn_id Id. de l'Identité précisé comme critère de recherche pour les Secrets
+	* @param[in] $stp_id Id. du Type de Secret précisé comme critère de recherche pour les Secrets
+	* @param[in] $env_id Id. de l'Environnement de Secret précisé comme critère de recherche pour les Secrets
+	* @param[in] $app_id Id. de l'Application précisé comme critère de recherche pour les Secrets
+	* @param[in] $scr_host Nom du Serveur précisé comme critère de recherche pour les Secrets
+	* @param[in] $scr_user Nom de l'Utilisateur précisé comme critère de recherche pour les Secrets
+	* @param[in] $scr_comment Commentaire précisé comme critère de recherche pour les Secrets
+	* @param[in] $Administrator Drapeau pour préciser si l'utilisateur est Administrateur
+	* @param[in] $orderBy Précise la préférence de tri en restitution de l'information
+	*
+	* @return Renvoi un tableau d'objet de Secrets, sinon lève une exception
+	*/
 		$Data = false;
 		
 		$Where = '';
@@ -516,6 +557,20 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 
 	public function listSecrets2( $searchSecret = '', $idn_id = '', $Administrator = false, $orderBy = '' ) {
+	/**
+	* Lister les Secrets (avec tous les détails associés).
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $searchSecret Critère de recherche pour les Secrets
+	* @param[in] $idn_id Id. de l'Identité précisé comme critère de recherche pour les Secrets
+	* @param[in] $Administrator Drapeau pour préciser si l'utilisateur est Administrateur
+	* @param[in] $orderBy Précise la préférence de tri en restitution de l'information
+	*
+	* @return Renvoi un tableau d'objet de Secrets, sinon lève une exception
+	*/
 		$Data = false;
 
 
@@ -646,7 +701,6 @@ class IICA_Secrets extends IICA_DB_Connector {
 			break;
 		}
 
-		//print( $Request ); print('<hr/>');
 		
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -685,10 +739,18 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Récupère les informations d'un Secret.
-	*/
 	public function get( $scr_id ) {
+	/**
+	* Récupère les informations générales d'un Secret.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $scr_id Id. du Secret à rechercher
+	*
+	* @return Renvoi un objet de type Secret, sinon lève une exception
+	*/
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 		include_once( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
@@ -775,10 +837,18 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 
-	/* ----------------------
-	** Supprime un Secret.
-	*/
 	public function delete( $scr_id ) {
+	/**
+	* Supprime un Secret.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $scr_id Id. du Secret à supprimer
+	*
+	* @return Renvoi vrai le Secret a été supprimé, sinon lève une exception
+	*/
 		if ( ! $Result = $this->prepare( 'DELETE ' .
 		 'FROM scr_secrets ' .
 		 'WHERE scr_id = :scr_id ' .
@@ -802,10 +872,18 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 
 
-	/* -------------------
-	** Récupère le nombre total de Secrets.
-	*/
 	public function total( $idn_id = '' ) {
+	/**
+	* Récupère le nombre total de Secrets.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $idn_id Id. de l'Identité quand on cherche le nombre total de Secrets rattaché à un utilisateur
+	*
+	* @return Renvoi le nombre total de Secrets, sinon lève une exception
+	*/
 		if ( $idn_id == '' ) {
 			$Request = 'SELECT ' .
 			 'count(*) AS total ' .
@@ -842,11 +920,29 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Lister les événements de l'historique.
-	*/
 	public function listHistoryEvents( $scr_id = '', $idn_id = '', $since_date = '', $before_date = '',
 	 $ach_access = '', $ach_ip = '', $hac_id = '', $rgh_id = '', $ach_gravity_level = '', $start = 0, $number = 10 ) {
+	/**
+	* Lister les événements de l'historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $scr_id Id. du Secret pour lequel on cherche l'historique associé
+	* @param[in] $idn_id Id. de l'Identité pour laquelle on cherche l'historique associé
+	* @param[in] $since_date Date depuis laquelle on recherche de l'historique
+	* @param[in] $before_date Date avant laquelle on recherche de l'historique
+	* @param[in] $ach_access Libellé de l'accès pour lequel on cherche l'hsitorique associé
+	* @param[in] $ach_ip Adresse IP pour laquelle on cherche l'historique associé
+	* @param[in] $hac_id Id. du type d'accès pour lequel on cherche l'hsitorique associé
+	* @param[in] $rgh_id Id. du droits utilisé pour lequel on cherche l'hsitorique associé
+	* @param[in] $ach_gravity_level Niveau de gravité pour lequel on cherche l'hsitorique associé
+	* @param[in] $start Rang dans le résultat à partir duquel on démarre l'affichage
+	* @param[in] $number Nombre d'occurrence à afficher à partir du rang d'affichage
+	*
+	* @return Renvoi un tableau d'objets de type Historique, sinon lève une exception
+	*/
 		$Request = 'SELECT ' .
 		 'scr_id, idn_login, ach_date, ach_access, ach_ip, hac_name, rgh_name, ach_gravity_level ' .
 		 'FROM ach_access_history as T1 ' .
@@ -943,11 +1039,27 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Total des événements dans l'historique.
-	*/
 	public function totalHistoryEvents( $scr_id = '', $idn_id = '', $since_date = '', $before_date = '',
 	 $ach_access = '', $ach_ip = '', $hac_id = '', $rgh_id = '', $ach_gravity_level = '' ) {
+	/**
+	* Total des événements dans l'historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $scr_id Id. du Secret pour lequel on cherche l'historique associé
+	* @param[in] $idn_id Id. de l'Identité pour laquelle on cherche l'historique associé
+	* @param[in] $since_date Date depuis laquelle on recherche de l'historique
+	* @param[in] $before_date Date avant laquelle on recherche de l'historique
+	* @param[in] $ach_access Libellé de l'accès pour lequel on cherche l'hsitorique associé
+	* @param[in] $ach_ip Adresse IP pour laquelle on cherche l'historique associé
+	* @param[in] $hac_id Id. du type d'accès pour lequel on cherche l'hsitorique associé
+	* @param[in] $rgh_id Id. du droits utilisé pour lequel on cherche l'hsitorique associé
+	* @param[in] $ach_gravity_level Niveau de gravité pour lequel on cherche l'hsitorique associé
+	*
+	* @return Renvoi le nombre total d'événements dans l'Historique répondant aux critères, sinon lève une exception
+	*/
 		$Request = 'SELECT ' .
 		 'min(ach_date) as first_date, count(*) as total ' .
 		 'FROM ach_access_history as T1 ' /*.
@@ -1035,10 +1147,18 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Purge les événements dans l'historique.
-	*/
 	public function purgeHistoryEvents( $ach_date ) {
+	/**
+	* Purge les événements dans l'historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $ach_date Date à partir de laquelle on supprime des occurrences dans l'historique (de cette date vers la plus ancienne)
+	*
+	* @return Renvoi vrai après avoir supprimé les occurrences de l'historique, sinon lève une exception
+	*/
 		$Request = 'DELETE ' .
 		 'FROM ach_access_history ' .
 		 'WHERE ach_date <= "' . $ach_date . '" ';
@@ -1057,10 +1177,19 @@ class IICA_Secrets extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Construit le message détaillé à remonter dans l'Historique.
-	*/
 	public function getMessageForHistory( $scr_id, $Secret = '' ) {
+	/**
+	* Construit le message détaillé à remonter dans l'Historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2013-02-18
+	*
+	* @param[in] $scr_id Id. du Secret pour lequel on cherche à formatter un message pour l'historque
+	* @param[in] $Secret Objet de type Secret qui vient d'être créé et pour lequel on cherche à formatter un message pour l'historque
+	*
+	* @return Renvoi la chaîne formatée pour l'historique, sinon une chaîne vide
+	*/
 		if ( $scr_id == '' ) return '';
 
 		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');

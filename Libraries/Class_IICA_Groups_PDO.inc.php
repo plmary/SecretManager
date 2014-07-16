@@ -10,8 +10,7 @@ class IICA_Groups extends IICA_DB_Connector {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.1
-* @date 2012-11-19
+* @date 2014-06-23
 */
     public $LastInsertId;
 
@@ -21,7 +20,6 @@ class IICA_Groups extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @return Renvoi un booléen sur le succès de la connexion à la base de données
@@ -38,7 +36,6 @@ class IICA_Groups extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $sgr_id (int) Identifiant du Groupe de Secrets à modifier (s'il est précisé, sinon créé le Groupe)
@@ -105,11 +102,11 @@ class IICA_Groups extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2012-11-07
 	*
 	* @param[in] $idn_id (int) Identifiant de l'identité pour laquelle on recherche les Groupes d'appartenance (si précisée, sinon recherche tous les Groupes)
 	* @param[in] $orderBy (string) Code de la colonne sur lequel se fera le tri à l'affichage
+	* @param[in] $rgh_id (int) Contrôle si l'utilisateur à aux moins les droits minimum sur les Groupes de Secrets (quand il n'est pas Administrateur)
 	*
 	* @return Renvoi vrai sur le succès de la mise à jour du Groupe, sinon lève une Exception
 	*/
@@ -182,6 +179,7 @@ class IICA_Groups extends IICA_DB_Connector {
 		$Data = array();
 		
 		while ( $Occurrence = $Result->fetchObject() ) {
+			$Occurrence->sgr_label = stripslashes( $Occurrence->sgr_label );
 			$Data[ $Occurrence->sgr_id ] = $Occurrence;
 		}
  
@@ -189,10 +187,18 @@ class IICA_Groups extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Récupère les informations d'un Groupe.
-	*/
 	public function get( $sgr_id ) {
+	/**
+	* Récupère les informations d'un Groupe.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret pour lequel on recherche des informations
+	*
+	* @return Renvoi vrai si les informations sur le Groupe de Secret ont été trouvées, sinon lève une Exception
+	*/
 		$Data = false;
 		
 		$Request = 'SELECT ' .
@@ -219,13 +225,19 @@ class IICA_Groups extends IICA_DB_Connector {
 	}
 
 
-	/* ----------------------
-	** Supprime un Groupe.
-	*/
 	public function delete( $sgr_id ) {
-		/*
-		** Démarre la transaction.
-		*/
+	/**
+	* Supprime un Groupe.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret que l'on souhaite supprimer
+	*
+	* @return Renvoi vrai sur le Groupe de Secrets à été supprimé, sinon lève une Exception
+	*/
+		// Démarre la transaction.
 		$this->beginTransaction();
 		
 		
@@ -275,9 +287,21 @@ class IICA_Groups extends IICA_DB_Connector {
 
 	
 	/* -----------------------------
-	** Ajoute au Groupe un Profil.
 	*/
 	public function addProfile( $sgr_id, $prf_id, $rgh_id = 1 ) {
+	/**
+	* Ajoute une association entre un Groupe de Secrets et un Profil.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret que l'on souhaite associer
+	* @param[in] $prf_id (int) Identifiant du Profil que l'on souhaite associer
+	* @param[in] $rgh_id (int) Identifiant du Droit d'Accès de Secret que l'on souhaite associer
+	*
+	* @return Renvoi vrai si l'association a été sauvegardée, sinon lève une Exception
+	*/
 		if ( ! $Result = $this->prepare( 'INSERT INTO prsg_profiles_secrets_groups ' .
 			'( prf_id, sgr_id, rgh_id ) ' .
 			'VALUES ( :prf_id, :sgr_id, :rgh_id )' ) ) {
@@ -309,10 +333,19 @@ class IICA_Groups extends IICA_DB_Connector {
 	}
 
 	
-	/* -----------------------------
-	** Supprime au Groupe un Profil.
-	*/
 	public function deleteProfile( $grp_id, $prf_id ) {
+	/**
+	* Détruit l'association entre un Groupe de Secrets et un Profil.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret que l'on souhaite dissocier
+	* @param[in] $prf_id (int) Identifiant du Profil que l'on souhaite disssocier
+	*
+	* @return Renvoi vrai si l'association a été supprimée, sinon lève une Exception
+	*/
 		if ( ! $Result = $this->prepare( 'DELETE FROM prsg_profiles_secrets_groups ' .
 			'WHERE prf_id = :prf_id AND sgr_id = :sgr_id ' ) ) {
 			$Error = $Result->errorInfo();
@@ -338,10 +371,19 @@ class IICA_Groups extends IICA_DB_Connector {
 	}
 
 	
-	/* -----------------------------
-	** Supprime au Groupe les Profils.
-	*/
 	public function deleteProfiles( $sgr_id, $prf_id = '' ) {
+	/**
+	* Détruit toutes les associations entre un Groupe de Secrets ou un Profil.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret que l'on souhaite dissocier
+	* @param[in] $prf_id (int) Identifiant du Profil que l'on souhaite disssocier
+	*
+	* @return Renvoi vrai si les associations ont été supprimées, sinon lève une Exception
+	*/
 		$Request = 'DELETE FROM prsg_profiles_secrets_groups ' ;
 		
 		if ( $sgr_id != '' ) $Request .= 'WHERE sgr_id = :sgr_id ';
@@ -376,10 +418,19 @@ class IICA_Groups extends IICA_DB_Connector {
 	}
 
 	
-	/* -----------------------------
-	** Liste les Profils d'un Groupe.
-	*/
 	public function listProfiles( $sgr_id, $Keys = 0 ) {
+	/**
+	* Liste les Profils associés à un Groupe de Secrets.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret sur lequel on souhaite réaliser une recherche
+	* @param[in] $Keys (boolean) Drapeau pour définir si l'on souhaite classer le résultat dans un tableau associatif ou séquentiel.
+	*
+	* @return Renvoi un tableau de Profils (classé par Groupe de Secrets ou non), sinon lève une Exception
+	*/
 		if ( ! $Result = $this->prepare( 'SELECT sgr_id, prf_id, rgh_id ' .
 		 'FROM prsg_profiles_secrets_groups ' .
 		 'WHERE sgr_id = :sgr_id ' ) ) {
@@ -414,10 +465,18 @@ class IICA_Groups extends IICA_DB_Connector {
 	}
 
 
-	/* -------------------
-	** Vérifie si le Groupe est associé.
-	*/
 	public function isAssociated( $sgr_id ) {
+	/**
+	* Vérifie si le Groupe de Secrets est associé.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret que l'on souhaite contrôler
+	*
+	* @return Renvoi vrai si le Groupe de Secrets est associé, faux si pas associé ou sinon lève une Exception en cas d'erreur
+	*/
 		$Request = 'SELECT ' .
 		 'count(*) ' .
 		 'FROM scr_secrets ' .
@@ -479,10 +538,18 @@ class IICA_Groups extends IICA_DB_Connector {
 
 
 
-	/* -------------------
-	** Récupère le nombre total de Groupes.
-	*/
 	public function total( $idn_id = '' ) {
+	/**
+	* Récupère le nombre total de Groupe de Secrets ou de rattaché à un utilisateur (non administrateur).
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-07
+	*
+	* @param[in] $idn_id (int) Identifiant de l'Identité pour lequel on cherche le nombre de Groupe de Secret associé
+	*
+	* @return Renvoi le nombre total de Groupe de Secrets dans la Base ou associé à un Utilisateur, sinon lève une Exception en cas d'erreur
+	*/
 		if ( $idn_id == '' ) {
 			$Request = 'SELECT ' .
 			 'count(*) AS total ' .
@@ -493,7 +560,6 @@ class IICA_Groups extends IICA_DB_Connector {
 			 'FROM idpr_identities_profiles AS T1 ' .
 			 'LEFT JOIN prsg_profiles_secrets_groups AS T2 ON T1.prf_id = T2.prf_id ' .
 			 'WHERE idn_id = :idn_id ';
-//			 sgr_secrets_groups ' ;
 		}
 
 		if ( ! $Result = $this->prepare( $Request ) ) {
@@ -519,11 +585,19 @@ class IICA_Groups extends IICA_DB_Connector {
 	}
 
 
-
-	/* -------------------
-	** Formate une chaine descriptive du Groupe accédé pour le tracer dans l'historique.
-	*/
 	public function getGroupForHistory( $sgr_id, $oGroup = '' ) {
+	/**
+	* Formate une chaine descriptive du Groupe accédé pour le tracer dans l'historique.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2014-06-23
+	*
+	* @param[in] $sgr_id (int) Identifiant du Groupe de Secret qui a été accédé
+	* @param[in] $oGroup (object) Objet décrivant le Groupe de Secret qui vient d'être créé
+	*
+	* @return Renvoi la chaîne formattée
+	*/
 		if ( $sgr_id == '' ) return '';
 
 		include_once( DIR_LIBRARIES . '/Class_HTML.inc.php');

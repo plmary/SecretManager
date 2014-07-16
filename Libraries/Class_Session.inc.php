@@ -7,8 +7,7 @@ class Session_Parser {
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @version 1.0
-* @date 2013-02-27
+* @date 2014-06-26
 */
 
 	public $Session_Path;
@@ -21,7 +20,6 @@ class Session_Parser {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-02-27
 	*
 	* @param[in] $_session_path Définit le chemin où sont stockés les fichiers de "session"
@@ -45,7 +43,6 @@ class Session_Parser {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-02-27
 	*
 	* @param[in] $_session_path Définit le chemin où sont stockés les fichiers de "session"
@@ -68,7 +65,6 @@ class Session_Parser {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-02-27
 	*
 	* @param[in] $Flow Flux représentant une "session"
@@ -125,7 +121,6 @@ class Session_Parser {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-02-27
 	*
 	* @param[in] $Flow Flux représentant une "session"
@@ -157,7 +152,6 @@ class Session_Parser {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-02-27
 	*
 	* @param[in] $Flow Flux représentant une "session"
@@ -283,7 +277,6 @@ class Session_Parser {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @version 1.0
 	* @date 2013-02-27
 	*
 	* @param[in] $ID_Session Identifiant de la session à analyser.
@@ -294,7 +287,6 @@ class Session_Parser {
 		if ( $ID_Session == '' ) return FALSE;
 		
 		$Filename = realpath( $this->Session_Path . '/sess_' . $ID_Session );
-//		print( "* Filename = '" . $Filename . "'\n" );
 
 		if ( is_readable ( $Filename ) ) {
 			// Création d'un nom de fichier unique (pour fichier temporaire).
