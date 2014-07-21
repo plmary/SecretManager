@@ -23,7 +23,7 @@
 
 include( 'Constants.inc.php' );
 
-$VERSION = '0.9-0';
+$VERSION = '1.0-0';
 
 $PREFIX_SUCCESS = '%S ';
 $PREFIX_ERROR	= '%E ';
@@ -52,8 +52,8 @@ $Options = getopt( $ShortOpts, $LongOpts );
 $FLAG_DEBUG = 0;
 $FLAG_FORCE = 0;
 
-$Config_File = DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php';
-$Security_File = DIR_LIBRARIES . '/Class_Security.inc.php';
+$Config_File = DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Config_SM-secrets-server.inc.php';
+$Security_File = DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_Security.inc.php';
 
 $Session_Dir = DIR_SESSION;
 
@@ -105,7 +105,7 @@ $Files = scandir( DIR_SESSION );
 foreach( $Files as $File ) {
     if ( $File == '.' or $File == '..' ) continue;
 
-    $Filename = DIR_SESSION . '/' . $File;
+    $Filename = DIR_SESSION . DIRECTORY_SEPARATOR . $File;
 
     if ( preg_match("/^sess_/i", $File ) ) {
         $tProperties = stat( $Filename );
@@ -156,7 +156,7 @@ if ( $FLAG_DEBUG ) {
 
 // ===================================
 // Charge le fichier des libellés génériques.
-$Labels_File = DIR_LABELS . '/' . $Security->getParameter( 'language_alert' ) . '_labels_generic.php';
+$Labels_File = DIR_LABELS . DIRECTORY_SEPARATOR . $Security->getParameter( 'language_alert' ) . '_labels_generic.php';
 
 if ( file_exists( $Labels_File ) ) {
 	include( $Labels_File );
@@ -171,6 +171,29 @@ if ( $FLAG_DEBUG ) {
 }
 
 
+
+// ===================================
+// Vérifie si le fichier d'empreintes des fichiers sensibles existe.
+if ( file_exists( INTEGRITY_FILENAME ) ) {
+	// Conserve en mémoire l'empreinte du fichier secondaire des empreintes.
+	$SecretServer_Integrity = hash_file( 'sha256', INTEGRITY_FILENAME );
+	if ( $FLAG_DEBUG ) {
+		print( $PREFIX_DEBUG . 'Compute hash file (' . INTEGRITY_FILENAME . ")\n" );
+	}
+} else {
+	$ForceCreating = TRUE;
+	$Tmp = $Security->checkFilesIntegrity( $ForceCreating );	
+
+	if ( $Tmp[ 0 ] === FALSE ) {
+		print( $PREFIX_ERROR . sprintf( "Error with file : %s\n", INTEGRITY_FILENAME ) );
+		exit( 1 );
+	}
+
+	$SecretServer_Integrity = hash_file( 'sha256', INTEGRITY_FILENAME );
+
+	print( $PREFIX_WARNING . 'Create and compute hash file (' . INTEGRITY_FILENAME . ")\n" );
+}
+
 // ===================================
 // Vérifie si le fichier de contrôle des fichiers d'empreintes des fichiers sensibles existe.
 if ( file_exists( MASTER_INTEGRITY_FILENAME ) ) {
@@ -181,6 +204,10 @@ if ( file_exists( MASTER_INTEGRITY_FILENAME ) ) {
 		print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'MASTER_INTEGRITY_FILE' ) );
 		exit( 1 );
 	}
+
+	if ( $FLAG_DEBUG ) {
+		print( $PREFIX_DEBUG . 'Compute hash file (' . MASTER_INTEGRITY_FILENAME . ")\n" );
+	}
 } else {
 	$ForceCreating = TRUE;
 	$Tmp = $Security->checkMasterFileIntegrity( $ForceCreating );	
@@ -189,21 +216,20 @@ if ( file_exists( MASTER_INTEGRITY_FILENAME ) ) {
 		print( $PREFIX_ERROR . sprintf( "Error with file : %s\n", MASTER_INTEGRITY_FILENAME ) );
 		exit( 1 );
 	}
+
+	print( $PREFIX_WARNING . 'Create and compute hash file (' . MASTER_INTEGRITY_FILENAME . ")\n" );
 }
 
 // Conserve en mémoire l'empreinte du fichier principal des empreintes.
 $Master_Integrity = $Tmp[ 1 ];
 
-// Conserve en mémoire l'empreinte du fichier secondaire des empreintes.
-$SecretServer_Integrity = hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' );
-
 
 // ===================================
 // Charge le module utile pour les transchiffrements.
-if ( file_exists( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' ) ) {
-	include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
+if ( file_exists( DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_IICA_Secrets_PDO.inc.php' ) ) {
+	include( DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_IICA_Secrets_PDO.inc.php' );
 } else {
-	print( $PREFIX_ERROR . '"Transcrypt module" (' . DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php) ' .
+	print( $PREFIX_ERROR . '"Transcrypt module" (' . DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_IICA_Secrets_PDO.inc.php) ' .
 	 " not exists or inaccessible\n" );
 	exit( 1 );
 }
@@ -213,10 +239,10 @@ $Secrets = new IICA_Secrets();
 
 // ==============================================
 // Charge l'environnement d'analyse des Sessions.
-if ( file_exists( DIR_LIBRARIES . '/Class_Session.inc.php' ) ) {
-	include( DIR_LIBRARIES . '/Class_Session.inc.php' );
+if ( file_exists( DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_Session.inc.php' ) ) {
+	include( DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_Session.inc.php' );
 } else {
-	print( $PREFIX_ERROR . '"Session_Parser module" (' . DIR_LIBRARIES . '/Class_Session.inc.php) ' .
+	print( $PREFIX_ERROR . '"Session_Parser module" (' . DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_Session.inc.php) ' .
 	 " not exists or inaccessible\n" );
 	exit( 1 );
 }
@@ -494,7 +520,7 @@ do {
 			}
 
 
-			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+			if ( $SecretServer_Integrity != hash_file( 'sha256', INTEGRITY_FILENAME ) ) {
 				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
 
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
@@ -556,7 +582,7 @@ do {
             if ( file_exists( $SecretFile ) ) {
                 $Path_Parts = pathinfo( $SecretFile );
                 
-                rename( $SecretFile, $Path_Parts['dirname'] .'/'. date( 'Y_m_d-H_i_s',
+                rename( $SecretFile, $Path_Parts['dirname'] . DIRECTORY_SEPARATOR . date( 'Y_m_d-H_i_s',
                  $_Create_Date ) . '-' . $Path_Parts['basename'] );
             }
             
@@ -612,7 +638,7 @@ do {
 				}
 			}
 
-			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+			if ( $SecretServer_Integrity != hash_file( 'sha256', INTEGRITY_FILENAME ) ) {
 				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
 
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
@@ -632,7 +658,7 @@ do {
             if ( file_exists( $SecretFile ) ) {
                 $Path_Parts = pathinfo( $SecretFile );
                 
-                rename( $SecretFile, $Path_Parts['dirname'] .'/'. date( 'Y_m_d-H_i_s',
+                rename( $SecretFile, $Path_Parts['dirname'] . DIRECTORY_SEPARATOR . date( 'Y_m_d-H_i_s',
                  $_Create_Date ) . '-' . $Path_Parts['basename'] );
             }
             
@@ -685,7 +711,7 @@ do {
 				}
 			}
 
-			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+			if ( $SecretServer_Integrity != hash_file( 'sha256', INTEGRITY_FILENAME ) ) {
 				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
 
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
@@ -842,7 +868,7 @@ do {
 				}
 			}
 
-			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+			if ( $SecretServer_Integrity != hash_file( 'sha256', INTEGRITY_FILENAME ) ) {
 				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
 
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
@@ -1029,7 +1055,7 @@ do {
 				}
 			}
 
-			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+			if ( $SecretServer_Integrity != hash_file( 'sha256', INTEGRITY_FILENAME ) ) {
 				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
 
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
@@ -1097,7 +1123,7 @@ do {
 				}
 			}
 
-			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+			if ( $SecretServer_Integrity != hash_file( 'sha256', INTEGRITY_FILENAME ) ) {
 				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
 
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
@@ -1127,7 +1153,7 @@ do {
 			}
 			
 			// Retire la protection sur le fichier généré.
-    	    $Filename = DIR_SESSION . '/trp_' . $ID_Session;
+    	    $Filename = DIR_SESSION . DIRECTORY_SEPARATOR . 'trp_' . $ID_Session;
 			chmod( $Filename, 0777 );
 
 

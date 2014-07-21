@@ -994,6 +994,10 @@ class Security extends IICA_Parameters {
 
 			return TRUE;
 		} else { // Utilise le fichier des contrôles d'intégrité.
+			if ( ! file_exists( INTEGRITY_FILENAME ) ) {
+				return array( FALSE, array( 'Not exists' ) );
+			}
+
 			$Hashes = parse_ini_file( INTEGRITY_FILENAME );
 			$Files_Corrupted = '';
 
@@ -1038,9 +1042,39 @@ class Security extends IICA_Parameters {
 
 
 
-	function checkMasterFileIntegrity( $ForceCreating = FALSE, $Memory_Hash = '' ) {
+	function createMasterFileIntegrity() {
 	/**
 	* Crée le fichier "d'empreinte" du fichier des "empreintes" des fichiers à surveiller.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @version 1.0
+	* @date 2012-11-08
+	*
+	* @return Retourne le Hash du fichier de contrôle du SecretManager ou faux si erreur durant la création du fichier stockant ce Hash.
+	*/
+		$Hash_File = hash_file( 'sha256', INTEGRITY_FILENAME );
+
+		$File_P = fopen( MASTER_INTEGRITY_FILENAME, 'w' );
+		if ( $File_P === FALSE ) {
+			print("%E error creating file\n");
+			return FALSE;
+		}
+
+		if ( fputs( $File_P, INTEGRITY_FILENAME . '=' . $Hash_File . "\n" ) === FALSE ) {
+			print( '%E fputs error<br/>' );
+			break;
+		}
+
+		fclose( $File_P );
+
+		return $Hash_File;
+	}
+
+
+	function checkMasterFileIntegrity( $ForceCreating = FALSE, $Memory_Hash = '' ) {
+	/**
+	* Crée le fichier "d'empreinte" du fichier des "empreintes" des fichiers à surveiller ou utilise le fichier "d'empreintes" précédemment créé.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -1056,25 +1090,18 @@ class Security extends IICA_Parameters {
 
 			
 		if ( $ForceCreating === TRUE ) { // Construit le fichier protégeant le fichier des contrôles d'intégrité.
-			if ( file_exists( INTEGRITY_FILENAME ) ) {
-				$Hash_File = hash_file( 'sha256', INTEGRITY_FILENAME );
-
-				$File_P = fopen( MASTER_INTEGRITY_FILENAME, 'w' );
-			
-				if ( fputs( $File_P, INTEGRITY_FILENAME . '=' . $Hash_File . "\n" ) === FALSE ) {
-					print( 'fputs error<br/>' );
-					break;
-				}
-			
-				fclose( $File_P );
-			} else {
+			if ( ( $Hash_File = $this->createMasterFileIntegrity() ) === FALSE ) {
 				return array( FALSE );
 			}
 
 			return array( TRUE, $Hash_File );
 		} else { // Utilise le fichier des contrôles d'intégrité.
 			if ( $Memory_Hash == '' ) {
-				$Hashes = parse_ini_file( MASTER_INTEGRITY_FILENAME );
+				if ( file_exists( MASTER_INTEGRITY_FILENAME ) ) {
+					if ( $this->createMasterFileIntegrity() === FALSE ) return array( FALSE );
+
+					$Hashes = parse_ini_file( MASTER_INTEGRITY_FILENAME );
+				}
 			} else {
 				$Hashes[ INTEGRITY_FILENAME ] = $Memory_Hash;
 			}
