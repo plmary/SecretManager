@@ -191,7 +191,11 @@ if ( file_exists( MASTER_INTEGRITY_FILENAME ) ) {
 	}
 }
 
+// Conserve en mémoire l'empreinte du fichier principal des empreintes.
 $Master_Integrity = $Tmp[ 1 ];
+
+// Conserve en mémoire l'empreinte du fichier secondaire des empreintes.
+$SecretServer_Integrity = hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' );
 
 
 // ===================================
@@ -489,6 +493,16 @@ do {
 				}
 			}
 
+
+			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_SECRETSERVER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
 			
 			// Teste le paramètre reçu.
 			if ( $Parameter == '' ) {
@@ -597,6 +611,16 @@ do {
 					break 2; // Déconnecte le client.
 				}
 			}
+
+			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_SECRETSERVER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
 			
             $_Create_Date = time();
 
@@ -657,6 +681,16 @@ do {
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
 					sendMessageToClient( $MsgSock, FLAG_ERROR .
 					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
+			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_SECRETSERVER_INTEGRITY_ALERT\n" );
 					break 2; // Déconnecte le client.
 				}
 			}
@@ -804,6 +838,16 @@ do {
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
 					sendMessageToClient( $MsgSock, FLAG_ERROR .
 					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
+			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_SECRETSERVER_INTEGRITY_ALERT\n" );
 					break 2; // Déconnecte le client.
 				}
 			}
@@ -985,6 +1029,16 @@ do {
 				}
 			}
 
+			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_SECRETSERVER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
 			// Récupère la clé de transport.
 			$T_Key = $Security->getTransportKey( $ID_Session );
 			if ( $T_Key[ 0 ] === FALSE ) {
@@ -1039,6 +1093,16 @@ do {
 				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
 					sendMessageToClient( $MsgSock, FLAG_ERROR .
 					 "###L_ERR_MASTER_INTEGRITY_ALERT\n" );
+					break 2; // Déconnecte le client.
+				}
+			}
+
+			if ( $SecretServer_Integrity != hash_file( 'sha256', DIR_LIBRARIES . '/file_integrity.dat' ) ) {
+				print( $PREFIX_ERROR . sprintf( '*** ' . $L_File_Integrity_Alert . " ***\n", 'SECRETSERVER_INTEGRITY_FILE' ) );
+
+				if ( $Security->getParameter( 'stop_SecretServer_on_alert' ) == 1 ) {
+					sendMessageToClient( $MsgSock, FLAG_ERROR .
+					 "###L_ERR_SECRETSERVER_INTEGRITY_ALERT\n" );
 					break 2; // Déconnecte le client.
 				}
 			}

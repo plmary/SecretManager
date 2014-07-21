@@ -958,8 +958,8 @@ class Security extends IICA_Parameters {
 		include( DIR_LABELS . '/en_labels_generic.php' );
 
 		$Directories = array(
-			'Master' => APPLICATION_PATH,
-			'Libraries' => DIR_LIBRARIES
+			'Master' => '.',
+			'Libraries' => 'Libraries'
 			);
 
 		$Patterns = array(

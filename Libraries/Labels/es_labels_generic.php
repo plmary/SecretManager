@@ -124,4 +124,8 @@ $LOG_7 = 'Mensajes de depuración';
 
 $L_Since = 'Desde';
 $L_Before = 'Antes';
+
+$L_Security_Alert = 'Alerta de seguridad';
+$L_File_Integrity_Alert = 'Archivo alerta integridad : %s';
+$L_Files_Integrity_Alert = 'SecretManager archivos alerta integridad';
 ?>

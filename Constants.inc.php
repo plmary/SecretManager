@@ -17,24 +17,24 @@ define( 'URL_BASE', 'https://' . SERVER );
 define( 'URL_PICTURES', 'https://' . SERVER . '/Pictures');
 define( 'URL_LIBRARIES', 'https://' . SERVER . '/Libraries' );
 
-define( 'DIR_SESSION',   APPLICATION_PATH . '/Temp' );
-define( 'DIR_LIBRARIES', APPLICATION_PATH . '/Libraries' );
-define( 'DIR_LABELS',    APPLICATION_PATH . '/Libraries/Labels' );
-define( 'DIR_RADIUS',    APPLICATION_PATH . '/Libraries/Radius' );
-define( 'DIR_PICTURES',  APPLICATION_PATH . '/Pictures' );
-define( 'DIR_BACKUP',    APPLICATION_PATH . '/Backup' );
+define( 'DIR_SESSION',   APPLICATION_PATH . DIRECTORY_SEPARATOR . 'Temp' );
+define( 'DIR_LIBRARIES', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'Libraries' );
+define( 'DIR_LABELS',    APPLICATION_PATH . DIRECTORY_SEPARATOR . 'Libraries' . DIRECTORY_SEPARATOR . 'Labels' );
+define( 'DIR_RADIUS',    APPLICATION_PATH . DIRECTORY_SEPARATOR . 'Libraries' . DIRECTORY_SEPARATOR . 'Radius' );
+define( 'DIR_PICTURES',  APPLICATION_PATH . DIRECTORY_SEPARATOR . 'Pictures' );
+define( 'DIR_BACKUP',    APPLICATION_PATH . DIRECTORY_SEPARATOR . 'Backup' );
 
 define( 'FLAG_ERROR', 0 );
 define( 'FLAG_SUCCESS',  1 );
 
-define( 'IICA_DB_CONFIG', DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+define( 'IICA_DB_CONFIG', DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Config_Access_DB.inc.php' );
 define( 'IICA_LIBRARIES', DIR_LIBRARIES );
 define( 'IICA_PICTURES', DIR_PICTURES );
 define( 'IICA_LABELS', DIR_LABELS );
 
-define( 'MAIL_BODY', DIR_LIBRARIES . "/Mail_Body.dat" );
+define( 'MAIL_BODY', DIR_LIBRARIES . DIRECTORY_SEPARATOR . "Mail_Body.dat" );
 
-define( 'INTEGRITY_FILENAME', DIR_LIBRARIES . '/files_integrity.dat' );
-define( 'MASTER_INTEGRITY_FILENAME', DIR_LIBRARIES . '/file_integrity.dat' );
+define( 'INTEGRITY_FILENAME', 'Libraries' . DIRECTORY_SEPARATOR . 'files_integrity.dat' );
+define( 'MASTER_INTEGRITY_FILENAME', 'Libraries' . DIRECTORY_SEPARATOR . 'file_integrity.dat' );
 
 ?>

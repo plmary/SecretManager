@@ -123,6 +123,6 @@
 	$L_Before = 'Before';
 
 	$L_Security_Alert = 'Security Alert';
-	$L_File_Integrity_Alert = 'File integrity alert : %s';
-	$L_Files_Integrity_Alert = 'SecretManager files integrity Alert';
+	$L_File_Integrity_Alert = 'Integritätswarnung Datei : %s';
+	$L_Files_Integrity_Alert = 'Integrität alarm sensible Dateien SecretManager';
 ?>
