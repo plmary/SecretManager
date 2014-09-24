@@ -14,6 +14,7 @@ $L_Subtitle = "Herramienta para compartir contraseñas";
 $L_Langue_en = "Inglés";
 $L_Langue_fr = "Francés";
 $L_Langue_de = "Alemán";
+$L_Langue_es = "Español";
 
 $L_No_Authorize = "Usted no está autorizado para esta pantalla";
 $L_Default = 'Defecto';

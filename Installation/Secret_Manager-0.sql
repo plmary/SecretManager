@@ -173,7 +173,7 @@ CREATE TABLE prsg_profiles_secrets_groups (
 
 CREATE TABLE scr_secrets (
                 scr_id BIGINT AUTO_INCREMENT NOT NULL,
-                sgr_id BIGINT NOT NULL,
+                sgr_id BIGINT,
                 stp_id BIGINT NOT NULL,
                 env_id BIGINT NOT NULL,
                 app_id BIGINT,
@@ -212,12 +212,6 @@ ALTER TABLE ach_access_history ADD CONSTRAINT hac_ach_fk
 FOREIGN KEY (hac_id)
 REFERENCES hac_history_actions_codes (hac_id)
 ON DELETE NO ACTION
-ON UPDATE NO ACTION;
-
-ALTER TABLE scr_secrets ADD CONSTRAINT app_scr_fk
-FOREIGN KEY (app_id)
-REFERENCES app_applications (app_id)
-ON DELETE SET NULL
 ON UPDATE NO ACTION;
 
 ALTER TABLE scr_secrets ADD CONSTRAINT env_scr_fk
@@ -265,12 +259,6 @@ ON UPDATE NO ACTION;
 ALTER TABLE idpr_identities_profiles ADD CONSTRAINT idn_idpr_fk
 FOREIGN KEY (idn_id)
 REFERENCES idn_identities (idn_id)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION;
-
-ALTER TABLE scr_secrets ADD CONSTRAINT sgr_scr_fk
-FOREIGN KEY (sgr_id)
-REFERENCES sgr_secrets_groups (sgr_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 

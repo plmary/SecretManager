@@ -30,7 +30,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.9-0'; // Version de l'outil
+	$this->Version = '0.9-1'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	

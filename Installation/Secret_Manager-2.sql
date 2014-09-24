@@ -88,7 +88,11 @@ INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES
 ('Backup_Total_Date', '0000-00-00 00:00'),
 ('mail_title', 'Alerte SecretManager'),
 ('language_alert', 'en'),
-('mail_body_type', 'HTML')
+('mail_body_type', 'HTML'),
+('secrets_complexity', '2'),
+('secrets_size', '20'),
+('stop_SecretServer_on_alert','0'),
+('secrets_lifetime','6')
 ;
 
 --
@@ -102,27 +106,27 @@ INSERT INTO `stp_secret_types` (`stp_id`, `stp_name`) VALUES
 
 -- Gestion des Connexions et Déconnexions des Utilisateurs
 INSERT INTO secret_manager.hac_history_actions_codes (hac_id, hac_name) VALUES
-	(NULL, 'L_ALERT_CNX'),
-	(NULL, 'L_ALERT_DCNX');
+	(1, 'L_ALERT_CNX'),
+	(2, 'L_ALERT_DCNX');
 
 
 -- Types d'objet dans le SecretManager
 INSERT INTO secret_manager.hac_history_actions_codes (hac_id, hac_name) VALUES 
-	(NULL, 'L_ALERT_APP'), -- Alerte sur les Applications
-	(NULL, 'L_ALERT_BCK'), -- Alerte sur Sauvegarde
-	(NULL, 'L_ALERT_CVL'), -- Alerte sur les Civilités
-	(NULL, 'L_ALERT_ENT'), -- Alerte sur les Entités
-	(NULL, 'L_ALERT_HST'), -- Alerte sur l'Historique
-	(NULL, 'L_ALERT_IDN'), -- Alerte sur les Identités
-	(NULL, 'L_ALERT_IDPR'), -- Alerte sur les Relations entre les Identités et les Profils
-	(NULL, 'L_ALERT_MK'), -- Alerte sur Clé Mère
-	(NULL, 'L_ALERT_PRF'), -- Alerte sur les Profils
-	(NULL, 'L_ALERT_PRSG'), -- Alerte sur les Relations entre les Profils et les Groupes de Secrets
-	(NULL, 'L_ALERT_RSTR'), -- Alerte sur Restauration
-	(NULL, 'L_ALERT_SCR'), -- Alerte sur les Secrets
-	(NULL, 'L_ALERT_SGR'), -- Alerte sur les Groupes de Secrets
-	(NULL, 'L_ALERT_SPR'), -- Alerte sur les Paramètres Systèmes
-	(NULL, 'L_ALERT_SS'); -- Alerte sur SecretServer
+	(3, 'L_ALERT_APP'), -- Alerte sur les Applications
+	(4, 'L_ALERT_BCK'), -- Alerte sur Sauvegarde
+	(5, 'L_ALERT_CVL'), -- Alerte sur les Civilités
+	(6, 'L_ALERT_ENT'), -- Alerte sur les Entités
+	(7, 'L_ALERT_HST'), -- Alerte sur l'Historique
+	(8, 'L_ALERT_IDN'), -- Alerte sur les Identités
+	(9, 'L_ALERT_IDPR'), -- Alerte sur les Relations entre les Identités et les Profils
+	(10, 'L_ALERT_MK'), -- Alerte sur Clé Mère
+	(11, 'L_ALERT_PRF'), -- Alerte sur les Profils
+	(12, 'L_ALERT_PRSG'), -- Alerte sur les Relations entre les Profils et les Groupes de Secrets
+	(13, 'L_ALERT_RSTR'), -- Alerte sur Restauration
+	(14, 'L_ALERT_SCR'), -- Alerte sur les Secrets
+	(15, 'L_ALERT_SGR'), -- Alerte sur les Groupes de Secrets
+	(16, 'L_ALERT_SPR'), -- Alerte sur les Paramètres Systèmes
+	(17, 'L_ALERT_SS'); -- Alerte sur SecretServer
 
 
 COMMIT;

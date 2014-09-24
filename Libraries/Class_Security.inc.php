@@ -1007,10 +1007,11 @@ class Security extends IICA_Parameters {
 				while ( false !== ($File = $Directory_P->read()) ) {
 					foreach( $Patterns[ $Directory ] as $Pattern ) {
 						if ( preg_match( $Pattern, $File ) ) {
+							$FileIdx = $Directory_P->path . '/' . $File;
 							$File = $Directory_P->path . DIRECTORY_SEPARATOR . $File;
 							$Hash_File = hash_file( 'sha256', $File );
 
-							if ( $Hash_File != $Hashes[ $File ] ) {
+							if ( $Hash_File != $Hashes[ $FileIdx ] ) {
 								$pObject = new stdClass();
 
 								$pObject->scr_id = '';
