@@ -581,6 +581,25 @@ if ( $Authentication->is_administrator() ) {
 		 "        </td>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" .
+		 "<label for=\"id_cascading\">" . $L_Cascading_Root_Connection . "</label></td>\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
+		 "         <select id=\"id_expiration\" name=\"Cascading_Connection\">\n" );
+
+		if ( $PageHTML->getParameter( 'cascading_connection' ) == 1 or $PageHTML->getParameter( 'cascading_connection' ) == '' ) {
+			$Selected_Y = 'selected';
+			$Selected_N = '';
+		} else {
+			$Selected_Y = '';
+			$Selected_N = 'selected';
+		}
+
+		print( "          <option value=\"1\" " . $Selected_Y . ">" . $L_Yes . "</option>\n" .
+		 "          <option value=\"0\" " . $Selected_N . ">" . $L_No . "</option>\n" .
+		 "         </select>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
 		 "        <td class=\"impair align-right\" rowspan=\"6\">" .
 		 "<label for=\"id_pwd\">" . $L_Use_Password . "</label>" .
 		 "</td>\n" .

@@ -36,7 +36,7 @@ class IICA_DB_Connector extends PDO {
 
 		$DSN = $_Driver . ':host=' . $_Host . ';port=' . $_Port . ';dbname=' . $_Base ;
 		
-		parent::__construct( $DSN, $_User, $_Password );
+		PDO::__construct( $DSN, $_User, $_Password );
 		
 		return true;
 	}

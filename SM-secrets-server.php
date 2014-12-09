@@ -57,6 +57,7 @@ $Security_File = DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_Security.inc.php';
 
 $Session_Dir = DIR_SESSION;
 
+date_default_timezone_set('Europe/Paris' );
 
 foreach( $Options as $Option => $Valeur ) {
 	switch( $Option ) {

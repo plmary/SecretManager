@@ -261,6 +261,7 @@ function saveEditFields( Id ){
 // Affiche une boîte de dialogue pour créer un nouveau Groupe de Secrets.
 function putAddGroup() {
     var Title, Label, Alert, Cancel, ButtonName;
+    
     $.ajax({
         async: false,
         url: '../../SM-secrets.php?action=L_ADD_GROUP_X',
@@ -391,7 +392,7 @@ function addGroup(){
                          '<td>'+
                          '<a id="modify_'+Id+'" class="simple" href="javascript:editFields(\''+Id+'\');">'+
                          '<img class="no-border" src="'+URL_PICTURES+'/b_edit.png" alt="'+L_Modify+'" title="'+L_Modify+'" /></a>\n'+
-                         '<a class="simple" href="'+Script+'?action=D&sgr_id='+Id+'">'+
+                         '<a class="simple" href="javascript:confirmDeleteGroup(\''+Id+'\');">'+
                          '<img class="no-border" src="'+URL_PICTURES+'/b_drop.png" alt="'+L_Delete+'" title="'+L_Delete+'" /></a>\n'+
                          '<a class="simple" href="'+Script+'?action=PRF&sgr_id='+Id+'">'+
                          '<img class="no-border" src="'+URL_PICTURES+'/b_usrscr_2.png" alt="'+L_Profiles_Associate+

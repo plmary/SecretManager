@@ -2139,15 +2139,7 @@ switch( $Action ) {
 	 "       </tr>\n" .
 	 "       </tbody>\n" .
 	 "      </table>\n" .
-	 "     </form>\n" .
-	 "     <div id=\"addProfile\" class=\"tableau_synthese hide modal\">\n".
-	 "      <button type=\"button\" class=\"close\">×</button>\n".
-	 "      <p class=\"titre\">".$L_Profile_Create."</p>\n".
-	 "      <div id=\"detailProfile\" style=\"margin:6px;padding:6px;width:400px;\" class=\"corps align-center\">\n" .
-	 "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" . $L_Label . "</span><span  class=\"td-aere\"><input id=\"iProfileLabel\" type=\"text\" class=\"obligatoire\" name=\"Label\" size=\"35\" maxlength=\"35\" /></span></p>\n" .
-	 "       <p class=\"align-center\"><input id=\"iButtonCreateProfile\" type=\"submit\" class=\"button\" value=\"". $L_Create . "\" /></p>\n" .
-	 "      </div> <!-- Fin : detailProfil -->\n" .
-	 "     </div> <!-- Fin : addProfile -->\n"
+	 "     </form>\n" 
 	);
 	
 	break;
@@ -2517,7 +2509,7 @@ switch( $Action ) {
 				'Message' => $L_ERR_CREA_Profile
 				);
 
-			$alert_message = $Profiles->getMessageForHistory( 'L_ERR_CREA_Profile' );
+			$alert_message = $Profiles->getMessageForHistory( '', 'L_ERR_CREA_Profile' );
 
 			$Security->updateHistory( 'L_ALERT_PRF', $alert_message, 2, LOG_ERR );
 
@@ -2545,7 +2537,7 @@ switch( $Action ) {
 					);
 			}
 
-			$alert_message = $Profiles->getMessageForHistory( $L_Message );
+			$alert_message = $Profiles->getMessageForHistory( '', $L_Message );
 
 			$Security->updateHistory( 'L_ALERT_PRF', $alert_message, 2, LOG_ERR );
 
@@ -3110,6 +3102,17 @@ switch( $Action ) {
     ) ) ;
     
     exit();
+
+
+ case 'L_ADD_PROFILE_X':
+    echo json_encode( array(
+        'Title' => $L_Profile_Create,
+        'Label' => $L_Label,
+        'Cancel' => $L_Cancel,
+        'Create' => $L_Create
+    ) ) ;
+    
+	exit();
 
 
  case 'L_MODIF_PROFILE_X':

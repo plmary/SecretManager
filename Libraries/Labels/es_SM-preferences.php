@@ -68,4 +68,6 @@
 	
 	$L_ERR_MAJ_Alert = 'Error al actualizar los parámetros de alertas';
 	$L_ERR_MAJ_Connection = 'Error durante la configuración de actualización Login';
+
+	$L_Cascading_Root_Connection = '"root" conexión en cascada';
 ?>

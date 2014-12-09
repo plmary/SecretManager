@@ -37,12 +37,6 @@ $(document).ready(function(){
     });
 
 
-    // Ajoute un Profil quand l'utilisateur click sur le bouton d'Ajout.
-    $('#iButtonCreateProfile').on('click', function(){
-        addProfile();
-    });
-
-
     // Supprime un Profil quand l'utilisateur click sur le bouton de "Suppression".
     $('#iButtonDeleteProfile').on('click', function(){
         deleteProfile();
@@ -52,31 +46,50 @@ $(document).ready(function(){
 
 // Affiche la boite de dialogue de création d'un Profil.
 function putAddProfile(){
-    $('#addProfile').show('slow');
-
-    var OldWidth = $('#addProfile').width();
-    var MinWidth = 400;
-    if ( MinWidth > OldWidth ) {
-        OldWidth = 400;
-    }
-
-    var OldHeight = $('#addProfile').height();
-    var MinHeight = 130;
-    if ( MinHeight > OldHeight ) {
-        OldHeight = 130;
-    }
-
-    $('#addProfile').css({
-        'left': ((window.outerWidth - OldWidth) / 2) + 'px',
-        'maxWidth': OldWidth + 'px',
-        'minWidth': MinWidth + 'px',
-        'top': (((window.outerHeight - OldHeight) / 2) - 100) + 'px',
-        'maxHeight': OldHeight + 'px',
-        'minHeight': MinHeight + 'px',
+//    $('#addProfile').show('slow');
+    var Title, Label, Cancel, Create;
+    
+    $.ajax({
+        async: false,
+        url: '../../SM-users.php?action=L_ADD_PROFILE_X',
+        type: 'POST',
+        //data: $.param({'sgr_id': Id, 'Alert': Alert, 'Label': Label}),
+        dataType: 'json',
+        success: function(reponse) {
+            Title = reponse['Title'];
+            Label = reponse['Label'];
+            Cancel = reponse['Cancel'];
+            ButtonName = reponse['Create'];
+        },
+        error: function(reponse) {
+            alert('Erreur serveur "Ajax_users.js" - "L_ADD_PROFILE_X" : ' + reponse['responseText']);
+        }
     });
+
+    $( '<div id="confirm_message" class="modal" role="dialog" tabindex="-1">' +
+     '<div class="modal-header">' +
+     '<button class="close" aria-hidden="true" data-dismiss="modal" type="button" ' +
+     'onClick="javascript:hideConfirmMessage();">×</button>' +
+     '<h4 id="myModalLabel">'+Title+'</h4>' +
+     '</div>' +
+     '<div class="modal-body">' +
+     '<div class="row-fluid"style="width:82%; margin-top:8px;">' +
+     "       <p><span class=\"td-aere align-right\" style=\"width:150px;\">" + Label + "</span>"+
+     "<span  class=\"td-aere\">"+
+     "<input id=\"iProfileLabel\" type=\"text\" class=\"obligatoire input-xlarge\" name=\"Label\" " +
+     "size=\"35\" maxlength=\"35\" /></span></p>\n" +
+     '</div>' +
+     '</div>' +
+     '<div class="modal-footer">' +
+     '<a class="button" id="iCancel" href="javascript:hideConfirmMessage();">'+Cancel+
+     '</a>&nbsp;<a class="button" href="javascript:addProfile();">'+
+     ButtonName+'</a>' +
+     '</div>' +
+     '</div>\n' ).prependTo( 'body' );
 
     $('#iProfileLabel').keyup(function(e){
         if (e.which == 13) {
+            e.stopPropagation();
             if ($('#iProfileLabel').val() != '') addProfile();
         }
     });
@@ -94,8 +107,6 @@ function addProfile(){
             data: $.param({'Label': $('#iProfileLabel').val()}),
             dataType: 'json',
             success: function(reponse) {
-                $('#addProfile').hide();
-
                 var Label = $('#iProfileLabel').val();
 
                 $('#iProfileLabel').val('');
@@ -113,6 +124,8 @@ function addProfile(){
                     var L_Delete_Profile_Confirmation = reponse['L_Delete_Profile_Confirmation'];
                     var L_Warning = reponse['L_Warning'];
                     var L_Groups_Associate = reponse['L_Groups_Associate'];
+
+                    $('#confirm_message').remove();
 
                     if ($('#dashboard').length == 0) {
                         $('#listeSecrets').prepend(

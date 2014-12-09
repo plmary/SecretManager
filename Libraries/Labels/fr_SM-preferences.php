@@ -74,4 +74,6 @@
 	$L_Secrets_Lifetime = 'Durée de vie des Secrets (en mois)';
 
 	$L_Stop_SecretServer_On_Alert = "Arrête le SecretServer en cas d'alerte";
+
+	$L_Cascading_Root_Connection = 'Connexion en cascade du compte "root"';
 ?>

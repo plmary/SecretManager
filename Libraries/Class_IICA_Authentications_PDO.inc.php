@@ -132,76 +132,107 @@ class IICA_Authentications extends IICA_Parameters {
 		/* -----------------------------
 		** Test l'authentifiant fournit.
 		*/
-		switch( $Type ) {
-		 default:
-		 case 'database':
-		 case 'D':
-			$Authenticator = sha1( $Authenticator . $Occurrence->idn_salt );
-	  
-			if ( $Authenticator != $Occurrence->idn_authenticator ) {
-				throw new Exception( $L_Err_Auth, -1 );
-			}
-			
-			break;
-		
-		 case 'radius':
-		 case 'R':
-			include( DIR_RADIUS . '/radius.class.php' );
-			include( DIR_LIBRARIES . '/Config_Radius.inc.php' );
+		$Cascading_Connection = $this->getParameter( 'cascading_connection' );
 
-			$Radius_Suffix = '';
-			$UPD_Timeout = 5;
-
-			if ( isset( $_Radius_Authentication_Port ) ) {
-				$authentication_port = $_Radius_Authentication_Port;
-			} else {			
-				$authentication_port = 1812;
-			}
-			
-			if ( isset( $_Radius_Accounting_Port ) ) {
-				$accounting_port = $_Radius_Accounting_Port;
-			} else {			
-				$accounting_port = 1813;
-			}
-
-			$radius = new Radius( $_Radius_Server, $_Radius_Secret_Common,
-			 $Radius_Suffix, $UPD_Timeout, $authentication_port, $accounting_port );
-
-			if ( ! @$radius->AccessRequest( $Login, $Authenticator ) ) {
-				throw new Exception( $L_Err_Auth, -1 );
-			}
-			
-			break;
-		
-		 case 'ldap':
-		 case 'L':
-			include( DIR_LIBRARIES . '/Config_LDAP.inc.php' );
-			
-			$LDAP_RDN = $_LDAP_RDN_Prefix . '=' . $Login . ',' . $_LDAP_Organization;
-
-			// Connexion au serveur LDAP
-			$ldap_c = ldap_connect( $_LDAP_Server, $_LDAP_Port );
-			if ( $ldap_c === FALSE ) {
-				throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
-			}
-	 
-			if ( ldap_set_option( $ldap_c, LDAP_OPT_PROTOCOL_VERSION,
-			 $_LDAP_Protocol_Version ) === FALSE ) {
-				throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
-			}
-
-			if ( $ldap_c ) {
-				// Authentification au serveur LDAP
-				$ldap_b = ldap_bind( $ldap_c, $LDAP_RDN, $Authenticator );
-
-				// Vérification de l'authentification
-				if ( ! $ldap_b ) {
-					throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
+		do {
+			switch( $Type ) {
+			 default:
+			 case 'database':
+			 case 'D':
+				$Authenticator = sha1( $Authenticator . $Occurrence->idn_salt );
+		  
+				if ( $Authenticator != $Occurrence->idn_authenticator ) {
+					throw new Exception( $L_Err_Auth, -1 );
 				}
-			}
+				
+				$Cascading_Connection = 0; // Arrête la boucle de connexion en cascade.
 
-			break;
-		}
+				break;
+			
+			 case 'radius':
+			 case 'R':
+				include( DIR_RADIUS . '/radius.class.php' );
+				include( DIR_LIBRARIES . '/Config_Radius.inc.php' );
+
+				$Radius_Suffix = '';
+				$UPD_Timeout = 5;
+
+				if ( isset( $_Radius_Authentication_Port ) ) {
+					$authentication_port = $_Radius_Authentication_Port;
+				} else {			
+					$authentication_port = 1812;
+				}
+				
+				if ( isset( $_Radius_Accounting_Port ) ) {
+					$accounting_port = $_Radius_Accounting_Port;
+				} else {			
+					$accounting_port = 1813;
+				}
+
+				try {
+					$radius = new Radius( $_Radius_Server, $_Radius_Secret_Common,
+					 $Radius_Suffix, $UPD_Timeout, $authentication_port, $accounting_port );
+
+					if ( ! @$radius->AccessRequest( $Login, $Authenticator ) ) {
+						if ( $Cascading_Connection == 0 ) {
+							throw new Exception( $L_Err_Auth, -1 );
+						} else {
+							$Type = 'D'; // Redirige pour faire un test dans la base interne.
+						}
+					}
+				} catch ( Exception $e ) {
+					if ( $Cascading_Connection == 0 ) {
+						$Type = 'D'; // Redirige pour faire un test dans la base interne.
+					} else {
+						throw new Exception( $e->getMessage() );
+					}
+
+				}
+				
+				break;
+			
+			 case 'ldap':
+			 case 'L':
+				include( DIR_LIBRARIES . '/Config_LDAP.inc.php' );
+				
+				$LDAP_RDN = $_LDAP_RDN_Prefix . '=' . $Login . ',' . $_LDAP_Organization;
+
+				// Connexion au serveur LDAP
+				try {
+					$ldap_c = ldap_connect( $_LDAP_Server, $_LDAP_Port );
+					if ( $ldap_c === FALSE ) {
+						throw new Exception( ldap_error( $ldap_c ) . ' (Address: '.$_LDAP_Server.', Port: '.$_LDAP_Port.')', ldap_errno( $ldap_c ) );
+					}
+			 
+					if ( ldap_set_option( $ldap_c, LDAP_OPT_PROTOCOL_VERSION,
+					 $_LDAP_Protocol_Version ) === FALSE ) {
+						throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
+					}
+
+					if ( $ldap_c ) {
+						// Authentification au serveur LDAP
+						$ldap_b = ldap_bind( $ldap_c, $LDAP_RDN, $Authenticator );
+
+						// Vérification de l'authentification
+						if ( ! $ldap_b ) {
+							if ( $Cascading_Connection == 0 ) {
+								throw new Exception( ldap_error( $ldap_c ).' (RDN: '.$LDAP_RDN.')', ldap_errno( $ldap_c ) );
+							} else {
+								$Type = 'D'; // Redirige pour faire un test dans la base interne.
+							}
+						}
+					}
+				} catch ( Exception $e ) {
+					if ( $Cascading_Connection == 0 ) {
+						throw new Exception( ldap_error( $ldap_c ), ldap_errno( $ldap_c ) );
+					} else {
+						$Type = 'D'; // Redirige pour faire un test dans la base interne.
+					}
+				}
+
+				break;
+			}
+		} while( $Cascading_Connection == 1 and $Login == 'root' );
 
 
 		/* ---------------------------------------------
@@ -791,6 +822,8 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Retourne vrai si la session n'a pas expirée, sinon retourne faux.
 	*/
+		if ( ! isset( $_SESSION[ 'Expired' ] ) ) return 0;
+		
 		$expired_date = new DateTime( date( 'Y-m-d H:i:s', $_SESSION[ 'Expired' ] ) );
 		$since_date = new DateTime( date( 'Y-m-d H:i:s' ) );
 		$session_date = $since_date->diff( $expired_date );

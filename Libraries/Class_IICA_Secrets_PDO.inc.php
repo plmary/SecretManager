@@ -316,7 +316,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
-	* @date 2013-02-18
+	* @date 2014-12-08
 	*
 	* @param[in] $sgr_id Id. du Groupe de Secret précisé comme critère de recherche pour les Secrets
 	* @param[in] $idn_id Id. de l'Identité précisé comme critère de recherche pour les Secrets
@@ -343,7 +343,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			if ( $Where == '' ) $Where = 'WHERE T6.idn_id = :idn_id ';
 			else $Where .= 'AND T6.idn_id = :idn_id ';
 				
-		} else $Where = 'WHERE ( T1.idn_id IS NULL OR T1.idn_id = 0 OR T1.idn_id = :idn_id ) ';
+		} //else $Where = 'WHERE ( T1.idn_id IS NULL OR T1.idn_id = 0 OR T1.idn_id = :idn_id ) ';
 
 		
 		if ( $stp_id != '' ) {
