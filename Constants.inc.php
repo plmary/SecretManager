@@ -6,7 +6,7 @@
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 * @author Pierre-Luc MARY
-* @date 2014-06-13
+* @date 2014-12-11
 *
 */
 
@@ -36,5 +36,7 @@ define( 'MAIL_BODY', DIR_LIBRARIES . DIRECTORY_SEPARATOR . "Mail_Body.dat" );
 
 define( 'INTEGRITY_FILENAME', 'Libraries' . DIRECTORY_SEPARATOR . 'files_integrity.dat' );
 define( 'MASTER_INTEGRITY_FILENAME', 'Libraries' . DIRECTORY_SEPARATOR . 'file_integrity.dat' );
+
+define( 'CONSTRAINTS_DB_FILENAME', 'Installation' . DIRECTORY_SEPARATOR . 'Secret_Manager-1.sql' );
 
 ?>

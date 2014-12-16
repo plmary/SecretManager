@@ -2186,6 +2186,50 @@ switch( $Action ) {
 	echo json_encode( $Resultat );
 
  	exit();
+
+
+ case 'SCR_LH_X': // Liste l'historique d'un Secret.
+	if ( ($scr_id = $Security->valueControl( $_POST[ 'scr_id' ], 'NUMERIC' )) == -1 ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (scr_id)', $Return_Page, 1 ) );
+
+		exit();
+	}
+
+	try {
+		include_once( DIR_LIBRARIES . '/Class_Secrets_Server.inc.php' );
+		
+		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets-server.php' );
+
+
+		$Secret_Server = new Secret_Server();
+
+		$List_Secrets_History = $Secrets->listSecretsHistory( $_POST['scr_id']);
+
+		$Flux_HTML = '';
+
+		foreach ( $List_Secrets_History as $Occurrence ) {
+			$Flux_HTML .= '<div class="history_row">' .
+				'<span class="green">' . $Secret_Server->mc_decrypt( $Occurrence->shs_password ) . '</span>' .
+				'<span>' . $Occurrence->shs_last_date_use . '</span>' .
+				'</div>';
+		}
+
+		$Resultat = array(
+			'Statut' => 'success',
+			'Password' => $L_Password,
+			'Date' => $L_Date,
+			'Message' => $Flux_HTML
+		);
+	} catch( Exception $e ) {
+		$Resultat = array(
+			'Statut' => 'error',
+			'Message' => $e->getMessage()
+		);
+	}
+
+	print( json_encode( $Resultat ) );
+
+	exit();
 }
 
 if ( $Action != 'SCR_V' ) {

@@ -18,7 +18,7 @@ $(document).ready( function() {
 
 
     // Surveille les touches du clavier utilisées dans le champ de Recherche.
-    $("#iSearchSecret").keyup(function(){
+    $('input[name="searchSecret"]').keyup(function(){
         var recherche = $(this).val();
         
         $('tbody#listeSecrets').html("");

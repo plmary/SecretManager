@@ -1,18 +1,61 @@
 -- Author  : Pierre-Luc MARY
--- Date    : 2014-06-19
+-- Date    : 2014-12-10
 -- Base    : secret_manager
--- Model   : 1.5-0
+-- Model   : 1.6-1
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT=1;
-SET time_zone = "+00:00";
+USE secret_manager;
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+ALTER TABLE scr_secrets ADD CONSTRAINT env_scr_fk
+FOREIGN KEY (env_id)
+REFERENCES env_environments (env_id)
+ON DELETE RESTRICT
+ON UPDATE NO ACTION;
 
-GRANT USAGE ON *.* TO 'iica_user'@'localhost' IDENTIFIED BY PASSWORD '*5E59D2AFD76D20C92203C039B9F0D6F0013EA9A0';
+ALTER TABLE idn_identities ADD CONSTRAINT ent_idn_fk
+FOREIGN KEY (ent_id)
+REFERENCES ent_entities (ent_id)
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON `secret\_manager`.* TO 'iica_user'@'localhost';
+ALTER TABLE idn_identities ADD CONSTRAINT cvl_idn_fk
+FOREIGN KEY (cvl_id)
+REFERENCES cvl_civilities (cvl_id)
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
+
+ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT rgh_prsg_fk
+FOREIGN KEY (rgh_id)
+REFERENCES rgh_rights (rgh_id)
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
+
+ALTER TABLE scr_secrets ADD CONSTRAINT stp_scr_fk
+FOREIGN KEY (stp_id)
+REFERENCES stp_secret_types (stp_id)
+ON DELETE RESTRICT
+ON UPDATE NO ACTION;
+
+ALTER TABLE idpr_identities_profiles ADD CONSTRAINT idpr_prf_fk
+FOREIGN KEY (prf_id)
+REFERENCES prf_profiles (prf_id)
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
+
+ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT prf_prsg_fk
+FOREIGN KEY (prf_id)
+REFERENCES prf_profiles (prf_id)
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
+
+ALTER TABLE idpr_identities_profiles ADD CONSTRAINT idn_idpr_fk
+FOREIGN KEY (idn_id)
+REFERENCES idn_identities (idn_id)
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
+
+ALTER TABLE prsg_profiles_secrets_groups ADD CONSTRAINT sgr_prsg_fk
+FOREIGN KEY (sgr_id)
+REFERENCES sgr_secrets_groups (sgr_id)
+ON DELETE CASCADE
+ON UPDATE NO ACTION;

@@ -90,7 +90,7 @@ CREATE TABLE ach_access_history (
                 idn_id BIGINT,
                 rgh_id BIGINT,
                 ach_gravity_level INT,
-                ach_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                ach_date DATETIME NOT NULL,
                 ach_ip VARCHAR(40),
                 ach_access VARCHAR(300) NOT NULL,
                 PRIMARY KEY (ach_id)
@@ -209,6 +209,6 @@ CREATE TABLE shs_secrets_history (
                 shs_id BIGINT AUTO_INCREMENT NOT NULL,
                 scr_id BIGINT NOT NULL,
                 shs_password LONGBLOB NOT NULL,
-                shs_last_date_use DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                shs_last_date_use DATETIME NOT NULL,
                 PRIMARY KEY (shs_id)
 );

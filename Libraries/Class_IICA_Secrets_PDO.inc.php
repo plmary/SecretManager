@@ -93,14 +93,14 @@ class IICA_Secrets extends IICA_DB_Connector {
 			throw new Exception( '<p class="alert">'. $L_Files_Integrity_Alert . '</p><p>' . $Files . '</p>', 1 );
 		}
 
-
+		$DateCourante = date( 'Y-m-d H:i:s' );
 		
 		if ( $scr_id == '' ) {
 			$Request = 'INSERT INTO scr_secrets ' .
 				'( sgr_id, stp_id, scr_host, scr_user, scr_password, scr_comment, ' .
 				'scr_alert, scr_creation_date, env_id, app_id, scr_expiration_date, idn_id ) ' .
 				'VALUES ( :sgr_id, :stp_id, :scr_host, :scr_user, :scr_password, ' .
-				':scr_comment, :scr_alert, "' . date( 'Y-m-d H:n:s' ) . '", :env_id, :app_id, ' .
+				':scr_comment, :scr_alert, "' . $DateCourante . '", :env_id, :app_id, ' .
 				':scr_expiration_date, :idn_id ) ';
 
 			if ( ! $Result = $this->prepare( $Request ) ) {
@@ -111,7 +111,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			$Request = 'UPDATE scr_secrets SET ' .
 				'scr_id = :scr_id, sgr_id = :sgr_id, stp_id = :stp_id, scr_host = :scr_host, ' .
 				'scr_user = :scr_user, scr_password = :scr_password, scr_comment = :scr_comment, ' .
-				'scr_alert = :scr_alert, scr_modification_date = "' . date( 'Y-m-d H:n:s' ) . '", ' .
+				'scr_alert = :scr_alert, scr_modification_date = "' . $DateCourante . '", ' .
 				'env_id = :env_id, app_id = :app_id, scr_expiration_date = :scr_expiration_date, ' .
 				'idn_id = :idn_id ' .
 				'WHERE scr_id = :scr_id';
@@ -216,6 +216,44 @@ class IICA_Secrets extends IICA_DB_Connector {
 				break;
 			}
 		}
+
+
+		// =========================================
+		// Mise à jour de l'historique des Secrets.
+		$Request = 'INSERT INTO shs_secrets_history ' .
+			'( scr_id, shs_password, shs_last_date_use ) ' .
+			'VALUES ( :scr_id, :scr_password, "' . $DateCourante . '" ) ';
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( $scr_id == '' ) {
+			if ( ! $Result->bindParam( ':scr_id', $this->LastInsertId, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+		} else {
+			if ( ! $Result->bindParam( ':scr_id', $scr_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+		}
+
+
+		if ( ! $Result->bindParam( ':scr_password', $Encrypted,
+		 PDO::PARAM_LOB ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
 		
 		return true;
 	}
@@ -1212,6 +1250,32 @@ class IICA_Secrets extends IICA_DB_Connector {
     		$Labels['L_Comment'] . ':"' . $Secret->scr_comment . '")';
     }
 
+
+    public function listSecretsHistory( $scr_id ) {
+		$Request = 'SELECT ' .
+		 'shs_password, shs_last_date_use ' .
+		 'FROM shs_secrets_history AS shs ' .
+		 'WHERE scr_id = :scr_id ' .
+		 'ORDER BY shs_last_date_use DESC ';
+		
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->bindParam( ':scr_id', $scr_id, PDO::PARAM_INT ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		return $Result->fetchAll( PDO::FETCH_CLASS );
+    }
 } // Fin class IICA_Secrets
 
 ?>

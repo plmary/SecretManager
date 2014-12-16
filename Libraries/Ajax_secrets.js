@@ -46,6 +46,11 @@ function hideModal() {
     // Cache le calque.
     $('#afficherSecret').hide();
     $('#addGroup').hide();
+
+    $('#history_title').remove();
+    $('.history_row').remove();
+
+    $('#menu-icon-page').off( 'click' );
 }
 
 
@@ -109,8 +114,19 @@ function viewPassword( scr_id ){
                         '<span class="'+couleur_fond+'td-aere" id="iPassword">'+password+'</span></p>';
 
                     $('#detailSecret').html(Message);
-                }
-                else if (statut == 'erreur') {
+
+
+                    $('#menu-icon-page').off( 'click' );
+
+                    $('#menu-icon-page').one( 'click', function() {
+                        addSecretsHistory( scr_id );
+                    });
+
+                    if ( $('#history_title').length > 0 ) {
+                        $('#history_title').remove();
+                        $('.history_row').remove();
+                    }
+                } else if (statut == 'erreur') {
                     $('#detailSecret').html(reponse['Message']);
                 }
 
@@ -261,7 +277,7 @@ function saveEditFields( Id ){
 // Affiche une boîte de dialogue pour créer un nouveau Groupe de Secrets.
 function putAddGroup() {
     var Title, Label, Alert, Cancel, ButtonName;
-    
+
     $.ajax({
         async: false,
         url: '../../SM-secrets.php?action=L_ADD_GROUP_X',
@@ -639,10 +655,10 @@ function getCreateSecret( sgr_id ){
     var FutureDate = new Date(NewYear, NewMonth, NewDay);
 
     NewDay = FutureDate.getDate();
+    if ( NewDay.toString().length == 1 ) NewDay = '0' + NewDay.toString();
     NewMonth = parseInt( FutureDate.getMonth() ) + 1;
     if ( NewMonth.toString().length == 1 ) NewMonth = '0' + NewMonth.toString();
     NewYear = FutureDate.getFullYear();
-    if ( NewYear.toString().length == 1 ) NewYear = '0' + NewYear.toString();
 
     FutureDate = NewYear + '/' + NewMonth + '/' + NewDay;
 
@@ -986,4 +1002,46 @@ function CreateSecret( sgr_id ){
             alert('Erreur sur serveur "Ajax_secrets.js" - "SCR_AX" : ' + reponse['responseText']);
         }
     });
+}
+
+
+function addSecretsHistory( scr_id ) {
+    $.ajax({
+        url: 'SM-secrets.php?action=SCR_LH_X',
+        type: 'POST',
+        data: $.param({
+            'scr_id': scr_id,
+        }),
+        dataType: 'json',
+        success: function(reponse) {
+            if (reponse['Statut'] == 'success') {
+                if ( $('#history_title').length == 0 ) {
+                    $('#listHistorique').before(
+                        '<div id="history_title">' +
+                        '<span class="bold">' + reponse['Password'] + '</span>' +
+                        '<span class="bold">' + reponse['Date'] + '</span>' +
+                        '</div>'
+                    );
+
+                    $('#listHistorique').html( reponse['Message'] );
+
+                    $('#menu-icon-page').one( 'click', function() {
+                        addSecretsHistory( scr_id );
+                    });
+                } else {
+                    $('#history_title').remove();
+                    $('.history_row').remove();
+
+                    $('#menu-icon-page').one( 'click', function() {
+                        addSecretsHistory( scr_id );
+                    });
+                }
+            } else {
+                // Récupère le statut de l'appel Ajax
+                showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
+            }
+
+        }
+    });
+
 }

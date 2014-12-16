@@ -217,9 +217,12 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 			}
 		}
 
-		 print( "        <td class=\"".$myClass."align-middle\" style=\"max-width:". $GLOBALS['S_Expiration_Date'] ."px; " .
+		$Expiration_Date = explode( ' ', $Secret->scr_expiration_date );
+		$Expiration_Date = $Expiration_Date[ 0 ];
+
+		print( "        <td class=\"".$myClass."align-middle\" style=\"max-width:". $GLOBALS['S_Expiration_Date'] ."px; " .
 		  "width:". $GLOBALS['S_Expiration_Date'] ."px;\" onclick=\"viewPassword(" . 
-		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_expiration_date ) . "</td>\n" .
+		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Expiration_Date ) . "</td>\n" .
 		  "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Comment'] ."px; " .
 		  "width:". $GLOBALS['S_Comment'] ."px;\" onclick=\"viewPassword(" . 
 		  $Secret->scr_id . ");\">" . $Security->XSS_Protection( $Secret->scr_comment ) . "</td>\n" );
@@ -262,7 +265,7 @@ function construireListe( $Search_Secrets, $orderBy = '', $Action = '' ) {
 		 $Secret->scr_id . " );\"><img class=\"no-border\" src=\"" . URL_PICTURES . "/b_eye.png\" alt=\"" .
 		 $GLOBALS['L_Password_View'] . "\" title=\"" . $GLOBALS['L_Password_View'] . "\" /></a>\n";
 		
-		print( "        <td style=\"max-width:". $GLOBALS['S_Action'] ."px; width:". $GLOBALS['S_Action'] ."px;\" data-right=\"" . $B_Rights . "\">\n" .
+		print( "        <td class=\"align-middle\" style=\"max-width:". $GLOBALS['S_Action'] ."px; width:". $GLOBALS['S_Action'] ."px;\" data-right=\"" . $B_Rights . "\">\n" .
 		 $Buttons .
 		 "        </td>\n" .
 		 "       </tr>\n" );
@@ -345,16 +348,16 @@ switch( $Action ) {
     //	$addButton = '';
     //}
 
-   	$addButton = '<form class="form-search simple" method="post" name="searchForm" action="' . $Script . '?action=R2">' .
+   	$searchButton = '<form class="form-search simple" method="post" name="searchForm" action="' . $Script . '?action=R2">' .
    	 '<div class="input-append">' .
-	 '<input type="text" class="span2 search-query" id="iSearchSecret" name="searchSecret" value="' . $Search_Secrets . '" />' .
+	 '<input type="text" class="span2 search-query" name="searchSecret" value="' . $Search_Secrets . '" />' .
 	 '<button type="submit" class="btn btn-small" title="' . $L_Search . '"><img class="no-border" src="' . URL_PICTURES . '/b_search.png" alt="'. $L_Search . 
 	 '" /></button>' .
 	 '</div>' .
 	 $addButton .
 	 '</form>';
 
-	$myButtons = '<div style="float: right; display: inline; margin-right: 3px;">' . $addButton . "</div>";
+	$myButtons = '<div style="float: right; display: inline; margin-right: 3px;">' . $searchButton . "</div>";
 
 	print( "     <table class=\"table-bordered principal\">\n" .
 	 "      <thead class=\"fixedHeader\">\n" .
@@ -683,7 +686,11 @@ print( "   </div> <!-- Fin : zoneMilieuComplet -->\n" .
  "   <div id=\"afficherSecret\" class=\"tableau_synthese hide modal\" style=\"left:45%;\">\n".
  "    <button type=\"button\" class=\"close\">×</button>\n".
  "    <p class=\"titre\">".$L_Secret_View."</p>\n".
- "    <div id=\"detailSecret\" style=\"margin:6px;padding:6px;min-width:250px;\" class=\"corps vertical-align align-center\"></div>\n" .
+ "    <div id=\"detailSecret\" style=\"margin: 0 6px;padding:6px;min-width:250px;\" class=\"corps vertical-align align-center\"></div>\n" .
+ "    <div id=\"detailHistorique\" class=\"corps align-center\">\n" .
+ "     <div id=\"menu-icon-page\" class=\"icon28 border\" title=\"" . $L_History_Secrets . "\" style=\"float: none; margin: 0 auto 3px;\"></div>\n" .
+ "     <div id=\"listHistorique\" class=\"retour_ligne\"></div>\n" .
+ "    </div>\n" .
  "   </div> <!-- Fin : afficherSecret -->\n" .
  $PageHTML->construireFooter( 1, 'home' ) .
  $PageHTML->piedPageHTML() );

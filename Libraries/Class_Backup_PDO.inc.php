@@ -191,6 +191,41 @@ class Backup extends IICA_Parameters {
         fwrite( $Save_File, ' </table>' . "\n" );
 
 
+        // =====================================================
+        // Traitement de la table des "Historiques des Secrets".		    
+        if ( ! $Result = $this->prepare( 'SELECT ' . 
+            'shs_id, scr_id, shs_password, shs_last_date_use ' .
+            'FROM shs_secrets_history' ) ) {
+            $Error = $Result->errorInfo();
+            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+        }
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		fwrite( $Save_File, "\n" . ' <table id="scr" name="shs_secrets_history">' . "\n" .
+		    '  <key id="history_mother_key">' . file_get_contents( DIR_LIBRARIES . '/secret.dat' ) . '</key>' . "\n" );
+		        
+        $Row_Count = 0;
+        
+		while ( $Occurrence = $Result->fetchObject() ) {
+		    $Row_Count += 1;
+		    
+		    $Out_Occurrence = '  <row id="shs-' . $Row_Count . '">' . "\n" .
+		        '   <column name="shs_id">' . $Occurrence->shs_id . '</column>' . "\n" .
+		        '   <column name="scr_id">' . $Occurrence->scr_id . '</column>' . "\n" .
+		        '   <column name="shs_password">' . $Occurrence->shs_password . '</column>' . "\n" .
+		        '   <column name="shs_last_date_use">' . $Occurrence->shs_last_date_use . '</column>' . "\n" .
+                '  </row>' . "\n" ;
+
+            fwrite( $Save_File, $Out_Occurrence );
+		}
+
+        fwrite( $Save_File, ' </table>' . "\n" );
+
+
         // ============================================
         // Traitement de la table des "Secrets".		    
         if ( ! $Result = $this->prepare( 'SELECT ' . 
@@ -663,6 +698,52 @@ class Backup extends IICA_Parameters {
 		}
 
 
+		// =========================================================================================
+		// A partir du fichier des contraintes, génère les requètes de suppression des contraintes.
+		$Constraints = file_get_contents( CONSTRAINTS_DB_FILENAME );
+		foreach ( explode(";", $Constraints ) as $Instruction ) { // Recherche les instructions parmis le flux
+			$Instruction = str_replace( array(" ","\t","\r"), " ", $Instruction );
+
+			$A_Instruction = explode( "\n", trim( $Instruction ) );
+
+			foreach ( $A_Instruction as $Occurrence ) {
+				$To_Do = FALSE;
+
+				$Internal = explode( ' ', trim( $Occurrence ) );
+
+				if ( $Internal[ 0 ] != '--'
+				 and $Internal[ 0 ] != ''
+				 and strtoupper( $Internal[ 0 ] ) != 'USE'
+				 and $Internal[ 0 ] != "\n"
+				 and $Internal[ 0 ] != "\r\n" ) {
+					$To_Do = TRUE;
+				}
+			}
+
+			if ( $To_Do == TRUE ) {
+				$Instruction = str_replace( "\n", " ", $Instruction );
+				$Internal = explode( ' ', trim( $Instruction ) );
+
+				if ( strtoupper( $Internal[0] ) == 'ALTER' and strtoupper( $Internal[1] ) == 'TABLE'
+				 and strtoupper( $Internal[3] ) == 'ADD' and strtoupper( $Internal[4] ) == 'CONSTRAINT' ) {
+					$Query = 'ALTER TABLE ' . $Internal[ 2 ] . ' DROP FOREIGN KEY ' . $Internal[ 5 ];
+
+					$Request = $this->prepareSQL( $Query );
+
+					try {
+						$this->executeSQL( $Request );
+					} catch ( Exception $e ) {
+						if ( $e->getCode() != 1091 ) {
+							throw new Exception( $e->getTraceAsString(), $e->getCode() );				}
+					}
+				}
+			}
+		}
+
+
+		// Recopie les données du fichier de sauvegarde dans la base de données.
+		$this->beginTransaction();
+
 	    $xml = new DOMDocument();
 
 	    $xml->load( $FileName );
@@ -686,23 +767,11 @@ class Backup extends IICA_Parameters {
 		for( $tables_i = 0; $tables_i < $Tables->length; $tables_i++ ) {
 			$Table_Name = $Tables->item( $tables_i )->getAttribute( 'name' );
 
-			$Query = 'DELETE FROM ' . $Table_Name . ';';
+			$Query = 'TRUNCATE TABLE ' . $Table_Name . ';';
 
-			if ( ! $Result = $this->prepare( $Query ) ) {
-				$Error = $Result->errorInfo();
-
-		        throw new Exception( $Error[ 2 ] . ' (' . $Error[ 1 ] . ')' );
-		        
-		        exit();
-			}
+			$Request = $this->prepareSQL( $Query );
 			
-			if ( ! $Result->execute() ) {
-				$Error = $Result->errorInfo();
-
-		        throw new Exception( $Error[ 2 ] . ' (' . $Error[ 1 ] . ')' );
-		        
-		        exit();
-		    }
+			$this->executeSQL( $Request );
 
 			$Occurrences = $Tables->item( $tables_i )->getElementsByTagName( 'row' );
 			for( $occurrences_i = 0; $occurrences_i < $Occurrences->length; $occurrences_i++ ) {
@@ -722,23 +791,20 @@ class Backup extends IICA_Parameters {
 				
 				$Query = 'INSERT INTO ' . $Table_Name . ' (' . $Columns_Name . ') VALUES (' . $Values . ');';
 
-				if ( ! $Result = $this->prepare( $Query ) ) {
-					$Error = $Result->errorInfo();
-
-			        throw new Exception( $Error[ 2 ] . ' (' . $Error[ 1 ] . ')' );
-			        
-			        exit();
-				}
+				$Request = $this->prepareSQL( $Query );
 				
-				if ( ! $Result->execute() ) {
-					$Error = $Result->errorInfo();
-
-			        throw new Exception( $Error[ 2 ] . ' (' . $Error[ 1 ] . ')[' . $Query . ']' );
-			        
-			        exit();
-			    }
+				$this->executeSQL( $Request );
 			}
 		}
+
+		$this->commitTransaction(); // Sauvegarde les mises à jour.
+
+
+		// ==============================================================
+		// Remet en place les contraintes qui ont été lues précédemment.
+		$Request = $this->prepareSQL( $Constraints );
+		$this->executeSQL( $Request );
+
 
 		return array( $Mother_Key_Encrypted, $Store_Date );
 	}
