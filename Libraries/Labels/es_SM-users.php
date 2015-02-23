@@ -118,4 +118,6 @@
 	
 	$L_Confirm_Delete_Entity = 'Usted confirma la supresión de esta Entidad : ';
     $L_Confirm_Delete_Civility = 'Usted confirma la supresión de esta Civilidad : ';
+
+    $L_No_User_Profile_Associated = 'Ningún perfil de usuario asociado';
 ?>

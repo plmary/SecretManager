@@ -1464,6 +1464,8 @@ case 'STOR_TX':
 	include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
 	
 	$Backup = new Backup();
+
+	set_time_limit ( 300 );
 	
 	try {
 		$Date_Backup = $Backup->backup_total();
@@ -1629,6 +1631,10 @@ case 'STOR_TX':
 
 		exit();
 	}
+
+
+	set_time_limit ( 300 );
+
 
 	try {
 		// Lance la restauration et récupère la clé mère contenue dans ce fichier.

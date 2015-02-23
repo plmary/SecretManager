@@ -103,4 +103,6 @@
 	
 	$L_Confirm_Delete_Entity = 'Sie bestätigen die Unterdrückung dieser Entität: ';
 	$L_Confirm_Delete_Civility = 'Sie bestätigen die Unterdrückung dieser Civility: ';
+
+    $L_No_User_Profile_Associated = 'Kein Benutzerprofil assoziiert';
 ?>

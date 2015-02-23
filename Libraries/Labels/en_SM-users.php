@@ -102,4 +102,6 @@
 	
 	$L_Confirm_Delete_Entity = 'Do you confirm the suppression of this Entity: ';
 	$L_Confirm_Delete_Civility = 'Do you confirm the suppression of this Civility: ';
+
+    $L_No_User_Profile_Associated = 'No user profile associated';
 ?>

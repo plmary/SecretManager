@@ -258,7 +258,7 @@ class IICA_Profiles extends IICA_DB_Connector {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
 
-		$this->commit();
+		$this->commitTransaction();
  
  		return true;
 	}

@@ -308,7 +308,7 @@ class IICA_Entities extends IICA_DB_Connector {
 
 
 		// Sauvegarde l'ensemble des modifications.
-		$this->commit();
+		$this->commitTransaction();
  
  		return true;
 	}

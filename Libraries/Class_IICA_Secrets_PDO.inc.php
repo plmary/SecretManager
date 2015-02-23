@@ -340,7 +340,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			}
 		}
 
-        $DB_Connect->commit();
+        $DB_Connect->commitTransaction();
 		
 		return true;
 	}

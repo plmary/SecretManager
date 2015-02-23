@@ -360,10 +360,12 @@ class IICA_Identities extends IICA_DB_Connector {
     	 'T2.cvl_last_name, ' .
     	 'T2.cvl_sex, ' .
     	 'T3.ent_code, ' .
-    	 'T3.ent_label ' .
+    	 'T3.ent_label, ' .
+    	 'count(T4.prf_id) AS "total_prf" ' .
 		 'FROM idn_identities as T1 ' .
     	 'LEFT JOIN cvl_civilities as T2 ON T1.cvl_id = T2.cvl_id ' .
-    	 'LEFT JOIN ent_entities as T3 ON T1.ent_id = T3.ent_id ';
+    	 'LEFT JOIN ent_entities as T3 ON T1.ent_id = T3.ent_id ' .
+    	 'LEFT JOIN idpr_identities_profiles AS T4 ON T4.idn_id = T1.idn_id ';
 
 
     	// Flag pour déterminer si on doit limiter l'affichage des Identités aux seuls administrateurs.
@@ -401,6 +403,9 @@ class IICA_Identities extends IICA_DB_Connector {
 			break;
 			
 		}
+
+
+		$Request .= 'GROUP BY T1.idn_id,T1.cvl_id,T1.idn_login ';
 
 		
 		switch( $orderBy ) {
@@ -602,7 +607,6 @@ class IICA_Identities extends IICA_DB_Connector {
 		** Commence la transaction.
 		*/
 		$this->beginTransaction();
-	
         if ( ! $Result = $this->prepare( 'DELETE ' .
          'FROM idn_identities ' .
          'WHERE idn_id = :idn_id' ) ) {
@@ -729,7 +733,7 @@ class IICA_Identities extends IICA_DB_Connector {
 		}
 
 
-		$this->commit();
+		$this->commitTransaction();
  
  		return true;
 	}
@@ -1461,7 +1465,6 @@ class IICA_Identities extends IICA_DB_Connector {
 
 		// Récupère l'objet Utilisateur si ce dernier n'a pas été fourni.
 		if ( $oUser == '' ) $oUser = $this->detailedGet( $idn_id );
-
  
     	// Récupère les libellés pour le message
     	$Labels = $pHTML->getTextCode( array( 'L_Username', 'L_Administrator', 'L_Civility', 'L_Entity', 'L_Operator' ), $pHTML->getParameter( 'language_alert' ) );

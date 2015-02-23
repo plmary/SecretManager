@@ -1,0 +1,1 @@
+ALTER TABLE `idn_identities` ADD `idn_api` TINYINT NOT NULL DEFAULT '0' AFTER `idn_operator`; 

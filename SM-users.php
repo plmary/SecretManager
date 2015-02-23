@@ -381,7 +381,19 @@ switch( $Action ) {
 
 				$Msg_Error .= $L_User_Disabled;
 			}
+
 		
+			if ( $Identity->total_prf == 0 and $Identity->idn_super_admin == FALSE ) {
+				if ( $Flag_Status == 1 ) {
+					$Msg_Error .= ', ';
+				} else {
+					$Flag_Status = 1;
+				}
+
+				$Msg_Error .= $L_No_User_Profile_Associated;
+			}
+		
+
 			if ( $Flag_Status == 1 ) {
 				$Flag_Status = '<img src="' . URL_PICTURES . '/s_attention.png" class="no-border" alt="Ko" title="' . $Msg_Error . '" />';
 			} else {
@@ -743,7 +755,7 @@ switch( $Action ) {
 	} catch( PDOException $e ) {
 		$alert_message = $PageHTML->getTextCode( 'L_ERR_DELE_Identity' ) . ' [' . $idn_id . ']';
 
-		if ( $verbosity_alert == 2 ) {
+		if ( $verbosity_alert == 2 ) { print($e->getMessage() . ' - ' .$alert_message);
 			$alert_message .= $Identities->getUserForHistory( $idn_id );
 		}
 
@@ -1972,7 +1984,7 @@ switch( $Action ) {
 
         echo json_encode( array(
             'Status' => 'error',
-            'Message' => ${$L_Message}
+            'Message' => $L_Message . ' ('.$e->getMessage().')'
             ) );
 
 		exit();
