@@ -1112,7 +1112,11 @@ class Security extends IICA_Parameters {
 
 			$Hash_File = hash_file( 'sha256', INTEGRITY_FILENAME );
 
-			if ( $Hash_File != $Hashes[ INTEGRITY_FILENAME ] ) {
+			if ( DIRECTORY_SEPARATOR != '/' ) {
+				$Idx_Name = str_replace( DIRECTORY_SEPARATOR, '/', INTEGRITY_FILENAME );
+			}
+			
+			if ( $Hash_File != $Hashes[ $Idx_Name ] ) {
 				$pObject = new stdClass();
 
 				$pObject->scr_id = '';
