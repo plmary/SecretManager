@@ -25,7 +25,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 	*/
 	public function __construct() {
 		parent::__construct();
-		
+
 		return true;
 	}
 
@@ -73,8 +73,8 @@ class IICA_Secrets extends IICA_DB_Connector {
 
 		$Secret_Server = new Secret_Server();
 
-		
 		$Integrity_Status = $Security->checkFilesIntegrity();
+
 		if ( $Integrity_Status[0] == FALSE ) {
 			if ( $Security->getParameter('stop_secret_server_on_alert') == 1 ) {
 				$Secret_Server->SS_Shutdown();
@@ -108,53 +108,119 @@ class IICA_Secrets extends IICA_DB_Connector {
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
 		} else {
-			$Request = 'UPDATE scr_secrets SET ' .
-				'scr_id = :scr_id, sgr_id = :sgr_id, stp_id = :stp_id, scr_host = :scr_host, ' .
-				'scr_user = :scr_user, scr_password = :scr_password, scr_comment = :scr_comment, ' .
-				'scr_alert = :scr_alert, scr_modification_date = "' . $DateCourante . '", ' .
-				'env_id = :env_id, app_id = :app_id, scr_expiration_date = :scr_expiration_date, ' .
-				'idn_id = :idn_id ' .
+			$Request = 'UPDATE scr_secrets SET ';
+			$Fields = '';
+			
+			if ( $sgr_id != '' ) {
+				$Fields .= 'sgr_id = :sgr_id';
+			}
+				
+			if ( $stp_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'stp_id = :stp_id';
+			}
+			
+			if ( $scr_host != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'scr_host = :scr_host';
+			}
+			
+			if ( $scr_user != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'scr_user = :scr_user';
+			}
+			
+			if ( $scr_password != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'scr_password = :scr_password';
+			}
+			
+			if ( $scr_comment != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'scr_comment = :scr_comment';
+			}
+			
+			if ( $scr_alert != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'scr_alert = :scr_alert';
+			}
+			
+			if ( $env_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'env_id = :env_id';
+			}
+			
+			if ( $app_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'app_id = :app_id';
+			}
+			
+			if ( $scr_expiration_date != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'scr_expiration_date = :scr_expiration_date';
+			}
+			
+			if ( $idn_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				$Fields .= 'idn_id = :idn_id ';
+			}
+			
+			if ( $Fields != '' ) $Fields .= ', ';
+				
+			$Request .= $Fields . 'scr_modification_date = "' . $DateCourante . '" ' .
 				'WHERE scr_id = :scr_id';
 
 			if ( ! $Result = $this->prepare( $Request ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
-			
+
 			if ( ! $Result->bindParam( ':scr_id', $scr_id, PDO::PARAM_INT ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 			}
 		}
 
-		if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $sgr_id != '' ) {
+			if ( ! $Result->bindParam( ':sgr_id', $sgr_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 
-		if ( ! $Result->bindParam( ':stp_id', $stp_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $stp_id != '' ) {
+			if ( ! $Result->bindParam( ':stp_id', $stp_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 				
-		if ( ! $Result->bindParam( ':scr_host', $scr_host, PDO::PARAM_STR, 255 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $scr_host != '' ) {
+			if ( ! $Result->bindParam( ':scr_host', $scr_host, PDO::PARAM_STR, 255 ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 				
-		if ( ! $Result->bindParam( ':scr_user', $scr_user, PDO::PARAM_STR, 100 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $scr_user != '' ) {
+			if ( ! $Result->bindParam( ':scr_user', $scr_user, PDO::PARAM_STR, 100 ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 
-		if ( ! $Result->bindParam( ':env_id', $env_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $env_id != '' ) {
+			if ( ! $Result->bindParam( ':env_id', $env_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 
-		if ( ! $Result->bindParam( ':app_id', $app_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $app_id != '' ) {
+			if ( ! $Result->bindParam( ':app_id', $app_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 		
 
@@ -180,24 +246,32 @@ class IICA_Secrets extends IICA_DB_Connector {
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
 				
-		if ( ! $Result->bindParam( ':scr_comment', $scr_comment, PDO::PARAM_STR, 100 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $scr_comment != '' ) {
+			if ( ! $Result->bindParam( ':scr_comment', $scr_comment, PDO::PARAM_STR, 100 ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 				
-		if ( ! $Result->bindParam( ':scr_alert', $scr_alert, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $scr_alert != '' ) {
+			if ( ! $Result->bindParam( ':scr_alert', $scr_alert, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 
-		if ( ! $Result->bindParam( ':scr_expiration_date', $scr_expiration_date, PDO::PARAM_STR, 19 ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $scr_expiration_date != '' ) {
+			if ( ! $Result->bindParam( ':scr_expiration_date', $scr_expiration_date, PDO::PARAM_STR, 19 ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 				
-		if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
-			$Error = $Result->errorInfo();
-			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		if ( $idn_id != '' ) {
+			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
 		}
 
 		if ( ! $Result->execute() ) {
@@ -511,7 +585,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			$Request .= 'ORDER BY scr_comment DESC ';
 			break;
 		}
-		
+	
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
@@ -1275,6 +1349,42 @@ class IICA_Secrets extends IICA_DB_Connector {
 		}
 
 		return $Result->fetchAll( PDO::FETCH_CLASS );
+    }
+    
+    
+    public function searchSecret( $scr_host, $scr_user ) {
+    	$Request = 'SELECT ' .
+    			'scr_id ' .
+    			'FROM scr_secrets ' .
+    			'WHERE scr_host = :scr_host ' .
+    			'AND scr_user = :scr_user ';
+    	
+    	if ( ! $Result = $this->prepare( $Request ) ) {
+    		$Error = $Result->errorInfo();
+    		throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+    	}
+    	
+    	if ( ! $Result->bindParam( ':scr_host', $scr_host, PDO::PARAM_STR, 255 ) ) {
+    		$Error = $Result->errorInfo();
+    		throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+    	}
+
+    	if ( ! $Result->bindParam( ':scr_user', $scr_user, PDO::PARAM_STR, 100 ) ) {
+    		$Error = $Result->errorInfo();
+    		throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+    	}
+    	 
+    	if ( ! $Result->execute() ) {
+    		$Error = $Result->errorInfo();
+    		throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+    	}
+    	
+    	$Occurrence = $Result->fetchObject();
+		if ( $Occurrence == '' ) {
+			return FALSE;
+		}
+
+    	return $Occurrence->scr_id;
     }
 } // Fin class IICA_Secrets
 

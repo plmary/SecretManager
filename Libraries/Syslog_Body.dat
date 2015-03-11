@@ -1,0 +1,1 @@
+User=%User;Date=%ActionDate;Action=%Action;IP=%UserIP;Group=%GroupSecrets;Type=%SecretType;Environment=%SecretEnvironment;Application=%SecretApplication;Secret_Host=%SecretHost;Secret_User=%SecretUser;Comment=%SecretComment

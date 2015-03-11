@@ -262,7 +262,15 @@ switch( $Action ) {
 			 "        <span>" . $L_Total_Users_Super_Admin . " : </span>\n" .
 			 "        <span class=\"green bold\">" . $Identities->totalSuperAdmin() . "</span>\n" .
 			 "       </p>\n" .
-			 "      </div> <!-- Fin : corps -->\n" .
+			 "       <p>\n" .
+			 "        <span>" . $L_Total_Users_Operator . " : </span>\n" .
+			 "        <span class=\"green bold\">" . $Identities->totalOperator() . "</span>\n" .
+			 "       </p>\n" .
+							 "       <p>\n" .
+			 "        <span>" . $L_Total_Users_API . " : </span>\n" .
+			 "        <span class=\"green bold\">" . $Identities->totalAPI() . "</span>\n" .
+			 "       </p>\n" .
+				"      </div> <!-- Fin : corps -->\n" .
 			 "      <p class=\"align-center\"><a class=\"button\" href=\"SM-users.php\">" . $L_Manage_Users . "</a></p>\n" .
 			 "     </div> <!-- Fin : affichage de la synthèse des utilisateurs -->\n\n" );
 	}

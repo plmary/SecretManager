@@ -24,7 +24,8 @@ USE `secret_manager`;
 --
 
 INSERT INTO `cvl_civilities` (`cvl_id`, `cvl_last_name`, `cvl_first_name`, `cvl_sex`, `cvl_birth_date`, `cvl_born_town`) VALUES
-(1, 'de l\\''Outil', 'Administrateur', 0, '0000-00-00', '');
+(1, 'de l\\''Outil', 'Administrateur', 0, '0000-00-00', ''),
+(2, 'API', 'Utilisateur', 0, '0000-00-00', '');
 
 --
 -- Contenu de la table `ent_entities`

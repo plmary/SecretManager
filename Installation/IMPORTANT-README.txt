@@ -1,82 +1,72 @@
-Date : 2014-12-15
+Date : 2014-02-24
 Author : Pierre-Luc MARY
 
-Contact me : mailto:pl.mary(at)orasys.fr
+Contact me : mailto:pl.mary(at)free.fr
 Bug track ticket : https://sourceforge.net/p/secretmanager/tickets/?source=navbar
 
 FR ]
 Quelles nouvelles :
 - La nouvelle "machine virtuelle" a été mis à votre disposition.
 Voir le lien ci-dessous :
-https://sourceforge.net/projects/secretmanager/files/VM-SecretManager_v0.10-1.zip/download
-Important : Un guide d'installation et d'utilisation ont été rédigés.
-
-- Cette version implémente la gestion de l'historique des Secrets.
-L'historique permet à un Administrateur de pouvoir utiliser un ancien mot de passe suite à
-la reconstruction d'une ancienne application ou ancien serveur.
-- Elle implémente également un concept de connexion en cascade pour l'utilisateur "root".
-Ce principe permet à un utilisateur "root" de pouvoir se connecter suite à un problème
-avec son LDAP ou son RADIUS.
-Pour ce faire, il tape le mot de passe qu'il utilisait avant la bascule vers le LDAP ou le
-RADIUS.
+https://sourceforge.net/projects/secretmanager/files/VM-SecretManager-v0.11-0.zip/download
+Important : Un guide d'installation et d'utilisation ont été rédigés pour utiliser la VM.
+Pour ce connecter à la VM : user: "root", password: "orasys"
 
 Plusieurs petites corrections :
-- Correction d'un problème lors de la création des "Groupes de Secrets" ;
-- Réécriture du processus de restauration (qui ne fonctionnait pas bien avec la mise en 
-place des contraintes d'intégrité dans la base de données) ;
+- Correction de la suppression des Entités, Groupes de Secrets et Profils;
+- Correction de petits problèmes sur les contrôles d'intégrité pour les personnes utilisant le SecretManager sur un Serveur Windows.
 
 ------------------------
 Première installation :
 
-Déziper "SecretManager_v0.10-0.zip" dans le "DocumentRoot" de 
+Déziper "SecretManager-v0.11-0.zip" dans le "DocumentRoot" de 
 votre Serveur Apache (voir la configuration de votre httpd-vhosts.conf). Ensuite, lire le 
 "Guide d'installation" dans le répertoire "Documentations" dans l'arborescence de 
 SecretManager.
 
-----------------------------------
-Mise à jour de v0.9-1 à v0.10-0 :
+Utilisateur par défaut : Nom utilisateur : "root", Mot de passe : "Welcome !"
+Clé opérateur par défaut : "CleO"
 
-Déziper "upd_SecretManager_v0.10-0.zip" dans le précédent répertoire d'installation de 
+----------------------------------
+Mise à jour de v0.10-0 à v0.11-0 :
+
+Déziper "upd_SecretManager-v0.11-0.zip" dans le précédent répertoire d'installation de 
 votre "SecretManager".
-*** Attention : il faut mettre à jour la base de données "Secret_Manager" par l'exécution
-du script suivant :
-- upd-1-v0.10-0-SecretManager.sql Ce script est dans le répertoire "Installation" comme
-tous les scripts SQL.
+
+*** Il n'y a pas de mise à jour de la base de données.
 
 ===================================
 
 [ EN ] What news: 
 - The new "virtual machine" has been made available. See the link above. An installation 
 and use guide has written. 
-- This version implements the management of history Secrets. The history allows an 
-Administrator can use an old password following the reconstruction of an old application 
-or old server. 
-- It also implements a cascade connection concept for the "root" user. This principle 
-allows a "root" user to be able to connect due to a problem with the LDAP or RADIUS. To do
-this, type the password he used before switching to LDAP or RADIUS.
+https://sourceforge.net/projects/secretmanager/files/VM-SecretManager-v0.11-0.zip/download
+
+VM user connection: user: "root", password: "orasys"
+
+- This version fixe little bugs.
+
 
 --------------------
 First installation: 
-Unzip "SecretManager_v0.10-0.zip" in the "DocumentRoot" your Apache Server (see your 
+Unzip "SecretManager-v0.11-0.zip" in the "DocumentRoot" your Apache Server (see your 
 httpd-vhosts.conf).
 Then read the "Installation Guide" in the "Documents" folder in the tree SecretManager.
 
+Default user : Username: "root", Password: "Welcome !"
+Default Operator Key : "CleO"
+
 --------------------------
-Update v0.9-1 to v0.10-0: 
-Unzip "upd_SecretManager_v0.10-0.zip" in your previous installation "SecretManager"
+Update v0.10-0 to v0.11-0: 
+Unzip "upd_SecretManager-v0.11-0.zip" in your previous installation "SecretManager"
 directory. 
 
-*** Warning: you must update the "Secret_Manager" database by executing the following 
-script:
-- Upd-1-v0.10-0-SecretManager.sql
-
-Show the "Installation" directory.
 
 *** ========================================================== ***
 
-Important "hosts" file must contain the following line : 127.0.0.1 secretmanager.local 
+Important:
+"hosts" file must contain the following line : 127.0.0.1 secretmanager.local 
 "httpd-vhosts.conf" file must contain the following lines (carefull, it's an exemple.
-
 Adjust the locations 'D:/xampp/htdocs' and 'D:\xampp\apache\conf' as your context) : 
 
 <VirtualHost secretmanager.local:443>
@@ -88,10 +78,10 @@ Adjust the locations 'D:/xampp/htdocs' and 'D:\xampp\apache\conf' as your contex
  SSLEngine on SSLCertificateFile D:\xampp\apache\conf\ssl.crt\server.crt 
  SSLCertificateKeyFile D:\xampp\apache\conf\ssl.key\server.key 
 
- ServerAdmin orasys@orasys.fr
+ ServerAdmin secretmanager@yourcompagny.com
 
  <Directory D:/xampp/htdocs/SecretManager> 
-  DirectoryIndex index.php 
+  DirectoryIndex index.php index.html
   AllowOverride All 
   Order allow,deny 
   Allow from all 

@@ -105,4 +105,9 @@
 	$L_Confirm_Delete_Civility = 'Sie bestätigen die Unterdrückung dieser Civility: ';
 
     $L_No_User_Profile_Associated = 'Kein Benutzerprofil assoziiert';
+
+    $L_API = 'API';
+    $L_Force_Default_Password = 'Zwangs Standard-Passwort';
+    $L_Empty_Default_Password = 'Wenn leer, wird standardmäßig das Kennwort initialisiert';
+    $L_Empty_No_Change_Password = 'Wenn leer, Passwort bleiben unverändert';
 ?>

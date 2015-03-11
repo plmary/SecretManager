@@ -6,7 +6,9 @@
 	$L_Total_Users_Expired = 'Abgelaufene Benutzeraccounts';
 	$L_Total_Users_Attempted = 'Benutzeraccounts mit fehlgeschlagenen Anmeldeversuchen';
 	$L_Total_Users_Super_Admin = 'root Benutzeraccounts';
-
+	$L_Total_Users_API = 'API Benutzer';
+	$L_Total_Users_Operator = 'Betreiber von Benutzerkonten';
+	
 	$L_Total_Groups_Base = 'Gesamtzahl Passwortgruppen in der Datenbank';
 	$L_Total_Profiles_Base = 'Gesamtzahl Profile in der Datenbank';
 	$L_Total_Entities_Base = 'Gesamtzahl Instanzen in der Datenbank';

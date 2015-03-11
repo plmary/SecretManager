@@ -6,7 +6,9 @@
 	$L_Total_Users_Expired = 'Usuarios caducados';
 	$L_Total_Users_Attempted = 'Los usuarios que excedan el número de ensayos';
 	$L_Total_Users_Super_Admin = 'Los superusuarios de administración';
-
+	$L_Total_Users_API = 'Los usuarios de la API';
+	$L_Total_Users_Operator = 'Las cuentas de usuario del operador';
+	
 	$L_Total_Groups_Base = 'Número total de grupos en la base';
 	$L_Total_Profiles_Base = 'Número total de perfiles en la base';
 	$L_Total_Entities_Base = 'Número total de entidades en la base';

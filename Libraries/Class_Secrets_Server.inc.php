@@ -105,7 +105,9 @@ private function __sendServerSocket( $Message ) {
 		
 		fclose( $PF_Socket );
 	}
-
+	if ( $Result == '' )
+		throw new Exception( 'L_ERR_SERVER_NOT_STARTED' );
+	
 	// Retourne le tableau issu de la réponse du serveur.
 	return explode( '###', $Result );
 }
@@ -433,7 +435,7 @@ public function SS_encryptValue( $Encrypt_Value ) {
 	*
 	* @return string Retourne la valeur chiffrée.
 	*/
-
+	
 	if ( $Encrypt_Value == '' ) {
 		throw new Exception( 'L_ERR_NO_VALUE' );
 	}

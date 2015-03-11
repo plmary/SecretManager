@@ -32,5 +32,6 @@
 	$L_ERR_Complexity_2 = 'Password muss mindestens einen Großbuchstaben, einen Kleinbuchstaben und eine Ziffer enthalten';
 	$L_ERR_Complexity_3 = 'Password muss mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Ziffer und ein Satzzeichen enthalten';
 	$L_ERR_Complexity_4 = 'Password muss mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Ziffer, ein Satzzeichen und ein Sonderzeichen enthalten';
-
+	$L_ERR_User_Not_Authorized = 'Benutzer nicht berechtigt';
+	
 ?>

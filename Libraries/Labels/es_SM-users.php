@@ -120,4 +120,9 @@
     $L_Confirm_Delete_Civility = 'Usted confirma la supresión de esta Civilidad : ';
 
     $L_No_User_Profile_Associated = 'Ningún perfil de usuario asociado';
+
+    $L_API = 'API';
+    $L_Force_Default_Password = 'Forzado contraseña predeterminada';
+    $L_Empty_Default_Password = 'Si está vacío, la contraseña por defecto es inicializado';
+    $L_Empty_No_Change_Password = 'Si está vacío, contraseña permanecer sin cambios';
 ?>

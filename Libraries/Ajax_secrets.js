@@ -1014,7 +1014,7 @@ function addSecretsHistory( scr_id ) {
         }),
         dataType: 'json',
         success: function(reponse) {
-            if (reponse['Statut'] == 'success') {
+            if (reponse['Status'] == 'success') {
                 if ( $('#history_title').length == 0 ) {
                     $('#listHistorique').before(
                         '<div id="history_title">' +
@@ -1040,8 +1040,11 @@ function addSecretsHistory( scr_id ) {
                 // Récupère le statut de l'appel Ajax
                 showInfoMessage( reponse['Status'], reponse['Message'] ); // SecretManager.js
             }
-
+        },
+        error: function(reponse) {
+            alert('Erreur sur serveur "Ajax_secrets.js" - "SCR_LH_X" : ' + reponse['responseText']);
         }
+
     });
 
 }

@@ -2208,21 +2208,36 @@ switch( $Action ) {
 		$Flux_HTML = '';
 
 		foreach ( $List_Secrets_History as $Occurrence ) {
+			if ( $PageHTML->getParameter( 'use_SecretServer' ) == '1' ) {
+				try {
+					$Decrypted = $Secret_Server->SS_decryptValue( $Occurrence->shs_password );
+				} catch( Exception $e ) {
+					$Error = $e->getMessage();
+					if ( isset( ${$Error} ) ) $Error = ${$Error};
+				
+					throw new Exception( $Error );
+				}
+			} else {
+				$Decrypted = $Security->mc_decrypt( $Occurrence->shs_password );
+			}
+
+			if ( htmlentities( $Decrypted ) == '' ) $Decrypted = '*** ' . $L_Invalid_Characters . ' ***';
+			
 			$Flux_HTML .= '<div class="history_row">' .
-				'<span class="green">' . $Secret_Server->mc_decrypt( $Occurrence->shs_password ) . '</span>' .
+				'<span class="green">' . $Decrypted . '</span>' .
 				'<span>' . $Occurrence->shs_last_date_use . '</span>' .
 				'</div>';
 		}
 
 		$Resultat = array(
-			'Statut' => 'success',
+			'Status' => 'success',
 			'Password' => $L_Password,
 			'Date' => $L_Date,
 			'Message' => $Flux_HTML
 		);
 	} catch( Exception $e ) {
 		$Resultat = array(
-			'Statut' => 'error',
+			'Status' => 'error',
 			'Message' => $e->getMessage()
 		);
 	}

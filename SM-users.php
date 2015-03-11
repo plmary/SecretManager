@@ -160,7 +160,7 @@ switch( $Action ) {
 		print( "     <table class=\"table-bordered\" cellspacing=\"0\" style=\"margin: 10px auto;width: 95%;\">\n" .
 		 "      <thead>\n" .
 		 "       <tr>\n" .
-		 "        <th colspan=\"9\">" . $L_List_Users . $Buttons . "</th>\n" .
+		 "        <th colspan=\"10\">" . $L_List_Users . $Buttons . "</th>\n" .
 		 "       </tr>\n" .
 		 "      </thead>\n" .
 		 "      <tbody>\n" );
@@ -282,6 +282,24 @@ switch( $Action ) {
 		print( "        <th onclick=\"javascript:document.location='" . $Script . 
 		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
 		 $L_Operator . "</th>\n" );
+
+		 
+		if ( $orderBy == 'api' ) {
+			$tmpClass = 'order-select';
+		
+			$tmpSort = 'api-desc';
+		} else {
+			if ( $orderBy == 'api-desc' ) $tmpClass = 'order-select';
+			else $tmpClass = 'order';
+		
+			$tmpSort = 'api';
+		}
+
+		if ( strlen( $L_API ) > 5 ) $L_Operator = sprintf( "%.5s&hellip;", $L_API );
+
+		print( "        <th onclick=\"javascript:document.location='" . $Script . 
+		 "?orderby=" . $tmpSort . "'\" class=\"" . $tmpClass . "\">" . 
+		 $L_API . "</th>\n" );
 		
 		 
 		print( "        <th>" . $L_Status . "</th>\n" .
@@ -315,6 +333,13 @@ switch( $Action ) {
 				$Flag_Oper = '<img class="no-border" src="' . URL_PICTURES . '/bouton_non_coche.gif" alt="Ko" />';
 			} else {
 				$Flag_Oper = '<img class="no-border" src="' . URL_PICTURES . '/bouton_coche.gif" alt="Ko" />';
+		  	}
+
+
+			if ( $Identity->idn_api == 0 ) {
+				$Flag_API = '<img class="no-border" src="' . URL_PICTURES . '/bouton_non_coche.gif" alt="Ko" />';
+			} else {
+				$Flag_API = '<img class="no-border" src="' . URL_PICTURES . '/bouton_coche.gif" alt="Ko" />';
 		  	}
 
 
@@ -413,6 +438,7 @@ switch( $Action ) {
 			 $Security->XSS_Protection( $Identity->idn_last_connection ) . "</td>\n" .
 			 "        <td class=\"align-center align-middle\">" . $Flag_Admin . "</td>\n" .
 			 "        <td class=\"align-center align-middle\">" . $Flag_Oper . "</td>\n" .
+			 "        <td class=\"align-center align-middle\">" . $Flag_API . "</td>\n" .
 			 "        <td class=\"align-center align-middle\">" . $Flag_Status . "</td>\n" .
 			 "        <td>\n" .
 			 "         <a class=\"simple\" href=\"" . $Script .
@@ -433,7 +459,7 @@ switch( $Action ) {
 		}
 		
 		print( "      </tbody>\n" .
-		 "      <tfoot><tr><th colspan=\"9\">Total : <span class=\"green\">" . 
+		 "      <tfoot><tr><th colspan=\"10\">Total : <span class=\"green\">" . 
 		 count( $List_Identities ) . "</span>" . $Buttons . "</th></tr></tfoot>\n" .
 		 "     </table>\n" .
 		 "\n" );
@@ -460,8 +486,8 @@ switch( $Action ) {
 	 "       </thead>\n" .
 	 "       <tbody>\n" .
 	 "       <tr>\n" .
-	 "        <td>" . $L_Entity . "</td>\n" .
-	 "        <td>\n" .
+	 "        <td width=\"35%\">" . $L_Entity . "</td>\n" .
+	 "        <td width=\"65%\">\n" .
 
 	 "         <table>\n" .
 	 "          <tr>\n" .
@@ -509,7 +535,7 @@ switch( $Action ) {
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td>" . $L_Username . "</td>\n" .
-	 "        <td><input type=\"text\" name=\"Username\" size=\"20\" /></td>\n" .
+	 "        <td><input type=\"text\" name=\"Username\" size=\"20\"></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td>" . $L_Rights . "</td>\n" .
@@ -521,10 +547,16 @@ switch( $Action ) {
 	 "           <td><input id=\"iAdministrator\" name=\"Administrator\" type=\"checkbox\" /></td>\n" .
 	 "           <td><label for=\"iOperator\">" . $L_Operator . "</label></td>\n" .
 	 "           <td><input id=\"iOperator\" name=\"Operator\" type=\"checkbox\" /></td>\n" .
+	 "           <td><label for=\"iAPI\">" . $L_API . "</label></td>\n" .
+	 "           <td><input id=\"iAPI\" name=\"API\" type=\"checkbox\" /></td>\n" .
 	 "          </tr>\n" .
 	 "         </table>\n" .
 
 	 "        </td>\n" .
+	 "       </tr>\n" .
+	 "       <tr id=\"iForcePassword\" class=\"hide\">\n" .
+	 "        <td>" . $L_Force_Default_Password . "</td>\n" .
+	 "        <td><input type=\"text\" name=\"Password\" size=\"20\" placeholder=\"" . $L_Empty_Default_Password . "\"></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td colspan=\"2\">&nbsp;</td>\n" .
@@ -549,13 +581,14 @@ switch( $Action ) {
  
 	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
 	
+	
+	// Contrôle les variables transmises.
 	if ( isset( $_POST[ 'Administrator' ] ) ) {
 		if ( $_POST[ 'Administrator' ] == 'on' )
 			$SuperAdmin = 1;
 	} else {
 		$SuperAdmin = 0;
 	}
-	
 
 	if ( isset( $_POST[ 'Operator' ] ) ) {
 		if ( $_POST[ 'Operator' ] == 'on' )
@@ -563,17 +596,13 @@ switch( $Action ) {
 	} else {
 		$Operator = 0;
 	}
-	
 
-	// ===========================================================
-	// Calcule un nouveau grain de sel spécifique à l'utilisateur.
-	$size = 8;
-	$complexity = 2; // Majuscules, Minuscules et Chiffres
-		
-	$Salt = $Security->passwordGeneration( $size, $complexity );
-	
-	$Authenticator = sha1( $_Default_Password . $Salt );
-
+	if ( isset( $_POST[ 'API' ] ) ) {
+		if ( $_POST[ 'API' ] == 'on' )
+			$API = 1;
+	} else {
+		$API = 0;
+	}
 
 	if ( ! $Username = $Security->valueControl( $_POST[ 'Username' ] ) ) {
 		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Username)', $Return_Page, 1 ) );
@@ -590,6 +619,27 @@ switch( $Action ) {
 		exit();
 	}
 
+	if ( ! $Password = $Security->valueControl( $_POST[ 'Password' ] ) ) {
+		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Password)', $Return_Page, 1 ) );
+		exit();
+	}
+	
+
+	// ========================================================================
+	// Calcule un nouveau grain de sel spécifique à l'utilisateur et l'utilise
+	// pour chiffrer le mot de passe.
+	$size = 8;
+	$complexity = 2; // Majuscules, Minuscules et Chiffres
+	
+	$Salt = $Security->passwordGeneration( $size, $complexity );
+	
+	if ( $Password == '' ) {
+		$Authenticator = sha1( $_Default_Password . $Salt );
+	} else {
+		$Authenticator = sha1( $Password . $Salt );
+	}
+
+	
 	if ( $verbosity_alert == 2 ) {
 		$tEntity = $Identities->getEntity( $ent_id );
 		$tCivility = $Identities->getCivility( $cvl_id );
@@ -607,7 +657,7 @@ switch( $Action ) {
 
 	try {
 		$Identities->set( '', $Username, $Authenticator, 1, 0,
-			$SuperAdmin, $Operator, $ent_id, $cvl_id, $Salt );
+			$SuperAdmin, $Operator, $ent_id, $cvl_id, $API, $Salt );
 
 		$Last_ID = $Identities->LastInsertId;
 
@@ -679,6 +729,16 @@ switch( $Action ) {
 	else
 		$Flag_Administrator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
+	if ( $Identity->idn_operator == 1 )
+		$Flag_Operator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+	else
+		$Flag_Operator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+
+	if ( $Identity->idn_api == 1 )
+		$Flag_API = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ok\" />";
+	else
+		$Flag_API = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+
 
 	print( "     <form name=\"deleteEntity\" method=\"post\" action=\"" . $Script . 
 	 "?action=DX&idn_id=" . $idn_id . "\">\n" .
@@ -713,6 +773,10 @@ switch( $Action ) {
 	 "        <td class=\"bg-light-grey td-aere\">\n" .
 	 "         " . $L_Administrator . "\n" .
 	 "         " . $Flag_Administrator . "\n" .
+	 "         " . $L_Operator . "\n" .
+	 "         " . $Flag_Operator . "\n" .
+	 "         " . $L_API . "\n" .
+	 "         " . $Flag_API . "\n" .
 	 "        </td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
@@ -794,6 +858,16 @@ switch( $Action ) {
 		$Flag_Check_Operator = "checked";
 	else
 		$Flag_Check_Operator = "";
+
+	if ( $Identity->idn_api == 1 ) {
+		$Flag_Check_API = "checked";
+		$View_Button_Default = 'hide';
+		$View_Field_Forced = 'display: inline-block;';
+	} else {
+		$Flag_Check_API = "";
+		$View_Button_Default = 'button';
+		$View_Field_Forced = 'display: none;';
+	}
 
 
 	$T_Entities = $Entities->listEntities();
@@ -905,12 +979,16 @@ switch( $Action ) {
 	 "           <input id=\"iAdministrator\" name=\"Administrator\" type=\"checkbox\" " . $Flag_Check_Administrator . " />\n" .
 	 "           <label for=\"iOperator\">" . $L_Operator . "</label>\n" .
 	 "           <input id=\"iOperator\" name=\"Operator\" type=\"checkbox\" " . $Flag_Check_Operator . " />\n" .
+	 "           <label for=\"iAPI2\">" . $L_API . "</label>\n" .
+	 "           <input id=\"iAPI2\" name=\"API\" type=\"checkbox\" " . $Flag_Check_API . " />\n" .
 	 "        </td>\n" .
  	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td class=\"align-right td-aere\">" . $L_Password . "</td>\n" .
-	 "        <td class=\"td-aere\"><a class=\"button\" href=\"javascript:resetPassword('" . $idn_id . "');" .
-	 "\">" . $L_Authenticator_Reset . "</a></td>\n" .
+	 "        <td class=\"td-aere\">" .
+	 "<a class=\"" . $View_Button_Default . "\" id=\"iResetDefault\" href=\"javascript:resetPassword('" . $idn_id . "');" .
+	 "\">" . $L_Authenticator_Reset . "</a>" . 
+	 "<input name=\"Password\" id=\"iForceField\" style=\"" . $View_Field_Forced . "\" type=\"text\" size=\"20\" placeholder=\"" . $L_Empty_No_Change_Password . "\" /></td>\n" .
 	 "       </tr>\n" .
 	 "       <tr>\n" .
 	 "        <td class=\"align-right td-aere\">" . $L_Attempt . "</td>\n" .
@@ -963,6 +1041,13 @@ switch( $Action ) {
 	} else {
 		$Operator = 0;
 	}
+	
+	if ( isset( $_POST[ 'API' ] ) ) {
+		if ( $_POST[ 'API' ] == 'on' )
+			$API = 1;
+	} else {
+		$API = 0;
+	}
 
 
 	if ( ($idn_id = $Security->valueControl( $_POST[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
@@ -985,10 +1070,35 @@ switch( $Action ) {
 		exit();
 	}
 
+	if ( $_POST[ 'Password'] != '' ) {
+		if ( ! $Password = $Security->valueControl( $_POST[ 'Password' ] ) ) {
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Password)', $Return_Page, 1 ) );
+			exit();
+		}
+	} else {
+		$Password = '';
+	}
+
+
+	// ========================================================================
+	// Calcule un nouveau grain de sel spécifique à l'utilisateur et l'utilise
+	// pour chiffrer le mot de passe.
+	if ( $Password != '' ) {
+		$size = 8;
+		$complexity = 2; // Majuscules, Minuscules et Chiffres
+		
+		$Salt = $Security->passwordGeneration( $size, $complexity );
+	
+		$Authenticator = sha1( $Password . $Salt );
+	} else {
+		$Authenticator = '';
+		$Salt = '';
+	}
+
 	
 	try {
-		$Identities->set( $idn_id, $Username, '', 1, 0, $SuperAdmin, $Operator, $ent_id,
-		 $cvl_id );
+		$Identities->set( $idn_id, $Username, $Authenticator, 1, 0, $SuperAdmin, $Operator, $ent_id,
+		 $cvl_id, $API, $Salt );
 
 		$alert_message = $PageHTML->getTextCode( 'L_User_Modified' ) . ' [' . $idn_id . ']';
 

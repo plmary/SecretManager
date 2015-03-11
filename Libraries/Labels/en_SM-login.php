@@ -1,8 +1,8 @@
 <?php
 /**
-* Libellé spécifique à la gestion des connexions.
+* Libellï¿½ spï¿½cifique ï¿½ la gestion des connexions.
 *
-* @warning Ce fichier doit impérativement être au format UTF-8 pour une gestion cohérente des caractères accentués.
+* @warning Ce fichier doit impï¿½rativement ï¿½tre au format UTF-8 pour une gestion cohï¿½rente des caractï¿½res accentuï¿½s.
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY
@@ -33,5 +33,6 @@
 	$L_ERR_Complexity_2 = 'Password does not contain at least one uppercase letter, one lowercase letter and one digit';
 	$L_ERR_Complexity_3 = 'Password does not contain at least one uppercase letter, one lowercase letter, one digit, and one special character';
 	$L_ERR_Complexity_4 = 'Password does not contain at least one uppercase letter, one lowercase letter, one digit, a special character and an accented character';
-
+	$L_ERR_User_Not_Authorized = 'User not authorize';
+	
 ?>

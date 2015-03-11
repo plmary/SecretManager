@@ -2,7 +2,7 @@
 
 class Session_Parser {
 /**
-* Cette classe gère la lecture des fichiers de "session".
+* Cette classe gï¿½re la lecture des fichiers de "session".
 *
 * PHP version 5
 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
@@ -16,15 +16,15 @@ class Session_Parser {
 	public function __construct( $_session_path = '' ) {
 	/**
 	* Constructeur de la classe :
-	* Définition du "chemin" d'accès aux fichiers de "session".
+	* Dï¿½finition du "chemin" d'accï¿½s aux fichiers de "session".
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-02-27
 	*
-	* @param[in] $_session_path Définit le chemin où sont stockés les fichiers de "session"
+	* @param[in] $_session_path Dï¿½finit le chemin oï¿½ sont stockï¿½s les fichiers de "session"
 	*
-	* @return Renvoi un booléen de succès
+	* @return Renvoi un boolï¿½en de succï¿½s
 	*/
 		if ( $_session_path == '' ) {
 			$this->Session_Path = session_save_path();
@@ -39,15 +39,15 @@ class Session_Parser {
 
 	public function set_session_path( $_session_path = '' ) {
 	/**
-	* Modification du "chemin" d'accès aux fichiers de "session".
+	* Modification du "chemin" d'accï¿½s aux fichiers de "session".
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-02-27
 	*
-	* @param[in] $_session_path Définit le chemin où sont stockés les fichiers de "session"
+	* @param[in] $_session_path Dï¿½finit le chemin oï¿½ sont stockï¿½s les fichiers de "session"
 	*
-	* @return Renvoi un booléen : vrai si chemin modifié et faux si chemin non modifié.
+	* @return Renvoi un boolï¿½en : vrai si chemin modifiï¿½ et faux si chemin non modifiï¿½.
 	*/
 		if ( $_session_path == '' ) {
 			return false;
@@ -61,20 +61,20 @@ class Session_Parser {
 
 	public function string_var_session( $Flow, $Offset, $Max_Offset = 1000 ) {
 	/**
-	* Récupère la chaîne qui vient d'être identifiée par le "parseur" de session.
+	* Rï¿½cupï¿½re la chaï¿½ne qui vient d'ï¿½tre identifiï¿½e par le "parseur" de session.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-02-27
 	*
-	* @param[in] $Flow Flux représentant une "session"
+	* @param[in] $Flow Flux reprï¿½sentant une "session"
 	* @param[in] $Offset Position courante dans le flux
-	* @param[in] $Max_Offset Définit une taille limite pour l'Offset.
+	* @param[in] $Max_Offset Dï¿½finit une taille limite pour l'Offset.
 	*
 	* @return Renvoi un tableau
-	*  1er élément du tableau = taille de la chaîne trouvée,
-	*  2ème élémént du tableau = valeur de la chaîne,
-	*  3ème élément du tableau = nouvelle position courante.
+	*  1er ï¿½lï¿½ment du tableau = taille de la chaï¿½ne trouvï¿½e,
+	*  2ï¿½me ï¿½lï¿½mï¿½nt du tableau = valeur de la chaï¿½ne,
+	*  3ï¿½me ï¿½lï¿½ment du tableau = nouvelle position courante.
 	*/
 		$Step = 1;
 	
@@ -83,7 +83,7 @@ class Session_Parser {
 	
 		for( ; $Offset < $Max_Offset; $Offset++ ) {
 			switch( $Step ) {
-			 case '1': // Récupère la taille de la chaine.
+			 case '1': // Rï¿½cupï¿½re la taille de la chaine.
 				if ( $Flow[ $Offset ] == ':' ) {
 					$Step = 2;
 					$Offset += 1;
@@ -94,7 +94,7 @@ class Session_Parser {
 
 				break;
 
-			 case '2': // Récupère la chaine associée à la variable.
+			 case '2': // Rï¿½cupï¿½re la chaine associï¿½e ï¿½ la variable.
 				for( $ii = 0; $ii < $Size; $ii++, $Offset++ ) {
 					$Value .= $Flow[ $Offset ];
 				}
@@ -117,20 +117,20 @@ class Session_Parser {
 
 	public function numeric_var_session( $Flow, $Offset, $Max_Offset = 1000 ) {
 	/**
-	* Récupère la chaîne numérique qui vient d'être identifiée par le "parseur" de session.
+	* Rï¿½cupï¿½re la chaï¿½ne numï¿½rique qui vient d'ï¿½tre identifiï¿½e par le "parseur" de session.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-02-27
 	*
-	* @param[in] $Flow Flux représentant une "session"
+	* @param[in] $Flow Flux reprï¿½sentant une "session"
 	* @param[in] $Offset Position courante dans le flux
-	* @param[in] $Max_Offset Définit une taille limite pour l'Offset.
+	* @param[in] $Max_Offset Dï¿½finit une taille limite pour l'Offset.
 	*
 	* @return Renvoi un tableau
-	*  1er élément du tableau = taille du numérique trouvée,
-	*  2ème élémént du tableau = valeur du numérique,
-	*  3ème élément du tableau = nouvelle position courante.
+	*  1er ï¿½lï¿½ment du tableau = taille du numï¿½rique trouvï¿½e,
+	*  2ï¿½me ï¿½lï¿½mï¿½nt du tableau = valeur du numï¿½rique,
+	*  3ï¿½me ï¿½lï¿½ment du tableau = nouvelle position courante.
 	*/
 		$Value = '';
 	
@@ -148,20 +148,20 @@ class Session_Parser {
 
 	public function array_var_session( $Flow, $Offset, $Max_Offset = 1000 ) {
 	/**
-	* Récupère le tableau qui vient d'être identifiée par le "parseur" de session.
+	* Rï¿½cupï¿½re le tableau qui vient d'ï¿½tre identifiï¿½e par le "parseur" de session.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-02-27
 	*
-	* @param[in] $Flow Flux représentant une "session"
+	* @param[in] $Flow Flux reprï¿½sentant une "session"
 	* @param[in] $Offset Position courante dans le flux
-	* @param[in] $Max_Offset Définit une taille limite pour l'Offset.
+	* @param[in] $Max_Offset Dï¿½finit une taille limite pour l'Offset.
 	*
 	* @return Renvoi un tableau
-	*  1er élément du tableau = nombre d'éléments dans le tableau,
-	*  2ème élémént du tableau = valeur du tableau,
-	*  3ème élément du tableau = nouvelle position courante.
+	*  1er ï¿½lï¿½ment du tableau = nombre d'ï¿½lï¿½ments dans le tableau,
+	*  2ï¿½me ï¿½lï¿½mï¿½nt du tableau = valeur du tableau,
+	*  3ï¿½me ï¿½lï¿½ment du tableau = nouvelle position courante.
 	*/
 		$Step = 1;
 	
@@ -273,23 +273,23 @@ class Session_Parser {
 
 	public function parseSession( $ID_Session ) {
 	/**
-	* Récupère le tableau qui vient d'être identifiée par le "parseur" de session.
+	* Rï¿½cupï¿½re le tableau qui vient d'ï¿½tre identifiï¿½e par le "parseur" de session.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
 	* @date 2013-02-27
 	*
-	* @param[in] $ID_Session Identifiant de la session à analyser.
+	* @param[in] $ID_Session Identifiant de la session ï¿½ analyser.
 	*
 	* @return Renvoi un tableau
-	*  Chaque entrée du tableau correspond à un nom et à une valeur de variable précédemment stockée dans la session.
+	*  Chaque entrï¿½e du tableau correspond ï¿½ un nom et ï¿½ une valeur de variable prï¿½cï¿½demment stockï¿½e dans la session.
 	*/
 		if ( $ID_Session == '' ) return FALSE;
 		
 		$Filename = realpath( $this->Session_Path . '/sess_' . $ID_Session );
 
 		if ( is_readable ( $Filename ) ) {
-			// Création d'un nom de fichier unique (pour fichier temporaire).
+			// Crï¿½ation d'un nom de fichier unique (pour fichier temporaire).
 			$Filename1 = tempnam( sys_get_temp_dir(), 'SM_' );
 			
 			// Duplique le fichier de Session (pour pouvoir lire la copie).
@@ -299,6 +299,9 @@ class Session_Parser {
 			
 			// Lecture de la copie.
 			$Records = file( $Filename1, FILE_IGNORE_NEW_LINES );
+			if ( $Records === FALSE ) {
+				return FALSE;
+			}
 			
 			// Suppression de la copie.
 			unlink( $Filename1 );
@@ -310,7 +313,7 @@ class Session_Parser {
 			for( $Offset = 0; $Offset < $Max_Offset; $Offset++ ) {
 
 				switch( $Step ) {
-				 case '0': // Récupère le nom de la variable.
+				 case '0': // Rï¿½cupï¿½re le nom de la variable.
 					$Entry = '';
 					$Type = '';
 					$Size = '';
@@ -318,7 +321,7 @@ class Session_Parser {
 
 					$Step = 1;
 
-				 case '1': // Récupère le nom de la variable.
+				 case '1': // Rï¿½cupï¿½re le nom de la variable.
 					if ( $Records[0][ $Offset ] == '|' ) {
 						$Step = 2;
 						continue;
@@ -328,12 +331,12 @@ class Session_Parser {
 				
 					break;
 
-				 case '2': // Récupère le type de variable.
+				 case '2': // Rï¿½cupï¿½re le type de variable.
 					$Type = $Records[0][ $Offset ];
 					$Offset += 2;
 				
 					switch( $Type ) {
-					 case 's': // Chaîne
+					 case 's': // Chaï¿½ne
 						list( $Size, $Value, $Offset ) = $this->string_var_session(
 						 $Records[0], $Offset, $Max_Offset );
 
@@ -345,8 +348,8 @@ class Session_Parser {
 
 					 case 'i': // Entier
 					 case 'd': // Double
-					 case 'r': // Réél
-					 case 'b': // Booléen
+					 case 'r': // Rï¿½ï¿½l
+					 case 'b': // Boolï¿½en
 						list( $Size, $Value, $Offset ) = $this->numeric_var_session(
 						 $Records[0], $Offset, $Max_Offset );
 						

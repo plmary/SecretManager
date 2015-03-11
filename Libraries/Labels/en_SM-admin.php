@@ -5,8 +5,10 @@
 	$L_Total_Users_Disabled = 'Disabled user accounts';
 	$L_Total_Users_Expired = 'Expired user accounts';
 	$L_Total_Users_Attempted = 'User accounts that reached max auth. attempts';
-	$L_Total_Users_Super_Admin = 'root accounts';
-
+	$L_Total_Users_Super_Admin = 'Root accounts';
+	$L_Total_Users_API = 'API users';
+	$L_Total_Users_Operator = 'Operator user accounts';
+	
 	$L_Total_Groups_Base = 'Overall Secrets Groups in database';
 	$L_Total_Profiles_Base = 'Overall Profiles in database';
 	$L_Total_Entities_Base = 'Overall Entities in database';

@@ -32,7 +32,7 @@ class IICA_Authentications extends IICA_Parameters {
 
 
 	public function authentication( $Login, $Authenticator, $Type = 'database',
-	 $Salt = '', $ConnectionTest = FALSE ) {
+	 $Salt = '', $ConnectionTest = FALSE, $UserAPI = FALSE ) {
 	/**
 	* Contrôle les éléments d'authentification
 	*
@@ -43,8 +43,9 @@ class IICA_Authentications extends IICA_Parameters {
 	* @param[in] $Login Nom de connexion de l'utilisateur
 	* @param[in] $Authenticator Authentifiant de l'utilisageur.
 	* @param[in] $Type Type d'authentification (par défaut 'database', l'autre valeur possible est radius)
-	* @param[in] $Salt Grain de sel à utiliser pour calculer le hash du mot de passe
+	* @param[in] $Salt *** plus utilisé ***
 	* @param[in] $ConnectionTest Drapeau pour limiter cette fonction à un simple test ou non (un simple test ne met pas à jour la session utilisateur)
+	* @param[in] $UserAPI Drapeau pour indiquer que l'utilisateur est un utilisateur de type API
 	*
 	* @param[out] $_SESSION['idn_id'] Identifiant de l'utilisateur connecté
 	* @param[out] $_SESSION['ent_id'] Identifiant de l'entité d'appartenance de l'utilisateur
@@ -88,6 +89,7 @@ class IICA_Authentications extends IICA_Parameters {
 		 'T1.idn_last_connection, ' .
 		 'T1.idn_super_admin, ' .
 		 'T1.idn_operator, ' .
+		 'T1.idn_api, ' .
 		 'T1.idn_authenticator, ' .
 		 'T1.idn_salt, ' .
 		 'T1.idn_disable, ' .
@@ -122,13 +124,17 @@ class IICA_Authentications extends IICA_Parameters {
 
 
 		/* ---------------------------------------------------------------------
-		** Si pas d'occurrence, alors mot de passe ou nom d'utilisateur inconnu.
+		** Si pas d'occurrence, alors nom d'utilisateur inconnu.
 		*/
 		if ( $Occurrence == '' ) {
 			throw new Exception( $L_Err_Auth, -1 );
 		}
 
-
+		if ( ($UserAPI == FALSE and $Occurrence->idn_api == TRUE) or
+				($UserAPI == TRUE and $Occurrence->idn_api == FALSE) ) {
+			throw new Exception( $L_ERR_User_Not_Authorized );
+		}
+		
 		/* -----------------------------
 		** Test l'authentifiant fournit.
 		*/
@@ -140,7 +146,7 @@ class IICA_Authentications extends IICA_Parameters {
 			 case 'database':
 			 case 'D':
 				$Authenticator = sha1( $Authenticator . $Occurrence->idn_salt );
-		  
+				
 				if ( $Authenticator != $Occurrence->idn_authenticator ) {
 					throw new Exception( $L_Err_Auth, -1 );
 				}

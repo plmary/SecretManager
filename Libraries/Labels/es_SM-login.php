@@ -32,5 +32,6 @@
 	$L_ERR_Complexity_2 = 'La contraseña no debe contener al menos una letra mayúscula, una minúscula y un número';
 	$L_ERR_Complexity_3 = 'La contraseña no debe contener al menos una letra mayúscula, una minúscula, un número y un carácter especial';
 	$L_ERR_Complexity_4 = 'La contraseña no debe contener al menos una letra mayúscula, una minúscula, números, caracteres especiales y un carácter acentuado';
-
+	$L_ERR_User_Not_Authorized = 'Usuario no autorizado';
+	
 ?>

@@ -85,4 +85,9 @@
 	$L_Stop_SecretServer_On_Alert = "SecretServer stops when an alert";
 
 	$L_Cascading_Root_Connection = '"root" cascade connection';
+
+	$L_API_Management = 'API management';
+	$L_Public_Key_To_Use = 'Public key to use';
+	$L_Private_Key_To_Use = 'Private key to use';
+	$L_Authorized_Client_List = 'Authorized client list (if empty, all clients are allowed)';
 ?>

@@ -6,7 +6,6 @@
 * @date 2014-06-20
 */
 
-
 // Active les fonctions ci-dessous quand le DOM de la page HTML est fini de charger.
 $(document).ready(function(){
     // Gère les touches du clavier sur l'ensemble de la page HTML.
@@ -56,6 +55,23 @@ $(document).ready(function(){
     // Gère les touches du clavier sur l'objet identifié comme "iEntityCode".
     $('#iButtonCreateCivility').on('click', function(){
         addCivility();
+    });
+
+    // Gère l'affichage de l'occurrence identifié comme "iForcePassword" en fonction du type d'utilisateur.
+    // En l'occurrence, il faut cocher le type API pour que cette occurrence apparaisse (création d'un utilisateur).
+    $('#iAPI').on('change', function() {
+    	$('#iForcePassword').toggleClass( 'hide' );
+    });
+
+    // Gère l'affichage du bouton de "reset" ou du champ pour forcer le mot de passe en fonction du type d'utilisateur.
+    // En l'occurrence, il faut cocher le type API pour que le champ et le bouton apparaisse ou disparaisse(modification d'un utilisateur).
+    $('#iAPI2').on('change', function() {
+    	$('#iResetDefault').toggleClass( 'hide button' );
+    	if ( $('#iAPI2').is( ':checked' ) ) {
+    		$('#iForceField').css( 'display', 'inline-block' );
+    	} else {
+    		$('#iForceField').css( 'display', 'none' );
+    	}
     });
 
 });

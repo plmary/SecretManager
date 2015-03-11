@@ -36,7 +36,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	*/
 	
 	public function set( $idn_id, $Login, $Authenticator, $ChangeAuthenticator, $Attempt,
-	 $SuperAdmin, $Operator, $Id_Entity, $Id_Civility, $Salt = '' ) {
+	 $SuperAdmin, $Operator, $Id_Entity, $Id_Civility, $API, $Salt = '' ) {
 	/**
 	* Créé ou actualise une Identité.
 	*
@@ -72,7 +72,8 @@ class IICA_Identities extends IICA_DB_Connector {
 			 'idn_expiration_date, ' .
 			 'idn_updated_authentication, ' .
 			 'idn_super_admin, ' .
-			 'idn_operator ' ;
+			 'idn_operator, ' .
+			 'idn_api ';
 			
 			if ( $Salt != '' ) {
 				$Request .= ', idn_salt ' ;
@@ -88,7 +89,8 @@ class IICA_Identities extends IICA_DB_Connector {
 			 ':idn_expiration_date, ' .
 			 ':idn_updated_authentication, ' .
 			 ':idn_super_admin, ' .
-			 ':idn_operator ' ;
+			 ':idn_operator, ' .
+			 ':idn_api ' ;
 			
 			if ( $Salt != '' ) {
 				$Request .= ', :idn_salt ' ;
@@ -121,18 +123,27 @@ class IICA_Identities extends IICA_DB_Connector {
 			}
 		} else {
 			$Command = 'UPDATE : ' ;
+			
+			$Request = 'UPDATE idn_identities SET ' .
+			'ent_id = :ent_id, ' .
+			'cvl_id = :cvl_id, ' .
+			'idn_login = :idn_login, ' .
+			'idn_change_authenticator = :idn_change_authenticator, ' .
+			'idn_expiration_date = :idn_expiration_date, ' .
+			'idn_updated_authentication = :idn_updated_authentication, ' .
+			'idn_super_admin = :idn_super_admin, ' .
+			'idn_operator = :idn_operator, ' .
+			'idn_api = :idn_api ';
+			
+			if ( $Authenticator != '' ) {
+					$Request .= ', idn_authenticator = :idn_authenticator, ' .
+							'idn_salt = :idn_salt ';
+			}
+			
+			$Request .= 'WHERE idn_id = :idn_id';
+			
 
-			if ( ! $Result = $this->prepare(
-			 'UPDATE idn_identities SET ' .
-			 'ent_id = :ent_id, ' .
-			 'cvl_id = :cvl_id, ' .
-			 'idn_login = :idn_login, ' .
-			 'idn_change_authenticator = :idn_change_authenticator, ' .
-			 'idn_expiration_date = :idn_expiration_date, ' .
-			 'idn_updated_authentication = :idn_updated_authentication, ' .
-			 'idn_super_admin = :idn_super_admin, ' .
-			 'idn_operator = :idn_operator ' .
-			 'WHERE idn_id = :idn_id' ) ) {
+			if ( ! $Result = $this->prepare( $Request ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Command . $Error[ 2 ], $Error[ 1 ] );
 			}
@@ -140,6 +151,19 @@ class IICA_Identities extends IICA_DB_Connector {
 			if ( ! $Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+			}
+					
+			if ( $Authenticator != '' ) {
+				if ( ! $Result->bindParam( ':idn_authenticator', $Authenticator, 
+				 PDO::PARAM_STR, 64 ) ) {
+					$Error = $Result->errorInfo();
+					throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+				 }
+
+				if ( ! $Result->bindParam( ':idn_salt', $Salt, PDO::PARAM_STR, 32 ) ) {
+					$Error = $Result->errorInfo();
+					throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+				}
 			}
 		}
     
@@ -186,6 +210,11 @@ class IICA_Identities extends IICA_DB_Connector {
 		}
 		
 		if ( ! $Result->bindParam( ':idn_operator', $Operator, PDO::PARAM_BOOL ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		if ( ! $Result->bindParam( ':idn_api', $API, PDO::PARAM_BOOL ) ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
 		}
@@ -356,6 +385,7 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'T1.idn_updated_authentication, ' .
 		 'T1.idn_super_admin, ' .
 		 'T1.idn_operator, ' .
+		 'T1.idn_api, ' .
 	     'T2.cvl_first_name, ' .
     	 'T2.cvl_last_name, ' .
     	 'T2.cvl_sex, ' .
@@ -512,7 +542,8 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'idn_expiration_date, ' .
 		 'idn_updated_authentication, ' .
 		 'idn_super_admin, ' .
-		 'idn_operator ' .
+		 'idn_operator, ' .
+		 'idn_api ' .
 		 'FROM idn_identities ' .
 		 'WHERE idn_id = :idn_id ';
 		 
@@ -559,6 +590,7 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'T1.idn_updated_authentication, ' .
 		 'T1.idn_super_admin, ' .
 		 'T1.idn_operator, ' .
+		 'T1.idn_api, ' .
 		 'T2.cvl_last_name, ' .
 		 'T2.cvl_first_name, ' .
 		 'T2.cvl_sex, ' .
@@ -1338,6 +1370,35 @@ class IICA_Identities extends IICA_DB_Connector {
  		return $Occurrence->total;
 	}
 
+
+	public function totalAPI() {
+		/**
+		 * Calcul le nombre total d'Identités API.
+		 *
+		 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+		 * @author Pierre-Luc MARY
+		 * @date 2015-03-14
+		 *
+		 * @return Renvoi le nombre total d'Identités API
+		 */
+		if ( ! $Result = $this->prepare( 'SELECT ' .
+			 'count(*) as total ' .
+			 'FROM idn_identities ' .
+			 'WHERE idn_api = 1 ' ) ) {
+				$Error = $Result->errorInfo();
+				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+	
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+	
+		$Occurrence = $Result->fetchObject();
+	
+		return $Occurrence->total;
+	}
+	
 
 	public function totalAttempted() {
 	/**

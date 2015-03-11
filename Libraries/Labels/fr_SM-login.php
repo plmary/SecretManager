@@ -33,5 +33,6 @@
 	$L_ERR_Complexity_2 = 'Le mot de passe ne contient pas au moins une majuscule, une minuscule et un chiffre';
 	$L_ERR_Complexity_3 = 'Le mot de passe ne contient pas au moins une majuscule, une minuscule, un chiffre et un caractère spécial';
 	$L_ERR_Complexity_4 = 'Le mot de passe ne contient pas au moins une majuscule, une minuscule, un chiffre, un caractère spécial et un caractère accentué';
+	$L_ERR_User_Not_Authorized = 'Utilisateur pas autorisé';
 
 ?>

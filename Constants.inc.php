@@ -32,11 +32,13 @@ define( 'IICA_LIBRARIES', DIR_LIBRARIES );
 define( 'IICA_PICTURES', DIR_PICTURES );
 define( 'IICA_LABELS', DIR_LABELS );
 
-define( 'MAIL_BODY', DIR_LIBRARIES . DIRECTORY_SEPARATOR . "Mail_Body.dat" );
+define( 'MAIL_BODY', DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Mail_Body.dat' );
+define( 'SYSLOG_BODY', DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Syslog_Body.dat' );
 
 define( 'INTEGRITY_FILENAME', 'Libraries' . DIRECTORY_SEPARATOR . 'files_integrity.dat' );
 define( 'MASTER_INTEGRITY_FILENAME', 'Libraries' . DIRECTORY_SEPARATOR . 'file_integrity.dat' );
 
 define( 'CONSTRAINTS_DB_FILENAME', 'Installation' . DIRECTORY_SEPARATOR . 'Secret_Manager-1.sql' );
 
+define( 'FILE_AUTHORIZED_CLIENT_LIST', DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Authorized_Client_List.dat' );
 ?>

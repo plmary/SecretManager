@@ -89,6 +89,15 @@ $(document).ready( function() {
             }
         }); 
     });
+    
+    // Désactive le formatage du Syslog, s'il n'y a pas de trace Syslog à générer.
+    $('#i_alert_syslog').change( function() {
+    	if ( $('#i_alert_syslog').val() == 0 ) {
+    		$("#i_syslog_format").prop('disabled', 'disabled');
+    	} else {
+    		$("#i_syslog_format").removeAttr('disabled');
+    	}
+    });
 });
 
 

@@ -1,8 +1,8 @@
 <?php
 /**
-* Libellé spécifique à la gestion des utilisateurs.
+* Libellï¿½ spï¿½cifique ï¿½ la gestion des utilisateurs.
 *
-* @warning Ce fichier doit impérativement être au format UTF-8 pour une gestion cohérente des caractères accentués.
+* @warning Ce fichier doit impï¿½rativement ï¿½tre au format UTF-8 pour une gestion cohï¿½rente des caractï¿½res accentuï¿½s.
 *
 * @copyright LGPL License 3.0 http://www.gnu.org/copyleft/lesser.html
 * @author Pierre-Luc MARY
@@ -104,4 +104,9 @@
 	$L_Confirm_Delete_Civility = 'Do you confirm the suppression of this Civility: ';
 
     $L_No_User_Profile_Associated = 'No user profile associated';
+
+    $L_API = 'API';
+    $L_Force_Default_Password = 'Forced default password';
+    $L_Empty_Default_Password = 'If empty, default password is initialized';
+    $L_Empty_No_Change_Password = 'If empty, password stay unchanged';
 ?>

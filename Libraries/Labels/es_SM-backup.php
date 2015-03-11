@@ -27,7 +27,7 @@ $L_Warning_Restore = '<span class="bg-orange bold tbrl_padding_6">Advertencia, r
 $L_Before_Date = 'Antes de esta fecha';
 $L_Delete_Secrets_Backup = 'Eliminar Secretos de copia de seguridad';
 $L_Delete_Total_Backup = 'Eliminar copia de seguridad completa';
-$L_Do_You_Confirm_Delete_Secrets_Restore = 'Confirme que la <span class="green bold">supresión</span> de las copias de seguridad <span class="blue1 bold">secretos</span> antes de la fecha de'
+$L_Do_You_Confirm_Delete_Secrets_Restore = 'Confirme que la <span class="green bold">supresión</span> de las copias de seguridad <span class="blue1 bold">secretos</span> antes de la fecha de';
 $L_Do_You_Confirm_Delete_Full_Restore = 'Confirme que la <span class="green bold">supresión</span> de las copias de seguridad <span class="blue1 bold">completas</span> antes de la fecha de';
 
 $L_Restore_File_Not_Deleted = 'Restaurar el archivo no se ha eliminado';

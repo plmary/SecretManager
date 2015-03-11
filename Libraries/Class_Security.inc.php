@@ -761,7 +761,7 @@ class Security extends IICA_Parameters {
 	}
 
 	
-	public function formatSyslogMessage( $action, $pObject = '' ) {
+	public function formatSyslogMessage( $action, $pSecret = '' ) {
 	/**
 	* Formate le message à remonter dans l'historique.
 	*
@@ -787,21 +787,36 @@ class Security extends IICA_Parameters {
 		if ( isset( $_SERVER[ 'REMOTE_ADDR' ] ) ) $Server = $_SERVER[ 'REMOTE_ADDR' ];
 		else $Server = '';
 
-		if ( $pObject == '' ) return FALSE;
+		if ( $pSecret == '' ) return FALSE;
 
-		if ( ! isset( $pObject->stp_name ) ) $pObject->stp_name = ${$pObject->stp_name};
+		if ( ! isset( $pSecret->stp_name ) ) $pSecret->stp_name = ${$pSecret->stp_name};
 
-		if ( ! isset( $pObject->env_name ) ) {
-			if ( $pObject->env_name != '' ) $pObject->env_name = ${$pObject->env_name};
-		} else $pObject->env_name = '';
+		if ( ! isset( $pSecret->env_name ) ) {
+			if ( $pSecret->env_name != '' ) $pSecret->env_name = ${$pSecret->env_name};
+		} else $pSecret->env_name = '';
 
-		return $idn_login . $Separator . $Server . $Separator . $action .
-		 $Separator . $pObject->scr_id . $Separator . $pObject->stp_name . $Separator . $pObject->env_name .
-		 $Separator . $pObject->app_name . $Separator . $pObject->scr_host . $Separator . $pObject->scr_user;
+		// Reformate le corps du Syslog
+		$message = file_get_contents( SYSLOG_BODY );
+
+		$message = str_ireplace( '%User', $idn_login, $message );
+		$message = str_ireplace( '%ActionDate', date('Y-m-d H:i:s'), $message );
+		$message = str_ireplace( '%Action', $action, $message );
+		$message = str_ireplace( '%UserIP', $_SESSION['user_ip'], $message );
+		if ( ! isset($pSecret->sgr_label) ) $pSecret->sgr_label = ''; 
+		$message = str_ireplace( '%GroupSecrets', $pSecret->sgr_label, $message );
+		$message = str_ireplace( '%SecretType', $pSecret->stp_name, $message );
+		$message = str_ireplace( '%SecretEnvironment', $pSecret->env_name, $message );
+		$message = str_ireplace( '%SecretApplication', $pSecret->app_name, $message );
+		$message = str_ireplace( '%SecretUser', $pSecret->scr_user, $message );
+		$message = str_ireplace( '%SecretHost', $pSecret->scr_host, $message );
+		if ( ! isset($pSecret->scr_comment) ) $pSecret->scr_comment = ''; 
+		$message = str_ireplace( '%SecretComment', $pSecret->scr_comment, $message );
+
+		return $message;
 	}	
  	
  	
-	public function writeLog( $action, $pObject = '', $priority = LOG_INFO ) {
+	public function writeLog( $action, $pObject = '', $priority = LOG_WARNING ) {
 	/**
 	* Envoi le message dans le flux "Syslog"
 	*
@@ -1114,6 +1129,8 @@ class Security extends IICA_Parameters {
 
 			if ( DIRECTORY_SEPARATOR != '/' ) {
 				$Idx_Name = str_replace( DIRECTORY_SEPARATOR, '/', INTEGRITY_FILENAME );
+			} else {
+				$Idx_Name = INTEGRITY_FILENAME;
 			}
 			
 			if ( $Hash_File != $Hashes[ $Idx_Name ] ) {

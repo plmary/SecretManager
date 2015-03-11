@@ -140,6 +140,7 @@ CREATE TABLE idn_identities (
                 idn_change_authenticator BOOLEAN DEFAULT true NOT NULL,
                 idn_super_admin BOOLEAN DEFAULT false NOT NULL,
                 idn_operator BOOLEAN DEFAULT false NOT NULL,
+                idn_api BOOLEAN DEFAULT false NOT NULL,
                 idn_attempt SMALLINT DEFAULT 0 NOT NULL,
                 idn_disable BOOLEAN DEFAULT false NOT NULL,
                 idn_logical_delete BOOLEAN DEFAULT 0 NOT NULL,

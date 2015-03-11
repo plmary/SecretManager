@@ -122,4 +122,9 @@
     $L_Confirm_Delete_Civility = 'Confirmez vous la suppression de cette Civilité : ';
 
     $L_No_User_Profile_Associated = 'Pas de profil utilisateur associé';
+
+    $L_API = 'API';
+    $L_Force_Default_Password = 'Forcer le mot de passe par défaut';
+    $L_Empty_Default_Password = 'Si vide, mot de passe par défaut';
+    $L_Empty_No_Change_Password = 'Si vide, mot de passe inchangé';
 ?>

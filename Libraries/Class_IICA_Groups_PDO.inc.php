@@ -614,6 +614,48 @@ class IICA_Groups extends IICA_DB_Connector {
     		$Labels['L_Alert'] . ':"' . $oGroup->sgr_alert . '")';
 	}
 
+
+	public function searchIdByLabel( $sgr_label ) {
+		/**
+		 * Recherche "l'ID" d'un Groupe de Secrets par son "libellé".
+		 *
+		 * @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+		 * @author Pierre-Luc MARY
+		 * @date 2015-03-06
+		 *
+		 * @param[in] $sgr_label (str) Libellé par lequel on va rechercher le Groupe de Secret
+		 *
+		 * @return Renvoi l'ID du Groupe de Secret, sinon lève une exception.
+		 */
+		if ( $sgr_label == '' ) throw new Exception( 'Parameter "sgr_label" mandatory' );
+
+		$Request = 'SELECT ' .
+		 'sgr_id ' .
+		 'FROM sgr_secrets_groups ' .
+		 'WHERE UPPER( sgr_label ) like :sgr_label ';
+
+		if ( ! $Result = $this->prepare( $Request ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		$sgr_label = '%' . strtoupper( $sgr_label ) . '%';
+		
+		if ( ! $Result->bindParam( ':sgr_label', $sgr_label, PDO::PARAM_STR, 60 ) ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+
+		if ( ! $Result->execute() ) {
+			$Error = $Result->errorInfo();
+			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
+		}
+		
+		$Occurrence = $Result->fetchObject() ;
+		
+		return $Occurrence->sgr_id;
+	}
+	
 } // Fin class IICA_Groups
 
 ?>

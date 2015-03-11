@@ -136,8 +136,9 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
              "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
-             "</a></li>\n"
-            );
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=API\">API</a></li>\n"
+             		);
             break;
 
          case 'A':
@@ -149,8 +150,9 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
              "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
-             "</a></li>\n"
-            );
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=API\">API</a></li>\n"
+             		);
             break;
 
          case 'C':
@@ -161,7 +163,8 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
              "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
-             "</a></li>\n"
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=API\">API</a></li>\n"
             );
             break;
 
@@ -172,7 +175,8 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
              "       <li class=\"active\">" . $L_SecretServer . "</li>\n" .
              "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets .
-             "</a></li>\n"
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=API\">API</a></li>\n"
             );
             break;
 
@@ -183,7 +187,20 @@ if ( $Authentication->is_administrator() ) {
              "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
              "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
              "</a></li>\n" .
-             "       <li class=\"active\">" . $L_Secrets . "</li>\n"
+             "       <li class=\"active\">" . $L_Secrets . "</li>\n" .
+             "       <li><a href=\"" . $Script . "?action=API\">API</a></li>\n"
+            );
+            break;
+
+         case 'API':
+         case 'APIX':
+            print( "       <li><a href=\"" . $Script . "\">" . $L_Welcome . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=A\">" . $L_Alerts . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=C\">" . $L_Connection . "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=S\">" . $L_SecretServer .
+             "</a></li>\n" .
+             "       <li><a href=\"" . $Script . "?action=SCR\">" . $L_Secrets . "</a></li>\n" .
+             "       <li class=\"active\">API</li>\n"
             );
             break;
         }
@@ -277,18 +294,30 @@ if ( $Authentication->is_administrator() ) {
 		 "        <td class=\"impair align-right\" width=\"50%\">" . $L_Alert_Syslog .
 		 "</td>\n" .
 		 "        <td class=\"pair\">\n" .
-		 "         <select name=\"alert_syslog\">\n" );
+		 "         <select id=\"i_alert_syslog\" name=\"alert_syslog\">\n" );
 
 		$Selected = '';
+		$Disabled = ' disabled ';
 
-		if ( $PageHTML->getParameter( 'alert_syslog' ) == '1' )
-			$Selected = ' selected ' ;
+		if ( $PageHTML->getParameter( 'alert_syslog' ) == '1' ) {
+			$Selected = ' selected ';
+			$Disabled = '';
+		}
 			
 		print( "          <option value=\"0\">" . $L_No . "</option>\n" .
-		 "          <option value=\"1\"" . $Selected . ">" . $L_Yes . "</option>\n" );
-
-		print( "         </select>\n" .
+		 "          <option value=\"1\"" . $Selected . ">" . $L_Yes . "</option>\n" .
+		 "         </select>\n" .
 		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "        <td class=\"impair align-right\">&nbsp;</td>\n" .
+		 "        <td class=\"pair\">\n" .
+		 "         <textarea id=\"i_syslog_format\" name=\"syslog_format\" style=\"width:98%;\"" . $Disabled . ">" ) ;
+		if ( file_exists( SYSLOG_BODY ) ) {
+			include( SYSLOG_BODY );
+		}
+		print( "</textarea>\n" .
+		 "        </td>\n" .
+		 "       <tr>\n" .
 		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"impair align-right\">" . $L_Alert_Mail . "</td>\n" .
@@ -385,6 +414,13 @@ if ( $Authentication->is_administrator() ) {
 			print( "     <h1>" . $L_Invalid_Value . " (alert_syslog)</h1>" );
 			break;
 		}
+		
+		if ( $Alert_Syslog ) {
+			if ( ($Syslog_Format = $Security->valueControl( $_POST[ 'syslog_format' ] )) == -1 ) {
+				print( "     <h1>" . $L_Invalid_Value . " (syslog_format)</h1>" );
+				break;
+			}
+		}
 
 		if ( ($Verbosity_Alert = $Security->valueControl( $_POST[ 'verbosity_alert' ],
 		 'NUMERIC' )) == -1 ) {
@@ -436,6 +472,9 @@ if ( $Authentication->is_administrator() ) {
 				$PageHTML->setParameter( 'mail_title', $Mail_Title );
 				$PageHTML->setParameter( 'mail_body_type', strtoupper( $Mail_Body_Type ) );
 				file_put_contents( MAIL_BODY, $Mail_Body );
+			}
+			if ( $Alert_Syslog ) {
+				file_put_contents( SYSLOG_BODY, $Syslog_Format );
 			}
 		} catch( PDOException $e ) {
 			print( $PageHTML->returnPage( $L_Title, $L_ERR_MAJ_Alert, $Script .
@@ -1503,6 +1542,82 @@ if ( $Authentication->is_administrator() ) {
         echo json_encode( $Ajax_Result );
 
         exit();
+        
+	 case 'API':
+	    $Public_Key_Localization = $PageHTML->getParameter( 'Public_Key_Localization' );
+	    $Private_Key_Localization = $PageHTML->getParameter( 'Private_Key_Localization' );
+	    
+	    $Authorized_Client_List = '';
+	    
+	    if ( file_exists( FILE_AUTHORIZED_CLIENT_LIST ) ) {
+	    	$Authorized_Client_List = file_get_contents( FILE_AUTHORIZED_CLIENT_LIST );
+	    }
+	    	
+		print(
+		 "      <form method=\"post\" action=\"" . $Script . "?action=APIX\" name=\"Form_API\">\n" .
+		 "      <table class=\"table-bordered\" style=\"margin:10px auto;width:95%\">\n" .
+		 "       <thead>\n" .
+		 "       <tr>\n" .
+		 "        <th colspan=\"2\">" . $L_API_Management . "</th>\n" .
+		 "       </tr>\n" .
+		 "       </thead>\n" .		 
+		 "       <tbody>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"pair align-right align-middle\" width=\"30%\">" . $L_Public_Key_To_Use . "</td>\n" .
+		 "        <td class=\"pair\">\n" .
+		 "         <input name=\"Public_Key_Localization\" type=\"text\" style=\"width: 98%;\" value=\"" . $Public_Key_Localization . "\">" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"pair align-right align-middle\" width=\"30%\">" . $L_Private_Key_To_Use . "</td>\n" .
+		 "        <td class=\"pair\">\n" .
+		 "         <input name=\"Private_Key_Localization\" type=\"text\" style=\"width: 98%;\" value=\"" . $Private_Key_Localization . "\">" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"pair align-right align-middle\" width=\"30%\">" . $L_Authorized_Client_List . "</td>\n" .
+		 "        <td class=\"pair\">\n" .
+		 "         <textarea name=\"Authorized_Client_List\" style=\"width: 98%;\">" . $Authorized_Client_List . "</textarea>" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
+				"       <tr>\n" .
+		 "        <td>&nbsp;</td>" .
+		 "        <td colspan=\"2\"><input type=\"submit\" class=\"button\" value=\"". $L_Save .
+		 "\" /></td>\n" .
+		 "       </tr>\n" .
+		 "       </tbody>\n" .
+		 "      </table>\n" .
+		 "      </form>\n"
+		);
+	 	break;
+	 	
+	 case 'APIX':
+		if ( ($Public_Key_Localization = $Security->valueControl( $_POST[ 'Public_Key_Localization' ], 'ASCII' )) == -1 ) {
+			print( '<h1>' . $L_Invalid_Value . " (Public_Key_Localization)</h1>" );
+			break;
+		}
+
+		if ( ($Private_Key_Localization = $Security->valueControl( $_POST[ 'Private_Key_Localization' ], 'ASCII' )) == -1 ) {
+			print( '<h1>' . $L_Invalid_Value . " (Private_Key_Localization)</h1>" );
+			break;
+		}
+
+		if ( ($Authorized_Client_List = $Security->valueControl( $_POST[ 'Authorized_Client_List' ], 'ASCII' )) == -1 ) {
+			print( '<h1>' . $L_Invalid_Value . " (Authorized_Client_List)</h1>" );
+			break;
+		}
+		
+		$PageHTML->setParameter( 'Public_Key_Localization', $Public_Key_Localization );
+	    $PageHTML->setParameter( 'Private_Key_Localization', $Private_Key_Localization );
+	    
+	    file_put_contents( FILE_AUTHORIZED_CLIENT_LIST, $Authorized_Client_List );
+
+		print( "<form method=\"post\" name=\"fMessage\" action=\"" . $Script . "?action=API\">\n" .
+			" <input type=\"hidden\" name=\"iMessage\" value=\"" . $L_Parameters_Updated . "\" />\n" .
+			"</form>\n" .
+			"<script>document.fMessage.submit();</script>" );
+
+		break;
 	}
 } else {
 	print( "<h1>" . $L_No_Authorize . "</h1>" );
