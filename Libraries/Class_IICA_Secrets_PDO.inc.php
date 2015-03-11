@@ -96,13 +96,102 @@ class IICA_Secrets extends IICA_DB_Connector {
 		$DateCourante = date( 'Y-m-d H:i:s' );
 		
 		if ( $scr_id == '' ) {
-			$Request = 'INSERT INTO scr_secrets ' .
-				'( sgr_id, stp_id, scr_host, scr_user, scr_password, scr_comment, ' .
-				'scr_alert, scr_creation_date, env_id, app_id, scr_expiration_date, idn_id ) ' .
-				'VALUES ( :sgr_id, :stp_id, :scr_host, :scr_user, :scr_password, ' .
-				':scr_comment, :scr_alert, "' . $DateCourante . '", :env_id, :app_id, ' .
-				':scr_expiration_date, :idn_id ) ';
+			$Fields = '';
+			$Values = '';
 
+			if ( $sgr_id != '' ) {
+				$Fields .= 'sgr_id';
+				$Values .= ':sgr_id';
+			}
+
+			if ( $stp_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'stp_id';
+				$Values .= ':stp_id';
+			}
+
+			if ( $scr_host != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'scr_host';
+				$Values .= ':scr_host';
+			}
+		
+			if ( $scr_user != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'scr_user';
+				$Values .= ':scr_user';
+			}
+
+			if ( $scr_password != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'scr_password';
+				$Values .= ':scr_password';
+			}
+
+			if ( $scr_comment != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'scr_comment';
+				$Values .= ':scr_comment';
+			}
+
+			if ( $scr_alert != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'scr_alert';
+				$Values .= ':scr_alert';
+			}
+
+			if ( $Fields != '' ) $Fields .= ', ';
+			if ( $Values != '' ) $Values .= ', ';
+
+			$Fields .= 'scr_creation_date';
+			$Values .= '"' . $DateCourante . '"';
+
+			if ( $env_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'env_id';
+				$Values .= ':env_id';
+			}
+
+			if ( $app_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'app_id';
+				$Values .= ':app_id';
+			}
+		
+			if ( $idn_id != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+
+				$Fields .= 'idn_id';
+				$Values .= ':idn_id';
+			}
+
+			if ( $scr_expiration_date != '' ) {
+				if ( $Fields != '' ) $Fields .= ', ';
+				if ( $Values != '' ) $Values .= ', ';
+			
+				$Fields .= 'scr_expiration_date';
+				$Values .= ':scr_expiration_date';
+			}
+				
+			$Request = 'INSERT INTO scr_secrets ( ' . $Fields . ' ) VALUES ( ' . $Values . ' ) ';
+			
 			if ( ! $Result = $this->prepare( $Request ) ) {
 				$Error = $Result->errorInfo();
 				throw new Exception( $Error[ 2 ], $Error[ 1 ] );

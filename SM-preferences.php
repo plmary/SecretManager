@@ -311,7 +311,7 @@ if ( $Authentication->is_administrator() ) {
 		 "       </tr>\n" .
 		 "        <td class=\"impair align-right\">&nbsp;</td>\n" .
 		 "        <td class=\"pair\">\n" .
-		 "         <textarea id=\"i_syslog_format\" name=\"syslog_format\" style=\"width:98%;\"" . $Disabled . ">" ) ;
+		 "         <textarea id=\"i_syslog_format\" name=\"syslog_format\" style=\"width:98%;height:42px;\"" . $Disabled . ">" ) ;
 		if ( file_exists( SYSLOG_BODY ) ) {
 			include( SYSLOG_BODY );
 		}

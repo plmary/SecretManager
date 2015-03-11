@@ -619,9 +619,13 @@ switch( $Action ) {
 		exit();
 	}
 
-	if ( ! $Password = $Security->valueControl( $_POST[ 'Password' ] ) ) {
-		print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Password)', $Return_Page, 1 ) );
-		exit();
+	if ( $_POST[ 'Password' ] != '' ) {
+		if ( ! $Password = $Security->valueControl( $_POST[ 'Password' ] ) ) {
+			print( $PageHTML->returnPage( $L_Title, $L_Invalid_Value . ' (Password)', $Return_Page, 1 ) );
+			exit();
+		}
+	} else {
+		$Password = '';
 	}
 	
 
@@ -700,7 +704,6 @@ switch( $Action ) {
 		
 		exit();
 	}
-
 
 	print( "<form method=\"post\" action=\"" . $Return_Page . "\" name=\"fInfoMessage\">\n" .
 		" <input type=\"hidden\" name=\"infoMessage\" value=\"" . $L_User_Created ."\">\n" .

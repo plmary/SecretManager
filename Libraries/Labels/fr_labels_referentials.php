@@ -8,7 +8,7 @@
 	
 	$L_Secret_Type_1 = 'Mot de passe OS';
 	$L_Secret_Type_2 = 'Mot de passe Applicatif';
-	$L_Secret_Type_3 = 'Mot de passe de Test';
+	$L_Secret_Type_3 = 'Mot de passe Document';
 
 
 	$L_Environment_1 = 'Production';

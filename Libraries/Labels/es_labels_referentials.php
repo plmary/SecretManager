@@ -6,9 +6,9 @@
 	$L_Right_4 = 'Modificación';
 
 	
-	$L_Secret_Type_1 = 'Olvidé mi contraseña OS';
-	$L_Secret_Type_2 = 'Olvidé mi contraseña Aplicativo';
-	$L_Secret_Type_3 = 'Prueba con contraseña';
+	$L_Secret_Type_1 = 'Contraseña OS';
+	$L_Secret_Type_2 = 'Contraseña Aplicativo';
+	$L_Secret_Type_3 = 'Contraseña Documento';
 
 
 	$L_Environment_1 = 'Producción';

@@ -7,7 +7,7 @@
 	
 	$L_Secret_Type_1 = 'OS password';
 	$L_Secret_Type_2 = 'Software password';
-	$L_Secret_Type_3 = 'Test password';
+	$L_Secret_Type_3 = 'Document password';
 
 	$L_Environment_1 = 'Production';
 	$L_Environment_2 = 'Staging';
