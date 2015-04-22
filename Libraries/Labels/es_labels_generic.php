@@ -129,4 +129,6 @@ $L_Before = 'Antes';
 $L_Security_Alert = 'Alerta de seguridad';
 $L_File_Integrity_Alert = 'Archivo alerta integridad : %s';
 $L_Files_Integrity_Alert = 'SecretManager archivos alerta integridad';
+
+$L_Default_Language = 'Default language';
 ?>

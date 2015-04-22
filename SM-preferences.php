@@ -55,7 +55,7 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) 
 
 // Charge les objets
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
-include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_PROTECTED . '/Config_Hash.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 		
@@ -511,16 +511,16 @@ if ( $Authentication->is_administrator() ) {
 	 // ================================================
 	 // Gestion des modes d'authentification des utilisateurs
 	 case 'C':
-	 	if ( file_exists( DIR_LIBRARIES . '/Config_Authentication.inc.php' ) ) {
-			include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	 	if ( file_exists( DIR_PROTECTED . '/Config_Authentication.inc.php' ) ) {
+			include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 		}
 		
-	 	if ( file_exists( DIR_LIBRARIES . '/Config_Radius.inc.php' ) ) {
-			include( DIR_LIBRARIES . '/Config_Radius.inc.php' );
+	 	if ( file_exists( DIR_PROTECTED . '/Config_Radius.inc.php' ) ) {
+			include( DIR_PROTECTED . '/Config_Radius.inc.php' );
 		}
 		
-	 	if ( file_exists( DIR_LIBRARIES . '/Config_LDAP.inc.php' ) ) {
-			include( DIR_LIBRARIES . '/Config_LDAP.inc.php' );
+	 	if ( file_exists( DIR_PROTECTED . '/Config_LDAP.inc.php' ) ) {
+			include( DIR_PROTECTED . '/Config_LDAP.inc.php' );
 		}
 		
 		if ( ! isset( $_LDAP_Port ) ) $_LDAP_Port = 389;
@@ -545,6 +545,34 @@ if ( $Authentication->is_administrator() ) {
 			break;
 		}
 
+		
+		$Default_Language = $PageHTML->getParameter( 'default_language' );
+
+		$Select_de = '';
+		$Select_fr = '';
+		$Select_en = '';
+		$Select_es = '';
+		
+		switch ( $Default_Language ) {
+		 case 'en':
+			$Select_en = 'selected';
+			break;
+
+		 case 'es':
+			$Select_es = 'selected';
+			break;
+
+		 case 'de':
+			$Select_de = 'selected';
+			break;
+
+		 case 'fr':
+		 default:
+			$Default_Language = 'fr';
+			$Select_fr = 'selected';
+			break;
+		}
+		
 		print( "     <script>\n" .
 		 "function activeFields( authentification_type ) {" .
 		 " if ( authentification_type == 'D' ) {\n" .
@@ -611,6 +639,18 @@ if ( $Authentication->is_administrator() ) {
 		 "       </tr>\n" .
 		 "       </thead>\n" .
 		 "       <tbody>\n" .
+		 "       <tr>\n" .
+		 "        <td class=\"impair align-right\" width=\"50%\">" .
+		 "<label for=\"id_expiration\">" . $L_Default_Language . "</label></td>\n" .
+		 "        <td class=\"pair\" colspan=\"2\">\n" .
+		 "         <select id=\"id_default_language\" name=\"Default_Language\" >\n" .
+		 "         <option value=\"fr\" " . $Select_fr . ">" . $L_Langue_fr . "</option>\n" .
+		 "         <option value=\"en\" " . $Select_en . ">" . $L_Langue_en . "</option>\n" .
+		 "         <option value=\"es\" " . $Select_es . ">" . $L_Langue_es . "</option>\n" .
+		 "         <option value=\"de\" " . $Select_de . ">" . $L_Langue_de . "</option>\n" .
+		 "         </select>\n" .
+		 "        </td>\n" .
+		 "       </tr>\n" .
 		 "       <tr>\n" .
 		 "        <td class=\"impair align-right\" width=\"50%\">" .
 		 "<label for=\"id_expiration\">" . $L_Expiration_Time . "</label></td>\n" .
@@ -943,10 +983,17 @@ if ( $Authentication->is_administrator() ) {
 			break;
 		}
 
+		if ( ($Default_Language = $Security->valueControl(
+				$_POST[ 'Default_Language' ], 'ASCII' )) == -1 ) {
+					print( "     <h1>" . $L_Invalid_Value . " (Default_Language)</h1>" );
+					break;
+				}
+		
 		try {
 			$PageHTML->setParameter( 'authentication_type', $authentication_type );
-			$PageHTML->setParameter( 'expiration_time', $_POST[ 'Expiration_Time' ] );
-
+			$PageHTML->setParameter( 'expiration_time', $Expiration_Time );
+			$PageHTML->setParameter( 'default_language', $Default_Language );
+				
 			$alert_message = $PageHTML->getTextCode( 'L_Parameters_Updated', $PageHTML->getParameter( 'language_alert' ) );
 
 			if ( $F_Verbosity_Alert == 1 ) {
@@ -968,7 +1015,7 @@ if ( $Authentication->is_administrator() ) {
 
 		switch( $authentication_type ) {
 		 case 'D':
-			$Output = @fopen( DIR_LIBRARIES . '/Config_Authentication.inc.php', 'w+' );
+			$Output = @fopen( DIR_PROTECTED . '/Config_Authentication.inc.php', 'w+' );
 			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .
@@ -1016,7 +1063,7 @@ if ( $Authentication->is_administrator() ) {
 			break;
 			
 		 case 'R':
-			$Output = @fopen( DIR_LIBRARIES . '/Config_Radius.inc.php', 'w+' );
+			$Output = @fopen( DIR_PROTECTED . '/Config_Radius.inc.php', 'w+' );
 			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .
@@ -1062,7 +1109,7 @@ if ( $Authentication->is_administrator() ) {
 			break;
 
 		 case 'L':
-			$Output = @fopen( DIR_LIBRARIES . '/Config_LDAP.inc.php', 'w+' );
+			$Output = @fopen( DIR_PROTECTED . '/Config_LDAP.inc.php', 'w+' );
 			if ( fwrite( $Output,
 "<?php\n" .
 "\n" .

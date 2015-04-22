@@ -67,8 +67,8 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Renvoi vrai en cas de succès ou génère une exception en cas d'erreur.
 	*/
-		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+		include( DIR_PROTECTED . '/Config_Hash.inc.php' );
+		include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-users.php' );
 		include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-login.php' );
 
@@ -158,7 +158,7 @@ class IICA_Authentications extends IICA_Parameters {
 			 case 'radius':
 			 case 'R':
 				include( DIR_RADIUS . '/radius.class.php' );
-				include( DIR_LIBRARIES . '/Config_Radius.inc.php' );
+				include( DIR_PROTECTED . '/Config_Radius.inc.php' );
 
 				$Radius_Suffix = '';
 				$UPD_Timeout = 5;
@@ -199,7 +199,7 @@ class IICA_Authentications extends IICA_Parameters {
 			
 			 case 'ldap':
 			 case 'L':
-				include( DIR_LIBRARIES . '/Config_LDAP.inc.php' );
+				include( DIR_PROTECTED . '/Config_LDAP.inc.php' );
 				
 				$LDAP_RDN = $_LDAP_RDN_Prefix . '=' . $Login . ',' . $_LDAP_Organization;
 
@@ -436,8 +436,8 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+		include( DIR_PROTECTED . '/Config_Hash.inc.php' );
+		include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 		
 		if ( ! class_exists( 'Security' ) ) {
 			include( DIR_LIBRARIES . '/Class_Security.inc.php' );
@@ -511,8 +511,8 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+		include( DIR_PROTECTED . '/Config_Hash.inc.php' );
+		include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 
 		if ( ! class_exists( 'Security' ) ) {
 			include( DIR_LIBRARIES . '/Class_Security.inc.php' );
@@ -597,7 +597,7 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+		include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 
 		// ===================================
 		// Récupère les données de l'identité.
@@ -640,7 +640,7 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Retourne la date remise à jour en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+		include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 
 		// ===================================
 		// Récupère les données de l'identité.
@@ -693,8 +693,8 @@ class IICA_Authentications extends IICA_Parameters {
 	*
 	* @return Retourne vrai en cas de succès, sinon lève une exception en cas d'erreur
 	*/
-		include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-		include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+		include( DIR_PROTECTED . '/Config_Hash.inc.php' );
+		include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 
 		// ===================================
 		// Récupère les données de l'identité.

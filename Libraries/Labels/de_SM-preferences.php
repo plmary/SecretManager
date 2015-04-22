@@ -86,4 +86,9 @@
 	$L_Stop_SecretServer_On_Alert = "SecretServer stoppt, wenn eine War";
 
 	$L_Cascading_Root_Connection = '"root" kaskadenschaltung';
-?>
+
+	$L_API_Management = 'API management';
+	$L_Public_Key_To_Use = 'Öffentliche Schlüssel zu verwenden';
+	$L_Private_Key_To_Use = 'Privater Schlüssel zu bedienen';
+	$L_Authorized_Client_List = 'Liste der IP-Clients dürfen (wenn leer, werden alle IP erlaubt)';
+	?>

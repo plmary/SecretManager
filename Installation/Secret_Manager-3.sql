@@ -94,7 +94,8 @@ INSERT INTO `spr_system_parameters` (`spr_name`, `spr_value`) VALUES
 ('secrets_size', '20'),
 ('stop_SecretServer_on_alert','0'),
 ('secrets_lifetime','6'),
-('cascading_connection','1')
+('cascading_connection','1'),
+('default_language', 'fr')
 ;
 
 --

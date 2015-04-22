@@ -30,7 +30,7 @@ public function __construct( $DB_Access = 1 ) {
 		include( DIR_LIBRARIES . '/Environnement.inc.php' );
 	}
 
-	$this->Version = '0.12-0'; // Version de l'outil
+	$this->Version = '0.13-0'; // Version de l'outil
 
 	if ( $DB_Access == 1 ) parent::__construct();
 	
@@ -226,7 +226,7 @@ public function construireFooter( $Buttons = 0, $Previous = '' ) {
 	 "<img src=\"" . URL_PICTURES . "/copy_left-15x15.jpg\" alt=\"Copyleft\" class=\"no-border\" />" .
 	 " Copyleft " . date( "Y" ) . " <strong>" .
 //	 "<a class=\"white\" href=\"http://plmtech.free.fr\" target=\"_blank\">plmTECH</a>" .
-	 "Pierre-Luc MARY" .
+	 "PLMary" .
 	 "</strong></p>\n" .
 	 "     </div>\n\n" ;
 

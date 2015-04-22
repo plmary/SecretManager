@@ -57,7 +57,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @return Renvoi vrai si l'Identité a été créée ou modifiée, sinon lève une exception
 	*/
-      include( 'Libraries/Config_Authentication.inc.php' );
+      include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 	       
 		if ( $idn_id == '' ) {
 			$Command = 'INSERT : ' ;
@@ -595,11 +595,14 @@ class IICA_Identities extends IICA_DB_Connector {
 		 'T2.cvl_first_name, ' .
 		 'T2.cvl_sex, ' .
 		 'T3.ent_code, ' .
-		 'T3.ent_label ' .
+		 'T3.ent_label, ' .
+		 'count(T4.prf_id) as "total_prf" ' .
 		 'FROM idn_identities AS T1 ' .
 		 'LEFT JOIN cvl_civilities AS T2 ON T1.cvl_id = T2.cvl_id ' .
 		 'LEFT JOIN ent_entities AS T3 ON T1.ent_id = T3.ent_id ' .
-		 'WHERE idn_id = :idn_id ';
+		 'LEFT JOIN idpr_identities_profiles AS T4 ON T1.idn_id = T4.idn_id ' .
+		 'WHERE T1.idn_id = :idn_id ' .
+		 'GROUP BY T1.cvl_id, T1.idn_login ';
 		 
 		if ( ! $Result = $this->prepare( $Request ) ) {
 			$Error = $Result->errorInfo();
@@ -632,8 +635,6 @@ class IICA_Identities extends IICA_DB_Connector {
 	*
 	* @return Renvoi vrai si l'Identité a été supprimée, sinon lève une exception
 	*/
-		include( 'Libraries/Config_Access_Tables.inc.php' );
-		
 		
 		/*
 		** Commence la transaction.
@@ -651,117 +652,6 @@ class IICA_Identities extends IICA_DB_Connector {
 		if ( ! $Result->execute() ) {
 			$Error = $Result->errorInfo();
 			throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-		}
-
-
-		/*
-		** Supprime la relation possible entre l'Identité et les Entités.
-		*/
-		if ( $_Access_IDN_ENT == 1 ) {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM iden_identites_entities ' .
-			 'WHERE idn_id = :idn_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		
-			$Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ;
-		
-			if ( ! $Result->execute() ) {
-				$this->rollBack();
- 
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-
-		/*
-		** Supprime la relation possible entre l'Identité et les Groupes.
-		*/
-		if ( $_Access_IDN_GRP == 1 ) {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM idgr_identities_groups ' .
-			 'WHERE idn_id = :idn_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		
-			$Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ;
-		
-			if ( ! $Result->execute() ) {
-				$this->rollBack();
- 
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-
-		/*
-		** Supprime la relation possible entre l'Identité et les Profiles.
-		*/
-		if ( $_Access_IDN_PRF == 1 ) {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM idpr_identities_profiles ' .
-			 'WHERE idn_id = :idn_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		
-			$Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ;
-		
-			if ( ! $Result->execute() ) {
-				$this->rollBack();
- 
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-
-		/*
-		** Supprime la relation possible entre l'Identité et les Applications.
-		*/
-		if ( $_Access_IDN_APP == 1 ) {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM idpr_identities_applications ' .
-			 'WHERE idn_id = :idn_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		
-			$Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ;
-		
-			if ( ! $Result->execute() ) {
-				$this->rollBack();
- 
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		}
-
-
-		/*
-		** Supprime la relation possible entre l'Identité et les Historiques des mots de
-		** passe.
-		*/
-		if ( $_Access_IDN_HST == 1 ) {
-			if ( ! $Result = $this->prepare( 'DELETE ' .
-			 'FROM psh_passwords_history ' .
-			 'WHERE idn_id = :idn_id' ) ) {
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
-		
-			$Result->bindParam( ':idn_id', $idn_id, PDO::PARAM_INT ) ;
-		
-			if ( ! $Result->execute() ) {
-				$this->rollBack();
- 
-				$Error = $Result->errorInfo();
-				throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-			}
 		}
 
 
@@ -1412,7 +1302,7 @@ class IICA_Identities extends IICA_DB_Connector {
 	* @return Renvoi le nombre total d'Identités ayant atteint le maximum de tentative de
 	* connexion.
 	*/
-		include( 'Libraries/Config_Authentication.inc.php' );
+		include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 
 		$Request = 'SELECT ' .
 		 'count(*) as total ' .

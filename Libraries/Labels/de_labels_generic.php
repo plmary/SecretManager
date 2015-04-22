@@ -125,4 +125,6 @@
 	$L_Security_Alert = 'Security Alert';
 	$L_File_Integrity_Alert = 'Integritätswarnung Datei : %s';
 	$L_Files_Integrity_Alert = 'Integrität alarm sensible Dateien SecretManager';
+
+	$L_Default_Language = 'Default language';
 ?>

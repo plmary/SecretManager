@@ -35,7 +35,7 @@ if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
 $Action = '';
 $Choose_Language = 0;
 
-include( DIR_LIBRARIES . '/Config_Access_DB.inc.php' );
+include( DIR_PROTECTED . '/Config_Access_DB.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Authentications_PDO.inc.php' );
 
 $Authentication = new IICA_Authentications();
@@ -54,7 +54,7 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-admin.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
 
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
-include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_PROTECTED . '/Config_Hash.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 
@@ -141,7 +141,7 @@ switch( $Action ) {
 		$orderBy = 'label';
 	}
 
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 	
 	print( "    <div id=\"dashboard\">\n" );
 
@@ -685,7 +685,7 @@ switch( $Action ) {
 		$orderBy = 'type';
 	}
 
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 	
 	$Secrets = new IICA_Secrets( 
 	 $_Host, $_Port, $_Driver, $_Base, $_User, $_Password );

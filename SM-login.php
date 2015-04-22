@@ -21,8 +21,6 @@ include( 'Constants.inc.php' );
 session_save_path( DIR_SESSION );
 session_start();
 
-// Initialise la langue Française par défaut.
-if ( ! isset( $_SESSION[ 'Language' ] ) ) $_SESSION[ 'Language' ] = 'fr';
 
 // Récupère le code langue, quand celui-ci est précisé.
 if ( array_key_exists( 'Lang', $_GET ) ) {
@@ -41,8 +39,6 @@ if ( ! array_key_exists( 'HTTPS', $_SERVER ) )
 $Action = '';
 $Choose_Language = 1;
 
-include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
-include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
 include( DIR_LIBRARIES . '/Class_Security.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );
@@ -56,6 +52,20 @@ $Secrets = new IICA_Secrets();
 
 // Initialise l'objet de gestion des entrés et sorties.
 $Security = new Security();
+
+
+// Initialise la langue de l'interface.
+if ( ! isset( $_SESSION[ 'Language' ] ) or $_SESSION[ 'Language' ] == '' ) {
+	$Default_Language = $PageHTML->getParameter( 'default_language' );
+	
+	if ( $Default_Language == '' ) $Default_Language = 'fr';
+
+	$_SESSION[ 'Language' ] = $Default_Language;
+}
+
+// Charge les libellés relatifs à la langue de l'interface.
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
+include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 
 
 // Récupère l'action spécifique à réaliser dans ce script.
@@ -126,7 +136,7 @@ switch( $Action ) {
  // Traite le changement de mot de passe d'un utilisateur.
  case 'CMDP':
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 	
 	if ( array_key_exists( 'rp', $_GET ) ) {
 		$Previous_Page = URL_BASE . '/SM-' . $_GET[ 'rp' ] . '.php';
@@ -264,8 +274,8 @@ switch( $Action ) {
 
  // Enregistre le changement de mot de passe.
  case 'CMDPX':
-	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Hash.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 
 	$Secrets = new IICA_Secrets();
 
@@ -344,7 +354,7 @@ switch( $Action ) {
 
  // Récueille les informations d'authentification.
  default:
-	include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+	include( DIR_PROTECTED . '/Config_Hash.inc.php' );
    
 	print( $PageHTML->enteteHTML( $L_Title, $Choose_Language ) .
      "    <div id=\"icon-users\" class=\"icon36\" style=\"float: left; margin: 3px 9px 3px 3px;\"></div>\n" .

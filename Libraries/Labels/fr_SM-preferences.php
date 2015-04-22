@@ -80,5 +80,5 @@
 	$L_API_Management = 'Gestion de l\'API';
 	$L_Public_Key_To_Use = 'Clé publique à utiliser';
 	$L_Private_Key_To_Use = 'Clé privée à utiliser';
-	$L_Authorized_Client_List = 'Liste des clients autorisés (si vide, tous les clients sont autorisés)';
+	$L_Authorized_Client_List = 'Liste des IP clients autorisés (si vide, toutes les IP sont autorisées)';
 ?>

@@ -52,7 +52,7 @@ $Options = getopt( $ShortOpts, $LongOpts );
 $FLAG_DEBUG = 0;
 $FLAG_FORCE = 0;
 
-$Config_File = DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Config_SM-secrets-server.inc.php';
+$Config_File = DIR_PROTECTED . DIRECTORY_SEPARATOR . 'Config_SM-secrets-server.inc.php';
 $Security_File = DIR_LIBRARIES . DIRECTORY_SEPARATOR . 'Class_Security.inc.php';
 
 $Session_Dir = DIR_SESSION;

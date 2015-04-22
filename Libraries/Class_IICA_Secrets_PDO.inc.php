@@ -6,8 +6,6 @@ include_once( IICA_LIBRARIES . '/Class_IICA_DB_Connector_PDO.inc.php' );
 include_once( IICA_LIBRARIES . '/Class_IICA_Groups_PDO.inc.php' );
 include_once( IICA_LIBRARIES . '/Class_IICA_Referentials_PDO.inc.php' );
 
-include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
-
 
 class IICA_Secrets extends IICA_DB_Connector {
 /**
@@ -1443,7 +1441,7 @@ class IICA_Secrets extends IICA_DB_Connector {
     
     public function searchSecret( $scr_host, $scr_user ) {
     	$Request = 'SELECT ' .
-    			'scr_id ' .
+    			'scr_id, sgr_id ' .
     			'FROM scr_secrets ' .
     			'WHERE scr_host = :scr_host ' .
     			'AND scr_user = :scr_user ';
@@ -1473,7 +1471,7 @@ class IICA_Secrets extends IICA_DB_Connector {
 			return FALSE;
 		}
 
-    	return $Occurrence->scr_id;
+    	return array( $Occurrence->scr_id, $Occurrence->sgr_id );
     }
 } // Fin class IICA_Secrets
 

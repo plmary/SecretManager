@@ -156,21 +156,21 @@ switch( $Action ) {
  	$Test = testURL( URL_BASE );
 
 	print ( "       <p>\n" .
-		 "        <span>" . $L_URL_Access . " \"URL_BASE\" (". URL_BASE .") : </span>\n" .
+		 "        <span>" . $L_URL_Access . " \"URL_BASE\" : </span>\n" .
 		 "        <span class=\"bg-" . $Test['Color'] . " bold rl_padding\">" . $Test['Status'] . "</span>\n" .
 		 "       </p>\n" );
 
  	$Test = testURL( URL_PICTURES );
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_URL_Access . " \"URL_PICTURES\" (". URL_PICTURES .") : </span>\n" .
+		 "        <span>" . $L_URL_Access . " \"URL_PICTURES\" : </span>\n" .
 		 "        <span class=\"bg-" . $Test['Color'] . " bold rl_padding\">" . $Test['Status'] . "</span>\n" .
 		 "       </p>\n" );
 
  	$Test = testURL( URL_LIBRARIES );
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_URL_Access . " \"URL_LIBRARIES\" (". URL_LIBRARIES .") : </span>\n" .
+		 "        <span>" . $L_URL_Access . " \"URL_LIBRARIES\" : </span>\n" .
 		 "        <span class=\"bg-" . $Test['Color'] . " bold rl_padding\">" . $Test['Status'] . "</span>\n" .
 		 "       </p>\n" );
 
@@ -198,7 +198,7 @@ switch( $Action ) {
  	}
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_Dir_Access . " \"DIR_SESSION\" (". DIR_SESSION .") : </span>\n" .
+		 "        <span>" . $L_Dir_Access . " \"DIR_SESSION\" : </span>\n" .
 		 "        <span class=\"bg-" . $Color . " bold rl_padding\">" . $Status . "</span>\n" .
 		 "       </p>\n" );
 
@@ -226,7 +226,7 @@ switch( $Action ) {
  	}
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_Dir_Access . " \"DIR_BACKUP\" (". DIR_BACKUP .") : </span>\n" .
+		 "        <span>" . $L_Dir_Access . " \"DIR_BACKUP\" : </span>\n" .
 		 "        <span class=\"bg-" . $Color . " bold rl_padding\">" . $Status . "</span>\n" .
 		 "       </p>\n" );
 
@@ -248,7 +248,7 @@ switch( $Action ) {
  	}
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_Dir_Access . " \"DIR_LIBRARIES\" (". DIR_LIBRARIES .") : </span>\n" .
+		 "        <span>" . $L_Dir_Access . " \"DIR_LIBRARIES\" : </span>\n" .
 		 "        <span class=\"bg-" . $Color . " bold rl_padding\">" . $Status . "</span>\n" .
 		 "       </p>\n" );
 
@@ -270,7 +270,7 @@ switch( $Action ) {
  	}
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_Dir_Access . " \"DIR_LABELS\" (". DIR_LABELS .") : </span>\n" .
+		 "        <span>" . $L_Dir_Access . " \"DIR_LABELS\" : </span>\n" .
 		 "        <span class=\"bg-" . $Color . " bold rl_padding\">" . $Status . "</span>\n" .
 		 "       </p>\n" );
 
@@ -292,7 +292,7 @@ switch( $Action ) {
  	}
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_Dir_Access . " \"DIR_RADIUS\" (". DIR_RADIUS .") : </span>\n" .
+		 "        <span>" . $L_Dir_Access . " \"DIR_RADIUS\" : </span>\n" .
 		 "        <span class=\"bg-" . $Color . " bold rl_padding\">" . $Status . "</span>\n" .
 		 "       </p>\n" );
 
@@ -314,10 +314,42 @@ switch( $Action ) {
  	}
 
 	print( "       <p>\n" .
-		 "        <span>" . $L_Dir_Access . " \"DIR_PICTURES\" (". DIR_PICTURES .") : </span>\n" .
+		 "        <span>" . $L_Dir_Access . " \"DIR_PICTURES\" : </span>\n" .
 		 "        <span class=\"bg-" . $Color . " bold rl_padding\">" . $Status . "</span>\n" .
-		 "       </p>\n" .
-		 "      </div> <!-- Fin : corps -->\n" .
+		 "       </p>\n" );
+
+	
+	// Test les accès aux différents fichiers précisés dans le fichier des Constantes.
+	$Files_List = array(
+			'MAIL_BODY' => MAIL_BODY,
+			'SYSLOG_BODY' => SYSLOG_BODY,
+			'INTEGRITY_FILENAME' => INTEGRITY_FILENAME,
+			'MASTER_INTEGRITY_FILENAME' => MASTER_INTEGRITY_FILENAME,
+			'CONSTRAINTS_DB_FILENAME' => CONSTRAINTS_DB_FILENAME,
+			'FILE_AUTHORIZED_CLIENT_LIST' => FILE_AUTHORIZED_CLIENT_LIST
+			);
+
+	foreach( $Files_List as $Key => $File ) {
+		if ( file_exists( $File ) ) {
+			if ( is_readable( $File ) )	{
+ 				$Color = 'green';
+				$Status = 'OK';
+			} else {
+ 				$Color = 'orange';
+				$Status = 'File not readable';
+			}
+		} else {
+ 			$Color = 'orange';
+			$Status = 'No file found';
+		}
+
+		print( "       <p>\n" .
+			 "        <span>" . $L_File_Access . " \"" . $Key . "\" : </span>\n" .
+			 "        <span class=\"bg-" . $Color . " bold rl_padding\">" . $Status . "</span>\n" .
+			 "       </p>\n" );
+	}	
+	
+	print( "      </div> <!-- Fin : corps -->\n" .
 		 //"      <p class=\"align-center\"><a class=\"button\" href=\"#\">" . $L_Management . "</a></p>\n" .
 		 "     </div> <!-- Fin : affichage de la synthèse des utilisateurs -->\n\n" );
 

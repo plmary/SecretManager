@@ -70,4 +70,9 @@
 	$L_ERR_MAJ_Connection = 'Error durante la configuración de actualización Login';
 
 	$L_Cascading_Root_Connection = '"root" conexión en cascada';
-?>
+
+	$L_API_Management = 'Gestión API';
+	$L_Public_Key_To_Use = 'Clave pública de usar';
+	$L_Private_Key_To_Use = 'La clave privada de usar';
+	$L_Authorized_Client_List = 'Lista de clientes IP authorizadas (si está vacio, todo IP están permitidos)';
+	?>

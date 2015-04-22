@@ -1611,7 +1611,7 @@ case 'STOR_TX':
  case 'LOAD_BACKUP_X':
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_labels_generic.php' );
 	include( DIR_LIBRARIES . '/Class_Backup_PDO.inc.php' );
-	include( DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php' );
+	include( DIR_PROTECTED . '/Config_SM-secrets-server.inc.php' );
 	
 
 	if ( $PageHTML->getParameter( 'use_SecretServer' ) == 1 ) {

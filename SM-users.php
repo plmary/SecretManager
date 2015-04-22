@@ -53,7 +53,7 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-profils.php' );
 include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) );
 
 include( DIR_LIBRARIES . '/Class_HTML.inc.php' );
-include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_PROTECTED . '/Config_Hash.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Civilities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Entities_PDO.inc.php' );
@@ -130,7 +130,7 @@ if ( array_key_exists( 'orderby', $_GET ) ) {
 
 switch( $Action ) {
  default:
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 	include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_SM-secrets.php' );
 	
 	print( "    <div id=\"dashboard\">\n" );
@@ -579,7 +579,7 @@ switch( $Action ) {
  case 'ADDX':
 	$Return_Page = $Script;
  
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 	
 	
 	// Contrôle les variables transmises.
@@ -843,7 +843,7 @@ switch( $Action ) {
  case 'M':
 	$Return_Page = $Script;
  
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
@@ -1157,7 +1157,7 @@ switch( $Action ) {
  case 'V':
 	$Return_Page = $Script;
 
-	include( DIR_LIBRARIES . '/Config_Authentication.inc.php' );
+	include( DIR_PROTECTED . '/Config_Authentication.inc.php' );
 	
 	if ( ($idn_id = $Security->valueControl( $_GET[ 'idn_id' ], 'NUMERIC' )) == -1 ) {
 		print( $PageHTML->infoBox( $L_Invalid_Value . ' (idn_id)', $Return_Page, 1 ) );
@@ -1171,6 +1171,16 @@ switch( $Action ) {
 	else
 		$Flag_Check_Administrator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
 
+	if ( $Identity->idn_operator == 1 )
+		$Flag_Check_Operator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ko\" />";
+	else
+		$Flag_Check_Operator = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+
+	if ( $Identity->idn_api == 1 )
+		$Flag_Check_API = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_coche.gif\" alt=\"Ko\" />";
+	else
+		$Flag_Check_API = "<img class=\"no-border\" src=\"" . URL_PICTURES . "/bouton_non_coche.gif\" alt=\"Ko\" />";
+	
 
 	if ( $Identity->cvl_sex == 0 )
 		$Flag_Sex = $L_Man;
@@ -1189,6 +1199,84 @@ switch( $Action ) {
 	else
 		$Flag_Disable = $L_No;
 
+
+	// Contrôle le statut du compte. 
+	$Flag_Status = 0;
+	$Msg_Error = '';
+	
+	if ( $Identity->idn_attempt > $_Max_Attempt ) {
+		$Flag_Status = 1;
+		$Msg_Error = $L_Attempt_Exceeded;
+	}
+	
+	
+	if ( $Identity->idn_expiration_date != '0000-00-00 00:00:00' ) {
+		if ( $Identity->idn_expiration_date < date( 'Y-m-d' ) ) {
+			if ( $Flag_Status == 1 ) {
+				$Msg_Error .= ', ';
+			} else {
+				$Flag_Status = 1;
+			}
+	
+			$Msg_Error .= $L_Expiration_Date_Exceeded;
+		}
+	}
+	
+	
+	if ( $Identity->idn_last_connection != '0000-00-00 00:00:00' ) {
+		$datetime1 = new DateTime( date( 'Y-m-d' ) );
+		$datetime2 = new DateTime( $Identity->idn_last_connection );
+	
+		$interval = $datetime1->diff( $datetime2 );
+	
+		if ( $interval->format('%R') == '-' ) {
+			if ( $interval->format('%m') >= $_Default_User_Lifetime ) {
+				if ( $Flag_Status == 1 ) {
+					$Msg_Error .= ', ';
+				} else {
+					$Flag_Status = 1;
+				}
+	
+				$Msg_Error .= $L_Last_Connection_Old;
+			}
+		}
+	} else {
+		if ( $Flag_Status == 1 ) {
+			$Msg_Error .= ', ';
+		} else {
+			$Flag_Status = 1;
+		}
+	
+		$Msg_Error .= $L_Never_Connected;
+	}
+	
+	
+	if ( $Identity->idn_disable == 1 ) {
+		if ( $Flag_Status == 1 ) {
+			$Msg_Error .= ', ';
+		} else {
+			$Flag_Status = 1;
+		}
+	
+		$Msg_Error .= $L_User_Disabled;
+	}
+	
+	
+	if ( $Identity->total_prf == 0 and $Identity->idn_super_admin == FALSE ) {
+		if ( $Flag_Status == 1 ) {
+			$Msg_Error .= ', ';
+		} else {
+			$Flag_Status = 1;
+		}
+	
+		$Msg_Error .= $L_No_User_Profile_Associated;
+	}
+
+	if ( $Flag_Status == 1 ) {
+		$Msg_Error = '<span class="bg-orange bold">&nbsp;' . $Msg_Error . '&nbsp;</span>';
+	} else {
+		$Msg_Error = '<span class="bg-green bold">&nbsp;OK&nbsp;</span>';
+	}
 	
 	print(
 	 "    <form method=\"post\" action=\"" . $Script . "\">\n" .
@@ -1248,8 +1336,16 @@ switch( $Action ) {
 	 $Security->XSS_Protection( $Identity->idn_updated_authentication ) . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
-	 "       <td class=\"align-right align-middle td-aere\">" . $L_Administrator . "</td>\n" .
-	 "       <td class=\"td-aere\">" . $Flag_Check_Administrator . "</td>\n" .
+	 "       <td class=\"align-right align-middle td-aere\">" . $L_Rights . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\" style=\"vertical-align: middle;\">" .
+	 $L_Administrator . '&nbsp;' . $Flag_Check_Administrator . '&nbsp;' .
+	 $L_Operator . '&nbsp;' . $Flag_Check_Operator . '&nbsp;' .
+	 $L_API . '&nbsp;' . $Flag_Check_API .
+	 "</td>\n" .
+	 "      </tr>\n" .
+	 "      <tr>\n" .
+	 "       <td class=\"align-right td-aere\">" . $L_Status . "</td>\n" .
+	 "       <td class=\"bg-light-grey td-aere\">" . $Msg_Error . "</td>\n" .
 	 "      </tr>\n" .
 	 "      <tr>\n" .
 	 "       <td class=\"td-aere\">&nbsp;</td>\n" .

@@ -445,7 +445,7 @@ class Security extends IICA_Parameters {
 	* @return string Retourne la chaine de données chiffrée.
 	*/
 		if ( $mc_key == '' ) {
-			include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+			include( DIR_PROTECTED . '/Config_Hash.inc.php' );
 			
 			if ( isset( $_salt_secret ) ) {
     			$mc_key = $_salt_secret;
@@ -480,7 +480,7 @@ class Security extends IICA_Parameters {
 	* @return string Retourne la chaine de données déchiffrée.
 	*/
 		if ( $mc_key == '' ) {
-			include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+			include( DIR_PROTECTED . '/Config_Hash.inc.php' );
 			
 			if ( isset( $_salt_secret ) ) {
     			$mc_key = $_salt_secret;
@@ -498,6 +498,83 @@ class Security extends IICA_Parameters {
 		 MCRYPT_MODE_ECB, $iv );
 	
 		return trim($decrypted);
+	}
+
+
+	public function mc_encrypt2( $encrypt, $mc_key, $mc_salt = '' ) {
+	/**
+	* Chiffrement d'une donnée.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-08
+	*
+	* @param[in] $encrypt Données à chiffrer.
+	* @param[in] $mc_key Clé de chiffrement (maximum 32 caractères, sinon la clé est tronquée).
+	* @param[in] $mc_salt Sel de complexication des clés (32 caractères).
+	*
+	* @return string Retourne la chaine de données chiffrée.
+	*/
+		if ( $mc_salt == '' ) {
+			include( DIR_PROTECTED . '/Config_Hash.inc.php' );
+			
+    		$mc_salt = $_salt_default;
+		}
+
+		$size = strlen( $mc_key );
+		if ( $size >= 32 ) {
+			$key = substr( $mc_key, 0, 32 );
+		} else {
+			$key = $mc_key . substr( $mc_salt, ($size - 1) );
+		}
+
+		$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
+		$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+
+		$passcrypt = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, trim( $encrypt ),
+			MCRYPT_MODE_CBC, $iv );
+
+		$encode = base64_encode( $passcrypt );
+		
+		return $encode;
+	}
+
+
+	public function mc_decrypt2( $decrypt, $mc_key, $mc_salt = '' ) {
+	/**
+	* Déchiffrement d'une donnée.
+	*
+	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
+	* @author Pierre-Luc MARY
+	* @date 2012-11-08
+	*
+	* @param[in] $decrypt Données à déchiffrer.
+	* @param[in] $mc_key Clé de déchiffrement.
+	*
+	* @return string Retourne la chaine de données déchiffrée.
+	*/
+		if ( $mc_salt == '' ) {
+			include( DIR_PROTECTED . '/Config_Hash.inc.php' );
+			
+    		$mc_salt = $_salt_default;
+		}
+
+		$size = strlen( $mc_key );
+		if ( $size >= 32 ) {
+			$key = substr( $mc_key, 0, 32 );
+		} else {
+			$key = $mc_key . substr( $mc_salt, ($size - 1) );
+		}
+		
+		$decoded = base64_decode( $decrypt );
+		
+		$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC );
+		$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+
+		$decrypted = mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $key, $decoded,
+			MCRYPT_MODE_CBC, $iv );
+	
+		return trim( $decrypted );
 	}
 
 

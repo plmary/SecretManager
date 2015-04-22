@@ -30,7 +30,7 @@ public function __construct() {
 	*/
 	parent::__construct();
 
-	include( DIR_LIBRARIES . '/Config_SM-secrets-server.inc.php' );
+	include( DIR_PROTECTED . '/Config_SM-secrets-server.inc.php' );
 	
 	$this->IP_Address = $IP_Address;
 	$this->IP_Port = $IP_Port;

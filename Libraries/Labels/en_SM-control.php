@@ -5,7 +5,8 @@
 	$L_DNS_or_IP = "Server address (DNS entry or IP address)";
 	$L_URL_Access = "URL access";
 	$L_Dir_Access = "Directory access";
-
+	$L_File_Access = "File access";
+	
 	$L_DB_Connection_Control = "Database connection control";
 	$L_DB_Connection = "Database connection";
 

@@ -69,7 +69,7 @@ include( DIR_LABELS . '/' . $_SESSION[ 'Language' ] . '_' . basename( $Script ) 
 
 
 // Charge le fichier de "Hash", dans la mesure où le SecretServer ne sera pas utilisé.
-include( DIR_LIBRARIES . '/Config_Hash.inc.php' );
+include( DIR_PROTECTED . '/Config_Hash.inc.php' );
 
 include( DIR_LIBRARIES . '/Class_IICA_Identities_PDO.inc.php' );
 include( DIR_LIBRARIES . '/Class_IICA_Secrets_PDO.inc.php' );

@@ -130,4 +130,6 @@
 	$L_Security_Alert = 'Alerte de Sécurité';
 	$L_File_Integrity_Alert = 'Alerte d\'intégrité sur le fichier : %s';
 	$L_Files_Integrity_Alert = 'Alerte sur l\'intégrité des fichiers sensibles de SecretManager';
+	
+	$L_Default_Language = 'Langue par défaut';
 ?>

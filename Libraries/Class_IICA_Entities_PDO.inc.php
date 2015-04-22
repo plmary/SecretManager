@@ -208,7 +208,6 @@ class IICA_Entities extends IICA_DB_Connector {
 	*
 	* @return Renvoi vrai si l'Entité a été supprimée
 	*/
-      include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
       
 		/*
 		** Démarre la transaction.
@@ -241,31 +240,6 @@ class IICA_Entities extends IICA_DB_Connector {
       if ( $_Access_ENT_GRP == 1 ) {
          if ( ! $Result = $this->prepare( 'DELETE ' .
           'FROM engr_entities_groups ' .
-          'WHERE ent_id = :ent_id' ) ) {
-            $this->rollBack();
-			
-            $Error = $Result->errorInfo();
-            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-         }
-
-         $Result->bindParam( ':ent_id', $ent_id, PDO::PARAM_INT ) ;
-		
-         if ( ! $Result->execute() ) {
-            $this->rollBack();
-
-            $Error = $Result->errorInfo();
-            throw new Exception( $Error[ 2 ], $Error[ 1 ] );
-         }
-      }
-
-
-		/*
-		** Détruit l'association dans la table de liaison entre les identités et
-		** les entités.
-		*/
-      if ( $_Access_IDN_ENT == 1 ) {
-         if ( ! $Result = $this->prepare( 'DELETE ' .
-          'FROM iden_identities_entities ' .
           'WHERE ent_id = :ent_id' ) ) {
             $this->rollBack();
 			

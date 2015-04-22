@@ -1,7 +1,5 @@
 <?php
 
-include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
-
 // =============================
 class IICA_Groups extends IICA_DB_Connector {
 /**
@@ -98,7 +96,7 @@ class IICA_Groups extends IICA_DB_Connector {
 
 	public function listGroups( $idn_id = '', $orderBy = '', $rgh_id = '' ) {
 	/**
-	* Liste les Groupes.
+	* Liste tous les Groupes (par défaut) ou tous les Groupes rattachés à une Identité.
 	*
 	* @license http://www.gnu.org/copyleft/lesser.html  LGPL License 3
 	* @author Pierre-Luc MARY
@@ -111,7 +109,7 @@ class IICA_Groups extends IICA_DB_Connector {
 	* @return Renvoi vrai sur le succès de la mise à jour du Groupe, sinon lève une Exception
 	*/
 		$Request = 'SELECT DISTINCT ' .
-		 'T1.sgr_id, sgr_label, sgr_alert, T2.rgh_id ' .
+		 'T1.sgr_id, sgr_label, sgr_alert, max(T2.rgh_id) AS "rgh_id" ' .
 		 'FROM sgr_secrets_groups AS T1 ' .
 		 'LEFT JOIN prsg_profiles_secrets_groups AS T2 ON T1.sgr_id = T2.sgr_id ' ;
 		
@@ -128,6 +126,8 @@ class IICA_Groups extends IICA_DB_Connector {
 				$Request .= 'AND T2.rgh_id >= :rgh_id ';
 			}
 		}
+		
+		$Request .= 'GROUP BY T1.sgr_id, sgr_label, sgr_alert ';
 		
 		switch( $orderBy ) {
 		 default:

@@ -1,4 +1,4 @@
-Date : 2014-02-24
+Date : 2015-04-02
 Author : Pierre-Luc MARY
 
 Contact me : mailto:pl.mary(at)free.fr
@@ -8,18 +8,26 @@ FR ]
 Quelles nouvelles :
 - La nouvelle "machine virtuelle" a été mis à votre disposition.
 Voir le lien ci-dessous :
-https://sourceforge.net/projects/secretmanager/files/VM-SecretManager-v0.11-0.zip/download
+https://sourceforge.net/projects/secretmanager/files/VM-SecretManager-v0.12-0.zip/download
 Important : Un guide d'installation et d'utilisation ont été rédigés pour utiliser la VM.
-Pour ce connecter à la VM : user: "root", password: "orasys"
+Pour ce connecter à la VM : user: "root", password: "plmary"
 
-Plusieurs petites corrections :
-- Correction de la suppression des Entités, Groupes de Secrets et Profils;
-- Correction de petits problèmes sur les contrôles d'intégrité pour les personnes utilisant le SecretManager sur un Serveur Windows.
+Une correction :
+- Correction du problème d'utilisation de clé de chiffrement entre la clé active et la clé utilisé pour
+  stocker les anciens secrets.
+
+Nouveauté :
+Mise en oeuvre d'une API pour interfacer en création et en modification le SecretManager avec vos
+applications.
+Modification des écrans ci-dessous :
+- Gestion des Utilisateurs (implémentation des utilisateurs de type API) ;
+- Gestion de l'écran de paramétrage (nouvel onglet) ;
+- Gestion des sauvegardes (prise en compte du nouveau champ dans table idn_identities).
 
 ------------------------
 Première installation :
 
-Déziper "SecretManager-v0.11-0.zip" dans le "DocumentRoot" de 
+Déziper "SecretManager-v0.12-0.zip" dans le "DocumentRoot" de 
 votre Serveur Apache (voir la configuration de votre httpd-vhosts.conf). Ensuite, lire le 
 "Guide d'installation" dans le répertoire "Documentations" dans l'arborescence de 
 SecretManager.
@@ -28,12 +36,14 @@ Utilisateur par défaut : Nom utilisateur : "root", Mot de passe : "Welcome !"
 Clé opérateur par défaut : "CleO"
 
 ----------------------------------
-Mise à jour de v0.10-0 à v0.11-0 :
+Mise à jour de v0.11-0 à v0.12-0 :
 
-Déziper "upd_SecretManager-v0.11-0.zip" dans le précédent répertoire d'installation de 
+Déziper "upd_SecretManager-v0.12-0.zip" dans le précédent répertoire d'installation de 
 votre "SecretManager".
 
-*** Il n'y a pas de mise à jour de la base de données.
+*** Attention : Il y a une mise à jour de base de données à faire.
+A partir de la racine de SecretManager, il faut exécuter le fichier :
+Installation/upd-1-v0.12-0.sql
 
 ===================================
 

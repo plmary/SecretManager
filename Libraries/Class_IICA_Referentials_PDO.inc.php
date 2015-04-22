@@ -1,7 +1,5 @@
 <?php
 
-include( DIR_LIBRARIES . '/Config_Access_Tables.inc.php' );
-
 // ===================================
 class IICA_Referentials extends IICA_DB_Connector {
 /**

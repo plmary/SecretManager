@@ -462,7 +462,7 @@ class Backup extends IICA_Parameters {
         // Traitement de la table des "Identités".
         if ( ! $Result = $this->prepare( 'SELECT idn_id, ent_id, cvl_id, idn_login, ' .
             'idn_authenticator, idn_salt, idn_change_authenticator, idn_super_admin, ' .
-            'idn_operator, idn_attempt, idn_disable, idn_last_connection, ' .
+            'idn_operator, idn_api, idn_attempt, idn_disable, idn_last_connection, ' .
             'idn_expiration_date, idn_updated_authentication ' .
             'FROM idn_identities ' ) ) {
             $Error = $Result->errorInfo();
@@ -491,6 +491,7 @@ class Backup extends IICA_Parameters {
 		        '   <column name="idn_change_authenticator">' . $Occurrence->idn_change_authenticator . '</column>' . "\n" .
 		        '   <column name="idn_super_admin">' . $Occurrence->idn_super_admin . '</column>' . "\n" .
 		        '   <column name="idn_operator">' . $Occurrence->idn_operator . '</column>' . "\n" .
+		        '   <column name="idn_api">' . $Occurrence->idn_api . '</column>' . "\n" .
 		        '   <column name="idn_attempt">' . $Occurrence->idn_attempt . '</column>' . "\n" .
 		        '   <column name="idn_disable">' . $Occurrence->idn_disable . '</column>' . "\n" .
 		        '   <column name="idn_last_connection">' . $Occurrence->idn_last_connection . '</column>' . "\n" .
